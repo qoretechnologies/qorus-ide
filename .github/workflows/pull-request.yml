@@ -44,7 +44,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_DEV}}
           # Mention someone in the embeds
-          DISCORD_EMBEDS: '[{ "color":16711680, "description": ":exclamation: Tests started, **please do not restart Qorus on Rippy** for the next 30 minutes. <@820316067921395752>" }]'
+          DISCORD_EMBEDS: '[{ "color":16711680, "description": ":exclamation: Tests started, **please do not restart Qorus on Rippy** for the next 30 minutes." }]'
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
         with:
@@ -112,8 +112,9 @@ jobs:
       - name: Discord notification safe to restart
         env:
           DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_DEV}}
+          DISCORD_EMBEDS: '[{ "color":65280, "description": ":white_check_mark: Tests action finished. It is now safe to restart Qorus on Rippy." }]'
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
         with:
-          args: ':white_check_mark: Tests action finished. It is now safe to restart Qorus on Rippy. <@gamey1000>'
+          args: '<@820316067921395752>'
         if: always()
