@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.qoretechnologies.qorus"},{"l":"com.qoretechnologies.qorus.client"}]

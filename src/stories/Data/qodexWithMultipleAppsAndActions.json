@@ -1,0 +1,179 @@
+{
+  "display_name": "Untitled Qodex",
+  "name": "Untitled Qodex",
+  "desc": "No description",
+  "states": {
+    "1": {
+      "position": {
+        "x": 50,
+        "y": 50
+      },
+      "initial": true,
+      "is_event_trigger": true,
+      "name": "Schedule",
+      "desc": "Trigger actions on a specific schedule",
+      "type": "state",
+      "id": "2P3rREB1l",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "QorusTriggers",
+          "action": "schedule",
+          "options": {
+            "minute": {
+              "type": "string",
+              "value": "*/20"
+            },
+            "hour": {
+              "type": "string",
+              "value": "*"
+            },
+            "day": {
+              "type": "string",
+              "value": "*"
+            },
+            "month": {
+              "type": "string",
+              "value": "*"
+            },
+            "wday": {
+              "type": "string",
+              "value": "*"
+            }
+          }
+        }
+      },
+      "transitions": [
+        {
+          "state": "3",
+          "language": "qore"
+        }
+      ]
+    },
+    "2": {
+      "position": {
+        "x": 49.99999999999999,
+        "y": 528.3333333333333
+      },
+      "initial": false,
+      "name": "Send Discord Message",
+      "desc": "Send a message to a Discord channel",
+      "type": "state",
+      "id": "1qSA-sVVn",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "Discord",
+          "action": "send-message",
+          "options": {
+            "qorus_app_connection": {
+              "type": "connection",
+              "value": "discord"
+            },
+            "guild": {
+              "type": "string",
+              "value": "Qore Technologies"
+            },
+            "channel": {
+              "type": "string",
+              "value": "api"
+            },
+            "content": {
+              "type": "string",
+              "value": "This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}"
+            }
+          }
+        }
+      },
+      "transitions": []
+    },
+    "3": {
+      "position": {
+        "x": 50,
+        "y": 300
+      },
+      "initial": false,
+      "is_event_trigger": false,
+      "name": "Get User Info",
+      "desc": "Get info about the current user",
+      "type": "state",
+      "id": "ZO2l-u06b",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "Discord",
+          "action": "user-info",
+          "options": {
+            "qorus_app_connection": {
+              "type": "connection",
+              "value": "discord"
+            }
+          }
+        }
+      },
+      "transitions": [
+        {
+          "state": "2",
+          "language": "qore"
+        },
+        {
+          "state": "4"
+        }
+      ]
+    },
+    "4": {
+      "position": {
+        "x": 521.8888888888889,
+        "y": 463.33333333333314
+      },
+      "key": "4",
+      "keyId": "4",
+      "isNew": true,
+      "isValid": false,
+      "is_event_trigger": false,
+      "name": "Add Event From Text",
+      "desc": "Quickly add an event to a calendar from text",
+      "type": "state",
+      "id": "uvGusta2C",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "GoogleCalendar",
+          "action": "quick-add-event"
+        }
+      },
+      "transitions": [
+        {
+          "state": "7"
+        }
+      ]
+    },
+    "7": {
+      "position": {
+        "x": 521.8888888888889,
+        "y": 663.3333333333331
+      },
+      "key": "7",
+      "keyId": "7",
+      "isValid": true,
+      "is_event_trigger": false,
+      "name": "Send WebSocket Message",
+      "desc": "Send a WebSocket data message",
+      "type": "state",
+      "id": "aNBfktTaHeBq",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "WebSockets",
+          "action": "send-msg-data",
+          "options": {
+            "qorus_app_connection": {
+              "type": "connection",
+              "value": "wss-1"
+            }
+          }
+        }
+      }
+    }
+  }
+}
