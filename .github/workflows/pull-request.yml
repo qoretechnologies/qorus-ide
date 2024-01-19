@@ -47,6 +47,8 @@ jobs:
           DISCORD_EMBEDS: '[{ "color":16711680, "description": ":exclamation: Tests started, **please do not restart Qorus on Rippy** for the next 30 minutes. <@820316067921395752>" }]'
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
+        with:
+          args: '<@820316067921395752>'
 
       - name: Save release version to outputs
         id: save_release_version
