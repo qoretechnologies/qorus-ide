@@ -9,7 +9,7 @@ import {
   ReqoreTimeAgo,
 } from '@qoretechnologies/reqore';
 import { IReqoreCustomTheme } from '@qoretechnologies/reqore/dist/constants/theme';
-import { capitalize, reduce } from 'lodash';
+import { capitalize } from 'lodash';
 import { useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { Messages } from '../../constants/messages';
@@ -31,9 +31,9 @@ export const Dashboard = () => {
     return data?.data?.draft;
   }, []);
 
-  const interfaces = useAsyncRetry(async () => {
+  const interfacesCount = useAsyncRetry<number>(async () => {
     const data = await callBackendBasic(
-      Messages.GET_ALL_INTERFACES,
+      Messages.GET_TOTAL_OBJECT_COUNT,
       undefined,
       undefined,
       undefined,
@@ -46,14 +46,14 @@ export const Dashboard = () => {
 
   const theme: IReqoreCustomTheme = { main: '#000000' };
 
-  if (draft.loading || interfaces.loading) {
+  if (draft.loading || interfacesCount.loading) {
     return <ReqoreSpinner centered>Loading dashboard...</ReqoreSpinner>;
   }
 
   return (
     <ReqorePanel flat>
-      <ReqoreColumns minColumnWidth="100%" columnsGap="10px">
-        <ReqoreColumns columnsGap="10px">
+      <ReqoreColumns minColumnWidth='100%' columnsGap='10px'>
+        <ReqoreColumns columnsGap='10px'>
           <ReqorePanel
             onClick={() => changeTab('CreateInterface', 'fsm')}
             customTheme={{ main: '#000000' }}
@@ -98,10 +98,10 @@ export const Dashboard = () => {
               </ReqoreTextEffect>
             </ReqoreH1>
           </ReqorePanel>
-          <ReqoreColumns columnsGap="10px" minColumnWidth="100%">
+          <ReqoreColumns columnsGap='10px' minColumnWidth='100%'>
             <ReqoreInput
-              size="big"
-              placeholder="Search away..."
+              size='big'
+              placeholder='Search away...'
               effect={{
                 gradient: {
                   colors: {
@@ -113,10 +113,10 @@ export const Dashboard = () => {
                 textSize: '20px',
               }}
             />
-            <ReqoreColumns columnsGap="10px" minColumnWidth="150px">
+            <ReqoreColumns columnsGap='10px' minColumnWidth='150px'>
               <ReqoreColumns
-                columnsGap="10px"
-                minColumnWidth="150px"
+                columnsGap='10px'
+                minColumnWidth='150px'
                 style={{ gridAutoRows: 'auto' }}
               >
                 <ReqorePanel customTheme={theme} fill>
@@ -151,7 +151,11 @@ export const Dashboard = () => {
                 onClick={() => changeTab('Interfaces')}
               >
                 <ReqoreTextEffect
-                  effect={{ textAlign: 'center', textSize: '20px', weight: 'bold' }}
+                  effect={{
+                    textAlign: 'center',
+                    textSize: '20px',
+                    weight: 'bold',
+                  }}
                 >
                   Browse All <br />{' '}
                   <ReqoreTextEffect
@@ -169,11 +173,7 @@ export const Dashboard = () => {
                       weight: 'thick',
                     }}
                   >
-                    {reduce(
-                      interfaces.value,
-                      (count, ifaceList) => count + ifaceList.length,
-                      0
-                    ).toString()}
+                    {interfacesCount.value.toString()}
                   </ReqoreTextEffect>{' '}
                   Objects
                 </ReqoreTextEffect>
@@ -181,12 +181,12 @@ export const Dashboard = () => {
             </ReqoreColumns>
           </ReqoreColumns>
         </ReqoreColumns>
-        <ReqoreColumns columnsGap="10px">
+        <ReqoreColumns columnsGap='10px'>
           {draft.value && (
             <ReqorePanel
               customTheme={theme}
               minimal
-              icon="Edit2Line"
+              icon='Edit2Line'
               contentEffect={{
                 gradient: {
                   direction: 'to right bottom',
@@ -199,7 +199,7 @@ export const Dashboard = () => {
                   animationSpeed: 5,
                 },
               }}
-              label="Open latest draft"
+              label='Open latest draft'
               onClick={() => {
                 changeDraft({
                   type: draft.value.type,
