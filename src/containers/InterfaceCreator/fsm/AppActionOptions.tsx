@@ -12,7 +12,10 @@ import Options, {
 } from '../../../components/Field/systemOptions';
 import { prepareFSMDataForPublishing } from '../../../helpers/fsm';
 import { buildTemplates, fetchData } from '../../../helpers/functions';
-import { addMessageListener, postMessage } from '../../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../../hocomponents/withMessageHandler';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
 import { useWhyDidYouUpdate } from '../../../hooks/useWhyDidYouUpdate';
@@ -53,7 +56,10 @@ export interface IQodexStateDataForTemplates extends TFSMStateAction {
   action?: IAppAction;
 }
 
-export type TQodexStatesForTemplates = Record<string | number, IQodexStateDataForTemplates>;
+export type TQodexStatesForTemplates = Record<
+  string | number,
+  IQodexStateDataForTemplates
+>;
 
 export const QodexAppActionOptions = memo(
   ({
@@ -67,7 +73,8 @@ export const QodexAppActionOptions = memo(
     const { action } = useGetAppActionData(appName, actionName);
     const [options, setOptions] = useState<IOptionsSchema>(action?.options);
     const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
-    const [templates, setTemplates] = useState<IReqoreTextareaProps['templates']>();
+    const [templates, setTemplates] =
+      useState<IReqoreTextareaProps['templates']>();
     const [value, setValue] = useState<IOptions>(outsideValue);
     const { metadata, states } = useContext(FSMContext);
 
@@ -92,11 +99,18 @@ export const QodexAppActionOptions = memo(
     }, [JSON.stringify(outsideValue)]);
 
     useMount(() => {
-      postMessage('subscribe', { args: { matchEvent: 'CONNECTION_UPDATED' } }, true);
+      postMessage(
+        'subscribe',
+        { args: { matchEvents: ['CONNECTION_UPDATED', 'CONNECTION_CREATED'] } },
+        true
+      );
       addMessageListener(
         'SUBSCRIPTION-EVENT',
         (data) => {
-          if (data?.data?.event_id === 'CONNECTION_UPDATED') {
+          if (
+            data?.data?.event_id === 'CONNECTION_UPDATED' ||
+            data?.data?.event_id === 'CONNECTION_CREATED'
+          ) {
             load();
           }
         },
@@ -137,7 +151,9 @@ export const QodexAppActionOptions = memo(
 
         const data = response.data;
 
-        setTemplates(buildTemplates(data, states, 'Use data from connected actions'));
+        setTemplates(
+          buildTemplates(data, states, 'Use data from connected actions')
+        );
       }
     }, [JSON.stringify(connectedStates)]);
 
@@ -176,10 +192,10 @@ export const QodexAppActionOptions = memo(
             }}
           >
             <ReqoreSpinner
-              iconColor="info"
+              iconColor='info'
               type={3}
               centered
-              size="big"
+              size='big'
               iconProps={{
                 image:
                   'https://hq.qoretechnologies.com:8092/api/public/apps/QorusBuiltinApi/qorus-builtin-api.svg',
@@ -205,7 +221,7 @@ export const QodexAppActionOptions = memo(
           value={value}
           onDependableOptionChange={handleDependableOptionChange}
           onChange={(_name, options) => setValue(options)}
-          name="options"
+          name='options'
           sortable={false}
           stringTemplates={templates}
         />
