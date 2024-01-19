@@ -13,7 +13,9 @@ export const username = 'IDETestUser';
 export const password = 'wegkur-hegji7-woKnez';
 export const basicAuthCredentials = `${username}:${password}`;
 export const buildWsAuth = (token: string) =>
-  process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'storybook' || !token
+  process.env.NODE_ENV === 'test' ||
+  process.env.NODE_ENV === 'storybook' ||
+  !token
     ? `?username=${username}&password=${password}`
     : `?token=${token}`;
 
@@ -93,6 +95,17 @@ export const vscode =
                 action: 'get-all-interfaces-complete',
                 data: data.type ? items[data.type] : items,
                 request_id: data.request_id,
+              };
+              break;
+            }
+            case Messages.GET_TOTAL_OBJECT_COUNT: {
+              messageData = {
+                request_id: data.request_id,
+                tab_token: 'none',
+                data: 470,
+                action: 'get-total-object-count-complete',
+                ok: true,
+                message: 'total object count',
               };
               break;
             }
@@ -502,7 +515,8 @@ export const vscode =
                     short_desc: {
                       type: 'string',
                       display_name: 'Short Description',
-                      short_desc: 'The short plain-text description of the flow',
+                      short_desc:
+                        'The short plain-text description of the flow',
                       desc: 'The short plain-text description of the flow',
                       preselected: true,
                     },
