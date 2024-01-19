@@ -46,7 +46,7 @@ jobs:
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
         with:
-          args: ':exclamation: Tests started, please do not restart Qorus on Rippy for the next 30 minutes. @gamey1000'
+          args: ':exclamation: Tests started, please do not restart Qorus on Rippy for the next 30 minutes. <@gamey1000>'
 
       - name: Save release version to outputs
         id: save_release_version
@@ -113,4 +113,5 @@ jobs:
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
         with:
-          args: ':white_check_mark: Tests action finished. It is now safe to restart Qorus on Rippy. @gamey1000'
+          args: ':white_check_mark: Tests action finished. It is now safe to restart Qorus on Rippy. <@gamey1000>'
+        if: always()
