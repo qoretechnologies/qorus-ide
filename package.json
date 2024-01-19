@@ -1,1736 +1,234 @@
 {
-  "name": "qorus-vscode",
-  "displayName": "Qorus Developer Tools",
-  "description": "Qorus Integration Engine developer tools",
+  "name": "frontend",
   "version": "5.0.0",
-  "publisher": "qoretechnologies",
-  "author": {
-    "name": "Qore Technologies",
-    "email": "vscode@qoretechnologies.com"
-  },
-  "engines": {
-    "vscode": "^1.47.0"
-  },
-  "extensionDependencies": ["qoretechnologies.qore-vscode"],
-  "license": "SEE LICENSE IN LICENSE.txt",
-  "homepage": "https://github.com/qoretechnologies/qorus-vscode",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/qoretechnologies/qorus-vscode.git"
-  },
-  "bugs": {
-    "url": "https://github.com/qoretechnologies/qorus-vscode/issues"
-  },
-  "categories": ["Other", "Snippets"],
-  "icon": "images/QorusDeveloperTools_Medium.png",
-  "galleryBanner": {
-    "color": "#333333",
-    "theme": "dark"
-  },
-  "quokka": {
-    "babel": {
-      "presets": ["env"]
-    }
-  },
-  "keywords": [
-    "qore",
-    "qorus",
-    "ide",
-    "integration",
-    "engine"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "out/extension.js",
-  "contributes": {
-    "languages": [
-      {
-        "id": "qmapper",
-        "aliases": ["Qorus Mapper"],
-        "extensions": [".qmapper"],
-        "configuration": "./syntaxes/qmapper.configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "qmapper",
-        "scopeName": "source.qmapper",
-        "path": "./syntaxes/qmapper.tmLanguage.json"
-      }
-    ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "qorusViews",
-          "title": "Qorus Development",
-          "icon": "images/QorusDeveloperTools_Small.png"
-        }
-      ]
-    },
-    "views": {
-      "qorusViews": [
-        {
-          "id": "qorusInterfaces",
-          "name": "Interfaces"
-        },
-        {
-          "id": "qorusInstances",
-          "name": "Instances",
-          "when": "qorus.showInstances"
-        }
-      ]
-    },
-    "commands": [
-      {
-        "command": "qorus.setActiveInstance",
-        "title": "Set As Active Qorus Instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.setInactiveInstanceStayLoggedIn",
-        "title": "Set As Inactive Qorus Instance & Stay Logged In",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.setInactiveInstance",
-        "title": "Set As Inactive Qorus Instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.logout",
-        "title": "Logout",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.loginAndSetActiveInstance",
-        "title": "Login & Set As Active Qorus Instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.loginAndStayInactiveInstance",
-        "title": "Login & Stay Inactive Qorus Instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.makeRelease",
-        "title": "Make Release",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.deleteInterfaces",
-        "title": "Delete Interfaces",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.deployCurrentFile",
-        "title": "Deploy Current File",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.editCurrentInterface",
-        "title": "Edit Current Interface",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.openUrlInExternalBrowser",
-        "title": "Open URL in an External Tool",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.testCurrentFile",
-        "title": "Execute Current File against active Qorus instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.testDir",
-        "title": "Execute files from directory against active Qorus instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.openWebview",
-        "title": "1. Open Webview",
-        "category": "Qorus",
-        "icon": "images/QorusDeveloperTools_Small.png"
-      },
-      {
-        "command": "qorus.openDrafts",
-        "title": "2. Open Drafts",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.createInterfaceFromDrafts",
-        "title": "Create new",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.openDraft",
-        "title": "Open Draft",
-        "category": "Qorus",
-        "icon": "images/QorusDeveloperTools_Small.png"
-      },
-      {
-        "command": "qorus.closeWebview",
-        "title": "Close Webview",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.views.deleteInterface",
-        "title": "4. Delete Interface",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployInterface",
-        "title": "3. Deploy Interface",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.openInterface",
-        "title": "1. View Code",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/code.svg",
-          "light": "images/icons/light/code.svg"
-        }
-      },
-      {
-        "command": "qorus.views.duplicateInterface",
-        "title": "1.5 Duplicate Interface",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/duplicate.svg",
-          "light": "images/icons/light/duplicate.svg"
-        }
-      },
-      {
-        "command": "qorus.views.discardChanges",
-        "title": "2. Discard changes",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/small-cross.svg",
-          "light": "images/icons/light/small-cross.svg"
-        }
-      },
-      {
-        "command": "qorus.views.createInterface",
-        "title": "1. Create new",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.explorer.editClass",
-        "title": "Edit Class",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editConnection",
-        "title": "Edit Connection",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.openInterfaceDrafts",
-        "title": "2. View all drafts for this interface inside the webview",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.explorer.multiDeploy",
-        "title": "Deploy Selected Files And Directories",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editJob",
-        "title": "Edit Job",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editFsm",
-        "title": "Edit Finite State Machine",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editPipeline",
-        "title": "Edit Pipeline",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editMapper",
-        "title": "Edit Mapper",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editMapperCode",
-        "title": "Edit Mapper Code",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editMapperCodeMethods",
-        "title": "Edit Mapper Code Methods",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editService",
-        "title": "Edit Service",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editValueMap",
-        "title": "Edit Value Map",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editErrors",
-        "title": "Edit Errors",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editServiceMethods",
-        "title": "Edit Service Methods",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editStep",
-        "title": "Edit Step",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editWorkflow",
-        "title": "Edit Workflow",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editFsm",
-        "title": "Edit Finite State Machine",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editPipeline",
-        "title": "Edit Pipeline",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editWorkflowSteps",
-        "title": "Edit Workflow Steps",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.editInterface",
-        "title": "Edit Interface",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.deployFile",
-        "title": "Deploy file to active Qorus instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.deployInterface",
-        "title": "Deploy Interface",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.deployDir",
-        "title": "Deploy Directory",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.explorer.testFile",
-        "title": "Execute file against active Qorus instance",
-        "category": "Qorus"
-      },
-      {
-        "command": "qorus.views.testFile",
-        "title": "1. Execute file against active Qorus instance",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/play.svg",
-          "light": "images/icons/light/play.svg"
-        }
-      },
-      {
-        "command": "qorus.createClass",
-        "title": "Create New Class",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createConnection",
-        "title": "Create New Connection",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createJob",
-        "title": "Create New Job",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createFsm",
-        "title": "Create New Finite State Machine",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createPipeline",
-        "title": "Create New Pipeline",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createMapper",
-        "title": "Create New Mapper",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createMapperCode",
-        "title": "Create New Mapper Code",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createService",
-        "title": "Create New Service",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createStep",
-        "title": "Create New Step",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createWorkflow",
-        "title": "Create New Workflow",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createGroup",
-        "title": "Create New Group",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createEvent",
-        "title": "Create New Sync Event",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createQueue",
-        "title": "Create New Queue",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createValueMap",
-        "title": "Create New Value Map",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createErrors",
-        "title": "Create New Errors",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.createType",
-        "title": "Create New Type",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/create-new.svg",
-          "light": "images/icons/light/create-new.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteClass",
-        "title": "Delete Class",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteConnection",
-        "title": "Delete Connection",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteConstant",
-        "title": "Delete Constants",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteErrors",
-        "title": "Delete Errors",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteEvent",
-        "title": "Delete Sync Event",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteFunction",
-        "title": "Delete Functions",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteGroup",
-        "title": "Delete Group",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteJob",
-        "title": "Delete Job",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteFsm",
-        "title": "Delete Finite State Machine",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deletePipeline",
-        "title": "Delete Pipeline",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteMapper",
-        "title": "Delete Mapper",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteMapperCode",
-        "title": "Delete Mapper Code",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteQueue",
-        "title": "Delete Queue",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteType",
-        "title": "Delete Type",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteService",
-        "title": "Delete Service",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteStep",
-        "title": "Delete Step",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteValueMap",
-        "title": "Delete Value Map",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deleteWorkflow",
-        "title": "Delete Workflow",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployAllInterfaces",
-        "title": "5. Deploy All Interfaces",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployClass",
-        "title": "Deploy Class",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployConnection",
-        "title": "Deploy Connection",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployFsm",
-        "title": "Deploy Finite State Machine",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployPipeline",
-        "title": "Deploy Pipeline",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployConstant",
-        "title": "Deploy Constants",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployDir",
-        "title": "Deploy Directory",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployErrors",
-        "title": "Deploy Errors",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployEvent",
-        "title": "Deploy Sync Event",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployFunction",
-        "title": "Deploy Functions",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployGroup",
-        "title": "Deploy Group",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployJob",
-        "title": "Deploy Job",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployMapper",
-        "title": "Deploy Mapper",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployMapperCode",
-        "title": "Deploy Mapper Code",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployQueue",
-        "title": "Deploy Queue",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployType",
-        "title": "Deploy Type",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployService",
-        "title": "Deploy Service",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployStep",
-        "title": "Deploy Step",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployValueMap",
-        "title": "Deploy Value Map",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.deployWorkflow",
-        "title": "Deploy Workflow",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/cloud-upload.svg",
-          "light": "images/icons/light/cloud-upload.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editClass",
-        "title": "Edit Class",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editConnection",
-        "title": "Edit Connection",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editFsm",
-        "title": "Edit Finite State Machine",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editPipeline",
-        "title": "Edit Pipeline",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editGroup",
-        "title": "Edit Group",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editEvent",
-        "title": "Edit Sync Event",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editType",
-        "title": "Edit Type",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editQueue",
-        "title": "Edit Queue",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editJob",
-        "title": "Edit Job",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editMapper",
-        "title": "Edit Mapper",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editMapperCode",
-        "title": "Edit Mapper Code",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editService",
-        "title": "Edit Service",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editValueMap",
-        "title": "Edit Value Map",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editErrors",
-        "title": "Edit Errors",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editStep",
-        "title": "Edit Step",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editWorkflow",
-        "title": "Edit Workflow",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/edit.svg",
-          "light": "images/icons/light/edit.svg"
-        }
-      },
-      {
-        "command": "qorus.views.editWorkflowSteps",
-        "title": "Edit Workflow Steps",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/wf-steps.svg",
-          "light": "images/icons/light/wf-steps.svg"
-        }
-      },
-      {
-        "command": "qorus.views.switchToCategoryView",
-        "title": "3. Switch to Category View",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/category-view.svg",
-          "light": "images/icons/light/category-view.svg"
-        }
-      },
-      {
-        "command": "qorus.views.switchToFolderView",
-        "title": "4. Switch to Folder View",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/folder-view.svg",
-          "light": "images/icons/light/folder-view.svg"
-        }
-      },
-      {
-        "command": "qorus.deleteDraft",
-        "title": "1.Delete draft",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/small-cross.svg",
-          "light": "images/icons/light/small-cross.svg"
-        }
-      },
-      {
-        "command": "qorus.deleteInterfaceDrafts",
-        "title": "3. Delete all drafts for this interface",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/small-cross.svg",
-          "light": "images/icons/light/small-cross.svg"
-        }
-      },
-      {
-        "command": "qorus.deleteAllDrafts",
-        "title": "Delete All Drafts",
-        "category": "Qorus",
-        "icon": {
-          "dark": "images/icons/dark/trash.svg",
-          "light": "images/icons/light/trash.svg"
-        }
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "qorus.deployCurrentFile",
-        "key": "ctrl+alt+o",
-        "mac": "cmd+alt+r",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "qorus.editCurrentInterface",
-        "key": "ctrl+alt+e",
-        "mac": "cmd+alt+e",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "qorus.testCurrentFile",
-        "key": "ctrl+alt+t",
-        "mac": "cmd+alt+t",
-        "when": "editorTextFocus"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "qorus.views.deleteClass",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteConnection",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteConstant",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteErrors",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteEvent",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteFunction",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteGroup",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteJob",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteFsm",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deletePipeline",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteMapper",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteMapperCode",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteQueue",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteType",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteService",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteStep",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteValueMap",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deleteWorkflow",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployAllInterfaces",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployClass",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployConnection",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployFsm",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployPipeline",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployConstant",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployDir",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployErrors",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployEvent",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployFunction",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployGroup",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployJob",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployMapper",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployMapperCode",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployQueue",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployType",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployService",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployStep",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployValueMap",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.deployWorkflow",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editClass",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editConnection",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editFsm",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editPipeline",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editGroup",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editEvent",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editType",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editQueue",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editJob",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editMapper",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editMapperCode",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editService",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editValueMap",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editErrors",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editStep",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editWorkflow",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.editWorkflowSteps",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.switchToCategoryView",
-          "when": "false"
-        },
-        {
-          "command": "qorus.views.switchToFolderView",
-          "when": "false"
-        }
-      ],
-      "view/title": [
-        {
-          "command": "qorus.openWebview",
-          "group": "navigation",
-          "when": "view == qorusInstances"
-        },
-        {
-          "command": "qorus.openWebview",
-          "group": "navigation",
-          "when": "view == qorusInterfaces"
-        },
-        {
-          "command": "qorus.openDrafts",
-          "group": "navigation",
-          "when": "view == qorusInterfaces"
-        },
-        {
-          "command": "qorus.views.deployAllInterfaces",
-          "group": "navigation",
-          "when": "view == qorusInterfaces"
-        },
-        {
-          "command": "qorus.views.switchToCategoryView",
-          "group": "navigation",
-          "when": "view == qorusInterfaces"
-        },
-        {
-          "command": "qorus.views.switchToFolderView",
-          "group": "navigation",
-          "when": "view == qorusInterfaces"
-        }
-      ],
-      "explorer/context": [
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createService",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createJob",
-          "group": "2_workspace@2"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createWorkflow",
-          "group": "2_workspace@3"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createStep",
-          "group": "2_workspace@4"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createMapper",
-          "group": "2_workspace@5"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createMapperCode",
-          "group": "2_workspace@6"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createClass",
-          "group": "2_workspace@7"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createConnection",
-          "group": "2_workspace@8"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createType",
-          "group": "2_workspace@9"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createFsm",
-          "group": "2_workspace@10"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createPipeline",
-          "group": "2_workspace@11"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createGroup",
-          "group": "2_workspace@12"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createEvent",
-          "group": "2_workspace@13"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createQueue",
-          "group": "2_workspace@14"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createValueMap",
-          "group": "2_workspace@15"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.createErrors",
-          "group": "2_workspace@16"
-        },
-        {
-          "when": "explorerResourceIsFolder && !listMultiSelection",
-          "command": "qorus.explorer.deployDir",
-          "group": "2_workspace@19"
-        },
-        {
-          "when": "explorerResourceIsFolder",
-          "command": "qorus.testDir",
-          "group": "2_workspace@21"
-        },
-        {
-          "when": "!explorerResourceIsFolder && !listMultiSelection",
-          "command": "qorus.explorer.deployFile",
-          "group": "2_workspace@51"
-        },
-        {
-          "when": "resourceExtname == .qsd",
-          "command": "qorus.explorer.editService",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qsd",
-          "command": "qorus.explorer.editServiceMethods",
-          "group": "2_workspace@2"
-        },
-        {
-          "when": "resourceExtname == .qclass",
-          "command": "qorus.explorer.editClass",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qjob",
-          "command": "qorus.explorer.editJob",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qmapper",
-          "command": "qorus.explorer.editMapper",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qmc",
-          "command": "qorus.explorer.editMapperCode",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qmc",
-          "command": "qorus.explorer.editMapperCodeMethods",
-          "group": "2_workspace@2"
-        },
-        {
-          "when": "resourceExtname == .qstep",
-          "command": "qorus.explorer.editStep",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qwf",
-          "command": "qorus.explorer.editWorkflow",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname == .qwf",
-          "command": "qorus.explorer.editWorkflowSteps",
-          "group": "2_workspace@2"
-        },
-        {
-          "when": "resourceExtname =~ /^\\.(yaml|java|py)$/",
-          "command": "qorus.explorer.editInterface",
-          "group": "2_workspace@1"
-        },
-        {
-          "when": "resourceExtname =~ /^\\.(yaml|java|py)$/ && !listMultiSelection",
-          "command": "qorus.explorer.deployInterface",
-          "group": "2_workspace@11"
-        },
-        {
-          "when": "resourceExtname == .qtest || resourceFilename =~ /Test\\.java$/ || resourceFilename =~ /test.py$/",
-          "command": "qorus.explorer.testFile",
-          "group": "2_workspace@21"
-        },
-        {
-          "when": "listMultiSelection",
-          "command": "qorus.explorer.multiDeploy",
-          "group": "2_workspace@50"
-        }
-      ],
-      "view/item/context": [
-        {
-          "command": "qorus.setActiveInstance",
-          "when": "view == qorusInstances && viewItem =~ /^qorus:inactive:(loggedIn|noAuth|unknown)$/"
-        },
-        {
-          "command": "qorus.setInactiveInstanceStayLoggedIn",
-          "when": "view == qorusInstances && viewItem == qorus:active:loggedIn"
-        },
-        {
-          "command": "qorus.setInactiveInstance",
-          "when": "view == qorusInstances && viewItem =~ /^qorus:active:(noAuth|unknown)$/"
-        },
-        {
-          "command": "qorus.logout",
-          "when": "view == qorusInstances && viewItem =~ /^qorus:(active|inactive):loggedIn$/"
-        },
-        {
-          "command": "qorus.loginAndSetActiveInstance",
-          "when": "view == qorusInstances && viewItem == qorus:inactive:loggedOut"
-        },
-        {
-          "command": "qorus.loginAndStayInactiveInstance",
-          "when": "view == qorusInstances && viewItem == qorus:inactive:loggedOut"
-        },
-        {
-          "command": "qorus.views.createInterface",
-          "when": "view == qorusInterfaces && viewItem == category",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.discardChanges",
-          "when": "view == qorusInterfaces && viewItem =~ /hasChanges/",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.openInterface",
-          "when": "view == qorusInterfaces && viewItem =~ /hasCode/",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.duplicateInterface",
-          "when": "view == qorusInterfaces && viewItem =~ /^interface/",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.deployInterface",
-          "when": "view == qorusInterfaces && viewItem =~ /^interface/ && viewItem =~ /isNotTest/",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.testFile",
-          "when": "view == qorusInterfaces && viewItem =~ /isTest/",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.openInterfaceDrafts",
-          "when": "view == qorusInterfaces && viewItem == category",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.deleteInterfaceDrafts",
-          "when": "view == qorusInterfaces && viewItem == category",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.deleteDraft",
-          "when": "view == qorusInterfaces && viewItem == draft",
-          "group": "inline"
-        },
-        {
-          "command": "qorus.views.deleteInterface",
-          "when": "view == qorusInterfaces && viewItem =~ /^interface/",
-          "group": "inline"
-        }
-      ]
-    },
-    "configuration": {
-      "type": "object",
-      "title": "Qorus Extension Configuration",
-      "properties": {
-        "qorus.openUrlInExternalBrowser.mac": {
-          "type": "string",
-          "description": "a default tool to use with custom URLs on Mac/OSX. By default 'open' is the standard tool on OSX",
-          "scope": "window",
-          "default": "open"
-        },
-        "qorus.openUrlInExternalBrowser.windows": {
-          "type": "string",
-          "description": "a default tool to use with custom URLs on MS Windows. By default we are using 'start <empty comment> <url>' for windows. As it seems better solution than 'explorer' for now. But you can try 'explorer' if you are facing issues with 'start'",
-          "scope": "window",
-          "default": "start \"\""
-        },
-        "qorus.openUrlInExternalBrowser.linux": {
-          "type": "string",
-          "description": "a default tool to use with custom URLs on Linux. By default 'xdg-open' is the standard tool in Linux ecosystems",
-          "scope": "window",
-          "default": "xdg-open"
-        },
-        "qorusDeployment.allow-redef": {
-          "type": "boolean",
-          "description": "Allows dangerous workflow redefinitions",
-          "default": false
-        },
-        "qorusDeployment.force": {
-          "type": "boolean",
-          "description": "Force schema verification/downgrade with user schemas",
-          "default": false
-        },
-        "qorusDeployment.validate": {
-          "type": "boolean",
-          "description": "Validate all functions recursively",
-          "default": true
-        },
-        "qorusDeployment.reload": {
-          "type": "boolean",
-          "description": "Reload interfaces in the server",
-          "default": true
-        },
-        "qorusDeployment.verbosity-level": {
-          "type": "integer",
-          "description": "Sets verbosity level (greater value = more info)",
-          "default": 1
-        },
-        "qorusTest.continue-on-error": {
-          "type": "boolean",
-          "description": "if one of the tests fails, server will continue on execution of the rest",
-          "default": false
-        }
-      }
-    }
-  },
-  "scripts": {
-    "vscode:prepublish": "rm -rf out && rm -rf dist && npm run compile && npm run build",
-    "compile": "NODE_ENV=production webpack --mode development --config webpack_backend.config.js",
-    "compile:test": "cd ui-test && node_modules/.bin/tsc -p ./src",
-    "watch": "node_modules/.bin/tsc -watch -p ./src",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test",
-    "start": "cd frontend && yarn start",
-    "build": "cd frontend && yarn build",
-    "build:dev": "NODE_ENV=development cd frontend && yarn build",
-    "build-storybook": "cd frontend && yarn build-storybook"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.6.0",
-    "@babel/core": "^7.6.0",
-    "@babel/node": "^7.6.1",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/plugin-proposal-decorators": "^7.6.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.6.0",
-    "@babel/plugin-transform-runtime": "^7.11.0",
-    "@babel/preset-env": "^7.6.0",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.6.0",
-    "@types/fs-extra": "^9.0.13",
-    "@types/glob": "^5.0.35",
-    "@types/mocha": "^2.2.43",
-    "@types/node": "^10.16.0",
-    "@types/request-promise": "^4.1.44",
-    "@typescript-eslint/eslint-plugin": "^5.16.0",
-    "@typescript-eslint/parser": "^5.16.0",
-    "babel-loader": "^8.0.6",
-    "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-ttag": "^1.7.23",
-    "chromatic": "^6.17.1",
-    "compression-webpack-plugin": "^2.0.0",
-    "connect-history-api-fallback": "^1.6.0",
-    "copy-webpack-plugin": "^5.0.3",
-    "eslint": "^8.11.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.29.4",
-    "file-loader": "^3.0.1",
-    "tslint": "^5.19.0",
-    "typescript": "^4.9.5",
-    "url-loader": "^1.1.2",
-    "vsce": "^2.7.0",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8",
-    "webpack-dev-middleware": "^3.7.1",
-    "webpack-dev-server": "^3.8.0",
-    "webpack-hot-middleware": "^2.24.4",
-    "webpack-merge": "^4.2.1"
-  },
+  "private": false,
   "dependencies": {
     "@andrewhead/python-program-analysis": "^0.4.8",
+    "@babel/core": "^7.16.0",
     "@babel/polyfill": "^7.7.0",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
+    "@previewjs/plugin-react": "^3.1.2",
     "@qoretechnologies/python-parser": "^0.4.10",
-    "@types/js-yaml": "^3.12.5",
+    "@qoretechnologies/reqore": "^0.38.4",
+    "@svgr/webpack": "^5.5.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/js-yaml": "^4.0.5",
     "@types/lodash": "^4.14.170",
+    "@types/node": "^16.11.47",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
     "@types/vscode": "^1.47.0",
     "archiver": "^3.1.1",
+    "babel-jest": "^29.4.3",
+    "babel-loader": "^8.2.3",
+    "babel-plugin-named-asset-import": "^0.3.8",
+    "babel-preset-react-app": "^10.0.1",
+    "bfj": "^7.0.2",
+    "browserslist": "^4.18.1",
+    "camelcase": "^6.2.1",
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "compressjs": "^1.0.3",
     "cron-validator": "^1.0.2",
     "cronstrue": "^1.81.0",
     "crypto-js": "^4.0.0",
+    "css-loader": "^6.5.1",
+    "css-minimizer-webpack-plugin": "^3.2.0",
+    "dotenv": "^10.0.0",
+    "dotenv-expand": "^5.1.0",
     "epoch-timeago": "^1.1.9",
+    "eslint": "^8.3.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-webpack-plugin": "^3.1.1",
     "eventlistener": "0.0.1",
-    "fs-extra": "^8.1.0",
+    "file-loader": "^6.2.0",
+    "fs-extra": "^10.0.0",
     "gettext-parser": "^2.0.0",
     "hoist-non-react-statics": "^3.3.2",
+    "html-webpack-plugin": "^5.5.0",
+    "identity-obj-proxy": "^3.0.0",
     "java-parser": "^0.8.0",
-    "js-yaml": "^3.13.1",
+    "jest": "27.4.3",
+    "jest-resolve": "^27.4.2",
+    "jest-watch-typeahead": "^1.0.0",
+    "js-yaml": "^4.1.0",
     "markdown-it": "^11.0.0",
     "md5": "^2.3.0",
+    "mini-css-extract-plugin": "^2.4.5",
     "moment": "^2.24.0",
-    "os-tmpdir": "^2.0.0",
+    "path": "^0.12.7",
+    "polished": "^4.1.0",
+    "postcss": "^8.4.4",
+    "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-loader": "^6.2.1",
+    "postcss-normalize": "^10.0.1",
+    "postcss-preset-env": "^7.0.1",
+    "prompts": "^2.4.2",
+    "react": "^18.2.0",
+    "react-app-polyfill": "^3.0.0",
+    "react-autocomplete": "^1.8.1",
+    "react-d3-tree": "^1.16.1",
+    "react-dev-utils": "^12.0.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-cjs": "^9.5.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-html5-backend-cjs": "^9.5.1",
+    "react-dnd-mouse-backend": "^1.0.0-rc.2",
+    "react-dom": "^18.2.0",
+    "react-element-pan": "^2.0.0",
+    "react-hierarchy-tree-graph": "^1.0.3",
+    "react-markdown": "^8.0.3",
+    "react-redux": "^7.1.1",
+    "react-refresh": "^0.11.0",
+    "react-scrollbar": "^0.5.6",
+    "react-use": "^15.3.4",
+    "react-use-websocket": "^4.5.0",
+    "recompose": "^0.30.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "resize-observer-polyfill": "^1.5.1",
+    "resolve": "^1.20.0",
+    "resolve-url-loader": "^4.0.0",
+    "sass": "^1.54.4",
+    "sass-loader": "^12.3.0",
+    "semver": "^7.3.5",
     "shortid": "^2.2.15",
+    "source-map-loader": "^3.0.0",
+    "style-loader": "^3.3.1",
+    "styled-components": "5.3.6",
     "stylis": "^3.5.4",
     "swagger-object-validator": "^1.1.7",
+    "tailwindcss": "^3.0.2",
+    "terser-webpack-plugin": "^5.2.5",
     "ttag": "^1.7.18",
+    "typescript": "^4.9.5",
     "url-join": "^4.0.1",
     "url-parse": "^1.5.3",
     "urldecode": "^1.0.1",
     "urlencode": "^1.1.0",
     "vscode-languageserver-types": "^3.14",
+    "web-vitals": "^2.1.4",
+    "webpack": "^5.64.4",
+    "webpack-dev-server": "^4.6.0",
+    "webpack-manifest-plugin": "^4.0.2",
+    "workbox-webpack-plugin": "^6.4.1",
     "xml-js": "^1.6.11",
     "yamljs": "^0.3.0"
   },
+  "scripts": {
+    "start": "NODE_ENV=development BROWSER=none node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "test:watch": "./node_modules/.bin/jest --watch",
+    "update-reqore": "yarn add @qoretechnologies/reqore@beta",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "test-storybook": "test-storybook src/Stories/Components --maxWorkers=1 && test-storybook src/Stories/Views --maxWorkers=1 && test-storybook src/Stories/Fields --maxWorkers=1 && test-storybook src/Stories/Interfaces --maxWorkers=1 && test-storybook src/Stories/Tests --maxWorkers=1",
+    "install-playwright": "npx playwright install --with-deps",
+    "chromatic": "npx chromatic --project-token=chpt_1aaa74dd9c1b035"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/__tests__"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/__tests__/setup.js"
+    ],
+    "testMatch": [
+      "<rootDir>/__tests__/**/*.{spec,test}.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jest-environment-jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/config/jest/babelTransform.js",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "<rootDir>/node_modules/(?!react-dnd|core-dnd|@react-dnd|dnd-core|react-dnd-html5-backend)",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "modulePaths": [],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "react-markdown": "<rootDir>/node_modules/react-markdown/react-markdown.min.js",
+      "^react-dnd$": "react-dnd-cjs",
+      "^react-dnd-html5-backend$": "react-dnd-html5-backend-cjs",
+      "^dnd-core$": "dnd-core-cjs",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "resetMocks": true,
+    "testTimeout": 60000
+  },
+  "babel": {
+    "presets": [
+      "react-app"
+    ]
+  },
+  "devDependencies": {
+    "@chromaui/addon-visual-tests": "^0.0.98",
+    "@storybook/addon-actions": "^7.4.5",
+    "@storybook/addon-essentials": "^7.4.5",
+    "@storybook/addon-interactions": "^7.4.5",
+    "@storybook/addon-links": "^7.4.5",
+    "@storybook/addon-mdx-gfm": "^7.4.5",
+    "@storybook/jest": "^0.2.2",
+    "@storybook/preset-create-react-app": "^7.4.5",
+    "@storybook/react": "^7.4.5",
+    "@storybook/react-webpack5": "^7.4.5",
+    "@storybook/test-runner": "^0.13.0",
+    "@storybook/testing-library": "^0.2.2",
+    "@storybook/testing-react": "^2.0.0",
+    "jest-environment-jsdom": "27.4.3",
+    "process": "^0.11.10",
+    "react-intersection-observer": "^9.4.2",
+    "storybook": "^7.4.5",
+    "ts-jest": "^29.0.5"
+  },
   "readme": "ERROR: No README data found!",
-  "_id": "qorus-vscode@4.0.3"
+  "_id": "frontend@5.0.0"
 }
