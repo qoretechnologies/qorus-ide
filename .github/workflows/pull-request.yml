@@ -58,7 +58,7 @@ jobs:
         id: install_modules
         run: |
           yarn install
-          yarn build
+          yarn build-prod
           yarn install-playwright
           yarn build-storybook --quiet
 

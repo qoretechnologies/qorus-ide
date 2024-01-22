@@ -55,15 +55,15 @@ jobs:
       - name: Save release version to outputs
         id: save_release_version
         run: echo ::set-output name=version::$(node -pe "require('./package.json').version")
-        
+
       - name: Install modules & Create build
         id: install_modules
         run: |
           yarn install
-          yarn build
+          yarn build-prod
           zip -r qorus-ide-develop.zip build
           chmod 644 qorus-ide-develop.zip
-          
+
       - name: Publish to Chromatic
         id: chromatic_publish
         uses: chromaui/action@v1
@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true
-          
+
       # Copy the build to HQ
       - name: Copy develop build to HQ
         id: copy_develop_build
@@ -83,7 +83,7 @@ jobs:
           chmod 700 ~/.ssh
           chmod 600 ~/.ssh/id_rsa
           scp qorus-ide-develop.zip ${{ secrets.DEPLOY_USER}}@${{ secrets.DEPLOY_HOST}}:${{ secrets.DEPLOY_PATH }}
-          
+
       - uses: actions/upload-artifact@v3
         id: upload_dev_build
         if: success()
@@ -91,8 +91,7 @@ jobs:
           name: IDE v${{ steps.save_release_version.outputs.version }} develop
           path: qorus-ide-develop.zip
           retention-days: 30
-          
-          
+
       # Notify Discord if Success
       - name: Discord notification
         env:
