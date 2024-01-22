@@ -1,6 +1,7 @@
 {
   "name": "qorus-ide",
   "version": "5.0.1",
+  "homepage": "ide",
   "private": false,
   "dependencies": {
     "@andrewhead/python-program-analysis": "^0.4.8",
