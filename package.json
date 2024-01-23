@@ -118,7 +118,7 @@
     "yamljs": "^0.3.0"
   },
   "scripts": {
-    "start": "NODE_ENV=development BROWSER=none node scripts/start.js",
+    "start": "NODE_ENV=development BROWSER=none REACT_APP_QORUS_TOKEN=$QORUS_TOKEN node scripts/start.js",
     "build-prod": "PUBLIC_URL=ide node scripts/build.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",

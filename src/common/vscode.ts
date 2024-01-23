@@ -9,15 +9,17 @@ import objects from '../stories/Data/objects.json';
 import projectConfig from '../stories/Data/projectConfig.json';
 import { sleep } from '../stories/Tests/utils';
 
-export const username = 'IDETestUser';
-export const password = 'wegkur-hegji7-woKnez';
-export const basicAuthCredentials = `${username}:${password}`;
-export const buildWsAuth = (token: string) =>
-  process.env.NODE_ENV === 'test' ||
-  process.env.NODE_ENV === 'storybook' ||
-  !token
-    ? `?username=${username}&password=${password}`
-    : `?token=${token}`;
+console.log(process.env);
+
+export const apiHost =
+  process.env.NODE_ENV !== 'production'
+    ? 'https://hq.qoretechnologies.com:8092/'
+    : '/';
+export const apiToken =
+  process.env.NODE_ENV === 'production'
+    ? localStorage.getItem('token')
+    : process.env.REACT_APP_QORUS_TOKEN;
+export const buildWsAuth = (token: string = apiToken) => `?token=${token}`;
 
 export const vscode =
   process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'storybook'
@@ -73,7 +75,7 @@ export const vscode =
                   method,
                   headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Basic ${btoa(basicAuthCredentials)}`,
+                    Authorization: `Bearer ${apiToken}`,
                   },
                   body: JSON.stringify(body),
                 }

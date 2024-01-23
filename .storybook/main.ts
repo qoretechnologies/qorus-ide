@@ -19,6 +19,7 @@ const config = {
     ...config,
     NODE_ENV: 'storybook',
     BROWSER: 'chrome',
+    REACT_APP_QORUS_TOKEN: process.env.QORUS_TOKEN,
   }),
   webpackFinal: async (config) => {
     return {

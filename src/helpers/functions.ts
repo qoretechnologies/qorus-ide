@@ -18,7 +18,7 @@ import omit from 'lodash/omit';
 import set from 'lodash/set';
 import size from 'lodash/size';
 import shortid from 'shortid';
-import { basicAuthCredentials } from '../common/vscode';
+import { apiHost, apiToken } from '../common/vscode';
 import { IProviderType } from '../components/Field/connectors';
 import { IOptions, IQorusType } from '../components/Field/systemOptions';
 import { interfaceKindTransform } from '../constants/interfaces';
@@ -33,12 +33,17 @@ import {
 import { TQodexTemplates } from '../containers/InterfaceCreator/fsm/AppActionOptions';
 import { TAction } from '../containers/InterfaceCreator/fsm/stateDialog';
 import { IQorusInterface } from '../containers/InterfacesView';
-import { addMessageListener, postMessage } from '../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../hocomponents/withMessageHandler';
 import { isStateValid } from './fsm';
 const md5 = require('md5');
 
-const functionOrStringExp: Function = (item: Function | string, ...itemArguments) =>
-  typeof item === 'function' ? item(...itemArguments) : item;
+const functionOrStringExp: Function = (
+  item: Function | string,
+  ...itemArguments
+) => (typeof item === 'function' ? item(...itemArguments) : item);
 
 const getType = (item: any): string => {
   if (isBoolean(item)) {
@@ -111,7 +116,8 @@ export const isStateIsolated = (
   forEach(states, (stateData, keyId) => {
     if (
       stateData.transitions?.find(
-        (transition: IFSMTransition) => transition.state === stateKey && !transition.fake
+        (transition: IFSMTransition) =>
+          transition.state === stateKey && !transition.fake
       )
     ) {
       isIsolated = false;
@@ -122,7 +128,11 @@ export const isStateIsolated = (
 };
 
 export interface ITypeComparatorData {
-  interfaceName?: string | IProviderType | TVariableActionValue | TFSMClassConnectorAction;
+  interfaceName?:
+    | string
+    | IProviderType
+    | TVariableActionValue
+    | TFSMClassConnectorAction;
   connectorName?: string;
   interfaceKind?: 'if' | 'block' | 'processor' | TAction | 'transaction';
   typeData?: any;
@@ -139,9 +149,9 @@ export const getProviderFromInterfaceObject = (
     }
     case 'class': {
       if (connectorName) {
-        return data?.['class-connectors']?.find((connector) => connector.name === connectorName)?.[
-          `${type}-provider`
-        ];
+        return data?.['class-connectors']?.find(
+          (connector) => connector.name === connectorName
+        )?.[`${type}-provider`];
       }
 
       return data?.processor?.[`processor-${type}-type`];
@@ -233,10 +243,14 @@ export const areTypesCompatible = async (
   output.options = await formatAndFixOptionsToKeyValuePairs(output.options);
   input.options = await formatAndFixOptionsToKeyValuePairs(input.options);
 
-  const comparison = await fetchData('/dataprovider/compareTypes?context=ui', 'PUT', {
-    base_type: input,
-    type: output,
-  });
+  const comparison = await fetchData(
+    '/dataprovider/compareTypes?context=ui',
+    'PUT',
+    {
+      base_type: input,
+      type: output,
+    }
+  );
 
   if (!comparison.ok) {
     return true;
@@ -245,7 +259,9 @@ export const areTypesCompatible = async (
   return comparison.data;
 };
 
-export const formatAndFixOptionsToKeyValuePairs = async (options?: IOptions): Promise<IOptions> => {
+export const formatAndFixOptionsToKeyValuePairs = async (
+  options?: IOptions
+): Promise<IOptions> => {
   const newOptions = cloneDeep(options || {});
 
   for await (const optionName of Object.keys(newOptions || {})) {
@@ -254,9 +270,13 @@ export const formatAndFixOptionsToKeyValuePairs = async (options?: IOptions): Pr
     if (newOptions[optionName].type === 'file-as-string') {
       // We need to fetch the file contents from the server
       // Load the contents into the schema string
-      const { fileData } = await callBackendBasic(Messages.GET_FILE_CONTENT, undefined, {
-        file: newOptions[optionName].value,
-      });
+      const { fileData } = await callBackendBasic(
+        Messages.GET_FILE_CONTENT,
+        undefined,
+        {
+          file: newOptions[optionName].value,
+        }
+      );
 
       newValue = fileData;
     }
@@ -413,7 +433,10 @@ export const getPipelineClosestParentOutputData = (
   }
 
   if (item.type === 'queue') {
-    return getPipelineClosestParentOutputData(item.parent, pipelineInputProvider);
+    return getPipelineClosestParentOutputData(
+      item.parent,
+      pipelineInputProvider
+    );
   }
 
   return {
@@ -434,7 +457,11 @@ const flattenPipeline = (data, parent?: any) => {
       return [...newData, newElement];
     }
 
-    return [...newData, newElement, ...flattenPipeline(newElement.children, newElement)];
+    return [
+      ...newData,
+      newElement,
+      ...flattenPipeline(newElement.children, newElement),
+    ];
   }, []);
 };
 
@@ -456,9 +483,14 @@ export const checkPipelineCompatibility = async (elements, inputProvider) => {
       );
 
       if (!isCompatibleWithParent) {
-        set(newElements, element.path, { ...omit(element, ['parent']), isCompatible: false });
+        set(newElements, element.path, {
+          ...omit(element, ['parent']),
+          isCompatible: false,
+        });
       } else {
-        set(newElements, element.path, { ...omit(element, ['parent', 'isCompatible']) });
+        set(newElements, element.path, {
+          ...omit(element, ['parent', 'isCompatible']),
+        });
       }
     }
   }
@@ -471,11 +503,11 @@ export const fetchData: (
   method?: string,
   body?: { [key: string]: any }
 ) => Promise<any> = async (url, method = 'GET', body) => {
-  const requestData = await fetch(`https://hq.qoretechnologies.com:8092/api/latest/${url}`, {
+  const requestData = await fetch(`${apiHost}api/latest/${url}`, {
     method,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic ${btoa(basicAuthCredentials)}`,
+      Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify(body),
   });
@@ -515,10 +547,16 @@ export const getTargetFile = (data: any) => {
   return data?.id;
 };
 
-export const insertUrlPartBeforeQuery = (url: string, part: string, query?: string) => {
+export const insertUrlPartBeforeQuery = (
+  url: string,
+  part: string,
+  query?: string
+) => {
   const urlParts = url.split('?');
   const urlWithoutQuery = urlParts[0];
-  const q = `?${urlParts[1] || ''}${urlParts[1] && query ? '&' : ''}${query ? query : ''}`;
+  const q = `?${urlParts[1] || ''}${urlParts[1] && query ? '&' : ''}${
+    query ? query : ''
+  }`;
 
   return `${urlWithoutQuery}${part}${q}`;
 };
@@ -530,7 +568,10 @@ export const hasValue = (value) => {
     return false;
   }
 };
-export const getDraftId = (data: IQorusInterface['data'], interfaceId?: string) => {
+export const getDraftId = (
+  data: IQorusInterface['data'],
+  interfaceId?: string
+) => {
   return data?.id || interfaceId;
 };
 
@@ -547,7 +588,8 @@ export const filterTemplatesByType = (
     const subItems = item.items?.filter((subItem) => {
       return (
         subItem.badge === fieldType ||
-        (fieldType === 'string' && isTypeStringCompatible(subItem.badge as string))
+        (fieldType === 'string' &&
+          isTypeStringCompatible(subItem.badge as string))
       );
     });
 
@@ -597,14 +639,17 @@ export const buildTemplates = (
               image: logo,
             },
             badge: app,
-            items: map(items, ({ display_name, value, example_value, name, type }) => ({
-              label: display_name,
-              description: example_value
-                ? `Example value: ${JSON.stringify(example_value)}`
-                : undefined,
-              badge: type,
-              value,
-            })),
+            items: map(
+              items,
+              ({ display_name, value, example_value, name, type }) => ({
+                label: display_name,
+                description: example_value
+                  ? `Example value: ${JSON.stringify(example_value)}`
+                  : undefined,
+                badge: type,
+                value,
+              })
+            ),
           };
         }
       ),
