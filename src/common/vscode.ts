@@ -9,16 +9,19 @@ import objects from '../stories/Data/objects.json';
 import projectConfig from '../stories/Data/projectConfig.json';
 import { sleep } from '../stories/Tests/utils';
 
-console.log('PROCESS ENV!!!!!', process.env, process.env.NODE_ENV);
-
 export const apiHost =
   process.env.NODE_ENV !== 'production'
     ? 'https://hq.qoretechnologies.com:8092/'
-    : '/';
+    : window.location.origin + '/';
 export const apiToken =
   process.env.NODE_ENV === 'production'
     ? localStorage.getItem('token')
     : process.env.REACT_APP_QORUS_TOKEN;
+
+if (!apiToken && process.env.NODE_ENV === 'production') {
+  window.location.href = '/login?next=/ide';
+}
+
 export const buildWsAuth = (token: string = apiToken) => `?token=${token}`;
 
 export const vscode =
