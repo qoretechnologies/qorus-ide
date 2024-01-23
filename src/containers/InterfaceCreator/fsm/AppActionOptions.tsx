@@ -111,7 +111,8 @@ export const QodexAppActionOptions = memo(
             data?.data?.event_id === 'CONNECTION_UPDATED' ||
             data?.data?.event_id === 'CONNECTION_CREATED'
           ) {
-            load();
+            console.log('OPTIONS AFTER UDPATE', value);
+            load(value);
           }
         },
         true
