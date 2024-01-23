@@ -1,7 +1,6 @@
 import { useCallback, useContext } from 'react';
 import { InitialContext } from '../context/init';
 import { fetchData } from '../helpers/functions';
-import { postMessage } from '../hocomponents/withMessageHandler';
 
 export interface IUseAuthorizeOAuth2AppProps {
   redirectUri?: string;
@@ -28,10 +27,10 @@ export const useAuthorizeOAuth2App = ({
       );
 
       if (data.ok) {
-        postMessage?.('open-window', {
-          url: data.data,
-        });
+        window?.open?.(data.url, '_blank');
+
         onWindowOpen?.();
+
         return data.data;
       }
 
