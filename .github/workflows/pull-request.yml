@@ -44,7 +44,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK_DEV}}
           # Mention someone in the embeds
-          DISCORD_EMBEDS: '[{ "color":16711680, "description": ":exclamation: Tests started, **please do not restart Qorus on Rippy** for the next 30 minutes. ${{ QORUS_TOKEN }}" }]'
+          DISCORD_EMBEDS: '[{ "color":16711680, "description": ":exclamation: Tests started, **please do not restart Qorus on Rippy** for the next 30 minutes." }]'
           DISCORD_AVATAR: 'https://github.com/qoretechnologies/qorus-vscode/blob/95ad81fa8654fe83bb41f68f4de42ae088298e59/public/q-symbol-small.png?raw=true'
         uses: Ilshidur/action-discord@0.3.2
         with:
