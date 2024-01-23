@@ -752,7 +752,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     if (!embedded) {
       setFsmReset?.(() => reset);
       // Set interface id
-      setInterfaceId(fsm?.iface_id || defaultInterfaceId || shortid.generate());
+      setInterfaceId(fsm?.id || defaultInterfaceId || shortid.generate());
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
@@ -1635,11 +1635,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         undefined,
         {
           iface_kind: 'fsm',
-          iface_id: interfaceId,
+          id: interfaceId,
           orig_data: fsm,
           no_data_return: !!onSubmitSuccess,
-          deploy_on_success: publish,
-          data,
+          data: {
+            ...fsm,
+            ...data,
+          },
         },
         t('Saving FSM...'),
         true
