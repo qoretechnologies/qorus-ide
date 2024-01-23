@@ -9,7 +9,7 @@ import objects from '../stories/Data/objects.json';
 import projectConfig from '../stories/Data/projectConfig.json';
 import { sleep } from '../stories/Tests/utils';
 
-console.log(process.env);
+console.log('PROCESS ENV!!!!!', process.env, process.env.NODE_ENV);
 
 export const apiHost =
   process.env.NODE_ENV !== 'production'
