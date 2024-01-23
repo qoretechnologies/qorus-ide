@@ -170,7 +170,8 @@ export default () =>
             });
 
             setIsReady(true);
-          }
+          },
+          true
         );
 
         const interfaceDataListener = addMessageListener(
