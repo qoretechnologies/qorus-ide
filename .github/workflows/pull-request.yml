@@ -64,6 +64,7 @@ jobs:
 
       - name: Run unit tests
         run: |
+          echo $QORUS_TOKEN
           yarn test
 
       # - name: Serve Storybook and run tests
