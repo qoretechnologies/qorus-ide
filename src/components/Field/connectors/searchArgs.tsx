@@ -13,7 +13,10 @@ import { TRecordType } from '.';
 import { TTranslator } from '../../../App';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
-import { insertUrlPartBeforeQuery } from '../../../helpers/functions';
+import {
+  fetchData,
+  insertUrlPartBeforeQuery,
+} from '../../../helpers/functions';
 import { maybeParseYaml, validateField } from '../../../helpers/validations';
 import Spacer from '../../Spacer';
 import SubField from '../../SubField';
@@ -45,8 +48,10 @@ export const RecordQueryArgs = ({
   const [hasLoaded, setHasLoaded] = React.useState<boolean>(false);
   const [error, setError] = React.useState<any | undefined>(undefined);
   const t: TTranslator = useContext<TTranslator>(TextContext);
-  const { fetchData, qorus_instance }: any = useContext(InitialContext);
-  const [localValue, setLocalValue] = React.useState<any>(value ? jsyaml.dump(value) : undefined);
+  const { qorus_instance }: any = useContext(InitialContext);
+  const [localValue, setLocalValue] = React.useState<any>(
+    value ? jsyaml.dump(value) : undefined
+  );
   const [isValueSubmitted, setIsValueSubmitted] = React.useState<boolean>(true);
 
   useUpdateEffect(() => {
@@ -62,11 +67,16 @@ export const RecordQueryArgs = ({
           // Set fields and operators to undefined
           setOptions(undefined);
           // Fetch the fields and operators
-          const fieldsData = await fetchData(insertUrlPartBeforeQuery(`/${url}`, `/record`));
+          const fieldsData = await fetchData(
+            insertUrlPartBeforeQuery(`/${url}`, `/record`)
+          );
           // Set the data
           if (fieldsData.error) {
             setHasLoaded(true);
-            setError({ title: fieldsData.error.err, desc: fieldsData.error.desc });
+            setError({
+              title: fieldsData.error.err,
+              desc: fieldsData.error.desc,
+            });
             return;
           }
 
@@ -80,19 +90,19 @@ export const RecordQueryArgs = ({
   );
 
   if (!hasLoaded) {
-    return <ReqoreMessage intent="pending">{t(`LoadingArgs`)}</ReqoreMessage>;
+    return <ReqoreMessage intent='pending'>{t(`LoadingArgs`)}</ReqoreMessage>;
   }
 
   if (error) {
     return (
-      <ReqoreMessage intent="danger" title={error.title}>
+      <ReqoreMessage intent='danger' title={error.title}>
         {error.desc}
       </ReqoreMessage>
     );
   }
 
   if (!size(options)) {
-    return <ReqoreMessage intent="warning">{t(`NoArgs`)}</ReqoreMessage>;
+    return <ReqoreMessage intent='warning'>{t(`NoArgs`)}</ReqoreMessage>;
   }
 
   const transformedOptions: IOptionsSchema =
@@ -113,28 +123,35 @@ export const RecordQueryArgs = ({
     return (
       <ReqoreTabs
         activeTab={isFreeform ? 'text' : 'form'}
-        tabsPadding="top"
+        tabsPadding='top'
         padded={false}
         tabs={[
           { label: 'Text', icon: 'Text', id: 'text' },
           { label: 'Form', icon: 'AlignCenter', id: 'form' },
         ]}
         onTabChange={(tabId) => {
-          onChange(tabId === 'text' ? `${type}_args_freeform` : `${type}_args`, [{}]);
+          onChange(
+            tabId === 'text' ? `${type}_args_freeform` : `${type}_args`,
+            [{}]
+          );
           setLocalValue(undefined);
         }}
       >
-        <ReqoreTabsContent tabId="text">
+        <ReqoreTabsContent tabId='text'>
           <ReqoreControlGroup fluid fill>
             <LongStringField
               value={localValue}
               onChange={(_name, value) => setLocalValue(value)}
               name={`${type}_args_freeform`}
-              intent={validateField('list-of-hashes', localValue) ? undefined : 'danger'}
+              intent={
+                validateField('list-of-hashes', localValue)
+                  ? undefined
+                  : 'danger'
+              }
             />
             {!isValueSubmitted && (
               <ReqoreButton
-                icon="CheckLine"
+                icon='CheckLine'
                 fixed
                 id={`save-${type}-args`}
                 effect={SaveColorEffect}
@@ -147,9 +164,9 @@ export const RecordQueryArgs = ({
             )}
           </ReqoreControlGroup>
         </ReqoreTabsContent>
-        <ReqoreTabsContent tabId="form">
+        <ReqoreTabsContent tabId='form'>
           {error && (
-            <ReqoreMessage intent="danger" title={error.title}>
+            <ReqoreMessage intent='danger' title={error.title}>
               {error.desc}
             </ReqoreMessage>
           )}
@@ -181,7 +198,11 @@ export const RecordQueryArgs = ({
                     value={options}
                     operatorsUrl={
                       hasOperators
-                        ? insertUrlPartBeforeQuery(url, `/search_operators`, 'context=ui')
+                        ? insertUrlPartBeforeQuery(
+                            url,
+                            `/search_operators`,
+                            'context=ui'
+                          )
                         : undefined
                     }
                     options={transformedOptions}
@@ -197,8 +218,10 @@ export const RecordQueryArgs = ({
               icon={'AddLine'}
               rightIcon={'AddLine'}
               effect={PositiveColorEffect}
-              textAlign="center"
-              onClick={() => onChange(`${type}_args`, [...((value || []) as IOptions[]), {}])}
+              textAlign='center'
+              onClick={() =>
+                onChange(`${type}_args`, [...((value || []) as IOptions[]), {}])
+              }
             >
               {t('AddAnotherRecord')}
             </ReqoreButton>
@@ -214,7 +237,9 @@ export const RecordQueryArgs = ({
       name={`${type}_args`}
       value={value as IOptions}
       operatorsUrl={
-        hasOperators ? insertUrlPartBeforeQuery(url, '/search_operators', 'context=ui') : undefined
+        hasOperators
+          ? insertUrlPartBeforeQuery(url, '/search_operators', 'context=ui')
+          : undefined
       }
       options={transformedOptions}
       placeholder={t('AddArgument')}

@@ -1,4 +1,9 @@
-import { ReqoreButton, ReqoreMessage, ReqoreModal, useReqoreTheme } from '@qoretechnologies/reqore';
+import {
+  ReqoreButton,
+  ReqoreMessage,
+  ReqoreModal,
+  useReqoreTheme,
+} from '@qoretechnologies/reqore';
 import { cloneDeep, get, isEqual, map, reduce, set, size, unset } from 'lodash';
 import { useContext, useState } from 'react';
 import { useDebounce, useUpdateEffect } from 'react-use';
@@ -19,7 +24,12 @@ import FieldGroup from '../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../components/FieldWrapper';
 import { Messages } from '../../constants/messages';
 import { DraftsContext, IDraftData } from '../../context/drafts';
-import { deleteDraft, getDraftId, hasValue } from '../../helpers/functions';
+import {
+  deleteDraft,
+  fetchData,
+  getDraftId,
+  hasValue,
+} from '../../helpers/functions';
 import { flattenFields, getLastChildIndex } from '../../helpers/mapper';
 import { validateField } from '../../helpers/validations';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
@@ -84,10 +94,16 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
   const [types, setTypes] = useState([]);
   const [addDialog, setAddDialog] = useState<any>({});
   const [fields, setFields] = useState(
-    formatFields(initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {})
+    formatFields(
+      initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {}
+    )
   );
-  const [targetDir, setTargetDir] = useState(initialData?.type?.target_dir || '');
-  const [targetFile, setTargetFile] = useState(initialData?.type?.target_file || '');
+  const [targetDir, setTargetDir] = useState(
+    initialData?.type?.target_dir || ''
+  );
+  const [targetFile, setTargetFile] = useState(
+    initialData?.type?.target_file || ''
+  );
   const [desc, setDesc] = useState(initialData?.type?.desc || '');
   const [selectedField, setSelectedField] = useState(undefined);
   const theme = useReqoreTheme();
@@ -99,7 +115,9 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
     if (soft) {
       setVal(initialData?.type?.path || '');
       setAddDialog({});
-      setFields(initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {});
+      setFields(
+        initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {}
+      );
       setTargetDir(initialData?.type?.target_dir || '');
       setTargetFile(initialData?.type?.target_file || '');
       setDesc(initialData?.type?.desc || '');
@@ -119,7 +137,10 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       'type',
       undefined,
       initialData?.type,
-      ({ typeData: { fields, val, targetDir, targetFile, types, desc }, id }: IDraftData) => {
+      ({
+        typeData: { fields, val, targetDir, targetFile, types, desc },
+        id,
+      }: IDraftData) => {
         setInterfaceId(id);
         setVal(val);
         setTypes(types);
@@ -142,7 +163,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
 
     if (initialData.qorus_instance) {
       (async () => {
-        const data = await initialData.fetchData('/system/metadata/types');
+        const data = await fetchData('/system/metadata/types');
         setTypes(data.data);
         setInterfaceId(initialData?.type?.iface_id || shortid.generate());
         applyDraft();
@@ -171,7 +192,10 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
 
       if (
         draftId &&
-        (hasValue(val) || hasValue(targetDir) || hasValue(targetFile) || size(fields)) &&
+        (hasValue(val) ||
+          hasValue(targetDir) ||
+          hasValue(targetFile) ||
+          size(fields)) &&
         hasChanged
       ) {
         initialData.saveDraft(
@@ -197,7 +221,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
 
   if (!initialData.qorus_instance) {
     return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent="warning">
+      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
         {t('NoInstance')}
       </ReqoreMessage>
     );
@@ -317,7 +341,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         no_data_return: !!onSubmitSuccess,
         data: {
           target_dir: !targetDir || targetDir === '' ? undefined : targetDir,
-          target_file: !targetFile || targetFile === '' ? undefined : targetFile,
+          target_file:
+            !targetFile || targetFile === '' ? undefined : targetFile,
           desc,
           path: val,
           typeinfo: {
@@ -335,7 +360,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       if (onSubmitSuccess) {
         onSubmitSuccess({
           target_dir: !targetDir || targetDir === '' ? undefined : targetDir,
-          target_file: !targetFile || targetFile === '' ? undefined : targetFile,
+          target_file:
+            !targetFile || targetFile === '' ? undefined : targetFile,
           desc,
           path: val,
           typeinfo: {
@@ -425,13 +451,13 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       )}
       <ContentWrapper style={{ flex: '0 auto' }}>
         <FieldWrapper
-          name="selected-field"
+          name='selected-field'
           label={t('field-label-target_dir')}
           isValid={validateField('file-string', targetDir)}
         >
           <FileField
             onChange={(_name, value) => setTargetDir(value)}
-            name="target_dir"
+            name='target_dir'
             value={targetDir}
             get_message={{
               action: 'creator-get-directories',
@@ -446,35 +472,35 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         </FieldWrapper>
         <FieldWrapper
           compact
-          name="selected-field"
+          name='selected-field'
           label={t('field-label-desc')}
           type={t('Optional')}
           isValid
         >
           <Field
             onChange={(_name, value) => setDesc(value)}
-            name="desc"
+            name='desc'
             value={desc}
             markdown
-            type="long-string"
+            type='long-string'
           />
         </FieldWrapper>
         <FieldGroup isValid={validateField('string', val)}>
           <FieldWrapper
             compact
-            name="selected-field"
+            name='selected-field'
             label={t('field-label-target_file')}
             type={t('Optional')}
             isValid
           >
             <String
               onChange={(_name, value) => setTargetFile(value)}
-              name="target-dir"
+              name='target-dir'
               value={targetFile}
             />
           </FieldWrapper>
           <FieldWrapper
-            name="selected-field"
+            name='selected-field'
             label={t('Path')}
             isValid={validateField('string', val)}
             compact
@@ -482,7 +508,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
             <Suggest
               defaultItems={types}
               value={val}
-              name="path"
+              name='path'
               onChange={(_name, value) => setVal(value)}
               autoFocus
             />
@@ -501,9 +527,13 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         }}
       >
         <StyledMapperWrapper
-          style={{ justifyContent: 'center', paddingTop: '10px', width: '600px' }}
+          style={{
+            justifyContent: 'center',
+            paddingTop: '10px',
+            width: '600px',
+          }}
         >
-          <StyledFieldsWrapper vertical width="600px">
+          <StyledFieldsWrapper vertical width='600px'>
             {size(flattenedFields) !== 0
               ? map(flattenedFields, (input, index) => (
                   <MapperInput
@@ -514,14 +544,17 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
                     field={input}
                     isTypeView
                     id={index + 1}
-                    lastChildIndex={getLastChildIndex(input, flattenedFields) - index}
+                    lastChildIndex={
+                      getLastChildIndex(input, flattenedFields) - index
+                    }
                     onClick={() => {
                       setSelectedField(input);
                     }}
                     isLastInOrder={
                       size(
-                        flattenedFields.find((field) => field.path === input.parentPath)?.type
-                          ?.fields
+                        flattenedFields.find(
+                          (field) => field.path === input.parentPath
+                        )?.type?.fields
                       ) ===
                       input.order + 1
                     }
@@ -558,9 +591,9 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
               minimal
               fluid
               effect={SaveColorEffect}
-              icon="AddLine"
-              rightIcon="AddLine"
-              textAlign="center"
+              icon='AddLine'
+              rightIcon='AddLine'
+              textAlign='center'
               onClick={() => handleClick()}
             >
               {t('AddNewField')}
@@ -569,7 +602,11 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         </StyledMapperWrapper>
       </div>
       {addDialog.isOpen && (
-        <MapperFieldModal t={t} onClose={() => setAddDialog({})} {...addDialog} />
+        <MapperFieldModal
+          t={t}
+          onClose={() => setAddDialog({})}
+          {...addDialog}
+        />
       )}
     </Content>
   );

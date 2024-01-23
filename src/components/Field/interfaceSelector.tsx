@@ -1,28 +1,37 @@
-import { ReqoreMessage, ReqoreP, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
+import {
+  ReqoreMessage,
+  ReqoreP,
+  ReqoreVerticalSpacer,
+} from '@qoretechnologies/reqore';
 import { FunctionComponent, useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { TTranslator } from '../../App';
 import { interfaceToPlural } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
+import { fetchData } from '../../helpers/functions';
 import { IField, IFieldChange } from '../FieldWrapper';
 import { ILongStringField } from './longString';
 import SelectField from './select';
 
 export interface IInterfaceSelector {
   t?: TTranslator;
-  type: 'workflows' | 'services' | 'jobs' | 'connections' | 'mappers' | 'value-maps';
+  type:
+    | 'workflows'
+    | 'services'
+    | 'jobs'
+    | 'connections'
+    | 'mappers'
+    | 'value-maps';
 }
 
-export const InterfaceSelector: FunctionComponent<ILongStringField & IField & IFieldChange> = ({
-  name,
-  onChange,
-  value,
-  default_value,
-  type,
-}) => {
+export const InterfaceSelector: FunctionComponent<
+  ILongStringField & IField & IFieldChange
+> = ({ name, onChange, value, default_value, type }) => {
   // Get the qorus instance
-  const { qorus_instance, fetchData } = useContext<{ qorus_instance?: string }>(InitialContext);
+  const { qorus_instance } = useContext<{ qorus_instance?: string }>(
+    InitialContext
+  );
   const t = useContext(TextContext);
   // Fetch data on mount
   const {
@@ -42,7 +51,9 @@ export const InterfaceSelector: FunctionComponent<ILongStringField & IField & IF
   if (!qorus_instance) {
     return (
       <div>
-        <ReqoreMessage intent="warning">{t('InterfacesQorusInstanceRequired')}</ReqoreMessage>
+        <ReqoreMessage intent='warning'>
+          {t('InterfacesQorusInstanceRequired')}
+        </ReqoreMessage>
         <ReqoreVerticalSpacer height={10} />
         <ReqoreP>{value || default_value}</ReqoreP>
       </div>
@@ -51,7 +62,7 @@ export const InterfaceSelector: FunctionComponent<ILongStringField & IField & IF
 
   if (error) {
     return (
-      <ReqoreMessage intent="danger" title={t('ErrorLoadingInterfaces')}>
+      <ReqoreMessage intent='danger' title={t('ErrorLoadingInterfaces')}>
         {t(error)}
       </ReqoreMessage>
     );

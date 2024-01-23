@@ -4,12 +4,17 @@ import { useAsyncRetry } from 'react-use';
 import styled from 'styled-components';
 import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
+import { fetchData } from '../../helpers/functions';
 import Auto from './auto';
 import Options from './systemOptions';
 
 type IApiCallArgsField = {
   value: string | number | { [key: string]: any };
-  onChange: (name: string, value: string | number | { [key: string]: any }, type: string) => void;
+  onChange: (
+    name: string,
+    value: string | number | { [key: string]: any },
+    type: string
+  ) => void;
   url: string;
 };
 
@@ -19,7 +24,7 @@ export const StyledPairField = styled.div`
 
 export const ApiCallArgs = ({ url, onChange, value }: IApiCallArgsField) => {
   const t = useContext(TextContext);
-  const { fetchData, qorus_instance }: any = useContext(InitialContext);
+  const { qorus_instance }: any = useContext(InitialContext);
 
   const {
     value: schema,
@@ -45,32 +50,36 @@ export const ApiCallArgs = ({ url, onChange, value }: IApiCallArgsField) => {
   }, [schema]);
 
   if (loading) {
-    return <ReqoreMessage intent="pending">Loading...</ReqoreMessage>;
+    return <ReqoreMessage intent='pending'>Loading...</ReqoreMessage>;
   }
 
   if (error) {
-    return <ReqoreMessage intent="danger">Error: {error.message}</ReqoreMessage>;
+    return (
+      <ReqoreMessage intent='danger'>Error: {error.message}</ReqoreMessage>
+    );
   }
 
   if (schema?.type === 'nothing') {
-    return <ReqoreMessage intent="warning">{t('APICallTakesNoArgs')}</ReqoreMessage>;
+    return (
+      <ReqoreMessage intent='warning'>{t('APICallTakesNoArgs')}</ReqoreMessage>
+    );
   }
 
   if (schema.type === 'hash') {
     return (
       <Options
-        name="field"
+        name='field'
         onChange={(n, v) => onChange(n, v, schema.type)}
         value={value}
         options={schema.arg_schema}
-        placeholder="AddArgument"
+        placeholder='AddArgument'
       />
     );
   }
 
   return (
     <Auto
-      name="field"
+      name='field'
       onChange={(n, v) => onChange(n, v, schema.type)}
       value={value}
       defaultType={schema.type.replace('*', '')}

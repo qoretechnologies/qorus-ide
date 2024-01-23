@@ -3,6 +3,7 @@ import { size } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InitialContext } from '../../context/init';
+import { fetchData } from '../../helpers/functions';
 import SelectField from './select';
 import StringField from './string';
 
@@ -49,8 +50,14 @@ export const getAddress = (v) => {
   return valueList[1];
 };
 
-const URLField: React.FC<IURLFieldProps> = ({ url, value, name, onChange, ...rest }) => {
-  const { fetchData, qorus_instance } = useContext(InitialContext);
+const URLField: React.FC<IURLFieldProps> = ({
+  url,
+  value,
+  name,
+  onChange,
+  ...rest
+}) => {
+  const { qorus_instance } = useContext(InitialContext);
   const [protocols, setProtocols] = useState<string[]>(
     rest.protocols || ['http', 'https', 'rest', 'rests']
   );
@@ -88,14 +95,14 @@ const URLField: React.FC<IURLFieldProps> = ({ url, value, name, onChange, ...res
         fixed
         defaultItems={protocols.map((prot) => ({ name: prot }))}
         onChange={(_name, value) => setProtocol(value)}
-        name="protocol"
+        name='protocol'
         value={protocol}
       />
       <StringField
-        label="://"
+        label='://'
         value={address}
         onChange={(_name, value) => setAddress(value)}
-        name="address"
+        name='address'
         fill
       />
     </ReqoreControlGroup>

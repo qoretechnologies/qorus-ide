@@ -116,7 +116,7 @@ export const QodexAppActionOptions = memo(
       return () => {
         listener();
       };
-    }, [value]);
+    }, [JSON.stringify(value)]);
 
     useMount(() => {
       postMessage(

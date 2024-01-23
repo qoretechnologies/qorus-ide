@@ -3,7 +3,10 @@ import { map } from 'lodash';
 import { useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { InitialContext } from '../../../context/init';
-import { insertUrlPartBeforeQuery } from '../../../helpers/functions';
+import {
+  fetchData,
+  insertUrlPartBeforeQuery,
+} from '../../../helpers/functions';
 import SelectField from '../select';
 
 export interface IProviderMessageSelectorProps {
@@ -19,7 +22,7 @@ export const ProviderMessageSelector = ({
   value,
   readOnly,
 }: IProviderMessageSelectorProps) => {
-  const { fetchData, qorus_instance }: any = useContext(InitialContext);
+  const { qorus_instance }: any = useContext(InitialContext);
 
   const {
     value: messages,
@@ -40,24 +43,27 @@ export const ProviderMessageSelector = ({
 
   if (!url) {
     return (
-      <ReqoreMessage intent="warning">
+      <ReqoreMessage intent='warning'>
         No URL was provided, messages cannot be fetched
       </ReqoreMessage>
     );
   }
 
   if (loading) {
-    return <ReqoreMessage intent="pending">Loading...</ReqoreMessage>;
+    return <ReqoreMessage intent='pending'>Loading...</ReqoreMessage>;
   }
 
   if (error) {
-    return <ReqoreMessage intent="danger">{error}</ReqoreMessage>;
+    return <ReqoreMessage intent='danger'>{error}</ReqoreMessage>;
   }
 
   return (
     <SelectField
-      className="provider-message-selector"
-      defaultItems={map(messages, (data, key) => ({ name: key, desc: data.desc }))}
+      className='provider-message-selector'
+      defaultItems={map(messages, (data, key) => ({
+        name: key,
+        desc: data.desc,
+      }))}
       onChange={(_name, value) => onChange(value)}
       value={value}
       disabled={readOnly}
