@@ -37,9 +37,13 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
   initialData = { ...initialData, ...data };
 
   const getName: () => string = () =>
-    initialData?.[initialData.subtab]?.name || initialData?.[initialData.subtab]?.path;
+    initialData?.[initialData.subtab]?.name ||
+    initialData?.[initialData.subtab]?.path;
 
-  const getVersion: () => string = () => initialData?.[initialData.subtab]?.version;
+  const getID: () => string = () => initialData?.[initialData.subtab]?.id;
+
+  const getVersion: () => string = () =>
+    initialData?.[initialData.subtab]?.version;
 
   const getNameWithVersion: () => string = () => {
     const name = getName();
@@ -61,13 +65,18 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
   return (
     <Tab
       name={getName()}
+      id={getID()}
       type={initialData.subtab}
       version={getVersion()}
       data={initialData}
       onDelete={onDelete}
     >
       {initialData.subtab === 'fsm' && (
-        <FSMView fsm={initialData.fsm} onSubmitSuccess={onSubmit} interfaceContext={context} />
+        <FSMView
+          fsm={initialData.fsm}
+          onSubmitSuccess={onSubmit}
+          interfaceContext={context}
+        />
       )}
       {initialData.subtab === 'connection' && (
         <ConnectionView
@@ -84,7 +93,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
         />
       )}
       {initialData.subtab === 'service' && (
-        <ClassConnectionsStateProvider type="service">
+        <ClassConnectionsStateProvider type='service'>
           {(classConnectionsProps) => (
             <ServicesView
               service={initialData.service}
@@ -111,7 +120,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
       )}
       {initialData.subtab === 'job' && (
         <CreatorWrapper>
-          <ClassConnectionsStateProvider type="job">
+          <ClassConnectionsStateProvider type='job'>
             {(classConnectionsProps) => (
               <InterfaceCreatorPanel
                 hasClassConnections
@@ -142,7 +151,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
       )}
       {initialData.subtab === 'step' && (
         <CreatorWrapper>
-          <ClassConnectionsStateProvider initialData={initialData} type="step">
+          <ClassConnectionsStateProvider initialData={initialData} type='step'>
             {(classConnectionsProps) => (
               <InterfaceCreatorPanel
                 type={'step'}
@@ -219,4 +228,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
   );
 };
 
-export default compose(withTextContext(), withInitialDataConsumer())(CreateInterface);
+export default compose(
+  withTextContext(),
+  withInitialDataConsumer()
+)(CreateInterface);

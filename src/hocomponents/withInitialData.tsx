@@ -497,7 +497,13 @@ export default () =>
       return (
         <InitialContext.Provider
           value={{
-            ...initialData,
+            ...{
+              ...initialData,
+              qorus_instance: {
+                ...initialData.qorus_instance,
+                url: apiHost,
+              },
+            },
             changeTab,
             setStepSubmitCallback,
             resetInterfaceData,
