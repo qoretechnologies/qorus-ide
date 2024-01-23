@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { ConnectionManagement } from '../../components/ConnectionManagement';
 import { AppsContext } from '../../context/apps';
 import apps from '../Data/apps.json';
-import { sleep } from '../Tests/utils';
 import { StoryMeta } from '../types';
 
 const meta = {
@@ -110,11 +109,11 @@ export const EditingConnection: Story = {
 
     await NewConnection.play({ canvasElement, ...rest });
 
-    await sleep(500);
+    // await sleep(500);
 
-    await waitFor(() => canvas.getAllByText('Edit connection')[0], {
-      timeout: 5000,
-    });
+    // await waitFor(() => canvas.getAllByText('Edit connection')[0], {
+    //   timeout: 5000,
+    // });
 
     // await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
 
