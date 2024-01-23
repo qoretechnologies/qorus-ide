@@ -107,21 +107,19 @@ export const EditingConnection: Story = {
     const canvas = within(canvasElement);
 
     await NewConnection.play({ canvasElement, ...rest });
-    console.log('Created new connection');
+
     await waitFor(() => canvas.getAllByText('Edit connection')[0], {
       timeout: 5000,
     });
-    // console.log('Waited for edit');
 
-    // await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
-    // console.log('Clicked edit');
-    // await waitFor(
-    //   () =>
-    //     expect(
-    //       document.querySelectorAll('.reqore-collection-item').length
-    //     ).toBe(3),
-    //   { timeout: 5000 }
-    // );
-    // console.log('Expected 3 options');
+    await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
+
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.reqore-collection-item').length
+        ).toBe(3),
+      { timeout: 5000 }
+    );
   },
 };

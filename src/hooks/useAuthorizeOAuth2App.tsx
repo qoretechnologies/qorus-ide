@@ -27,7 +27,7 @@ export const useAuthorizeOAuth2App = ({
       );
 
       if (data.ok) {
-        window?.open?.(data.url, '_blank');
+        //window?.open?.(data.url, '_blank');
 
         onWindowOpen?.();
 
