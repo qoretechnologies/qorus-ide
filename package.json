@@ -120,7 +120,7 @@
   "scripts": {
     "start": "NODE_ENV=development BROWSER=none REACT_APP_QORUS_TOKEN=$QORUS_TOKEN node scripts/start.js",
     "build-prod": "PUBLIC_URL=ide node scripts/build.js",
-    "build": "node scripts/build.js",
+    "build": "NODE_ENV=development node scripts/build.js",
     "test": "node scripts/test.js",
     "test:watch": "./node_modules/.bin/jest --watch",
     "update-reqore": "yarn add @qoretechnologies/reqore@beta",
