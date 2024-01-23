@@ -7,6 +7,7 @@ import { flushSync } from 'react-dom';
 import { useEffectOnce } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import shortid from 'shortid';
+import { apiHost } from '../common/vscode';
 import Loader from '../components/Loader';
 import { interfaceKindTransform } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
@@ -28,7 +29,7 @@ export default () =>
         sidebarOpen: false,
         is_hosted_instance: true,
         qorus_instance: {
-          url: `https://hq.qoretechnologies.com:8092`,
+          url: apiHost,
         },
       });
       const [confirmDialog, setConfirmDialog] = useState<{
@@ -46,15 +47,21 @@ export default () =>
       const [texts, setTexts] = useState<{ [key: string]: string }[]>([]);
       const [t, setT] = useState<(text_id) => string>(undefined);
       const [tabHistory, setTabHistory] = useState<
-        { tab: string; subtab?: string; iface_id?: string; name?: string; draftId?: string }[]
+        {
+          tab: string;
+          subtab?: string;
+          iface_id?: string;
+          name?: string;
+          draftId?: string;
+        }[]
       >([]);
       const { addNotification } = useReqore();
 
-      const changeTab: (tab: string, subtab?: string, force?: boolean) => void = (
-        tab,
-        subtab,
-        force
-      ) => {
+      const changeTab: (
+        tab: string,
+        subtab?: string,
+        force?: boolean
+      ) => void = (tab, subtab, force) => {
         const setTabs = () => {
           setInitialData((current) => ({
             ...current,
@@ -79,7 +86,10 @@ export default () =>
         if (texts) {
           setT(() => {
             return (text_id) => {
-              return texts.find((textItem) => textItem.id === text_id)?.text || text_id;
+              return (
+                texts.find((textItem) => textItem.id === text_id)?.text ||
+                text_id
+              );
             };
           });
         }
@@ -94,7 +104,10 @@ export default () =>
               // Do not modify state if the text already
               // exists
               if (!currentTexts[data.text_id]) {
-                pastTexts[data.text_id] = { isTranslated: true, text: data.text };
+                pastTexts[data.text_id] = {
+                  isTranslated: true,
+                  text: data.text,
+                };
                 return {
                   ...currentTexts,
                   [data.text_id]: data.text,
@@ -119,41 +132,47 @@ export default () =>
       });
 
       useEffect(() => {
-        const initialDataListener = addMessageListener(Messages.RETURN_INITIAL_DATA, ({ data }) => {
-          props.setTheme?.(data.theme);
+        const initialDataListener = addMessageListener(
+          Messages.RETURN_INITIAL_DATA,
+          ({ data }) => {
+            props.setTheme?.(data.theme);
 
-          flushSync(() => setInitialData({}));
+            flushSync(() => setInitialData({}));
 
-          let currentInitialData;
+            let currentInitialData;
 
-          flushSync(() =>
-            setInitialData((current) => {
-              currentInitialData = { ...current };
-              return null;
-            })
-          );
+            flushSync(() =>
+              setInitialData((current) => {
+                currentInitialData = { ...current };
+                return null;
+              })
+            );
 
-          if (!data?.tab) {
-            data.tab = data.is_hosted_instance ? 'Dashboard' : 'ProjectConfig';
-          }
+            if (!data?.tab) {
+              data.tab = data.is_hosted_instance
+                ? 'Dashboard'
+                : 'ProjectConfig';
+            }
 
-          if (data?.draftData) {
-            setDraftData(data.draftData);
-          }
+            if (data?.draftData) {
+              setDraftData(data.draftData);
+            }
 
-          flushSync(() => {
-            setInitialData({
-              ...currentInitialData,
-              ...data,
+            flushSync(() => {
+              setInitialData({
+                ...currentInitialData,
+                ...data,
+              });
+
+              if (data?.tab) {
+                changeTab(data.tab, data.subtab);
+              }
             });
 
-            if (data?.tab) {
-              changeTab(data.tab, data.subtab);
-            }
-          });
-
-          setIsReady(true);
-        });
+            setIsReady(true);
+          },
+          true
+        );
 
         const interfaceDataListener = addMessageListener(
           Messages.RETURN_INTERFACE_DATA,
@@ -178,7 +197,7 @@ export default () =>
       });
 
       if (!texts || !t || !isReady) {
-        return <Loader text="Loading translations..." />;
+        return <Loader text='Loading translations...' />;
       }
 
       // this action is called when the user clicks the confirm button
@@ -208,11 +227,15 @@ export default () =>
           confirmLabel: btnText,
           description: t(text),
           intent,
-          confirmButtonIntent: btnIntent ? blueprintIntentToReqoreMapper[btnIntent] : 'success',
+          confirmButtonIntent: btnIntent
+            ? blueprintIntentToReqoreMapper[btnIntent]
+            : 'success',
         });
       };
 
-      const setStepSubmitCallback: (callback: () => any) => void = (callback): void => {
+      const setStepSubmitCallback: (callback: () => any) => void = (
+        callback
+      ): void => {
         setInitialData((current) => ({
           ...current,
           stepCallback: callback,
@@ -290,7 +313,10 @@ export default () =>
         }));
       };
 
-      const changeInitialData: (path: string, value: any) => any = (path, value) => {
+      const changeInitialData: (path: string, value: any) => any = (
+        path,
+        value
+      ) => {
         setInitialData((current) => {
           const result = { ...current };
           set(result, path, value);
@@ -357,7 +383,13 @@ export default () =>
         data: any,
         toastMessage?: string,
         useWebSocket?: boolean
-      ) => Promise<any> = async (getMessage, returnMessage, data, toastMessage, useWebSocket) => {
+      ) => Promise<any> = async (
+        getMessage,
+        returnMessage,
+        data,
+        toastMessage,
+        useWebSocket
+      ) => {
         // Create the unique ID for this request
         const uniqueId: string = shortid.generate();
         // Create new toast
@@ -424,7 +456,8 @@ export default () =>
           label ||
           find(
             data?.selectedFields || [],
-            (field) => field.name === 'display_name' || field.name === 'class-class-name'
+            (field) =>
+              field.name === 'display_name' || field.name === 'class-class-name'
           )?.value ||
           `Untitled ${type}`;
 
@@ -464,7 +497,13 @@ export default () =>
       return (
         <InitialContext.Provider
           value={{
-            ...initialData,
+            ...{
+              ...initialData,
+              qorus_instance: {
+                ...initialData.qorus_instance,
+                url: apiHost,
+              },
+            },
             changeTab,
             setStepSubmitCallback,
             resetInterfaceData,

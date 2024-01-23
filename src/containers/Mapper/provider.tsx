@@ -19,6 +19,7 @@ import String from '../../components/Field/string';
 import { IOptions, IOptionsSchema } from '../../components/Field/systemOptions';
 import Loader from '../../components/Loader';
 import { TextContext } from '../../context/text';
+import { fetchData } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 import { submitControl } from '../InterfaceCreator/controls';
@@ -149,7 +150,7 @@ const MapperProvider: FC<IProviderProps> = ({
   setRecord,
   setFields,
   clear,
-  initialData: { fetchData },
+  initialData,
   setMapperKeys,
   setOptionProvider,
   title,
@@ -203,7 +204,11 @@ const MapperProvider: FC<IProviderProps> = ({
   const filterChildren = (children: any[]) => {
     return children.filter((child) => {
       if (isPipeline || recordType) {
-        return child.has_record || child.children_can_support_records || child.has_provider;
+        return (
+          child.has_record ||
+          child.children_can_support_records ||
+          child.has_provider
+        );
       }
 
       if (requiresRequest) {
@@ -226,7 +231,9 @@ const MapperProvider: FC<IProviderProps> = ({
       }
 
       if (isEvent) {
-        return child.supports_observable || child.children_can_support_observers;
+        return (
+          child.supports_observable || child.children_can_support_observers
+        );
       }
 
       return true;
@@ -251,7 +258,8 @@ const MapperProvider: FC<IProviderProps> = ({
         // Set loading
         setIsLoading(true);
         // Select the provider data
-        const { url, filter, inputFilter, outputFilter, withDetails } = realProviders[provider];
+        const { url, filter, inputFilter, outputFilter, withDetails } =
+          realProviders[provider];
         // Get the data
         let { data, error } = await fetchData(`${url}`);
 
@@ -398,7 +406,9 @@ const MapperProvider: FC<IProviderProps> = ({
     if (
       provider === 'factory' &&
       supportsOptions &&
-      !validateField('system-options', options, { optionsSchema: availableOptions })
+      !validateField('system-options', options, {
+        optionsSchema: availableOptions,
+      })
     ) {
       setChildren((current) => {
         // Update this item
@@ -431,7 +441,8 @@ const MapperProvider: FC<IProviderProps> = ({
         up: record?.data?.up !== false,
         can_manage_fields: record?.data?.can_manage_fields,
         transaction_management: record?.data?.transaction_management,
-        subtype: value === 'request' || value === 'response' ? value : undefined,
+        subtype:
+          value === 'request' || value === 'response' ? value : undefined,
         path: `${url}/${value}`
           .replace(`${name}`, '')
           .replace(`${realProviders[provider].url}/`, '')
@@ -470,7 +481,9 @@ const MapperProvider: FC<IProviderProps> = ({
     const splitter = `${suffixString.includes('?') ? '&' : '?'}`;
 
     const { data = {}, error } = await fetchData(
-      `${url}/${value}${suffixString}${type === 'outputs' ? `${splitter}soft=true` : ''}`
+      `${url}/${value}${suffixString}${
+        type === 'outputs' ? `${splitter}soft=true` : ''
+      }`
     );
 
     handleCallError(error);
@@ -511,7 +524,8 @@ const MapperProvider: FC<IProviderProps> = ({
         up: data.up !== false,
         transaction_management: data?.transaction_management,
         record_requires_search_options: data?.record_requires_search_options,
-        subtype: value === 'request' || value === 'response' ? value : undefined,
+        subtype:
+          value === 'request' || value === 'response' ? value : undefined,
         path: `${url}/${value}`
           .replace(`${name}`, '')
           .replace(`${realProviders[provider].url}/`, '')
@@ -551,19 +565,25 @@ const MapperProvider: FC<IProviderProps> = ({
             : `action=childDetails&${buildOptions()}`
           : buildOptions();
 
-      const splitter = `${realProviders[provider].recordSuffix.includes('?') ? '&' : '?'}`;
+      const splitter = `${
+        realProviders[provider].recordSuffix.includes('?') ? '&' : '?'
+      }`;
       suffixString =
         customOptionString && customOptionString !== ''
           ? `${suffix}${
               data.has_record ? realProviders[provider].recordSuffix : ''
             }${splitter}${customOptionString}`
           : `${newSuffix}${
-              data.has_record || data.has_type ? realProviders[provider].recordSuffix : ''
+              data.has_record || data.has_type
+                ? realProviders[provider].recordSuffix
+                : ''
             }${splitter}${childDetailsSuffix}`;
 
       // Fetch the record
       const record = await fetchData(
-        `${url}/${value}${suffixString}${type === 'outputs' ? `${splitter}soft=true` : ''}`
+        `${url}/${value}${suffixString}${
+          type === 'outputs' ? `${splitter}soft=true` : ''
+        }`
       );
 
       handleCallError(record.error);
@@ -590,7 +610,8 @@ const MapperProvider: FC<IProviderProps> = ({
         transaction_management: data.transaction_management,
         record_requires_search_options: data.record_requires_search_options,
         can_manage_fields: record.data?.can_manage_fields,
-        subtype: value === 'request' || value === 'response' ? value : undefined,
+        subtype:
+          value === 'request' || value === 'response' ? value : undefined,
         descriptions: [...descriptions, data?.desc],
         path: `${url}/${value}`
           .replace(`${name}`, '')
@@ -606,7 +627,11 @@ const MapperProvider: FC<IProviderProps> = ({
       if (data.has_type || isConfigItem) {
         // Set the record data
         setRecord &&
-          setRecord(!realProviders[provider].requiresRecord ? record.data.fields : record.data);
+          setRecord(
+            !realProviders[provider].requiresRecord
+              ? record.data.fields
+              : record.data
+          );
         //
       }
     }
@@ -696,7 +721,8 @@ const MapperProvider: FC<IProviderProps> = ({
         supports_observable: data.supports_observable,
         transaction_management: data.transaction_management,
         record_requires_search_options: data.record_requires_search_options,
-        subtype: value === 'request' || value === 'response' ? value : undefined,
+        subtype:
+          value === 'request' || value === 'response' ? value : undefined,
         descriptions: [...descriptions, data?.desc],
         path: `${url}/${value}`
           .replace(`${name}`, '')
@@ -712,7 +738,11 @@ const MapperProvider: FC<IProviderProps> = ({
       setRecord && setRecord(data.fields);
     }
     // Check if there is a record
-    else if (isConfigItem || data.has_record || !realProviders[provider].requiresRecord) {
+    else if (
+      isConfigItem ||
+      data.has_record ||
+      !realProviders[provider].requiresRecord
+    ) {
       setIsLoading(true);
       if (type === 'outputs' && data.mapper_keys) {
         // Save the mapper keys
@@ -726,7 +756,9 @@ const MapperProvider: FC<IProviderProps> = ({
             : `?action=childDetails&${buildOptions()}`
           : buildOptions();
 
-      const splitter = `${realProviders[provider].recordSuffix.includes('?') ? '&' : '?'}`;
+      const splitter = `${
+        realProviders[provider].recordSuffix.includes('?') ? '&' : '?'
+      }`;
       const newSuffix = suffix;
       suffixString =
         customOptionString && customOptionString !== ''
@@ -734,12 +766,16 @@ const MapperProvider: FC<IProviderProps> = ({
               data.has_record ? realProviders[provider].recordSuffix : ''
             }${splitter}${customOptionString}`
           : `${newSuffix}${
-              data.has_record || data.has_type ? realProviders[provider].recordSuffix : ''
+              data.has_record || data.has_type
+                ? realProviders[provider].recordSuffix
+                : ''
             }${splitter}${childDetailsSuffix}`;
 
       // Fetch the record
       const record = await fetchData(
-        `${url}/${value}${suffixString}${type === 'outputs' ? `${splitter}soft=true` : ''}`
+        `${url}/${value}${suffixString}${
+          type === 'outputs' ? `${splitter}soft=true` : ''
+        }`
       );
 
       handleCallError(record.error);
@@ -764,7 +800,8 @@ const MapperProvider: FC<IProviderProps> = ({
         supports_observable: data.supports_observable,
         transaction_management: data.transaction_management,
         record_requires_search_options: data.record_requires_search_options,
-        subtype: value === 'request' || value === 'response' ? value : undefined,
+        subtype:
+          value === 'request' || value === 'response' ? value : undefined,
         descriptions: [...descriptions, data?.desc],
         path: `${url}/${value}`
           .replace(`${name}`, '')
@@ -778,7 +815,11 @@ const MapperProvider: FC<IProviderProps> = ({
       };
       // Set the record data
       setRecord &&
-        setRecord(!realProviders[provider].requiresRecord ? record.data.fields : record.data);
+        setRecord(
+          !realProviders[provider].requiresRecord
+            ? record.data.fields
+            : record.data
+        );
       //
     }
     setOptionProvider(newOptionProvider);
@@ -795,11 +836,14 @@ const MapperProvider: FC<IProviderProps> = ({
 
   const getDescription = () => {
     if (last(nodes)?.value) {
-      return last(nodes)?.values?.find((val) => val.name === last(nodes)?.value)?.desc;
+      return last(nodes)?.values?.find((val) => val.name === last(nodes)?.value)
+        ?.desc;
     }
 
     // Return the same as above only from the second to last item
-    return nth(nodes, -2)?.values?.find((val) => val.name === nth(nodes, -2)?.value)?.desc;
+    return nth(nodes, -2)?.values?.find(
+      (val) => val.name === nth(nodes, -2)?.value
+    )?.desc;
   };
 
   const description = getDescription();
@@ -827,22 +871,30 @@ const MapperProvider: FC<IProviderProps> = ({
             ),
           ]}
         >
-          <ReqoreMessage intent="info">{t('WildcardReplace')}</ReqoreMessage>
+          <ReqoreMessage intent='info'>{t('WildcardReplace')}</ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
           <String
-            name="wildcard"
-            onChange={(_name, value) => setWildcardDiagram((cur) => ({ ...cur, value }))}
+            name='wildcard'
+            onChange={(_name, value) =>
+              setWildcardDiagram((cur) => ({ ...cur, value }))
+            }
             value={wildcardDiagram.value}
           />
         </CustomDialog>
       )}
-      <ReqorePanel minimal={compact} style={style} flat transparent padded={!!title}>
+      <ReqorePanel
+        minimal={compact}
+        style={style}
+        flat
+        transparent
+        padded={!!title}
+      >
         <ReqoreControlGroup fluid wrap fill>
           <SelectField
             fixed
             name={`provider${type ? `-${type}` : ''}`}
             disabled={isLoading || readOnly}
-            className="provider-type-selector"
+            className='provider-type-selector'
             defaultItems={getDefaultItems()}
             onChange={(_name, value) => {
               handleProviderChange(value);
@@ -857,8 +909,13 @@ const MapperProvider: FC<IProviderProps> = ({
                   key={`${title}-${index}`}
                   name={`provider-${type ? `${type}-` : ''}${index}`}
                   disabled={isLoading || readOnly}
-                  className="provider-selector"
-                  filters={['supports_read', 'supports_request', 'has_record', 'up']}
+                  className='provider-selector'
+                  filters={[
+                    'supports_read',
+                    'supports_request',
+                    'has_record',
+                    'up',
+                  ]}
                   defaultItems={child.values.map((child) => ({
                     ...child,
                     intent: child.up === false ? 'danger' : undefined,
@@ -905,15 +962,17 @@ const MapperProvider: FC<IProviderProps> = ({
               optionProvider?.record_requires_search_options &&
               !readOnly ? (
                 <ReqoreButton
-                  tooltip="Apply the search options to move forward"
-                  icon="RefreshLine"
-                  intent="info"
+                  tooltip='Apply the search options to move forward'
+                  icon='RefreshLine'
+                  intent='info'
                   disabled={!validateField('system-options', searchOptions)}
                   fixed
                   onClick={() => {
                     const customOptionString = buildOptions();
                     // Get the child data
-                    const { url, suffix } = child.values.find((val) => val.name === child.value);
+                    const { url, suffix } = child.values.find(
+                      (val) => val.name === child.value
+                    );
                     // If the value is a wildcard present a dialog that the user has to fill
                     if (child.value === '*') {
                       setWildcardDiagram({
@@ -942,15 +1001,17 @@ const MapperProvider: FC<IProviderProps> = ({
               ) : null}
               {index === 0 && optionsChanged && !readOnly ? (
                 <ReqoreButton
-                  tooltip="Apply the current options to move forward"
-                  icon="RefreshLine"
-                  intent="info"
+                  tooltip='Apply the current options to move forward'
+                  icon='RefreshLine'
+                  intent='info'
                   disabled={!validateField('system-options', options)}
                   fixed
                   onClick={() => {
                     const customOptionString = buildOptions();
                     // Get the child data
-                    const { url, suffix } = child.values.find((val) => val.name === child.value);
+                    const { url, suffix } = child.values.find(
+                      (val) => val.name === child.value
+                    );
                     // If the value is a wildcard present a dialog that the user has to fill
                     if (child.value === '*') {
                       setWildcardDiagram({
@@ -984,10 +1045,10 @@ const MapperProvider: FC<IProviderProps> = ({
             <ReqoreControlGroup fluid={false}>
               {nodes[nodes.length - 2]?.values?.[0]?.url ? (
                 <ReqoreButton
-                  tooltip="Go back a step"
-                  intent="danger"
-                  icon="ArrowGoBackLine"
-                  className="provider-go-back"
+                  tooltip='Go back a step'
+                  intent='danger'
+                  icon='ArrowGoBackLine'
+                  className='provider-go-back'
                   fixed
                   onClick={() => {
                     setChildren((cur) => {
@@ -1007,9 +1068,11 @@ const MapperProvider: FC<IProviderProps> = ({
                         const index = size(result) - 1;
                         const { value, values } = lastChild;
                         // Get the child data
-                        const { url, suffix, provider_info } = values.find((val) => {
-                          return val.name === value;
-                        });
+                        const { url, suffix, provider_info } = values.find(
+                          (val) => {
+                            return val.name === value;
+                          }
+                        );
 
                         // If the value is a wildcard present a dialog that the user has to fill
                         if (value === '*') {
@@ -1045,10 +1108,10 @@ const MapperProvider: FC<IProviderProps> = ({
               ) : null}
               {onResetClick && (
                 <ReqoreButton
-                  tooltip="Remove all data"
-                  intent="danger"
-                  icon="CloseLine"
-                  className="provider-reset"
+                  tooltip='Remove all data'
+                  intent='danger'
+                  icon='CloseLine'
+                  className='provider-reset'
                   onClick={onResetClick}
                   fixed
                 />
@@ -1057,8 +1120,8 @@ const MapperProvider: FC<IProviderProps> = ({
           ) : null}
           {record && !optionsChanged ? (
             <ReqoreButton
-              intent="success"
-              icon="CheckLine"
+              intent='success'
+              icon='CheckLine'
               fixed
               onClick={() => {
                 setFields(record);
@@ -1068,17 +1131,28 @@ const MapperProvider: FC<IProviderProps> = ({
           ) : null}
         </ReqoreControlGroup>
         {description ? (
-          <ReqoreMessage intent="info" opaque={false} size="small" margin="top">
+          <ReqoreMessage intent='info' opaque={false} size='small' margin='top'>
             <ReactMarkdown>{description}</ReactMarkdown>
           </ReqoreMessage>
         ) : null}
         {errorMessage && (
-          <ReqoreMessage title="An error occurred" intent="danger" size="small" margin="top">
+          <ReqoreMessage
+            title='An error occurred'
+            intent='danger'
+            size='small'
+            margin='top'
+          >
             {errorMessage}
           </ReqoreMessage>
         )}
         {warningMessage && (
-          <ReqoreMessage title="Warning" intent="warning" size="small" margin="top" opaque={false}>
+          <ReqoreMessage
+            title='Warning'
+            intent='warning'
+            size='small'
+            margin='top'
+            opaque={false}
+          >
             {warningMessage}
           </ReqoreMessage>
         )}

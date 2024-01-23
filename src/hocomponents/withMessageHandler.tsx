@@ -14,7 +14,11 @@ export interface IWebSocketOptions {
 export const wsConnections: Record<string, WebSocket> = {};
 export const wsHeartbeats: Record<string, NodeJS.Timeout> = {};
 
-export const createOrGetWebSocket = (instance: any, url: string, options: IWebSocketOptions) => {
+export const createOrGetWebSocket = (
+  instance: any,
+  url: string,
+  options: IWebSocketOptions
+) => {
   if (!instance) {
     throw new Error('Instance is not defined');
   }
@@ -30,7 +34,9 @@ export const createOrGetWebSocket = (instance: any, url: string, options: IWebSo
       wsUrl = wsUrl.slice(0, -1);
     }
 
-    wsConnections[url] = new WebSocket(`${wsUrl}/${url}${buildWsAuth(instance.token)}`);
+    wsConnections[url] = new WebSocket(
+      `${wsUrl}/${url}${buildWsAuth(instance.token)}`
+    );
 
     wsConnections[url].onopen = function (this, ev) {
       reconnectTries = 0;
@@ -46,6 +52,8 @@ export const createOrGetWebSocket = (instance: any, url: string, options: IWebSo
 
     wsConnections[url].onclose = function (this, ev) {
       options?.onClose?.(ev);
+
+      console.log('Websocket disconnected with', ev);
 
       removeWebSocketData(url);
 
@@ -125,14 +133,20 @@ export const addEventMessageListener: TMessageListener = (
   useWebSockets,
   connection
 ) => {
-  return addMessageListener(event, callback, useWebSockets, connection, 'event');
+  return addMessageListener(
+    event,
+    callback,
+    useWebSockets,
+    connection,
+    'event'
+  );
 };
 
 // Adds a new message listener
 export const addMessageListener: TMessageListener = (
   action,
   callback,
-  useWebSockets?: boolean,
+  useWebSockets: boolean = true,
   connection = 'creator',
   eventKey: string = 'action'
 ) => {
@@ -142,7 +156,9 @@ export const addMessageListener: TMessageListener = (
     isWebSocketSupported &&
     useWebSockets &&
     // @ts-ignore
-    (process.env.NODE_ENV === 'storybook' ? window._useWebsocketsInStorybook : true) &&
+    (process.env.NODE_ENV === 'storybook'
+      ? window._useWebsocketsInStorybook
+      : true) &&
     process.env.NODE_ENV !== 'test';
 
   // Check if websockets are supported
@@ -159,7 +175,8 @@ export const addMessageListener: TMessageListener = (
     }
 
     try {
-      const _data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      const _data =
+        typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
       // Check if the action is equal
       if (_data[eventKey] === action) {
         // Run the callback with the action data
@@ -185,14 +202,16 @@ export const addMessageListener: TMessageListener = (
 export const postMessage: TPostMessage = (
   action,
   data = {},
-  useWebSockets,
+  useWebSockets = true,
   connection = 'creator'
 ) => {
   const useWs =
     isWebSocketSupported &&
     useWebSockets &&
     // @ts-ignore
-    (process.env.NODE_ENV === 'storybook' ? window._useWebsocketsInStorybook : true) &&
+    (process.env.NODE_ENV === 'storybook'
+      ? window._useWebsocketsInStorybook
+      : true) &&
     process.env.NODE_ENV !== 'test';
 
   if (useWs) {
@@ -223,7 +242,11 @@ export default () =>
     const enhancedComponent: FunctionComponent = (props: any) => {
       // Return the enhanced component
       return (
-        <Component {...props} addMessageListener={addMessageListener} postMessage={postMessage} />
+        <Component
+          {...props}
+          addMessageListener={addMessageListener}
+          postMessage={postMessage}
+        />
       );
     };
 

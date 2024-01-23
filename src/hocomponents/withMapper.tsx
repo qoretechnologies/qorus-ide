@@ -7,7 +7,11 @@ import { Messages } from '../constants/messages';
 import { formatFields } from '../containers/InterfaceCreator/typeView';
 import { providers } from '../containers/Mapper/provider';
 import { MapperContext } from '../context/mapper';
-import { callBackendBasic, insertUrlPartBeforeQuery } from '../helpers/functions';
+import {
+  callBackendBasic,
+  fetchData,
+  insertUrlPartBeforeQuery,
+} from '../helpers/functions';
 import { fixRelations, flattenFields } from '../helpers/mapper';
 import withFieldsConsumer from './withFieldsConsumer';
 import withInitialDataConsumer from './withInitialDataConsumer';
@@ -32,7 +36,8 @@ export default () =>
     const EnhancedComponent: FunctionComponent = (props: any) => {
       const { qorus_instance } = props;
       const [mapper, setMapper] = useState<any>(props.mapper);
-      const [showMapperConnections, setShowMapperConnections] = useState<boolean>(false);
+      const [showMapperConnections, setShowMapperConnections] =
+        useState<boolean>(false);
       const [inputs, setInputs] = useState<any>(null);
       const [contextInputs, setContextInputs] = useState<any>(null);
       const [outputs, setOutputs] = useState<any>(null);
@@ -73,8 +78,10 @@ export default () =>
         is_api_call: boolean;
       }>(null);
       const [mapperKeys, setMapperKeys] = useState<any>(null);
-      const [hideInputSelector, setHideInputSelector] = useState<boolean>(false);
-      const [hideOutputSelector, setHideOutputSelector] = useState<boolean>(false);
+      const [hideInputSelector, setHideInputSelector] =
+        useState<boolean>(false);
+      const [hideOutputSelector, setHideOutputSelector] =
+        useState<boolean>(false);
       const [inputsError, setInputsError] = useState<any>(null);
       const [outputsError, setOutputsError] = useState<any>(null);
       const [wrongKeysCount, setWrongKeysCount] = useState<number>(0);
@@ -154,10 +161,10 @@ export default () =>
         setIsContextLoaded(true);
       };
 
-      const getUrlFromProvider: (fieldType: 'input' | 'output', provider?: any) => string = (
-        fieldType,
-        provider
-      ) => {
+      const getUrlFromProvider: (
+        fieldType: 'input' | 'output',
+        provider?: any
+      ) => string = (fieldType, provider) => {
         const prov = provider
           ? provider
           : fieldType === 'input'
@@ -165,18 +172,31 @@ export default () =>
           : outputOptionProvider;
 
         // If the provider is an api call, we need to add /request or /response at the end
-        const url = prov.is_api_call ? (fieldType === 'input' ? '/response' : '/request') : '';
-        const providerUrl = getRealUrlFromProvider(prov, undefined, undefined, undefined);
+        const url = prov.is_api_call
+          ? fieldType === 'input'
+            ? '/response'
+            : '/request'
+          : '';
+        const providerUrl = getRealUrlFromProvider(
+          prov,
+          undefined,
+          undefined,
+          undefined
+        );
 
         return insertUrlPartBeforeQuery(
           `${providerUrl}${
-            fieldType === 'output' ? `${providerUrl.includes('?') ? '&' : '?'}soft=true` : ''
+            fieldType === 'output'
+              ? `${providerUrl.includes('?') ? '&' : '?'}soft=true`
+              : ''
           }`,
           url
         );
       };
 
-      const getProviderUrl: (fieldType: 'input' | 'output') => string = (fieldType) => {
+      const getProviderUrl: (fieldType: 'input' | 'output') => string = (
+        fieldType
+      ) => {
         // Get the mapper options data
         const provider = mapper.mapper_options[`mapper-${fieldType}`];
         // Save the provider options
@@ -186,16 +206,28 @@ export default () =>
           setOutputOptionProvider(provider);
         }
 
-        return getUrlFromProvider(fieldType, mapper.mapper_options[`mapper-${fieldType}`]);
+        return getUrlFromProvider(
+          fieldType,
+          mapper.mapper_options[`mapper-${fieldType}`]
+        );
       };
 
-      const getMapperKeysUrl: (fieldType: 'input' | 'output') => string = (fieldType) => {
+      const getMapperKeysUrl: (fieldType: 'input' | 'output') => string = (
+        fieldType
+      ) => {
         // Get the mapper options data
-        const { type, name, path = '', subtype } = mapper.mapper_options[`mapper-${fieldType}`];
+        const {
+          type,
+          name,
+          path = '',
+          subtype,
+        } = mapper.mapper_options[`mapper-${fieldType}`];
         // Get the rules for the given provider
         const { url, suffix } = providers[type];
         // Build the URL
-        const newUrl = `${url}/${name}${suffix}${addTrailingSlash(path)}/mapper_keys`;
+        const newUrl = `${url}/${name}${suffix}${addTrailingSlash(
+          path
+        )}/mapper_keys`;
         // Build the URL based on the provider type
         return newUrl.replace('/request', '').replace('/response', '');
       };
@@ -266,14 +298,17 @@ export default () =>
         // Check if this input is a factory
         const { type } = mapper.mapper_options[`mapper-input`];
 
-        const inputs = await props.fetchData(inputUrl);
+        const inputs = await fetchData(inputUrl);
         // If one of the connections is down
         if (inputs.error) {
           setInputsError(inputs.error && 'InputConnError');
           // Save the inputs & outputs
           setInputs(
             formatFields(
-              insertCustomFields({}, mapper.mapper_options['mapper-input']['custom-fields'] || {})
+              insertCustomFields(
+                {},
+                mapper.mapper_options['mapper-input']['custom-fields'] || {}
+              )
             )
           );
           // Cancel loading
@@ -305,13 +340,16 @@ export default () =>
         // Save the url as a record, to be accessible
         setOutputRecord(outputUrl);
         // Fetch the input and output fields
-        const outputs = await props.fetchData(`${outputUrl}`);
+        const outputs = await fetchData(`${outputUrl}`);
         // If one of the connections is down
         if (outputs.error) {
           console.error(outputs);
           setOutputs(
             formatFields(
-              insertCustomFields({}, mapper.mapper_options['mapper-output']['custom-fields'] || {})
+              insertCustomFields(
+                {},
+                mapper.mapper_options['mapper-output']['custom-fields'] || {}
+              )
             )
           );
           // Cancel loading
@@ -322,7 +360,7 @@ export default () =>
         if (mapper.mapper_options['mapper-output'].type !== 'type') {
           const mapperKeysUrl = getMapperKeysUrl('output');
           // Fetch the mapper keys
-          const resp = await props.fetchData(mapperKeysUrl);
+          const resp = await fetchData(mapperKeysUrl);
           // Check if mapper keys call was good
           if (resp.error) {
             console.error(resp);
@@ -352,15 +390,18 @@ export default () =>
         const url = getUrlFromProvider(null, staticData);
 
         // Send the URL to backend
-        const listener = props.addMessageListener(Messages.RETURN_FIELDS_FROM_TYPE, ({ data }) => {
-          if (data) {
-            // Save the inputs if the data exist
-            setContextInputs(data.fields || data);
-            maybeApplyStoredDraft();
-          }
+        const listener = props.addMessageListener(
+          Messages.RETURN_FIELDS_FROM_TYPE,
+          ({ data }) => {
+            if (data) {
+              // Save the inputs if the data exist
+              setContextInputs(data.fields || data);
+              maybeApplyStoredDraft();
+            }
 
-          listener();
-        });
+            listener();
+          }
+        );
         // Ask backend for the fields for this particular type
         props.postMessage(Messages.GET_FIELDS_FROM_TYPE, {
           ...staticData,
@@ -379,7 +420,7 @@ export default () =>
           let mapperKeys;
           // Fetch the mapper keys
           (async () => {
-            const response = await props.fetchData('system/default_mapper_keys');
+            const response = await fetchData('system/default_mapper_keys');
             setMapperKeys(response.data);
             mapperKeys = response.data;
             setIsContextLoaded(false);
@@ -393,7 +434,8 @@ export default () =>
               if (mapper.mapper_options?.['mapper-output']) {
                 await getOutputsData(mapperKeys);
               }
-              const mapperContext = mapper.interfaceContext || props.currentMapperContext;
+              const mapperContext =
+                mapper.interfaceContext || props.currentMapperContext;
               // If this mapper has context
               if (mapperContext) {
                 // If the context also has the static data
@@ -420,7 +462,8 @@ export default () =>
                     data[data.custom_data.iface_kind]['staticdata-type']
                   ) {
                     // Save the static data
-                    const staticData = data[data.custom_data.iface_kind]['staticdata-type'];
+                    const staticData =
+                      data[data.custom_data.iface_kind]['staticdata-type'];
                     // Get all the needed data from static data
                     getFieldsFromStaticData(staticData);
                     setIsContextLoaded(true);
@@ -441,7 +484,12 @@ export default () =>
             }
           })();
         }
-      }, [qorus_instance, mapper, props.currentMapperContext, draftSavedForLater.current]);
+      }, [
+        qorus_instance,
+        mapper,
+        props.currentMapperContext,
+        draftSavedForLater.current,
+      ]);
 
       useEffect(() => {
         if (props.mapper) {
@@ -486,7 +534,11 @@ export default () =>
         });
       };
 
-      const updateRelations = (type: 'inputs' | 'outputs', oldName: string, newName: string) => {
+      const updateRelations = (
+        type: 'inputs' | 'outputs',
+        oldName: string,
+        newName: string
+      ) => {
         setRelations((cur) => {
           let result = { ...cur };
 
@@ -504,7 +556,8 @@ export default () =>
                 if (relationOutputName.includes(`${oldName}.`)) {
                   return {
                     ...newResult,
-                    [relationOutputName.replace(`${oldName}.`, `${newName}.`)]: relation,
+                    [relationOutputName.replace(`${oldName}.`, `${newName}.`)]:
+                      relation,
                   };
                 }
 
@@ -611,7 +664,10 @@ export default () =>
                 // Check if the code matches the removed code
                 // or if the removed mapper code is empty
                 // which means all code needs to be removed
-                if (!removedMapperCode || removedMapperCode.includes(mapperCodeName)) {
+                if (
+                  !removedMapperCode ||
+                  removedMapperCode.includes(mapperCodeName)
+                ) {
                   // Delete the code
                   delete newRelationData.code;
                 }
@@ -654,7 +710,11 @@ export default () =>
             setInputProvider,
             outputProvider,
             setOutputProvider,
-            relations: fixRelations(relations, flattenFields(outputs), flattenFields(inputs)),
+            relations: fixRelations(
+              relations,
+              flattenFields(outputs),
+              flattenFields(inputs)
+            ),
             setRelations,
             inputsLoading,
             setInputsLoading,

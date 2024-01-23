@@ -12,6 +12,7 @@ import SelectField from '../../components/Field/select';
 import String from '../../components/Field/string';
 import FieldGroup from '../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../components/FieldWrapper';
+import { fetchData } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 
@@ -59,14 +60,16 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
     return fieldData;
   };
 
-  const [field, setField] = useState(fieldData ? transformFieldData(fieldData) : defaultData);
+  const [field, setField] = useState(
+    fieldData ? transformFieldData(fieldData) : defaultData
+  );
   const [types, setTypes] = useState(null);
   const [error, setError] = useState(null);
 
   useMount(() => {
     (async () => {
       // Fetch the available types
-      const types: any = await initialData.fetchData(
+      const types: any = await fetchData(
         `dataprovider/basetypes${type === 'outputs' ? '?soft=1' : ''}`
       );
       if (types.error) {
@@ -106,7 +109,8 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
     !Object.keys(siblings).find((sibling: string) => sibling === name);
 
   const isFieldValid: () => boolean = () => {
-    const isNameValid: boolean = validateField('string', field.name) && isUnique(field.name);
+    const isNameValid: boolean =
+      validateField('string', field.name) && isUnique(field.name);
     const isDescValid: boolean = validateField('desc', field.name);
     const isTypeValid: boolean = !!field.type;
 
@@ -129,7 +133,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
       }
       // Transform the field type to the
       // same maybe type
-      newField.type = types.find((t) => t.typename === `*${type.replace('soft', '')}`);
+      newField.type = types.find(
+        (t) => t.typename === `*${type.replace('soft', '')}`
+      );
     }
     // If parent is not a custom field, set this as the first
     // custom field in the hierarchy
@@ -171,18 +177,20 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
       ]}
     >
       <ContentWrapper>
-        {error && <ReqoreMessage intent="danger">{error}</ReqoreMessage>}
+        {error && <ReqoreMessage intent='danger'>{error}</ReqoreMessage>}
         {!types && !error && <p>Loading...</p>}
         {types && (
-          <FieldGroup label="Info" isValid={isFieldValid()} collapsible={false}>
+          <FieldGroup label='Info' isValid={isFieldValid()} collapsible={false}>
             <FieldWrapper
               label={t(`field-label-name`)}
-              isValid={validateField('string', field.name) && isUnique(field.name)}
+              isValid={
+                validateField('string', field.name) && isUnique(field.name)
+              }
               compact
             >
               <String
                 onChange={(path, value) => onChange(path, value)}
-                name="name"
+                name='name'
                 value={field.name}
                 autoFocus
               />
@@ -193,10 +201,19 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
               isValid={validateField('string', field.desc)}
               compact
             >
-              <LongStringField fill onChange={onChange} name="desc" value={field.desc} />
+              <LongStringField
+                fill
+                onChange={onChange}
+                name='desc'
+                value={field.desc}
+              />
               <MarkdownPreview value={field.desc} />
             </FieldWrapper>
-            <FieldWrapper label={t(`field-label-type`)} isValid={!!field.type} compact>
+            <FieldWrapper
+              label={t(`field-label-type`)}
+              isValid={!!field.type}
+              compact
+            >
               <SelectField
                 simple
                 defaultItems={types
@@ -206,13 +223,21 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
                     desc: '',
                   }))}
                 onChange={onTypeChange}
-                name="type.name"
+                name='type.name'
                 value={field.type?.name}
               />
             </FieldWrapper>
             {field.type?.name !== 'auto' && (
-              <FieldWrapper label={t(`field-label-can_be_undefined`)} isValid compact>
-                <BooleanField onChange={onChange} name="canBeNull" value={field.canBeNull} />
+              <FieldWrapper
+                label={t(`field-label-can_be_undefined`)}
+                isValid
+                compact
+              >
+                <BooleanField
+                  onChange={onChange}
+                  name='canBeNull'
+                  value={field.canBeNull}
+                />
               </FieldWrapper>
             )}
           </FieldGroup>

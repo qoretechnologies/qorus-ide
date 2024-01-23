@@ -118,14 +118,15 @@
     "yamljs": "^0.3.0"
   },
   "scripts": {
-    "start": "NODE_ENV=development BROWSER=none node scripts/start.js",
-    "build": "node scripts/build.js",
+    "start": "NODE_ENV=development BROWSER=none REACT_APP_QORUS_TOKEN=$QORUS_TOKEN node scripts/start.js",
+    "build-prod": "PUBLIC_URL=ide node scripts/build.js",
+    "build": "NODE_ENV=development REACT_APP_QORUS_TOKEN=$QORUS_TOKEN node scripts/build.js",
     "test": "node scripts/test.js",
     "test:watch": "./node_modules/.bin/jest --watch",
     "update-reqore": "yarn add @qoretechnologies/reqore@beta",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "test-storybook": "test-storybook src/Stories/Components --maxWorkers=1 && test-storybook src/Stories/Views --maxWorkers=1 && test-storybook src/Stories/Fields --maxWorkers=1 && test-storybook src/Stories/Interfaces --maxWorkers=1 && test-storybook src/Stories/Tests --maxWorkers=1",
+    "storybook": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN storybook dev -p 6006",
+    "build-storybook": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN storybook build",
+    "test-storybook": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Components --maxWorkers=1 && STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Views --maxWorkers=1 && test-storybook src/Stories/Fields --maxWorkers=1 && test-storybook src/Stories/Interfaces --maxWorkers=1 && test-storybook src/Stories/Tests --maxWorkers=1",
     "install-playwright": "npx playwright install --with-deps",
     "chromatic": "npx chromatic --project-token=chpt_1aaa74dd9c1b035"
   },

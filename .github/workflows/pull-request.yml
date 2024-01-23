@@ -14,7 +14,8 @@ jobs:
   PullRequestTests:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    env:
+      QORUS_TOKEN: ${{ secrets.QORUS_TOKEN }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Get current time for the commit
@@ -58,7 +59,7 @@ jobs:
         id: install_modules
         run: |
           yarn install
-          yarn build
+          yarn build-prod
           yarn install-playwright
           yarn build-storybook --quiet
 

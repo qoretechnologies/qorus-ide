@@ -6,6 +6,7 @@ import { ConnectionManagement } from '../../components/ConnectionManagement';
 import { AppsContext } from '../../context/apps';
 import apps from '../Data/apps.json';
 import { StoryMeta } from '../types';
+import { sleep } from '../Tests/utils';
 
 const meta = {
   component: ConnectionManagement,
@@ -16,7 +17,11 @@ const meta = {
     return (
       // @ts-ignore
       <AppsContext.Provider value={{ apps }}>
-        <ConnectionManagement {...args} onChange={setConnection} selectedConnection={connection} />
+        <ConnectionManagement
+          {...args}
+          onChange={setConnection}
+          selectedConnection={connection}
+        />
       </AppsContext.Provider>
     );
   },
@@ -71,7 +76,9 @@ export const NewConnection: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => canvas.getAllByText('Create new connection')[0], { timeout: 5000 });
+    await waitFor(() => canvas.getAllByText('Create new connection')[0], {
+      timeout: 5000,
+    });
 
     await fireEvent.click(canvas.getAllByText('Create new connection')[0]);
   },
@@ -85,7 +92,10 @@ export const NewConnectionWithRequiredOptions: Story = {
     await NewConnection.play({ canvasElement, ...rest });
 
     await waitFor(
-      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(4),
+      () =>
+        expect(
+          document.querySelectorAll('.reqore-collection-item').length
+        ).toBe(4),
       { timeout: 5000 }
     );
   },
@@ -100,13 +110,20 @@ export const EditingConnection: Story = {
 
     await NewConnection.play({ canvasElement, ...rest });
 
-    await waitFor(() => canvas.getAllByText('Edit connection')[0], { timeout: 15000 });
+    await sleep(500);
+
+    await waitFor(() => canvas.getAllByText('Edit connection')[0], {
+      timeout: 5000,
+    });
 
     await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
 
     await waitFor(
-      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(3),
-      { timeout: 15000 }
+      () =>
+        expect(
+          document.querySelectorAll('.reqore-collection-item').length
+        ).toBe(3),
+      { timeout: 5000 }
     );
   },
 };

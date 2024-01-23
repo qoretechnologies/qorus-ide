@@ -15,7 +15,10 @@ import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import CustomDialog from '../../components/CustomDialog';
 import { DraftsTable } from '../../components/DraftsTable';
-import { NegativeColorEffect, PositiveColorEffect } from '../../components/Field/multiPair';
+import {
+  NegativeColorEffect,
+  PositiveColorEffect,
+} from '../../components/Field/multiPair';
 import Tutorial from '../../components/Tutorial';
 import {
   interfaceIcons,
@@ -31,7 +34,10 @@ import { TextContext } from '../../context/text';
 import { callBackendBasic } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
-import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../hocomponents/withMessageHandler';
 import withMethodsConsumer from '../../hocomponents/withMethodsConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 
@@ -157,7 +163,11 @@ const tutorials = {
         title: 'tutorial-pipeline-diagram-title',
         text: 'tutorial-pipeline-diagram-content',
       },
-      { id: 'pipeline-start', title: 'pipeline-start-title', text: 'pipeline-start-content' },
+      {
+        id: 'pipeline-start',
+        title: 'pipeline-start-title',
+        text: 'pipeline-start-content',
+      },
     ],
   },
 };
@@ -204,22 +214,27 @@ const TutorialButton = ({ type, onClick }) => {
     <>
       {isSuccessful && (
         <ReqoreButton
-          icon="QuestionMark"
+          icon='QuestionMark'
           onClick={() => {
-            tutorials[type].elements = tutorials[type].elements.map((element) => {
-              const el = document.querySelector(`#${element.id}`);
+            tutorials[type].elements = tutorials[type].elements.map(
+              (element) => {
+                const el = document.querySelector(`#${element.id}`);
 
-              if (!el) {
-                return undefined;
+                if (!el) {
+                  return undefined;
+                }
+
+                return {
+                  ...element,
+                  elementData: el.getBoundingClientRect(),
+                };
               }
+            );
 
-              return {
-                ...element,
-                elementData: el.getBoundingClientRect(),
-              };
-            });
-
-            onClick([...tutorials.default.elements, ...tutorials[type].elements]);
+            onClick([
+              ...tutorials.default.elements,
+              ...tutorials[type].elements,
+            ]);
           }}
         >
           Tutorial
@@ -227,7 +242,7 @@ const TutorialButton = ({ type, onClick }) => {
       )}
     </>
   ) : (
-    <ReqoreButton intent="pending" minimal>
+    <ReqoreButton intent='pending' minimal>
       {t('WaitingForElements')}
     </ReqoreButton>
   );
@@ -237,6 +252,7 @@ const Tab: React.FC<ITabProps> = ({
   t,
   data,
   type,
+  id,
   version,
   children,
   resetAllInterfaceData,
@@ -269,8 +285,10 @@ const Tab: React.FC<ITabProps> = ({
   const [draftsOpen, setDraftsOpen] = useState<boolean>(false);
   const { changeTab, isSavingDraft, lastDraft, is_hosted_instance }: any =
     useContext(InitialContext);
-  const { methods, setMethods, setMethodsCount }: any = useContext(MethodsContext);
-  const { maybeApplyDraft, addDraft } = useContext<IDraftsContext>(DraftsContext);
+  const { methods, setMethods, setMethodsCount }: any =
+    useContext(MethodsContext);
+  const { maybeApplyDraft, addDraft } =
+    useContext<IDraftsContext>(DraftsContext);
   const [draftsCount, setDraftsCount] = useState<number>(0);
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
   const [localLastDraft, setLastDraft] = useState<string>(null);
@@ -283,9 +301,12 @@ const Tab: React.FC<ITabProps> = ({
   }, [lastDraft]);
 
   useMount(() => {
-    const recreateListener = addMessageListener(Messages.MAYBE_RECREATE_INTERFACE, (data) => {
-      setRecreateDialog(() => data);
-    });
+    const recreateListener = addMessageListener(
+      Messages.MAYBE_RECREATE_INTERFACE,
+      (data) => {
+        setRecreateDialog(() => data);
+      }
+    );
 
     // Ask for recreation dialog
     postMessage('check-edit-data', {});
@@ -374,7 +395,10 @@ const Tab: React.FC<ITabProps> = ({
             // used in class connections as triggers
             const { 'class-connections': classConnections } = data.service;
             const removedMethods: any[] = methods.filter((method) => {
-              return method.name !== 'init' && !isMethodUsedInCC(method.name, classConnections);
+              return (
+                method.name !== 'init' &&
+                !isMethodUsedInCC(method.name, classConnections)
+              );
             });
             // Set the methods to only leave the init method
             // only if no methods were left
@@ -382,7 +406,8 @@ const Tab: React.FC<ITabProps> = ({
               return size(removedMethods) !== size(methods)
                 ? [...cur].filter(
                     (method) =>
-                      method.name === 'init' || isMethodUsedInCC(method.name, classConnections)
+                      method.name === 'init' ||
+                      isMethodUsedInCC(method.name, classConnections)
                   )
                 : [{ name: 'init', desc: '' }];
             });
@@ -391,7 +416,9 @@ const Tab: React.FC<ITabProps> = ({
               removeSubItemFromFields(method.id, 'service-methods');
             });
 
-            setMethodsCount((current: number) => current - size(removedMethods));
+            setMethodsCount(
+              (current: number) => current - size(removedMethods)
+            );
           }
           data.changeInitialData('isRecreate', true);
           setRecreateDialog(null);
@@ -443,10 +470,8 @@ const Tab: React.FC<ITabProps> = ({
         effect: NegativeColorEffect,
         onClick: () => {
           data.confirmAction(t('ConfirmDeleteInterface'), () => {
-            postMessage('delete-interface', {
-              iface_kind: type,
-              name,
-              version,
+            postMessage('delete-objects', {
+              [type]: id,
             });
 
             onDelete?.();
@@ -476,9 +501,14 @@ const Tab: React.FC<ITabProps> = ({
   return (
     <>
       <ReqoreBreadcrumbs
-        size="normal"
+        size='normal'
         flat
-        style={{ border: 'none', paddingTop: '10px', paddingBottom: '10px', margin: 0 }}
+        style={{
+          border: 'none',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+          margin: 0,
+        }}
         rightElement={<ReqoreControlGroup>{getActions()}</ReqoreControlGroup>}
         items={[
           {

@@ -1,4 +1,8 @@
-import { ReqoreMessage, ReqorePanel, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
+import {
+  ReqoreMessage,
+  ReqorePanel,
+  ReqoreVerticalSpacer,
+} from '@qoretechnologies/reqore';
 import cloneDeep from 'lodash/cloneDeep';
 import every from 'lodash/every';
 import forEach from 'lodash/forEach';
@@ -18,6 +22,7 @@ import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import Loader from '../../../components/Loader';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
+import { fetchData } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import ConnectorSelector from './connectorSelector';
 
@@ -52,20 +57,25 @@ const StyledTransitionWrapper = styled.div`
   }
 `;
 
-export const getConditionType: (condition: any) => TTransitionCondition = (condition) =>
+export const getConditionType: (condition: any) => TTransitionCondition = (
+  condition
+) =>
   condition === null || condition === undefined
     ? 'none'
     : typeof condition === 'object'
     ? 'connector'
     : 'custom';
 
-export const isConditionValid: (transitionData: IFSMTransition | IFSMState) => boolean = (
-  transitionData
-) => {
+export const isConditionValid: (
+  transitionData: IFSMTransition | IFSMState
+) => boolean = (transitionData) => {
   const condition = getConditionType(transitionData.condition);
 
   if (condition === 'connector') {
-    return !!transitionData?.condition?.['class'] && !!transitionData?.condition?.connector;
+    return (
+      !!transitionData?.condition?.['class'] &&
+      !!transitionData?.condition?.connector
+    );
   }
 
   if (condition === 'custom') {
@@ -93,11 +103,11 @@ export const renderConditionField: (
     case 'custom': {
       return (
         <String
-          name="condition"
+          name='condition'
           onChange={(name, value) => onChange(name, value)}
           value={transitionData?.condition}
           autoFocus
-          id="condition-field"
+          id='condition-field'
         />
       );
     }
@@ -120,11 +130,15 @@ export const ConditionField = ({ data, onChange, required }) => {
         compact
       >
         <RadioField
-          name="conditionType"
+          name='conditionType'
           onChange={(_name, value) => {
             onChange(
               'condition',
-              value === 'none' ? null : value === 'custom' ? '' : { class: null }
+              value === 'none'
+                ? null
+                : value === 'custom'
+                ? ''
+                : { class: null }
             );
           }}
           value={conditionType || 'none'}
@@ -148,7 +162,7 @@ export const ConditionField = ({ data, onChange, required }) => {
           compact
         >
           <RadioField
-            name="language"
+            name='language'
             onChange={(name, value) => {
               onChange(name, value);
             }}
@@ -170,19 +184,26 @@ export const ConditionField = ({ data, onChange, required }) => {
   );
 };
 
-export const TransitionEditor = ({ onChange, transitionData, errors, qorus_instance }) => {
+export const TransitionEditor = ({
+  onChange,
+  transitionData,
+  errors,
+  qorus_instance,
+}) => {
   const t = useContext(TextContext);
 
-  const renderErrorsField: (transitionData: IFSMTransition) => any = (transitionData) => {
+  const renderErrorsField: (transitionData: IFSMTransition) => any = (
+    transitionData
+  ) => {
     if (qorus_instance && !errors) {
-      return <Loader text="Loading..." />;
+      return <Loader text='Loading...' />;
     }
 
     return (
       <MultiSelect
         simple
         default_items={[{ name: 'All' }, ...(errors || [])]}
-        name="errors"
+        name='errors'
         onChange={(_name, value) => onChange('errors', value)}
         value={transitionData?.errors}
       />
@@ -194,7 +215,7 @@ export const TransitionEditor = ({ onChange, transitionData, errors, qorus_insta
       {transitionData.branch && (
         <FieldWrapper label={t('Branch')} isValid compact>
           <RadioField
-            name="branch"
+            name='branch'
             onChange={(_name, value) => {
               onChange('branch', value);
             }}
@@ -206,10 +227,17 @@ export const TransitionEditor = ({ onChange, transitionData, errors, qorus_insta
       {!transitionData.branch && (
         <>
           <ConditionField onChange={onChange} data={transitionData} />
-          <FieldWrapper label={t('Errors')} isValid type={t('Optional')} compact>
+          <FieldWrapper
+            label={t('Errors')}
+            isValid
+            type={t('Optional')}
+            compact
+          >
             {!qorus_instance && (
               <>
-                <ReqoreMessage intent="warning">{t('TransitionErrorsNoInstance')}</ReqoreMessage>
+                <ReqoreMessage intent='warning'>
+                  {t('TransitionErrorsNoInstance')}
+                </ReqoreMessage>
                 <ReqoreVerticalSpacer height={10} />
               </>
             )}
@@ -227,7 +255,9 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
   editingData,
   onSubmit,
 }) => {
-  const { qorus_instance, fetchData } = useContext<{ qorus_instance?: string }>(InitialContext);
+  const { qorus_instance } = useContext<{ qorus_instance?: string }>(
+    InitialContext
+  );
 
   const getTransitionFromStates: () => IModifiedTransitions = () =>
     editingData.reduce(
@@ -243,7 +273,9 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
       {}
     );
 
-  const [newData, setNewData] = useState<IModifiedTransitions>(getTransitionFromStates());
+  const [newData, setNewData] = useState<IModifiedTransitions>(
+    getTransitionFromStates()
+  );
   const [errors, setErrors] = useState<{ name: string }[] | null>(null);
   const t = useContext(TextContext);
 
@@ -322,7 +354,9 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
       ]}
     >
       {areAllTransitionsDeleted() ? (
-        <ReqoreMessage intent="warning">{t('AllTransitionsRemoved')}</ReqoreMessage>
+        <ReqoreMessage intent='warning'>
+          {t('AllTransitionsRemoved')}
+        </ReqoreMessage>
       ) : (
         <>
           {map(
@@ -346,7 +380,9 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
                 >
                   <ContentWrapper>
                     <TransitionEditor
-                      onChange={(name, value) => handleDataUpdate(id, name, value)}
+                      onChange={(name, value) =>
+                        handleDataUpdate(id, name, value)
+                      }
                       transitionData={transitionData.data}
                       errors={errors}
                       qorus_instance={qorus_instance}

@@ -10,7 +10,10 @@ import {
   useReqoreProperty,
   useReqoreTheme,
 } from '@qoretechnologies/reqore';
-import { ReqoreTextEffect, StyledEffect } from '@qoretechnologies/reqore/dist/components/Effect';
+import {
+  ReqoreTextEffect,
+  StyledEffect,
+} from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
 import { drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
@@ -21,7 +24,14 @@ import map from 'lodash/map';
 import maxBy from 'lodash/maxBy';
 import reduce from 'lodash/reduce';
 import size from 'lodash/size';
-import React, { Dispatch, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  Dispatch,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useDebounce, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -76,7 +86,9 @@ import {
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
-import withMessageHandler, { postMessage } from '../../../hocomponents/withMessageHandler';
+import withMessageHandler, {
+  postMessage,
+} from '../../../hocomponents/withMessageHandler';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
 import TinyGrid from '../../../images/graphy-dark.png';
@@ -176,11 +188,20 @@ export type TVariableActionValue = {
     | 'apicall';
 } & Partial<IProviderType>;
 
-export type TFSMClassConnectorAction = { class: string; connector: string; prefix?: string };
+export type TFSMClassConnectorAction = {
+  class: string;
+  connector: string;
+  prefix?: string;
+};
 export type TAppAndAction = { app: string; action: string; options: IOptions };
 export type TFSMStateAction = {
   type: TAction;
-  value?: string | TFSMClassConnectorAction | IProviderType | TVariableActionValue | TAppAndAction;
+  value?:
+    | string
+    | TFSMClassConnectorAction
+    | IProviderType
+    | TVariableActionValue
+    | TAppAndAction;
 };
 
 export interface IFSMState extends IFSMMetadata {
@@ -298,7 +319,8 @@ const StyledFSMLine = styled.path`
           stroke-linejoin: round;
           stroke-linecap: round;
           stroke-miterlimit: 10;
-          animation: ${StyledFSMLineAnimation} ${fake ? 20 : 10}s linear infinite;
+          animation: ${StyledFSMLineAnimation} ${fake ? 20 : 10}s linear
+            infinite;
         `
       : undefined}
 `;
@@ -361,8 +383,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   ...rest
 }) => {
   const t = useContext(TextContext);
-  const { sidebarOpen, path, image_path, callBackend, qorus_instance, saveDraft, ...init }: any =
-    useContext(InitialContext);
+  const {
+    sidebarOpen,
+    path,
+    image_path,
+    callBackend,
+    qorus_instance,
+    saveDraft,
+    ...init
+  }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
 
   parentStateName = parentStateName?.replace(/ /g, '-');
@@ -374,7 +403,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const [interfaceId, setInterfaceId] = useState(null);
   const [hasUnsavedState, setHasUnsavedState] = useState<boolean>(false);
   const [st, setSt] = useState<IFSMStates>(cloneDeep(fsm?.states || {}));
-  const [mt, setMt] = useState<IFSMMetadata>(buildMetadata(fsm, interfaceContext));
+  const [mt, setMt] = useState<IFSMMetadata>(
+    buildMetadata(fsm, interfaceContext)
+  );
 
   const wrapperRef = useRef(null);
   const showTransitionsToaster = useRef(0);
@@ -408,7 +439,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     };
   }>(undefined);
 
-  const [compatibilityChecked, setCompatibilityChecked] = useState<boolean>(true);
+  const [compatibilityChecked, setCompatibilityChecked] =
+    useState<boolean>(true);
   const [outputCompatibility, setOutputCompatibility] = useState<
     { [key: string]: boolean } | undefined
   >(undefined);
@@ -419,15 +451,24 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const [editingTransition, setEditingTransition] = useState<
     { stateId: number; index: number }[] | null
   >([]);
-  const [editingTransitionOrder, setEditingTransitionOrder] = useState<number | null>(null);
-  const [editingInitialOrder, setEditingInitialOrder] = useState<boolean>(false);
-  const [wrapperDimensions, setWrapperDimensions] = useState<{ width: number; height: number }>({
+  const [editingTransitionOrder, setEditingTransitionOrder] = useState<
+    number | null
+  >(null);
+  const [editingInitialOrder, setEditingInitialOrder] =
+    useState<boolean>(false);
+  const [wrapperDimensions, setWrapperDimensions] = useState<{
+    width: number;
+    height: number;
+  }>({
     width: 0,
     height: 0,
   });
   const [isMetadataHidden, setIsMetadataHidden] = useState<boolean>(true);
-  const [addingNewStateAt, setIsAddingNewStateAt] =
-    useState<{ x: number; y: number; fromState?: string | number }>(undefined);
+  const [addingNewStateAt, setIsAddingNewStateAt] = useState<{
+    x: number;
+    y: number;
+    fromState?: string | number;
+  }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
   const theme = useReqoreTheme();
@@ -446,7 +487,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   const getDiagramBoundingRect = (): DOMRect => {
     return document
-      .getElementById(`${parentStateName ? `${parentStateName}-` : ''}fsm-diagram`)!
+      .getElementById(
+        `${parentStateName ? `${parentStateName}-` : ''}fsm-diagram`
+      )!
       ?.getBoundingClientRect();
   };
 
@@ -474,7 +517,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     const parentStateId = parseInt(parentStateName) || 0;
     const generatedId = shortid.generate();
     const id = (
-      item.id ?? (parentStateName ? `${parentStateId}.${generatedId}` : generatedId)
+      item.id ??
+      (parentStateName ? `${parentStateId}.${generatedId}` : generatedId)
     ).toString();
 
     setStates((cur: IFSMStates): IFSMStates => {
@@ -518,7 +562,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           injectedData: item.injectedData,
           type: item.name,
           'block-type':
-            item.name === 'block' ? (item.stateType as 'while' | 'for' | 'foreach') : undefined,
+            item.name === 'block'
+              ? (item.stateType as 'while' | 'for' | 'foreach')
+              : undefined,
           id,
           states: item.name === 'block' ? {} : undefined,
           condition: item.name === 'if' ? '' : undefined,
@@ -629,11 +675,17 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }, [states]);
 
   const areMetadataValid = (): boolean => {
-    if (metadata['input-type'] && !validateField('type-selector', metadata['input-type'])) {
+    if (
+      metadata['input-type'] &&
+      !validateField('type-selector', metadata['input-type'])
+    ) {
       return false;
     }
 
-    if (metadata['output-type'] && !validateField('type-selector', metadata['output-type'])) {
+    if (
+      metadata['output-type'] &&
+      !validateField('type-selector', metadata['output-type'])
+    ) {
       return false;
     }
 
@@ -651,7 +703,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     );
   };
 
-  const handleMetadataChange: (name: string, value: any) => void = (name, value) => {
+  const handleMetadataChange: (name: string, value: any) => void = (
+    name,
+    value
+  ) => {
     setMetadata((cur) => ({
       ...cur,
       [name]: value,
@@ -697,7 +752,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     if (!embedded) {
       setFsmReset?.(() => reset);
       // Set interface id
-      setInterfaceId(fsm?.iface_id || defaultInterfaceId || shortid.generate());
+      setInterfaceId(fsm?.id || defaultInterfaceId || shortid.generate());
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
@@ -892,7 +947,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
     const { transitions } = states[stateId];
 
-    return transitions?.find((transition) => transition.state === targetId && !transition.fake);
+    return transitions?.find(
+      (transition) => transition.state === targetId && !transition.fake
+    );
   };
 
   // This function gets all the states that do not have any transitions out of them
@@ -909,7 +966,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   const getStateDataForComparison = useCallback(
-    (state: IFSMState, providerType: 'input' | 'output'): ITypeComparatorData | null => {
+    (
+      state: IFSMState,
+      providerType: 'input' | 'output'
+    ): ITypeComparatorData | null => {
       if (state.action) {
         if (!state.action.value) {
           return null;
@@ -918,10 +978,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         const { type, value } = state.action;
 
         const obj = {
-          interfaceName: type === 'connector' ? (value as TFSMClassConnectorAction).class : value,
+          interfaceName:
+            type === 'connector'
+              ? (value as TFSMClassConnectorAction).class
+              : value,
           interfaceKind: type,
           connectorName:
-            type === 'connector' ? (value as TFSMClassConnectorAction).connector : undefined,
+            type === 'connector'
+              ? (value as TFSMClassConnectorAction).connector
+              : undefined,
           typeData: state[`${providerType}-type`] || state['input-output-type'],
         };
 
@@ -931,14 +996,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
         // If the state is a variable, we need to get the variable data
         if (type === 'var-action') {
-          const { var_name, var_type, action_type } = state.action.value as TVariableActionValue;
+          const { var_name, var_type, action_type } = state.action
+            .value as TVariableActionValue;
           const variableData = getVariable(var_name, var_type, metadata);
 
           if (variableData?.value) {
             return {
               ...obj,
               interfaceKind: action_type,
-              interfaceName: { ...(value as TVariableActionValue), ...variableData.value },
+              interfaceName: {
+                ...(value as TVariableActionValue),
+                ...variableData.value,
+              },
             };
           }
         }
@@ -988,7 +1057,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       return;
     }
 
-    const outputType: IProviderType | undefined = cloneDeep(metadata['output-type']);
+    const outputType: IProviderType | undefined = cloneDeep(
+      metadata['output-type']
+    );
 
     if (!outputType) {
       setOutputCompatibility(undefined);
@@ -996,7 +1067,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       return;
     }
 
-    outputType.options = await formatAndFixOptionsToKeyValuePairs(outputType.options);
+    outputType.options = await formatAndFixOptionsToKeyValuePairs(
+      outputType.options
+    );
 
     const compareHash = {};
 
@@ -1019,9 +1092,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       };
     }
 
-    const comparison = await fetchData('/dataprovider/compareManyTypes', 'PUT', {
-      types: compareHash,
-    });
+    const comparison = await fetchData(
+      '/dataprovider/compareManyTypes',
+      'PUT',
+      {
+        types: compareHash,
+      }
+    );
 
     setCompatibilityChecked(true);
     setOutputCompatibility(comparison.data);
@@ -1039,7 +1116,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       return;
     }
 
-    const inputType: IProviderType | undefined = cloneDeep(metadata['input-type']);
+    const inputType: IProviderType | undefined = cloneDeep(
+      metadata['input-type']
+    );
 
     if (!inputType) {
       setInputCompatibility(undefined);
@@ -1048,7 +1127,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     }
 
     // Format and fix the options
-    inputType.options = await formatAndFixOptionsToKeyValuePairs(inputType.options);
+    inputType.options = await formatAndFixOptionsToKeyValuePairs(
+      inputType.options
+    );
 
     const compareHash = {};
 
@@ -1073,9 +1154,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       };
     }
 
-    const comparison = await fetchData('/dataprovider/compareManyTypes', 'PUT', {
-      types: compareHash,
-    });
+    const comparison = await fetchData(
+      '/dataprovider/compareManyTypes',
+      'PUT',
+      {
+        types: compareHash,
+      }
+    );
 
     setCompatibilityChecked(true);
     setInputCompatibility(comparison.data);
@@ -1160,7 +1245,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         const targetStateType = states[id].type;
 
         // Also do nothing is the user is trying to transition FSM to itself or IF to itself
-        if ((targetStateType === 'fsm' || targetStateType === 'if') && selectedState === id) {
+        if (
+          (targetStateType === 'fsm' || targetStateType === 'if') &&
+          selectedState === id
+        ) {
           return;
         }
 
@@ -1256,7 +1344,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setSelectedState(id);
       }
     },
-    [selectedState, states, metadata, getStateDataForComparison, areStatesCompatible]
+    [
+      selectedState,
+      states,
+      metadata,
+      getStateDataForComparison,
+      areStatesCompatible,
+    ]
   );
 
   const handleSelectState = useCallback(
@@ -1320,7 +1414,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   const fixIncomptibleStates = useCallback(
-    async (id: string | number, localStates: IFSMStates, onFinish?: () => any) => {
+    async (
+      id: string | number,
+      localStates: IFSMStates,
+      onFinish?: () => any
+    ) => {
       const newStates = { ...localStates };
 
       for await (const [stateId, state] of Object.entries(newStates)) {
@@ -1332,7 +1430,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           Promise.resolve();
         } else {
           // Check if this state is compatible with the modified state
-          const isCompatible = await areStatesCompatible(stateId, id, newStates);
+          const isCompatible = await areStatesCompatible(
+            stateId,
+            id,
+            newStates
+          );
           // Is compatible no change needed
           if (!isCompatible) {
             showTransitionsToaster.current += 1;
@@ -1370,12 +1472,19 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       // Delete `isNew` from the fixed state
       delete fixedStates[id].isNew;
 
-      if (data.type !== states[id].type || !isEqual(data.action, states[id].action)) {
+      if (
+        data.type !== states[id].type ||
+        !isEqual(data.action, states[id].action)
+      ) {
         if (size(fixedStates[id].transitions)) {
           const newTransitions = [];
 
           for await (const transition of fixedStates[id].transitions) {
-            const isCompatible = await areStatesCompatible(id, transition.state, fixedStates);
+            const isCompatible = await areStatesCompatible(
+              id,
+              transition.state,
+              fixedStates
+            );
 
             if (isCompatible) {
               newTransitions.push(transition);
@@ -1426,7 +1535,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     [preUpdateStateData]
   );
 
-  const updateMultipleTransitionData = async (newData: IModifiedTransitions) => {
+  const updateMultipleTransitionData = async (
+    newData: IModifiedTransitions
+  ) => {
     let fixedStates: IFSMStates = { ...states };
 
     for await (const [id, transitionData] of Object.entries(newData)) {
@@ -1460,12 +1571,19 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         delete fixedStates[stateId].transitions;
       }
 
-      if (data?.type !== states[stateId].type || !isEqual(data.action, states[stateId].action)) {
+      if (
+        data?.type !== states[stateId].type ||
+        !isEqual(data.action, states[stateId].action)
+      ) {
         if (size(fixedStates[stateId].transitions)) {
           const newTransitions = [];
 
           for await (const transition of fixedStates[stateId].transitions) {
-            const isCompatible = await areStatesCompatible(stateId, transition.state, fixedStates);
+            const isCompatible = await areStatesCompatible(
+              stateId,
+              transition.state,
+              fixedStates
+            );
 
             if (isCompatible) {
               newTransitions.push(transition);
@@ -1517,11 +1635,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         undefined,
         {
           iface_kind: 'fsm',
-          iface_id: interfaceId,
+          id: interfaceId,
           orig_data: fsm,
           no_data_return: !!onSubmitSuccess,
-          deploy_on_success: publish,
-          data,
+          data: {
+            ...fsm,
+            ...data,
+          },
         },
         t('Saving FSM...'),
         true
@@ -1552,7 +1672,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       confirmAction({
         title: 'Unsaved changes',
         intent: 'warning',
-        description: 'You have unsaved changes. Are you sure you want to save your Qodex?',
+        description:
+          'You have unsaved changes. Are you sure you want to save your Qodex?',
         onConfirm: submit,
       });
     } else {
@@ -1561,7 +1682,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   const hasBothWayTransition = useCallback(
-    (stateId: string, targetId: string): { stateId: string; index: number } | null => {
+    (
+      stateId: string,
+      targetId: string
+    ): { stateId: string; index: number } | null => {
       const transitionIndex = states[targetId].transitions?.findIndex(
         (transition) => transition.state === stateId
       );
@@ -1587,9 +1711,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     [states, zoom]
   );
 
-  const isTransitionToSelf = useCallback((stateId: string, targetId: string): boolean => {
-    return stateId === targetId;
-  }, []);
+  const isTransitionToSelf = useCallback(
+    (stateId: string, targetId: string): boolean => {
+      return stateId === targetId;
+    },
+    []
+  );
 
   const hasTransitionToItself = useCallback(
     (stateId: string): boolean => {
@@ -1608,26 +1735,34 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     setEditingTransitionOrder(id);
   }, []);
 
-  const handleStateDeleteClick = useCallback((id: string | number, unfilled?: boolean): void => {
-    confirmAction({
-      title: 'Delete action',
-      description: `Are you sure you want to delete state ${name}?`,
-      intent: 'danger',
-      onConfirm: () => {
-        setStates((current) => {
-          const newStates = removeFSMState(current, id, interfaceId, (newStates) => {
-            // If this state was deleted because of unfilled data, do not
-            // save history
-            if (!unfilled) {
-              updateHistory(newStates);
-            }
-          });
+  const handleStateDeleteClick = useCallback(
+    (id: string | number, unfilled?: boolean): void => {
+      confirmAction({
+        title: 'Delete action',
+        description: `Are you sure you want to delete state ${name}?`,
+        intent: 'danger',
+        onConfirm: () => {
+          setStates((current) => {
+            const newStates = removeFSMState(
+              current,
+              id,
+              interfaceId,
+              (newStates) => {
+                // If this state was deleted because of unfilled data, do not
+                // save history
+                if (!unfilled) {
+                  updateHistory(newStates);
+                }
+              }
+            );
 
-          return newStates;
-        });
-      },
-    });
-  }, []);
+            return newStates;
+          });
+        },
+      });
+    },
+    []
+  );
 
   const getTargetStateLocation = ({
     x1,
@@ -1711,7 +1846,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     if (side === 'bottom') {
       path = `M ${startStateCenter.x - linesGap * startIndex} ${
         startStateCenter.y + startStateData.height / 2
-      } V ${startStateCenter.y + startEndVerticalDifference / 2 + 10 * startIndex}
+      } V ${
+        startStateCenter.y + startEndVerticalDifference / 2 + 10 * startIndex
+      }
       H ${endStateCenter.x - endLinesGap * endIndex}
       V ${endStateCenter.y - endStateData.height / 2}`;
     }
@@ -1719,9 +1856,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     if (side === 'top') {
       path = `M ${startStateCenter.x - linesGap * startIndex} ${
         startStateCenter.y - startStateData.height / 2
-      } V ${startStateCenter.y - startEndVerticalDifference / 2 - 10 * startIndex} H ${
-        endStateCenter.x - endLinesGap * endIndex
-      } V ${endStateCenter.y + endStateData.height / 2}`;
+      } V ${
+        startStateCenter.y - startEndVerticalDifference / 2 - 10 * startIndex
+      } H ${endStateCenter.x - endLinesGap * endIndex} V ${
+        endStateCenter.y + endStateData.height / 2
+      }`;
     }
 
     if (side === 'left') {
@@ -1738,9 +1877,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       const endOfStartState = x1 + startStateData.width;
       const horizontalDiff = x2 - endOfStartState;
 
-      path = `M ${endOfStartState} ${startStateCenter.y - linesGap * startIndex} H ${
-        endOfStartState + horizontalDiff / 2 + 10 * startIndex
-      } V ${endStateCenter.y - endLinesGap * endIndex} H ${x2}`;
+      path = `M ${endOfStartState} ${
+        startStateCenter.y - linesGap * startIndex
+      } H ${endOfStartState + horizontalDiff / 2 + 10 * startIndex} V ${
+        endStateCenter.y - endLinesGap * endIndex
+      } H ${x2}`;
     }
 
     return path;
@@ -1811,7 +1952,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 bottom: 0,
               };
             }
-            targetStatesTransitionIndexes.current[transition.state][mirrorSide(side)] += 1;
+            targetStatesTransitionIndexes.current[transition.state][
+              mirrorSide(side)
+            ] += 1;
 
             if (!statesTransitionIndexes.current[id]) {
               statesTransitionIndexes.current[id] = {
@@ -1845,10 +1988,14 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
             transitionIndexes.current[transition.state][mirrorSide(side)] += 1;
 
-            transitionData.transitionIndexPerStateSide = statesTransitionIndexes.current[id][side];
+            transitionData.transitionIndexPerStateSide =
+              statesTransitionIndexes.current[id][side];
             transitionData.transitionIndexPerTargetStateSide =
-              targetStatesTransitionIndexes.current[transition.state][mirrorSide(side)];
-            transitionData.transitionIndexPerSide = transitionIndexes.current[id][side];
+              targetStatesTransitionIndexes.current[transition.state][
+                mirrorSide(side)
+              ];
+            transitionData.transitionIndexPerSide =
+              transitionIndexes.current[id][side];
             transitionData.transitionEndIndexPerSide =
               transitionIndexes.current[transition.state][mirrorSide(side)];
 
@@ -1978,7 +2125,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   const renderAppCatalogue = () => {
     if (addingNewStateAt) {
-      const isFirstTriggerState = (size(states) === 0 || !hasEventTriggerState()) && !embedded;
+      const isFirstTriggerState =
+        (size(states) === 0 || !hasEventTriggerState()) && !embedded;
       const variables = reduce(
         {
           ...(metadata.globalvar || {}),
@@ -2010,9 +2158,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           blur={5}
           label={isFirstTriggerState ? undefined : 'Add new action'}
           onClose={() => setIsAddingNewStateAt(undefined)}
-          width="90vw"
-          height="90vh"
-          className="fsm-app-selector"
+          width='90vw'
+          height='90vh'
+          className='fsm-app-selector'
           style={{
             userSelect: 'none',
           }}
@@ -2020,7 +2168,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           {isFirstTriggerState && (
             <>
               <ReqoreVerticalSpacer height={25} />
-              <ReqoreControlGroup horizontalAlign="center" fluid size="huge" vertical>
+              <ReqoreControlGroup
+                horizontalAlign='center'
+                fluid
+                size='huge'
+                vertical
+              >
                 <ReqoreH1 effect={{ textSize: '40px' }}>
                   What would you like to{' '}
                   <ReqoreTextEffect
@@ -2040,8 +2193,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   </ReqoreTextEffect>
                 </ReqoreH1>
                 <ReqoreVerticalSpacer height={7} />
-                <ReqoreP size="normal" effect={{ brightness: 75 }}>
-                  React to changes in your favorite application or run an action on schedule
+                <ReqoreP size='normal' effect={{ brightness: 75 }}>
+                  React to changes in your favorite application or run an action
+                  on schedule
                 </ReqoreP>
               </ReqoreControlGroup>
               <ReqoreVerticalSpacer height={35} />
@@ -2149,7 +2303,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
               setIsAddingNewStateAt(undefined);
             }}
-            fetchData={init.fetchData}
+            fetchData={fetchData}
           />
         </ReqoreModal>
       );
@@ -2188,7 +2342,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         onSavedStatusChanged={(saved?: boolean) => {
           setHasUnsavedState(!saved);
         }}
-        onDelete={(unfilled?: boolean) => handleStateDeleteClick(state, unfilled)}
+        onDelete={(unfilled?: boolean) =>
+          handleStateDeleteClick(state, unfilled)
+        }
         states={states}
         activeTab={editingTransitionOrder ? 'transitions' : 'configuration'}
         inputProvider={getStateDataForComparison(states[state], 'input')}
@@ -2200,7 +2356,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   if (!qorus_instance) {
     return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent="warning">
+      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
         {t('NoInstance')}
       </ReqoreMessage>
     );
@@ -2208,7 +2364,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   if (!isReady || apps.loading) {
     return (
-      <ReqoreSpinner iconColor="info" centered size="huge">
+      <ReqoreSpinner iconColor='info' centered size='huge'>
         {t('Loading...')}
       </ReqoreSpinner>
     );
@@ -2216,7 +2372,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   if (showTransitionsToaster.current) {
     addNotification({
-      content: `${showTransitionsToaster.current} ${t('IncompatibleTransitionsRemoved')}`,
+      content: `${showTransitionsToaster.current} ${t(
+        'IncompatibleTransitionsRemoved'
+      )}`,
       intent: 'warning',
     });
     showTransitionsToaster.current = 0;
@@ -2249,7 +2407,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             });
             // For each change, remove the state using this variable
             changes.forEach(({ name, type }) => {
-              setStates(removeAllStatesWithVariable(name, type, states, interfaceId));
+              setStates(
+                removeAllStatesWithVariable(name, type, states, interfaceId)
+              );
             });
           }}
           globalvar={metadata?.globalvar}
@@ -2262,9 +2422,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       {renderAppCatalogue()}
 
       <Content
-        label={embedded ? `${parentStateName} inline implementation` : metadata.display_name}
+        label={
+          embedded
+            ? `${parentStateName} inline implementation`
+            : metadata.display_name
+        }
         onLabelEdit={
-          embedded ? undefined : (name) => setMetadata({ ...metadata, display_name: name })
+          embedded
+            ? undefined
+            : (name) => setMetadata({ ...metadata, display_name: name })
         }
         contentStyle={{ display: 'flex' }}
         padded={!embedded}
@@ -2278,7 +2444,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               setIsMetadataHidden((cur) => !cur);
             }
           },
-          effect: !areMetadataValid() && !embedded ? WarningColorEffect : undefined,
+          effect:
+            !areMetadataValid() && !embedded ? WarningColorEffect : undefined,
           icon: embedded ? 'ArrowLeftLine' : 'SettingsLine',
         }}
         responsiveActions={false}
@@ -2292,7 +2459,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('vertical', 'top', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'vertical',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2304,7 +2476,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('vertical', 'center', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'vertical',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2316,7 +2493,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('vertical', 'bottom', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'vertical',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2336,7 +2518,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('horizontal', 'top', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'horizontal',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2351,7 +2538,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('horizontal', 'center', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'horizontal',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2366,7 +2558,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 onClick: () => {
                   setStates({
                     ...states,
-                    ...alignStates('horizontal', 'bottom', getStatesFromSelectedStates(), zoom),
+                    ...alignStates(
+                      'horizontal',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
                   });
                   setSelectedStates({});
                 },
@@ -2428,7 +2625,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 label: 'Zoom in',
                 onClick: () => zoomIn(),
                 tooltip: t('Zoom in'),
-                className: `fsm-${parentStateName ? `${parentStateName}-` : ''}zoom-in`,
+                className: `fsm-${
+                  parentStateName ? `${parentStateName}-` : ''
+                }zoom-in`,
               },
               {
                 icon: 'HistoryLine',
@@ -2436,14 +2635,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 tooltip: t('Reset zoom'),
                 label: `${Math.round(zoom * 100)}% [Reset]`,
                 intent: zoom > 0.9 && zoom < 1.09 ? undefined : 'info',
-                className: `fsm-${parentStateName ? `${parentStateName}-` : ''}zoom-reset`,
+                className: `fsm-${
+                  parentStateName ? `${parentStateName}-` : ''
+                }zoom-reset`,
               },
               {
                 icon: 'ZoomOutLine',
                 label: 'Zoom out',
                 onClick: () => zoomOut(),
                 tooltip: t('Zoom out'),
-                className: `fsm-${parentStateName ? `${parentStateName}-` : ''}zoom-out`,
+                className: `fsm-${
+                  parentStateName ? `${parentStateName}-` : ''
+                }zoom-out`,
               },
               {
                 divider: true,
@@ -2469,12 +2672,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           {
             group: [
               {
-                label: !areMetadataValid() || !isFSMValid() ? 'Fix to publish' : t('Publish'),
+                label:
+                  !areMetadataValid() || !isFSMValid()
+                    ? 'Fix to publish'
+                    : t('Publish'),
                 onClick: () => handleSubmitClick(false, true),
                 readOnly: !areMetadataValid() || !isFSMValid(),
                 icon:
-                  !areMetadataValid() || !isFSMValid() ? 'ErrorWarningLine' : 'UploadCloud2Line',
-                effect: !areMetadataValid() || !isFSMValid() ? WarningColorEffect : SaveColorEffect,
+                  !areMetadataValid() || !isFSMValid()
+                    ? 'ErrorWarningLine'
+                    : 'UploadCloud2Line',
+                effect:
+                  !areMetadataValid() || !isFSMValid()
+                    ? WarningColorEffect
+                    : SaveColorEffect,
                 show: !embedded,
                 className: 'qodex-publish',
                 tooltip: isFSMValid()
@@ -2484,23 +2695,29 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                       content: (
                         <>
                           {size(states) < 2 && (
-                            <ReqoreP>- At least 1 trigger and 1 normal states are required</ReqoreP>
+                            <ReqoreP>
+                              - At least 1 trigger and 1 normal states are
+                              required
+                            </ReqoreP>
                           )}
                           {!areMetadataValid() && (
                             <ReqoreP>
-                              - Metadata is not valid, please make sure the name of your Qodex is
-                              valid and that input & output types are compatible
+                              - Metadata is not valid, please make sure the name
+                              of your Qodex is valid and that input & output
+                              types are compatible
                             </ReqoreP>
                           )}
                           {!areStatesValid(states) && (
                             <ReqoreP>
-                              - All states need to be valid (invalid states have red border) and
-                              connected (isolated states have red warning icon)
+                              - All states need to be valid (invalid states have
+                              red border) and connected (isolated states have
+                              red warning icon)
                             </ReqoreP>
                           )}
                           {!hasEventTriggerState() && (
                             <ReqoreP>
-                              - You need to have at least 1 trigger state (state with event trigger)
+                              - You need to have at least 1 trigger state (state
+                              with event trigger)
                             </ReqoreP>
                           )}
                         </>
@@ -2508,13 +2725,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                     },
               },
               {
-                effect: !areMetadataValid() || !isFSMValid() ? WarningColorEffect : SaveColorEffect,
+                effect:
+                  !areMetadataValid() || !isFSMValid()
+                    ? WarningColorEffect
+                    : SaveColorEffect,
                 className: 'fsm-publish-more',
                 actions: [
                   {
                     label: 'Export data',
                     effect:
-                      !areMetadataValid() || !isFSMValid() ? WarningColorEffect : SaveColorEffect,
+                      !areMetadataValid() || !isFSMValid()
+                        ? WarningColorEffect
+                        : SaveColorEffect,
                     className: 'fsm-export-data',
                     icon: 'Save3Fill',
                     onClick: () => {
@@ -2536,8 +2758,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       >
         {!isMetadataHidden && !embedded ? (
           <ReqoreModal
-            label="Qodex settings"
-            icon="SettingsLine"
+            label='Qodex settings'
+            icon='SettingsLine'
             isOpen
             blur={3}
             onClose={() => setIsMetadataHidden(true)}
@@ -2551,7 +2773,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             ]}
           >
             <QodexFields
-              value={omit(metadata, ['target_dir', 'autovar', 'globalvar', 'localvar'])}
+              value={omit(metadata, [
+                'target_dir',
+                'autovar',
+                'globalvar',
+                'localvar',
+              ])}
               onChange={(fields) => {
                 setMetadata(fields);
               }}
@@ -2603,12 +2830,21 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
         <>
           <div style={{ display: 'flex', overflow: 'hidden' }}>
-            <div style={{ flex: 1, overflow: 'hidden', minHeight: 100, userSelect: 'none' }}>
+            <div
+              style={{
+                flex: 1,
+                overflow: 'hidden',
+                minHeight: 100,
+                userSelect: 'none',
+              }}
+            >
               <StyledDiagramWrapper
-                as="div"
+                as='div'
                 theme={theme}
                 ref={wrapperRef}
-                id={`${parentStateName ? `${parentStateName}-` : ''}fsm-diagram`}
+                id={`${
+                  parentStateName ? `${parentStateName}-` : ''
+                }fsm-diagram`}
               >
                 {wrapperRef.current && (
                   <DragSelectArea
@@ -2639,8 +2875,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                           } = state;
                           const { width, height } = getStateBoundingRect(id);
 
-                          if (x >= left && x + width <= right && y >= top && y + height <= bottom) {
-                            return { ...newStates, [id]: { fromMouseDown: false } };
+                          if (
+                            x >= left &&
+                            x + width <= right &&
+                            y >= top &&
+                            y + height <= bottom
+                          ) {
+                            return {
+                              ...newStates,
+                              [id]: { fromMouseDown: false },
+                            };
                           }
 
                           return newStates;
@@ -2665,10 +2909,14 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   zoomOut={zoomOut}
                   enableEdgeMovement={isMovingStates}
                   wrapperSize={{
-                    width: wrapperRef.current?.getBoundingClientRect()?.width || 0,
-                    height: wrapperRef.current?.getBoundingClientRect()?.height || 0,
+                    width:
+                      wrapperRef.current?.getBoundingClientRect()?.width || 0,
+                    height:
+                      wrapperRef.current?.getBoundingClientRect()?.height || 0,
                   }}
-                  id={`${parentStateName ? `${parentStateName}-` : ''}fsm-diagram`}
+                  id={`${
+                    parentStateName ? `${parentStateName}-` : ''
+                  }fsm-diagram`}
                   items={map(states, (state, id) => ({
                     x: state.position.x,
                     y: state.position.y,
@@ -2677,8 +2925,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   }))}
                 >
                   <StyledDiagram
-                    as="div"
-                    id="fsm-states-wrapper"
+                    as='div'
+                    id='fsm-states-wrapper'
                     key={JSON.stringify(wrapperDimensions)}
                     ref={(r) => {
                       drop(r);
@@ -2689,7 +2937,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                       timeSinceDiagramMouseDown.current = Date.now();
                     }}
                     onMouseUp={() => {
-                      if (Date.now() - timeSinceDiagramMouseDown.current < 200) {
+                      if (
+                        Date.now() - timeSinceDiagramMouseDown.current <
+                        200
+                      ) {
                         if (size(selectedStates) > 0) {
                           setSelectedStates({});
                         }
@@ -2747,12 +2998,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                         activateState={handleActivateStateClick}
                         zoom={zoom}
                         passRef={handlePassStateRef}
-                        isValid={'isValid' in state ? state.isValid : isStateValid(state, metadata)}
+                        isValid={
+                          'isValid' in state
+                            ? state.isValid
+                            : isStateValid(state, metadata)
+                        }
                       />
                     ))}
                     <svg
-                      height="100%"
-                      width="100%"
+                      height='100%'
+                      width='100%'
                       style={{
                         position: 'absolute',
                         boxShadow: 'inset 0 0 50px 2px #00000080',
@@ -2762,70 +3017,77 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                     >
                       <defs>
                         <marker
-                          id="arrowhead"
-                          markerUnits="userSpaceOnUse"
-                          markerWidth="30"
-                          markerHeight="30"
-                          refX="20"
-                          refY="10"
-                          orient="auto"
-                        >
-                          <path d="M2,2 L2,20 L20,10 L2,2" fill={getTransitionColor(null, null)} />
-                        </marker>
-                        <marker
-                          id="arrowheaderror"
-                          markerUnits="userSpaceOnUse"
-                          markerWidth="30"
-                          markerHeight="30"
-                          refX="20"
-                          refY="10"
-                          orient="auto"
+                          id='arrowhead'
+                          markerUnits='userSpaceOnUse'
+                          markerWidth='30'
+                          markerHeight='30'
+                          refX='20'
+                          refY='10'
+                          orient='auto'
                         >
                           <path
-                            d="M2,2 L2,20 L20,10 L2,2"
+                            d='M2,2 L2,20 L20,10 L2,2'
+                            fill={getTransitionColor(null, null)}
+                          />
+                        </marker>
+                        <marker
+                          id='arrowheaderror'
+                          markerUnits='userSpaceOnUse'
+                          markerWidth='30'
+                          markerHeight='30'
+                          refX='20'
+                          refY='10'
+                          orient='auto'
+                        >
+                          <path
+                            d='M2,2 L2,20 L20,10 L2,2'
                             fill={getTransitionColor(null, 'false')}
                           />
                         </marker>
                         <marker
-                          id="arrowheadtrue"
-                          markerUnits="userSpaceOnUse"
-                          markerWidth="30"
-                          markerHeight="30"
-                          refX="20"
-                          refY="10"
-                          orient="auto"
+                          id='arrowheadtrue'
+                          markerUnits='userSpaceOnUse'
+                          markerWidth='30'
+                          markerHeight='30'
+                          refX='20'
+                          refY='10'
+                          orient='auto'
                         >
                           <path
-                            d="M2,2 L2,20 L20,10 L2,2"
+                            d='M2,2 L2,20 L20,10 L2,2'
                             fill={getTransitionColor(null, 'true')}
                           />
                         </marker>
                         <marker
-                          id="arrowheadfalse"
-                          markerUnits="userSpaceOnUse"
-                          markerWidth="30"
-                          markerHeight="30"
-                          refX="20"
-                          refY="10"
-                          orient="auto"
+                          id='arrowheadfalse'
+                          markerUnits='userSpaceOnUse'
+                          markerWidth='30'
+                          markerHeight='30'
+                          refX='20'
+                          refY='10'
+                          orient='auto'
                         >
                           <path
-                            d="M2,2 L2,20 L20,10 L2,2"
+                            d='M2,2 L2,20 L20,10 L2,2'
                             fill={getTransitionColor(null, 'false')}
                           />
                         </marker>
                         <marker
-                          id="arrowheadfake"
-                          markerUnits="userSpaceOnUse"
-                          markerWidth="30"
-                          markerHeight="30"
-                          refX="20"
-                          refY="10"
-                          orient="auto"
+                          id='arrowheadfake'
+                          markerUnits='userSpaceOnUse'
+                          markerWidth='30'
+                          markerHeight='30'
+                          refX='20'
+                          refY='10'
+                          orient='auto'
                         >
                           <path
-                            d="M2,2 L2,20 L20,10 L2,2"
-                            fill={getTransitionColor(undefined, undefined, true)}
+                            d='M2,2 L2,20 L20,10 L2,2'
+                            fill={getTransitionColor(
+                              undefined,
+                              undefined,
+                              true
+                            )}
                           />
                         </marker>
                       </defs>
@@ -2850,14 +3112,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                           !isTransitionToSelf(state, targetState) ? (
                             <>
                               <StyledFSMLine
-                                className="fsm-transition"
+                                className='fsm-transition'
                                 onClick={() => {
                                   setEditingTransition((cur) => {
                                     const result = [...cur];
 
-                                    result.push({ stateId: state, index: transitionIndex });
+                                    result.push({
+                                      stateId: state,
+                                      index: transitionIndex,
+                                    });
 
-                                    const hasBothWay = hasBothWayTransition(state, targetState);
+                                    const hasBothWay = hasBothWayTransition(
+                                      state,
+                                      targetState
+                                    );
 
                                     if (hasBothWay) {
                                       result.push(hasBothWay);
@@ -2868,10 +3136,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                 }}
                                 key={index}
                                 name={`fsm-transition${
-                                  isError ? '-error' : branch ? `-${branch}` : ''
+                                  isError
+                                    ? '-error'
+                                    : branch
+                                    ? `-${branch}`
+                                    : ''
                                 }`}
                                 id={`fsm-transition-${index}`}
-                                stroke={getTransitionColor(isError, branch, fake)}
+                                stroke={getTransitionColor(
+                                  isError,
+                                  branch,
+                                  fake
+                                )}
                                 strokeWidth={1}
                                 markerEnd={`url(#arrowhead${getTransitionEndMarker(
                                   isError,
@@ -2879,19 +3155,31 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                   fake
                                 )})`}
                                 d={getTransitionPath(
-                                  { side, endSide, ...rest, state, targetState },
+                                  {
+                                    side,
+                                    endSide,
+                                    ...rest,
+                                    state,
+                                    targetState,
+                                  },
                                   getTransitionIndex(
                                     transitionIndexPerSide,
                                     transitionIndexes.current[state][side]
                                   ),
                                   getTransitionIndex(
                                     transitionEndIndexPerSide,
-                                    transitionIndexes.current[targetState][endSide]
+                                    transitionIndexes.current[targetState][
+                                      endSide
+                                    ]
                                   ),
                                   transitionIndexes.current[state][side],
-                                  transitionIndexes.current[targetState][endSide]
+                                  transitionIndexes.current[targetState][
+                                    endSide
+                                  ]
                                 )}
-                                deselected={hoveredState && hoveredState !== state}
+                                deselected={
+                                  hoveredState && hoveredState !== state
+                                }
                                 selected={hoveredState === state}
                                 fake={fake}
                               />
@@ -2900,16 +3188,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                   style={{
                                     transform: `rotate(${calculateTextRotation(
                                       side
-                                    )}deg) translateY(${calculateTextTranslation(side)}px)`,
+                                    )}deg) translateY(${calculateTextTranslation(
+                                      side
+                                    )}px)`,
                                     transformBox: 'fill-box',
                                     transformOrigin: 'center',
                                   }}
-                                  deselected={hoveredState && hoveredState !== state}
+                                  deselected={
+                                    hoveredState && hoveredState !== state
+                                  }
                                 >
                                   <textPath
                                     href={`#fsm-transition-${index}`}
-                                    startOffset="10px"
-                                    fill="#ffffff"
+                                    startOffset='10px'
+                                    fill='#ffffff'
                                   >
                                     {targetState}
                                   </textPath>
@@ -2934,7 +3226,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     return renderFSM();
   }
 
-  return <FSMContext.Provider value={{ metadata, states }}>{renderFSM()}</FSMContext.Provider>;
+  return (
+    <FSMContext.Provider value={{ metadata, states }}>
+      {renderFSM()}
+    </FSMContext.Provider>
+  );
 };
 
 export default compose(

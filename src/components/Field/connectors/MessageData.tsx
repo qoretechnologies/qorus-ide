@@ -11,11 +11,18 @@ import jsyaml from 'js-yaml';
 import { useContext, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { InitialContext } from '../../../context/init';
-import { insertUrlPartBeforeQuery } from '../../../helpers/functions';
+import {
+  fetchData,
+  insertUrlPartBeforeQuery,
+} from '../../../helpers/functions';
 import { maybeParseYaml, validateField } from '../../../helpers/validations';
 import Auto from '../auto';
 import LongStringField from '../longString';
-import { PositiveColorEffect, SaveColorEffect, SelectorColorEffect } from '../multiPair';
+import {
+  PositiveColorEffect,
+  SaveColorEffect,
+  SelectorColorEffect,
+} from '../multiPair';
 import { IQorusType, getTypeAndCanBeNull } from '../systemOptions';
 
 export interface IProviderMessageDataProps {
@@ -37,7 +44,7 @@ export const ProviderMessageData = ({
   readOnly,
   isFreeform,
 }: IProviderMessageDataProps) => {
-  const { fetchData, qorus_instance }: any = useContext(InitialContext);
+  const { qorus_instance }: any = useContext(InitialContext);
   const [localValue, setLocalValue] = useState<string>(
     value && typeof value === 'object' ? jsyaml.dump(value) : undefined
   );
@@ -68,37 +75,37 @@ export const ProviderMessageData = ({
 
   if (!url || !messageId) {
     return (
-      <ReqoreMessage intent="warning">
+      <ReqoreMessage intent='warning'>
         No URL or message ID was provided, message data cannot be fetched
       </ReqoreMessage>
     );
   }
 
   if (loading) {
-    return <ReqoreMessage intent="pending">Loading...</ReqoreMessage>;
+    return <ReqoreMessage intent='pending'>Loading...</ReqoreMessage>;
   }
 
   if (error) {
-    return <ReqoreMessage intent="danger">{error}</ReqoreMessage>;
+    return <ReqoreMessage intent='danger'>{error}</ReqoreMessage>;
   }
 
   if (messageData.arg_schema) {
     return (
       <ReqoreTabs
         activeTab={isFreeform ? 'text' : 'form'}
-        tabsPadding="vertical"
+        tabsPadding='vertical'
         padded={false}
         tabs={[
           { label: 'Text', icon: 'Text', id: 'text' },
           { label: 'Form', icon: 'AlignCenter', id: 'form' },
         ]}
       >
-        <ReqoreTabsContent tabId="text" style={{ flexFlow: 'column' }}>
+        <ReqoreTabsContent tabId='text' style={{ flexFlow: 'column' }}>
           <ReqoreTree
-            label="Type information"
-            size="small"
+            label='Type information'
+            size='small'
             flat={false}
-            intent="info"
+            intent='info'
             zoomable
             exportable
             collapsible
@@ -113,13 +120,15 @@ export const ProviderMessageData = ({
               onChange={(_name, value) => setLocalValue(value)}
               name={`message`}
               intent={
-                validateField(messageData.type, localValue, { arg_schema: messageData.arg_schema })
+                validateField(messageData.type, localValue, {
+                  arg_schema: messageData.arg_schema,
+                })
                   ? undefined
                   : 'danger'
               }
             />
             <ReqoreButton
-              icon="CheckLine"
+              icon='CheckLine'
               fixed
               flat={false}
               id={`save-${type}-args`}
@@ -145,7 +154,7 @@ export const ProviderMessageData = ({
             />
           </ReqoreControlGroup>
         </ReqoreTabsContent>
-        <ReqoreTabsContent tabId="form">
+        <ReqoreTabsContent tabId='form'>
           <Auto
             {...getTypeAndCanBeNull(type || messageData.type)}
             arg_schema={messageData.arg_schema}

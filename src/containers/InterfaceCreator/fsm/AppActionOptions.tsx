@@ -98,22 +98,30 @@ export const QodexAppActionOptions = memo(
       setValue(outsideValue);
     }, [JSON.stringify(outsideValue)]);
 
-    useMount(() => {
-      postMessage(
-        'subscribe',
-        { args: { matchEvents: ['CONNECTION_UPDATED', 'CONNECTION_CREATED'] } },
-        true
-      );
-      addMessageListener(
+    useEffect(() => {
+      const listener = addMessageListener(
         'SUBSCRIPTION-EVENT',
         (data) => {
           if (
             data?.data?.event_id === 'CONNECTION_UPDATED' ||
             data?.data?.event_id === 'CONNECTION_CREATED'
           ) {
-            load();
+            console.log('OPTIONS AFTER UDPATE', value);
+            load(value);
           }
         },
+        true
+      );
+
+      return () => {
+        listener();
+      };
+    }, [JSON.stringify(value)]);
+
+    useMount(() => {
+      postMessage(
+        'subscribe',
+        { args: { matchEvents: ['CONNECTION_UPDATED', 'CONNECTION_CREATED'] } },
         true
       );
     });
