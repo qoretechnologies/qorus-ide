@@ -4,6 +4,7 @@ import { ConnectionManagement } from '../../components/ConnectionManagement';
 import { AppsContext } from '../../context/apps';
 import apps from '../Data/apps.json';
 import { StoryMeta } from '../types';
+import { within, waitFor, fireEvent } from '@storybook/testing-library';
 
 const meta = {
   component: ConnectionManagement,
@@ -66,20 +67,20 @@ export const SelectedOAuth2Authorized: Story = {
   },
 };
 
-// export const NewConnection: Story = {
-//   args: {
-//     app: 'GoogleCalendar',
-//   },
-//   play: async ({ canvasElement }) => {
-//     const canvas = within(canvasElement);
+export const NewConnection: Story = {
+  args: {
+    app: 'GoogleCalendar',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
 
-//     await waitFor(() => canvas.getAllByText('Create new connection')[0], {
-//       timeout: 5000,
-//     });
+    await waitFor(() => canvas.getAllByText('Create new connection')[0], {
+      timeout: 5000,
+    });
 
-//     await fireEvent.click(canvas.getAllByText('Create new connection')[0]);
-//   },
-// };
+    await fireEvent.click(canvas.getAllByText('Create new connection')[0]);
+  },
+};
 
 // export const NewConnectionWithRequiredOptions: Story = {
 //   args: {
