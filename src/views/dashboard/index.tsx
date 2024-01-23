@@ -50,6 +50,8 @@ export const Dashboard = () => {
     return <ReqoreSpinner centered>Loading dashboard...</ReqoreSpinner>;
   }
 
+  console.log('TESTING THAT CONSOLE LOG WORKS');
+
   return (
     <ReqorePanel flat>
       <ReqoreColumns minColumnWidth='100%' columnsGap='10px'>
