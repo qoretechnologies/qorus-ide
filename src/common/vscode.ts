@@ -1,4 +1,3 @@
-import isChromatic from 'chromatic/isChromatic';
 import { Messages } from '../constants/messages';
 import configItems from '../stories/Data/configItems';
 import directories from '../stories/Data/directories.json';
@@ -40,10 +39,6 @@ export const vscode =
               break;
             }
             case 'open-window': {
-              if (window && process.env.NODE_ENV !== 'test' && !isChromatic()) {
-                window.open(data.url, '_blank');
-              }
-
               break;
             }
             case 'save-draft': {
