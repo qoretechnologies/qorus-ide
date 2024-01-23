@@ -146,7 +146,7 @@ export const addEventMessageListener: TMessageListener = (
 export const addMessageListener: TMessageListener = (
   action,
   callback,
-  useWebSockets?: boolean,
+  useWebSockets: boolean = true,
   connection = 'creator',
   eventKey: string = 'action'
 ) => {
@@ -202,7 +202,7 @@ export const addMessageListener: TMessageListener = (
 export const postMessage: TPostMessage = (
   action,
   data = {},
-  useWebSockets,
+  useWebSockets = true,
   connection = 'creator'
 ) => {
   const useWs =
