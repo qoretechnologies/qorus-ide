@@ -51,6 +51,8 @@ export const EventVariablesInFSM: StoryObj<typeof meta> = {
       { timeout: 5000 }
     );
 
+    await sleep(500);
+
     await fireEvent.click(
       document.querySelectorAll('.select-reference-add-new')[0]
     );
