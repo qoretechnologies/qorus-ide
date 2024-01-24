@@ -532,16 +532,17 @@ export const fetchData: (
     });
 
     const requestData = await fetchCache[cacheKey].actualCall;
-    fetchCache[cacheKey].data = await requestData.json();
+    const json = await requestData.json();
+    fetchCache[cacheKey].data = json;
 
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
       return {
         action: 'fetch-data-complete',
-        data: fetchCache[cacheKey].data,
+        data: json,
         ok: false,
-        error: fetchCache[cacheKey].data,
+        error: json,
       };
     }
 
