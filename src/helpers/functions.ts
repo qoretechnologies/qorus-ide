@@ -512,6 +512,8 @@ export const fetchData: (
 ) => Promise<any> = async (url, method = 'GET', body) => {
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
+  console.log(fetchCache, cacheKey);
+
   if (fetchCache[cacheKey]?.data) {
     return {
       action: 'fetch-data-complete',

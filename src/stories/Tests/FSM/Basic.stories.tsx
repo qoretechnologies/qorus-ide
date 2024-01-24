@@ -6,13 +6,13 @@ import fsm from '../../Data/fsm.json';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
-    _testsClickState,
-    _testsCloseStateDetail,
-    _testsConfirmDialog,
-    _testsDeleteState,
-    _testsDoubleClickState,
-    _testsSelectFromAppCatalogue,
-    sleep,
+  _testsClickState,
+  _testsCloseStateDetail,
+  _testsConfirmDialog,
+  _testsDeleteState,
+  _testsDoubleClickState,
+  _testsSelectFromAppCatalogue,
+  sleep,
 } from '../utils';
 import { AutoAlign } from './Alignment.stories';
 
@@ -36,10 +36,12 @@ export const SwitchesToBuilder: StoryFSM = {
   args: {
     fsm,
   },
-  play: async ({ canvasElement }) => {
+  play: async () => {
     await waitFor(
       async () => {
-        await expect(document.querySelector('#fsm-diagram svg')).toBeInTheDocument();
+        await expect(
+          document.querySelector('#fsm-diagram svg')
+        ).toBeInTheDocument();
       },
       { timeout: 10000 }
     );
@@ -55,12 +57,22 @@ export const NewStatesAfterState: StoryFSM = {
     await sleep(1000);
 
     await fireEvent.click(document.querySelector('.add-new-state-after'));
-    await _testsSelectFromAppCatalogue(canvas, undefined, 'Discord', 'Get Server Info');
+    await _testsSelectFromAppCatalogue(
+      canvas,
+      undefined,
+      'Discord',
+      'Get Server Info'
+    );
 
     await sleep(300);
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[0]);
-    await _testsSelectFromAppCatalogue(canvas, undefined, 'Discord', 'Get User Info');
+    await _testsSelectFromAppCatalogue(
+      canvas,
+      undefined,
+      'Discord',
+      'Get User Info'
+    );
 
     await expect(document.querySelectorAll('.fsm-state').length).toBe(3);
   },
@@ -81,7 +93,9 @@ export const ShowsStateIds: StoryFSM = {
     await sleep(100);
     await fireEvent.click(document.querySelector('#show-state-ids'));
     await sleep(100);
-    await expect(canvas.getAllByText('[1] Save Intent Info')[0]).toBeInTheDocument();
+    await expect(
+      canvas.getAllByText('[1] Save Intent Info')[0]
+    ).toBeInTheDocument();
   },
 };
 
@@ -98,10 +112,12 @@ export const SelectedStateChange: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(document.querySelector('.fsm-state-detail')).toBeInTheDocument();
-        await expect(document.querySelector('.fsm-state-detail h3').textContent).toBe(
-          'Intent: Close Ticket?'
-        );
+        await expect(
+          document.querySelector('.fsm-state-detail')
+        ).toBeInTheDocument();
+        await expect(
+          document.querySelector('.fsm-state-detail h3').textContent
+        ).toBe('Intent: Close Ticket?');
       },
       { timeout: 10000 }
     );
@@ -115,9 +131,9 @@ export const SelectedStateChange: StoryFSM = {
     await waitFor(
       async () => {
         // Make sure the h3 with text `Intent: Close Ticket?` inside .reqore-drawer is visible
-        await expect(document.querySelector('.fsm-state-detail h3').textContent).toBe(
-          'Save Intent Info'
-        );
+        await expect(
+          document.querySelector('.fsm-state-detail h3').textContent
+        ).toBe('Save Intent Info');
       },
       { timeout: 10000 }
     );
@@ -163,9 +179,12 @@ export const StatesCanBeConnected: StoryFSM = {
 
     await sleep(2000);
 
-    await waitFor(() => expect(document.querySelectorAll('.fsm-transition').length).toBe(6), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () => expect(document.querySelectorAll('.fsm-transition').length).toBe(6),
+      {
+        timeout: 10000,
+      }
+    );
   },
 };
 
@@ -181,7 +200,12 @@ export const StateIsNotRemovedIfUnfinished: StoryFSM = {
     await sleep(1000);
 
     await fireEvent.click(document.querySelector('.add-new-state-after'));
-    await _testsSelectFromAppCatalogue(canvas, undefined, 'Discord', 'Get Server Info');
+    await _testsSelectFromAppCatalogue(
+      canvas,
+      undefined,
+      'Discord',
+      'Get Server Info'
+    );
 
     await sleep(1000);
 
@@ -224,9 +248,13 @@ export const ZoomIn: StoryFSM = {
     await fireEvent.click(document.querySelector('.fsm-zoom-in'));
 
     await sleep(100);
-    await fireEvent.wheel(document.querySelector('#fsm-diagram'), { deltaY: -1 });
+    await fireEvent.wheel(document.querySelector('#fsm-diagram'), {
+      deltaY: -1,
+    });
     await sleep(100);
-    await fireEvent.wheel(document.querySelector('#fsm-diagram'), { deltaY: -1 });
+    await fireEvent.wheel(document.querySelector('#fsm-diagram'), {
+      deltaY: -1,
+    });
     await sleep(100);
 
     await fireEvent.click(document.querySelector('.fsm-more-actions'));
@@ -257,9 +285,13 @@ export const ZoomOut: StoryFSM = {
     await sleep(100);
     await fireEvent.click(document.querySelector('.fsm-zoom-out'));
     await sleep(100);
-    await fireEvent.wheel(document.querySelector('#fsm-diagram'), { deltaY: 1 });
+    await fireEvent.wheel(document.querySelector('#fsm-diagram'), {
+      deltaY: 1,
+    });
     await sleep(100);
-    await fireEvent.wheel(document.querySelector('#fsm-diagram'), { deltaY: 1 });
+    await fireEvent.wheel(document.querySelector('#fsm-diagram'), {
+      deltaY: 1,
+    });
     await sleep(100);
 
     await fireEvent.click(document.querySelector('.fsm-more-actions'));
