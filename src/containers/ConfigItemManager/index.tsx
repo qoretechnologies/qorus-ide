@@ -8,14 +8,17 @@ import compose from 'recompose/compose';
 import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import CustomDialog from '../../components/CustomDialog';
-import { PositiveColorEffect, SynthColorEffect } from '../../components/Field/multiPair';
+import {
+  PositiveColorEffect,
+  SynthColorEffect,
+} from '../../components/Field/multiPair';
 import { Messages } from '../../constants/messages';
 import { getFilteredItems } from '../../helpers/common';
 import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-    addMessageListener,
-    postMessage,
+  TMessageListener,
+  TPostMessage,
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import InterfaceCreatorPanel from '../InterfaceCreator/panel';
@@ -98,7 +101,8 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
   processorData,
   onUpdate,
 }) => {
-  const [showConfigItemPanel, setShowConfigItemPanel] = useState<boolean>(false);
+  const [showConfigItemPanel, setShowConfigItemPanel] =
+    useState<boolean>(false);
   const [configItemData, setConfigItemData] = useState<any>(false);
   const [configItems, setConfigItems] = useState<any>({});
   const [zoom, setZoom] = useState(0.5);
@@ -113,8 +117,8 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
     postMessage(Messages.GET_CONFIG_ITEMS, {
       'base-class-name': baseClassName,
       classes,
-      iface_id: interfaceId,
-      iface_kind: type,
+      id: interfaceId,
+      type: type,
       steps,
       state_data: stateData,
       processor_data: processorData,
@@ -122,41 +126,53 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
   });
 
   useEffect(() => {
-    const itemsListener = addMessageListener(Messages.RETURN_CONFIG_ITEMS, (data) => {
-      if (!initialConfigItems.current) {
-        initialConfigItems.current = data;
-      }
-      const configItemsCount =
-        data.workflow_items !== undefined
-          ? size([...data.items, ...data.global_items, ...data.workflow_items])
-          : size([...data.items, ...data.global_items]);
+    const itemsListener = addMessageListener(
+      Messages.RETURN_CONFIG_ITEMS,
+      (data) => {
+        if (!initialConfigItems.current) {
+          initialConfigItems.current = data;
+        }
+        const configItemsCount =
+          data.workflow_items !== undefined
+            ? size([
+                ...data.items,
+                ...data.global_items,
+                ...data.workflow_items,
+              ])
+            : size([...data.items, ...data.global_items]);
 
-      if (configItemsCount > 100) {
-        // The larger the number of items, the smaller the paging
-        // When the count is 100 the paging is 50, when the count is 500 the paging is 10
-        const pages = Math.floor(100 / Math.floor(configItemsCount / 50));
-        setItemsPerPage(pages < 10 ? 10 : pages);
-      }
+        if (configItemsCount > 100) {
+          // The larger the number of items, the smaller the paging
+          // When the count is 100 the paging is 50, when the count is 500 the paging is 10
+          const pages = Math.floor(100 / Math.floor(configItemsCount / 50));
+          setItemsPerPage(pages < 10 ? 10 : pages);
+        }
 
-      setConfigItems(data);
-      // Check if the initial config items are the same as the current config items
-      // If they are, then we don't need to update the config items
-      if (JSON.stringify(initialConfigItems.current) !== JSON.stringify(data)) {
-        initialConfigItems.current = data;
-        onUpdate?.();
+        setConfigItems(data);
+        // Check if the initial config items are the same as the current config items
+        // If they are, then we don't need to update the config items
+        if (
+          JSON.stringify(initialConfigItems.current) !== JSON.stringify(data)
+        ) {
+          initialConfigItems.current = data;
+          onUpdate?.();
+        }
       }
-    });
+    );
     // Listen for config items data request
     // and open the fields editing
-    const itemListener = addMessageListener(Messages.RETURN_CONFIG_ITEM, ({ item }) => {
-      // Transform the type of the CI
-      if (item.type.startsWith('*')) {
-        item.type = item.type.replace('*', '');
-        item.can_be_undefined = true;
+    const itemListener = addMessageListener(
+      Messages.RETURN_CONFIG_ITEM,
+      ({ item }) => {
+        // Transform the type of the CI
+        if (item.type.startsWith('*')) {
+          item.type = item.type.replace('*', '');
+          item.can_be_undefined = true;
+        }
+        // Set the config data
+        setConfigItemData(item);
       }
-      // Set the config data
-      setConfigItemData(item);
-    });
+    );
 
     // Remove both listeners on unmount
     return () => {
@@ -180,7 +196,15 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
     parent: string | null,
     level: string,
     remove?: boolean
-  ) => void = (name, value, parent, level, isTemplatedString, remove, currentType) => {
+  ) => void = (
+    name,
+    value,
+    parent,
+    level,
+    isTemplatedString,
+    remove,
+    currentType
+  ) => {
     // Send message that the config item has been updated
     postMessage(Messages.UPDATE_CONFIG_ITEM_VALUE, {
       name,
@@ -189,32 +213,36 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
       file_name: configItems.file_name,
       remove,
       level,
-      iface_id: interfaceId,
+      id: interfaceId,
       parent_class: parent,
-      iface_kind: type,
+      type: type,
       is_templated_string: isTemplatedString,
       state_id: stateData?.id,
       processor_id: processorData?.pid,
     });
   };
 
-  const handleEditStructureClick: (configItemName: string) => void = (configItemName) => {
+  const handleEditStructureClick: (configItemName: string) => void = (
+    configItemName
+  ) => {
     // Request the config item data
     postMessage(Messages.GET_CONFIG_ITEM, {
-      iface_id: interfaceId,
+      id: interfaceId,
       name: configItemName,
-      iface_kind: type,
+      type: type,
       state_id: stateData?.id,
       processor_id: processorData?.pid,
     });
   };
 
-  const handleDeleteStructureClick: (configItemName: string) => void = (configItemName) => {
+  const handleDeleteStructureClick: (configItemName: string) => void = (
+    configItemName
+  ) => {
     // Request the config item data
     postMessage(Messages.DELETE_CONFIG_ITEM, {
-      iface_id: interfaceId,
+      id: interfaceId,
       name: configItemName,
-      iface_kind: type,
+      type: type,
       state_id: stateData?.id,
       processor_id: processorData?.pid,
     });
@@ -265,7 +293,11 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
                 onClick: () => setShowFilters(!showFilters),
                 flat: !size(filters),
                 effect: size(filters) ? SynthColorEffect : undefined,
-                badge: reduce(filters, (count, filters) => count + size(filters), 0),
+                badge: reduce(
+                  filters,
+                  (count, filters) => count + size(filters),
+                  0
+                ),
               },
               {
                 icon: 'CloseLine',
@@ -303,13 +335,17 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
               onSubmit={handleSubmit}
             />
           )}
-          {(type === 'step' || type === 'workflow') && configItems.workflow_items ? (
+          {(type === 'step' || type === 'workflow') &&
+          configItems.workflow_items ? (
             <GlobalTable
               zoom={zoom}
               query={query}
               itemsPerPage={itemsPerPage}
               definitionsOnly={definitionsOnly}
-              configItems={getFilteredItems(configItems.workflow_items, filters)}
+              configItems={getFilteredItems(
+                configItems.workflow_items,
+                filters
+              )}
               initialItems={initialConfigItems.current.workflow_items}
               workflow
               onSubmit={handleSubmit}
@@ -350,7 +386,9 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
               type={'config-item'}
               initialInterfaceId={interfaceId}
               data={configItemData}
-              disabledFields={configItemData && configItemData.parent && ['name']}
+              disabledFields={
+                configItemData && configItemData.parent && ['name']
+              }
               isEditing={!!configItemData}
               onSubmitSuccess={() => {
                 setConfigItemData(null);
@@ -366,4 +404,7 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
   );
 };
 
-export default compose(withTextContext(), withMessageHandler())(ConfigItemManager);
+export default compose(
+  withTextContext(),
+  withMessageHandler()
+)(ConfigItemManager);
