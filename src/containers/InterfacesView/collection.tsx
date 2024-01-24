@@ -57,7 +57,6 @@ export const InterfacesViewCollection = ({
   };
 
   const getDraftsCount = () => {
-    console.log(value, type);
     return size(value.filter((item) => item.draft || item.hasDraft));
   };
 

@@ -3,10 +3,10 @@ import { get, map, set } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import {
-    getTypeFromValue,
-    getValueOrDefaultValue,
-    maybeParseYaml,
-    validateField,
+  getTypeFromValue,
+  getValueOrDefaultValue,
+  maybeParseYaml,
+  validateField,
 } from '../../helpers/validations';
 import withTextContext from '../../hocomponents/withTextContext';
 import { ConnectionManagement } from '../ConnectionManagement';
@@ -65,17 +65,26 @@ function AutoField<T = any>({
   isVariable,
   ...rest
 }: IAutoFieldProps & T) {
-  const [currentType, setType] = useState<IQorusType>(defaultInternalType || null);
-  const [currentInternalType, setInternalType] = useState<IQorusType>(defaultInternalType || 'any');
+  const [currentType, setType] = useState<IQorusType>(
+    defaultInternalType || null
+  );
+  const [currentInternalType, setInternalType] = useState<IQorusType>(
+    defaultInternalType || 'any'
+  );
   const [isSetToNull, setIsSetToNull] = useState<boolean>(false);
 
   useMount(() => {
-    let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
+    let defType: IQorusType =
+      defaultType && (defaultType.replace(/"/g, '').trim() as any);
     defType = defType || 'any';
     let internalType;
     // If value already exists, but the type is auto or any
     // set the type based on the value
-    if (value && (defType === 'auto' || defType === 'any') && !defaultInternalType) {
+    if (
+      value &&
+      (defType === 'auto' || defType === 'any') &&
+      !defaultInternalType
+    ) {
       internalType = getTypeFromValue(maybeParseYaml(value));
     } else {
       internalType = defaultInternalType || defType;
@@ -84,8 +93,10 @@ function AutoField<T = any>({
     setType(defType);
     // If the value is null and can be null, set the null flag
     if (
-      (getValueOrDefaultValue(value, default_value, _canBeNull(defType)) === 'null' ||
-        getValueOrDefaultValue(value, default_value, _canBeNull(defType)) === null) &&
+      (getValueOrDefaultValue(value, default_value, _canBeNull(defType)) ===
+        'null' ||
+        getValueOrDefaultValue(value, default_value, _canBeNull(defType)) ===
+          null) &&
       _canBeNull(defType)
     ) {
       setIsSetToNull(true);
@@ -104,27 +115,42 @@ function AutoField<T = any>({
     // which will be used as a type
     if (rest['type-depends-on']) {
       // Get the requested type
-      const typeValue: IQorusType = requestFieldData(rest['type-depends-on'], 'value');
+      const typeValue: IQorusType = requestFieldData(
+        rest['type-depends-on'],
+        'value'
+      );
       // Check if the field has the value set yet
       if (typeValue && typeValue !== currentType) {
         // If this is auto / any field
         // set the internal type
         if (typeValue === 'auto' || typeValue === 'any') {
-          setInternalType(value ? getTypeFromValue(maybeParseYaml(value)) : 'any');
+          setInternalType(
+            value ? getTypeFromValue(maybeParseYaml(value)) : 'any'
+          );
         } else {
           setInternalType(typeValue);
         }
         // Set the new type
         setType(typeValue);
         if (!currentType) {
-          handleChange(name, value === undefined ? undefined : value, typeValue);
+          handleChange(
+            name,
+            value === undefined ? undefined : value,
+            typeValue
+          );
         } else if (typeValue !== 'any') {
           const typeFromValue =
-            value || value === null ? getTypeFromValue(maybeParseYaml(value)) : 'any';
+            value || value === null
+              ? getTypeFromValue(maybeParseYaml(value))
+              : 'any';
 
           handleChange(
             name,
-            value === null ? null : typeValue === typeFromValue ? value : undefined,
+            value === null
+              ? null
+              : typeValue === typeFromValue
+              ? value
+              : undefined,
             typeValue
           );
         }
@@ -177,7 +203,15 @@ function AutoField<T = any>({
     // If this field is set to null
     if (isSetToNull) {
       // Render a readonly field with null
-      return <StringField name={name} value={null} onChange={handleChange} read_only canBeNull />;
+      return (
+        <StringField
+          name={name}
+          value={null}
+          onChange={handleChange}
+          read_only
+          canBeNull
+        />
+      );
     }
     if (!currentType) {
       return null;
@@ -254,7 +288,8 @@ function AutoField<T = any>({
       case 'hash<auto>': {
         if (arg_schema) {
           const currentPath = path ? `${path}.` : '';
-          const transformedValue = typeof value === 'string' ? maybeParseYaml(value) : value;
+          const transformedValue =
+            typeof value === 'string' ? maybeParseYaml(value) : value;
 
           return map(arg_schema, (schema, option) => {
             return (
@@ -267,7 +302,10 @@ function AutoField<T = any>({
                 nested={level > 0}
                 isValid={
                   schema.required
-                    ? validateField(schema.type, get(transformedValue, `${option}`))
+                    ? validateField(
+                        schema.type,
+                        get(transformedValue, `${option}`)
+                      )
                     : true
                 }
                 detail={schema.required ? 'Required' : 'Optional'}
@@ -385,7 +423,14 @@ function AutoField<T = any>({
         );
       }
       case 'multi-select': {
-        return <MultiSelect {...rest} value={value} name={name} onChange={handleChange} />;
+        return (
+          <MultiSelect
+            {...rest}
+            value={value}
+            name={name}
+            onChange={handleChange}
+          />
+        );
       }
       case 'mapper':
       case 'workflow':
@@ -394,7 +439,12 @@ function AutoField<T = any>({
       case 'value-map':
       case 'connection': {
         return (
-          <InterfaceSelector type={currentType} name={name} value={value} onChange={handleChange} />
+          <InterfaceSelector
+            type={currentType}
+            name={name}
+            value={value}
+            onChange={handleChange}
+          />
         );
       }
       case 'data-provider': {
@@ -421,7 +471,7 @@ function AutoField<T = any>({
             name={name}
             value={value}
             filesOnly
-            label="Select File"
+            label='Select File'
             onChange={handleChange}
             type={currentType}
             get_message={{
@@ -439,9 +489,13 @@ function AutoField<T = any>({
       case 'any':
         return null;
       case 'auto':
-        return <ReqoreMessage intent="info">Please select data type</ReqoreMessage>;
+        return (
+          <ReqoreMessage intent='info'>Please select data type</ReqoreMessage>
+        );
       default:
-        return <ReqoreMessage intent="danger">{t('UnknownType')}</ReqoreMessage>;
+        return (
+          <ReqoreMessage intent='danger'>{t('UnknownType')}</ReqoreMessage>
+        );
     }
   };
 
@@ -493,7 +547,7 @@ function AutoField<T = any>({
     >
       {showPicker && (
         <SelectField
-          name="type"
+          name='type'
           defaultItems={types}
           value={currentInternalType}
           onChange={(_name, value) => {
@@ -520,7 +574,7 @@ function AutoField<T = any>({
           onChange={(value) => handleChange(name, value)}
           allowedValues={rest.allowed_values}
           // TODO: Change this to dynamic URL
-          redirectUri="https://hq.qoretechnologies.com:8092/grant"
+          redirectUri='https://hq.qoretechnologies.com:8092/grant'
           app={rest.app}
           action={rest.action}
         />

@@ -21,7 +21,6 @@ jobs:
     env:
       QORUS_TOKEN: ${{ secrets.QORUS_TOKEN }}
 
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Get current time for the commit
@@ -64,6 +63,7 @@ jobs:
         run: |
           yarn install
           yarn build-prod
+          yarn build-storybook --quiet
           zip -r qorus-ide-develop.zip build
           chmod 644 qorus-ide-develop.zip
 
@@ -74,6 +74,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           exitZeroOnChanges: true
+          onlyChanged: true
 
       # Copy the build to HQ
       - name: Copy develop build to HQ

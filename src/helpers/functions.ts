@@ -498,28 +498,71 @@ export const checkPipelineCompatibility = async (elements, inputProvider) => {
   return newElements;
 };
 
+const fetchCache: {
+  [key: string]: {
+    actualCall: Promise<any>;
+    data: any;
+  };
+} = {};
+
 export const fetchData: (
   url: string,
   method?: string,
   body?: { [key: string]: any }
 ) => Promise<any> = async (url, method = 'GET', body) => {
-  const requestData = await fetch(`${apiHost}api/latest/${url}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiToken}`,
-    },
-    body: JSON.stringify(body),
-  });
+  const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
-  const json = await requestData.json();
+  if (fetchCache[cacheKey]?.data) {
+    return {
+      action: 'fetch-data-complete',
+      data: fetchCache[cacheKey].data,
+      ok: true,
+    };
+  }
 
-  return {
-    action: 'fetch-data-complete',
-    data: json,
-    ok: requestData.ok,
-    error: !requestData.ok ? json : undefined,
-  };
+  if (!fetchCache[cacheKey]?.actualCall) {
+    fetchCache[cacheKey] = { actualCall: null, data: null };
+    fetchCache[cacheKey].actualCall = fetch(`${apiHost}api/latest/${url}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiToken}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const requestData = await fetchCache[cacheKey].actualCall;
+    fetchCache[cacheKey].data = await requestData.json();
+
+    if (!requestData.ok) {
+      delete fetchCache[cacheKey];
+
+      return {
+        action: 'fetch-data-complete',
+        data: fetchCache[cacheKey].data,
+        ok: false,
+        error: fetchCache[cacheKey].data,
+      };
+    }
+
+    return {
+      action: 'fetch-data-complete',
+      data: fetchCache[cacheKey].data,
+      ok: requestData.ok,
+      error: !requestData.ok ? fetchCache[cacheKey].data : undefined,
+    };
+  } else {
+    // We need to wait for the call to finish and the data to be available
+    while (!fetchCache[cacheKey].data) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    return {
+      action: 'fetch-data-complete',
+      data: fetchCache[cacheKey].data,
+      ok: true,
+    };
+  }
 };
 
 export { functionOrStringExp, getType };

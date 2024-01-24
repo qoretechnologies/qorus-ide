@@ -105,7 +105,7 @@ export const fixOptions = (
     }
   });
 
-  return reduce(
+  const res = reduce(
     fixedValue,
     (newValue, option, optionName) => {
       if (!isObject(option) || !option?.type) {
@@ -122,6 +122,8 @@ export const fixOptions = (
     },
     {}
   );
+
+  return res;
 };
 
 export const flattenOptions = (options: IOptions): TFlatOptions => {
@@ -471,14 +473,14 @@ const Options = ({
       val !== undefined &&
       val !== currentValue[optionName]?.value
     ) {
-      onDependableOptionChange?.(optionName, val, availableOptions, options);
-
       // We also need to remove the value from all dependants
       forEach(options, (option, name) => {
         if (option.depends_on?.includes(optionName)) {
           updatedValue[name].value = undefined;
         }
       });
+
+      onDependableOptionChange?.(optionName, val, updatedValue, options);
     }
 
     onChange(name, updatedValue);
@@ -544,7 +546,6 @@ const Options = ({
   };
 
   const fixedValue: IOptions = fixOptions(value, options);
-
   const removeSelectedOption = (optionName: string) => {
     const newValue = cloneDeep(value);
 

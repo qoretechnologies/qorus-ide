@@ -20,7 +20,11 @@ import LongStringField from './longString';
  * @returns A function that takes a string and returns a boolean.
  */
 export const isValueTemplate = (value?: any) => {
-  if (typeof value !== 'string' || !value?.startsWith('$') || !value?.includes(':')) {
+  if (
+    typeof value !== 'string' ||
+    !value?.startsWith('$') ||
+    !value?.includes(':')
+  ) {
     return false;
   }
 
@@ -101,7 +105,11 @@ export const TemplateField = ({
         name={name}
         {...rest}
         className={`${rest.className} template-selector`}
-        templates={allowTemplates ? filterTemplatesByType(templates, rest.type) : undefined}
+        templates={
+          allowTemplates
+            ? filterTemplatesByType(templates, rest.type)
+            : undefined
+        }
       />
     );
   }
@@ -121,12 +129,12 @@ export const TemplateField = ({
   return (
     <ReqoreTabs
       activeTab={isTemplate ? 'template' : 'custom'}
-      activeTabIntent="info"
+      activeTabIntent='info'
       fill
-      size="small"
+      size='small'
       flat
       padded={false}
-      tabsPadding="top"
+      tabsPadding='top'
       tabs={[
         {
           id: 'custom',
@@ -161,11 +169,15 @@ export const TemplateField = ({
       <ReqoreTabsContent tabId={'template'}>
         <ReqoreControlGroup fluid stack fill>
           <LongStringField
-            className="template-selector"
-            type="string"
-            name="templateVal"
+            className='template-selector'
+            type='string'
+            name='templateVal'
             value={templateValue}
-            templates={allowTemplates ? filterTemplatesByType(templates, rest.type) : undefined}
+            templates={
+              allowTemplates
+                ? filterTemplatesByType(templates, rest.type)
+                : undefined
+            }
             onChange={(_n, val) => setTemplateValue(val)}
           />
         </ReqoreControlGroup>
