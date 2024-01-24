@@ -220,7 +220,7 @@ export const QodexAppActionOptions = memo(
         )}
         <Options
           flat
-          key={value.qorus_app_connection.value}
+          key={`id:${value?.qorus_app_connection?.value}`}
           zoomable
           padded={false}
           label={undefined}
