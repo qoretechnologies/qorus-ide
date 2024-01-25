@@ -5,7 +5,10 @@ import { FunctionComponent, memo, useContext, useState } from 'react';
 import { useMount } from 'react-use';
 import { Messages } from '../../constants/messages';
 import { TextContext } from '../../context/text';
-import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../hocomponents/withMessageHandler';
 
 export interface IManageConfigButton extends IReqoreButtonProps {
   disabled?: boolean;
@@ -33,15 +36,18 @@ const ManageConfigButton: FunctionComponent<IManageConfigButton> = memo(
     useMount(() => {
       // Listen for changes in config items for
       // this interface
-      const messageHandler = addMessageListener(Messages.RETURN_CONFIG_ITEMS, (data) => {
-        setIsLoading(false);
-        const itemCount =
-          type === 'workflow'
-            ? size(data.workflow_items?.filter((item) => item.is_set))
-            : size(data.items);
-        // Set the new config count
-        setConfigCount(itemCount);
-      });
+      const messageHandler = addMessageListener(
+        Messages.RETURN_CONFIG_ITEMS,
+        (data) => {
+          setIsLoading(false);
+          const itemCount =
+            type === 'workflow'
+              ? size(data.workflow_items?.filter((item) => item.is_set))
+              : size(data.items);
+          // Set the new config count
+          setConfigCount(itemCount);
+        }
+      );
 
       if (fetchCall) {
         fetchCall();
@@ -66,10 +72,10 @@ const ManageConfigButton: FunctionComponent<IManageConfigButton> = memo(
         badge={isLoading ? undefined : configCount}
         icon={'SettingsLine'}
         onClick={onClick}
-        tooltip={t('ManageConfigItems')}
+        tooltip={t('Click to manage config items for this interface')}
         {...rest}
       >
-        {isLoading ? 'Loading...' : t('ManageConfigItems')}
+        {isLoading ? 'Loading...' : t('Manage Configuration Items')}
       </ReqoreButton>
     );
   }

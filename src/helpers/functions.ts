@@ -505,11 +505,27 @@ const fetchCache: {
   };
 } = {};
 
+const doFetchData = async (
+  url: string,
+  method = 'GET',
+  body?: { [key: string]: any }
+) => {
+  return fetch(`${apiHost}api/latest/${url}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiToken}`,
+    },
+    body: JSON.stringify(body),
+  });
+};
+
 export const fetchData: (
   url: string,
   method?: string,
-  body?: { [key: string]: any }
-) => Promise<any> = async (url, method = 'GET', body) => {
+  body?: { [key: string]: any },
+  cache?: boolean
+) => Promise<any> = async (url, method = 'GET', body, cache = true) => {
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
   if (fetchCache[cacheKey]?.data) {
@@ -520,20 +536,20 @@ export const fetchData: (
     };
   }
 
-  if (!fetchCache[cacheKey]?.actualCall) {
-    fetchCache[cacheKey] = { actualCall: null, data: null };
-    fetchCache[cacheKey].actualCall = fetch(`${apiHost}api/latest/${url}`, {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiToken}`,
-      },
-      body: JSON.stringify(body),
-    });
+  if (!fetchCache[cacheKey]?.actualCall || !cache) {
+    const fetchCall = doFetchData(url, method, body);
 
-    const requestData = await fetchCache[cacheKey].actualCall;
+    if (cache) {
+      fetchCache[cacheKey] = { actualCall: null, data: null };
+      fetchCache[cacheKey].actualCall = fetchCall;
+    }
+
+    const requestData = await fetchCall;
     const json = await requestData.json();
-    fetchCache[cacheKey].data = json;
+
+    if (cache) {
+      fetchCache[cacheKey].data = json;
+    }
 
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
@@ -548,9 +564,9 @@ export const fetchData: (
 
     return {
       action: 'fetch-data-complete',
-      data: fetchCache[cacheKey].data,
+      data: json,
       ok: requestData.ok,
-      error: !requestData.ok ? fetchCache[cacheKey].data : undefined,
+      error: !requestData.ok ? json : undefined,
     };
   } else {
     // We need to wait for the call to finish and the data to be available
