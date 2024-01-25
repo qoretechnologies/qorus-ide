@@ -170,7 +170,7 @@ export type TOption = {
 };
 export type IOptions =
   | {
-      [optionName: string]: TOption;
+      [optionName: string]: TOption | undefined;
     }
   | undefined;
 
@@ -398,9 +398,12 @@ const Options = ({
 
   useEffect(() => {
     setOptions(rest.options);
-    // Fix the value accorditong to the new options
-    onChange(name, fixOptions(value, rest.options));
   }, [JSON.stringify(rest.options)]);
+
+  useEffect(() => {
+    // Fix the value accorditong to the new options
+    onChange(name, fixOptions(value, options));
+  }, [JSON.stringify(options)]);
 
   useUpdateEffect(() => {
     if (operatorsUrl && qorus_instance) {
@@ -578,6 +581,7 @@ const Options = ({
     })
     .reduce((newValue, optionName) => {
       const option = fixedValue[optionName];
+      console.log(fixedValue, optionName, option);
       // Check if this option is in the options schema
       // do not add it if not
       if (!options?.[optionName]) {
@@ -589,7 +593,7 @@ const Options = ({
         return {
           ...newValue,
           [optionName]: {
-            type: getType(options[optionName].type, operators, option.op),
+            type: getType(options[optionName].type, operators, option?.op),
             value: option,
           },
         };
