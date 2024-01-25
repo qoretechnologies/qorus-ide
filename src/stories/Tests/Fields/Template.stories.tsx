@@ -30,7 +30,10 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
     await ShowsTemplatesListForString.play({ canvasElement, ...rest });
 
     await waitFor(
-      () => expect(document.querySelector('.reqore-popover-content')).toBeInTheDocument(),
+      () =>
+        expect(
+          document.querySelector('.reqore-popover-content')
+        ).toBeInTheDocument(),
       {
         timeout: 10000,
       }
@@ -38,13 +41,17 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
 
     await sleep(500);
 
-    await waitFor(async () => await canvas.getAllByText('Context Data')[0], { timeout: 10000 });
+    await waitFor(async () => await canvas.getAllByText('Context Data')[0], {
+      timeout: 10000,
+    });
 
     await fireEvent.click(canvas.getAllByText('Context Data')[0]);
 
     await sleep(500);
 
-    await waitFor(async () => await canvas.getAllByText('Interface ID')[0], { timeout: 10000 });
+    await waitFor(async () => await canvas.getAllByText('Interface ID')[0], {
+      timeout: 10000,
+    });
 
     await fireEvent.click(canvas.getAllByText('Interface ID')[0]);
 
@@ -52,7 +59,7 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
   },
 };
 
-export const ValueIsResetWhenChangingTabs: StoryObj<typeof meta> = {
+export const ValueIsResetWhenChangingToCustom: StoryObj<typeof meta> = {
   args: {
     component: Number,
     type: 'number',
@@ -62,12 +69,46 @@ export const ValueIsResetWhenChangingTabs: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     await waitFor(
       async () => {
-        await expect(document.querySelector('.template-selector')).toBeInTheDocument();
+        await expect(
+          document.querySelector('.template-selector')
+        ).toBeInTheDocument();
       },
       { timeout: 10000 }
     );
 
-    await fireEvent.click(document.querySelectorAll('.reqore-tabs-list-item')[0]);
-    await expect(rest.args.onChange).toHaveBeenLastCalledWith('Test Field', null);
+    await fireEvent.click(
+      document.querySelectorAll('.reqore-tabs-list-item')[0]
+    );
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      'Test Field',
+      null
+    );
+  },
+};
+
+export const ValueIsResetWhenChangingToTemplate: StoryObj<typeof meta> = {
+  args: {
+    component: Number,
+    type: 'number',
+    value: 1000,
+    name: 'Test Field',
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    await waitFor(
+      async () => {
+        await expect(
+          document.querySelector('.reqore-input')
+        ).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(
+      document.querySelectorAll('.reqore-tabs-list-item')[1]
+    );
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      'Test Field',
+      null
+    );
   },
 };

@@ -22,7 +22,7 @@ import isArray from 'lodash/isArray';
 import map from 'lodash/map';
 import reduce from 'lodash/reduce';
 import size from 'lodash/size';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { isObject } from 'util';
@@ -301,7 +301,7 @@ const templatesCache: { [key: string]: IReqoreTextareaProps['templates'] } = {};
 
 const Options = ({
   name,
-  value,
+  value = {},
   onChange,
   onDependableOptionChange,
   url,
@@ -396,9 +396,11 @@ const Options = ({
     }
   }, [url, qorus_instance, customUrl]);
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     setOptions(rest.options);
-  }, [rest.options]);
+    // Fix the value accorditong to the new options
+    onChange(name, fixOptions(value, rest.options));
+  }, [JSON.stringify(rest.options)]);
 
   useUpdateEffect(() => {
     if (operatorsUrl && qorus_instance) {
@@ -545,7 +547,7 @@ const Options = ({
     onChange(name, undefined);
   };
 
-  const fixedValue: IOptions = fixOptions(value, options);
+  const fixedValue: IOptions = value;
   const removeSelectedOption = (optionName: string) => {
     const newValue = cloneDeep(value);
 

@@ -85,9 +85,7 @@ import {
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
-import withMessageHandler, {
-  postMessage,
-} from '../../../hocomponents/withMessageHandler';
+import withMessageHandler from '../../../hocomponents/withMessageHandler';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
 import TinyGrid from '../../../images/graphy-dark.png';
@@ -2006,9 +2004,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   const reset = () => {
-    postMessage(Messages.RESET_CONFIG_ITEMS, {
-      iface_id: interfaceId,
-    });
     setStates(cloneDeep(fsm?.states || {}));
     setSelectedStates({});
     changeHistory.current = [JSON.stringify(cloneDeep(fsm?.states || {}))];

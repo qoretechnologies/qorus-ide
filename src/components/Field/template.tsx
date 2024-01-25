@@ -6,7 +6,7 @@ import {
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
 import { filterTemplatesByType } from '../../helpers/functions';
@@ -81,6 +81,12 @@ export const TemplateField = ({
   const [isTemplate, setIsTemplate] = useState<boolean>(isValueTemplate(value));
   const [templateValue, setTemplateValue] = useState<string | null>(value);
   const t = useContext(TextContext);
+
+  useEffect(() => {
+    if (isTemplate) {
+      setTemplateValue(value);
+    }
+  }, [value]);
 
   // When template key or template value change run the onChange function
   useUpdateEffect(() => {
