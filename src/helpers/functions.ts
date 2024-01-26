@@ -524,8 +524,9 @@ export const fetchData: (
   url: string,
   method?: string,
   body?: { [key: string]: any },
-  cache?: boolean
-) => Promise<any> = async (url, method = 'GET', body, cache = true) => {
+  forceCache?: boolean
+) => Promise<any> = async (url, method = 'GET', body, forceCache = true) => {
+  const cache = method === 'DELETE' || method === 'POST' ? false : forceCache;
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
   if (fetchCache[cacheKey]?.data) {

@@ -68,6 +68,7 @@ export const QodexActionExec = memo(
       if (response.ok) {
         setResponse(response.data);
       } else {
+        console.error(response.data, response);
         setError('There was an error in the test call!');
       }
 
