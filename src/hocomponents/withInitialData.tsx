@@ -177,7 +177,7 @@ export default () =>
       });
 
       if (!texts || !t || !isReady) {
-        return <Loader text='Loading translations...' />;
+        return <Loader text='Loading translations...' centered />;
       }
 
       // this action is called when the user clicks the confirm button

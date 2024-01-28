@@ -4,7 +4,6 @@ import {
   ReqoreH3,
   ReqoreInput,
   ReqorePanel,
-  ReqoreSpinner,
   ReqoreTextEffect,
   ReqoreTimeAgo,
 } from '@qoretechnologies/reqore';
@@ -12,6 +11,7 @@ import { IReqoreCustomTheme } from '@qoretechnologies/reqore/dist/constants/them
 import { capitalize } from 'lodash';
 import { useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
+import Loader from '../../components/Loader';
 import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { callBackendBasic } from '../../helpers/functions';
@@ -47,7 +47,20 @@ export const Dashboard = () => {
   const theme: IReqoreCustomTheme = { main: '#000000' };
 
   if (draft.loading || interfacesCount.loading) {
-    return <ReqoreSpinner centered>Loading dashboard...</ReqoreSpinner>;
+    return (
+      <ReqorePanel
+        flat
+        contentStyle={{
+          display: 'flex',
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        fill
+      >
+        <Loader centered text='Loading dashboard...' />
+      </ReqorePanel>
+    );
   }
 
   return (

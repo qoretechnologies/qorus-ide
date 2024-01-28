@@ -4,7 +4,6 @@ import {
   ReqoreMessage,
   ReqoreModal,
   ReqoreP,
-  ReqoreSpinner,
   ReqoreVerticalSpacer,
   useReqore,
   useReqoreProperty,
@@ -805,7 +804,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   useUpdateEffect(() => {
-    if (qorus_instance && isReady && !apps.loading) {
+    if (isReady && !apps.loading) {
       if (embedded || fsm) {
         let newStates = embedded ? states : cloneDeep(fsm?.states || {});
 
@@ -890,7 +889,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       setWrapperDimensions({ width, height });
     }
-  }, [qorus_instance, isReady, apps.loading]);
+  }, [isReady, apps.loading]);
 
   useEffect(() => {
     if (states && onStatesChange) {
@@ -2350,11 +2349,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }
 
   if (!isReady || apps.loading) {
-    return (
-      <ReqoreSpinner iconColor='info' centered size='huge'>
-        {t('Loading...')}
-      </ReqoreSpinner>
-    );
+    return <Loader centered text={t('Loading...')} />;
   }
 
   if (showTransitionsToaster.current) {

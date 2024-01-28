@@ -12,7 +12,13 @@ import {
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import last from 'lodash/last';
 import size from 'lodash/size';
-import { FunctionComponent, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { connect } from 'react-redux';
 import { useEffectOnce, useMount, useUnmount } from 'react-use';
 import compose from 'recompose/compose';
@@ -120,7 +126,9 @@ const App: FunctionComponent<IApp> = ({
   is_hosted_instance,
   ...rest
 }) => {
-  const [openedDialogs, setOpenedDialogs] = useState<{ id: string; onClose: () => void }[]>([]);
+  const [openedDialogs, setOpenedDialogs] = useState<
+    { id: string; onClose: () => void }[]
+  >([]);
   const [contextMenu, setContextMenu] = useState<IContextMenu>(null);
   const [isDirsDialogOpen, setIsDirsDialogOpen] = useState<boolean>(false);
   const { addNotification } = useReqore();
@@ -193,9 +201,12 @@ const App: FunctionComponent<IApp> = ({
     );
     // Set instance
     listeners.push(
-      addMessageListener(Messages.SET_QORUS_INSTANCE, ({ qorus_instance }): void => {
-        setActiveInstance(qorus_instance);
-      })
+      addMessageListener(
+        Messages.SET_QORUS_INSTANCE,
+        ({ qorus_instance }): void => {
+          setActiveInstance(qorus_instance);
+        }
+      )
     );
     listeners.push(
       addMessageListener('display-notifications', ({ data }) => {
@@ -268,7 +279,12 @@ const App: FunctionComponent<IApp> = ({
   });
 
   if (!t || isLoading) {
-    return <Loader text="Loading app..." />;
+    return (
+      <>
+        <GlobalStyle />
+        <Loader text='Loading app...' centered />;
+      </>
+    );
   }
 
   return (
@@ -287,7 +303,12 @@ const App: FunctionComponent<IApp> = ({
           }}
         >
           <DialogsContext.Provider value={{ addDialog, removeDialog }}>
-            {contextMenu && <ContextMenu {...contextMenu} onClick={() => setContextMenu(null)} />}
+            {contextMenu && (
+              <ContextMenu
+                {...contextMenu}
+                onClick={() => setContextMenu(null)}
+              />
+            )}
             <TextContext.Provider value={t}>
               {/*tab !== 'Login' && <Menu />*/}
               <ReqorePanel
@@ -298,8 +319,13 @@ const App: FunctionComponent<IApp> = ({
                 rounded={false}
                 iconImage={QorusBase64Image}
                 iconProps={{ size: '27px', style: { height: 'auto' } }}
-                contentStyle={{ overflow: 'hidden', display: 'flex', flexFlow: 'column' }}
-                label="Qorus IDE"
+                contentStyle={{
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexFlow: 'column',
+                  flex: 1,
+                }}
+                label='Qorus IDE'
                 badge={badges}
                 headerEffect={{
                   glow: {
@@ -322,23 +348,34 @@ const App: FunctionComponent<IApp> = ({
                           noArrow: true,
                           handler: 'hoverStay',
                           content: (
-                            <ReqoreMenu rounded maxHeight="300px">
+                            <ReqoreMenu rounded maxHeight='300px'>
                               <ReqoreMenuDivider label={'History'} />
                               {[...tabHistory]
                                 .reverse()
                                 .map(({ subtab, tab, name }, index: number) =>
                                   index !== 0 ? (
                                     <ReqoreMenuItem
-                                      icon={subtab ? interfaceIcons[subtab] : viewsIcons[tab]}
+                                      icon={
+                                        subtab
+                                          ? interfaceIcons[subtab]
+                                          : viewsIcons[tab]
+                                      }
                                       onClick={() =>
-                                        onHistoryBackClick(tabHistory.length - (index + 1))
+                                        onHistoryBackClick(
+                                          tabHistory.length - (index + 1)
+                                        )
                                       }
                                       description={
-                                        name || (tab === 'CreateInterface' ? 'New' : undefined)
+                                        name ||
+                                        (tab === 'CreateInterface'
+                                          ? 'New'
+                                          : undefined)
                                       }
                                     >
                                       {t(tab)}
-                                      {subtab ? ` : ${interfaceKindToName[subtab]}` : ''}
+                                      {subtab
+                                        ? ` : ${interfaceKindToName[subtab]}`
+                                        : ''}
                                     </ReqoreMenuItem>
                                   ) : null
                                 )}
@@ -370,22 +407,28 @@ const App: FunctionComponent<IApp> = ({
                           handler: 'hoverStay',
                           noWrapper: true,
                           content: (
-                            <ReqoreMenu rounded width="250px">
+                            <ReqoreMenu rounded width='250px'>
                               <ReqoreMenuDivider label={t('Objects')} />
                               {MenuSubItems.map((item) => (
                                 <ReqoreMenuItem
                                   label={item.name}
                                   icon={item.icon}
                                   onClick={() =>
-                                    changeTab('Interfaces', interfaceNameToKind[item.name])
+                                    changeTab(
+                                      'Interfaces',
+                                      interfaceNameToKind[item.name]
+                                    )
                                   }
-                                  rightIcon="AddCircleLine"
-                                  rightIconColor="info"
+                                  rightIcon='AddCircleLine'
+                                  rightIconColor='info'
                                   rightIconProps={{
                                     intent: 'info',
                                   }}
                                   onRightIconClick={() =>
-                                    changeTab('CreateInterface', interfaceNameToKind[item.name])
+                                    changeTab(
+                                      'CreateInterface',
+                                      interfaceNameToKind[item.name]
+                                    )
                                   }
                                 />
                               ))}
@@ -458,6 +501,7 @@ const App: FunctionComponent<IApp> = ({
                     display: 'flex',
                     flex: 1,
                     flexFlow: 'column',
+                    height: '100%',
                   }}
                 >
                   <SourceDirectories
@@ -470,7 +514,7 @@ const App: FunctionComponent<IApp> = ({
                   tab !== 'ProjectConfig' &&
                   tab !== 'Loading' ? (
                     <ReqoreBreadcrumbs
-                      size="normal"
+                      size='normal'
                       flat
                       style={{
                         border: 'none',
@@ -482,7 +526,9 @@ const App: FunctionComponent<IApp> = ({
                         {
                           icon: 'Home4Fill',
                           onClick: () => {
-                            changeTab(is_hosted_instance ? 'Dashboard' : 'ProjectConfig');
+                            changeTab(
+                              is_hosted_instance ? 'Dashboard' : 'ProjectConfig'
+                            );
                           },
                         },
                         {
@@ -497,24 +543,24 @@ const App: FunctionComponent<IApp> = ({
                   ) : null}
                   <>
                     {websocketReconnectTry > 0 ? (
-                      <ReqoreModal isOpen intent="warning" blur={5}>
+                      <ReqoreModal isOpen intent='warning' blur={5}>
                         <ReqoreH1 effect={{ textAlign: 'center' }}>
                           Lost connection to server. Trying to reconnect...{' '}
                           <ReqoreIcon
-                            icon="Loader3Line"
-                            animation="spin"
-                            size="big"
-                            margin="both"
+                            icon='Loader3Line'
+                            animation='spin'
+                            size='big'
+                            margin='both'
                           />
                           {websocketReconnectTry} / {WS_RECONNECT_MAX_TRIES}
                         </ReqoreH1>
                       </ReqoreModal>
                     ) : null}
                     {hasWebsocketFailedToReconnect && (
-                      <ReqoreModal isOpen intent="danger" blur={5}>
+                      <ReqoreModal isOpen intent='danger' blur={5}>
                         <ReqoreH1 effect={{ textAlign: 'center' }}>
-                          Unable to establish a connection to the server, please try to reload the
-                          page.
+                          Unable to establish a connection to the server, please
+                          try to reload the page.
                         </ReqoreH1>
                       </ReqoreModal>
                     )}
@@ -544,7 +590,10 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setCurrentProjectFolder: (folder) => {
-    dispatch({ type: 'current_project_folder', current_project_folder: folder });
+    dispatch({
+      type: 'current_project_folder',
+      current_project_folder: folder,
+    });
   },
   openLogin: () => {
     dispatch({ type: 'login_visible', login_visible: true });

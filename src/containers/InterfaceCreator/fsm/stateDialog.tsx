@@ -41,7 +41,6 @@ import withMessageHandler, {
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import ConfigItemManager from '../../ConfigItemManager';
 import ManageConfigButton from '../../ConfigItemManager/manageButton';
-import { QodexActionExec } from './ActionExec';
 import { QodexAppActionOptions } from './AppActionOptions';
 import ConnectorSelector from './connectorSelector';
 import { ConditionField } from './transitionDialog';
@@ -223,7 +222,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
         },
       });
     },
-    [newData.action?.value]
+    [JSON.stringify(newData.action?.value)]
   );
 
   const statesForTemplates = useMemo(() => {
@@ -401,6 +400,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
         return (
           <>
             <QodexAppActionOptions
+              key={id}
               appName={actionValue?.app}
               actionName={actionValue?.action}
               connectedStates={statesForTemplates}
@@ -410,12 +410,13 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               id={id}
             />
             <ReqoreVerticalSpacer height={10} />
-            <QodexActionExec
+            {/*<QodexActionExec
+              key={id}
               appName={actionValue?.app}
               actionName={actionValue?.action}
               options={actionValue?.options}
               id={interfaceId}
-            />
+        />*/}
           </>
         );
       }

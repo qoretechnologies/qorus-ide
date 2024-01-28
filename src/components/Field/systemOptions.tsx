@@ -581,7 +581,6 @@ const Options = ({
     })
     .reduce((newValue, optionName) => {
       const option = fixedValue[optionName];
-      console.log(fixedValue, optionName, option);
       // Check if this option is in the options schema
       // do not add it if not
       if (!options?.[optionName]) {
