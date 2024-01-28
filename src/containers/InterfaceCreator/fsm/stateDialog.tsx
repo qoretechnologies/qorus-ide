@@ -44,6 +44,7 @@ import ManageConfigButton from '../../ConfigItemManager/manageButton';
 import { QodexAppActionOptions } from './AppActionOptions';
 import ConnectorSelector from './connectorSelector';
 import { ConditionField } from './transitionDialog';
+import { QodexActionExec } from './ActionExec';
 
 export interface IFSMStateDialogProps {
   onClose: () => any;
@@ -410,13 +411,13 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               id={id}
             />
             <ReqoreVerticalSpacer height={10} />
-            {/*<QodexActionExec
+            <QodexActionExec
               key={id}
               appName={actionValue?.app}
               actionName={actionValue?.action}
               options={actionValue?.options}
               id={interfaceId}
-        />*/}
+            />
           </>
         );
       }
