@@ -66,13 +66,20 @@ export const ExportData: StoryFSM = {
     await sleep(1000);
 
     await fireEvent.click(document.querySelector(`.fsm-publish-more`));
-    await waitFor(() => expect(document.querySelector('.fsm-export-data')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelector('.fsm-export-data')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
     await fireEvent.click(document.querySelector(`.fsm-export-data`));
-    await waitFor(() => expect(document.querySelector('.reqore-modal')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () => expect(document.querySelector('.reqore-modal')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
   },
 };
 
@@ -85,10 +92,16 @@ export const CatalogueOpen: StoryFSM = {
 
     await sleep(1000);
 
-    await fireEvent.dblClick(document.querySelector(`#fsm-diagram .element-pan`));
-    await waitFor(() => expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await fireEvent.dblClick(
+      document.querySelector(`#fsm-diagram .element-pan`)
+    );
+    await waitFor(
+      () =>
+        expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
   },
 };
 
@@ -103,9 +116,15 @@ export const NewState: StoryFSM = {
 
       await sleep(1000);
 
-      await waitFor(() => expect(document.querySelector('.state-saved-flag')).toBeInTheDocument(), {
-        timeout: 5000,
-      });
+      await waitFor(
+        () =>
+          expect(
+            document.querySelector('.state-saved-flag')
+          ).toBeInTheDocument(),
+        {
+          timeout: 5000,
+        }
+      );
     }
 
     await _testsAddNewState(
@@ -147,7 +166,10 @@ export const MultipleDeepVariableStates: StoryFSM = {
     await _testsClickState('State 2');
 
     await waitFor(
-      async () => await expect(document.querySelector('.state-next-button')).toBeDisabled(),
+      async () =>
+        await expect(
+          document.querySelector('.state-next-button')
+        ).toBeDisabled(),
       {
         timeout: 5000,
       }
@@ -156,17 +178,23 @@ export const MultipleDeepVariableStates: StoryFSM = {
     // Fill the required option
     await waitFor(
       async () => {
-        await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[0], {
-          target: {
-            value: 'This is a test',
-          },
-        });
+        await fireEvent.change(
+          document.querySelectorAll('.system-option .reqore-textarea')[0],
+          {
+            target: {
+              value: 'This is a test',
+            },
+          }
+        );
       },
       { timeout: 5000 }
     );
 
     await waitFor(
-      async () => await expect(document.querySelector('.state-next-button')).toBeEnabled(),
+      async () =>
+        await expect(
+          document.querySelector('.state-next-button')
+        ).toBeEnabled(),
       {
         timeout: 5000,
       }
@@ -185,7 +213,10 @@ export const MultipleDeepVariableStates: StoryFSM = {
     await _testsClickStateByLabel(canvas, 'State 2.State 3');
 
     await waitFor(
-      async () => await expect(document.querySelector('.state-next-button')).toBeDisabled(),
+      async () =>
+        await expect(
+          document.querySelector('.state-next-button')
+        ).toBeDisabled(),
       {
         timeout: 5000,
       }
@@ -194,17 +225,23 @@ export const MultipleDeepVariableStates: StoryFSM = {
     // Fill the required option
     await waitFor(
       async () => {
-        await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[1], {
-          target: {
-            value: 'This is a test 2',
-          },
-        });
+        await fireEvent.change(
+          document.querySelectorAll('.system-option .reqore-textarea')[1],
+          {
+            target: {
+              value: 'This is a test 2',
+            },
+          }
+        );
       },
       { timeout: 5000 }
     );
 
     await waitFor(
-      async () => await expect(document.querySelector('.state-next-button')).toBeEnabled(),
+      async () =>
+        await expect(
+          document.querySelector('.state-next-button')
+        ).toBeEnabled(),
       {
         timeout: 5000,
       }
@@ -217,7 +254,10 @@ export const MultipleDeepVariableStates: StoryFSM = {
     await fireEvent.click(canvas.getAllByText('Next')[0]);
 
     await waitFor(
-      async () => expect(canvas.getAllByText('State 2.State 3.State 6')[0]).toBeInTheDocument(),
+      async () =>
+        expect(
+          canvas.getAllByText('State 2.State 3.State 6')[0]
+        ).toBeInTheDocument(),
       {
         timeout: 5000,
       }
@@ -257,12 +297,6 @@ export const ReadonlyVariablesInState: StoryFSM = {
     await sleep(1000);
     await _testsOpenAppCatalogue('State-2.State-3');
     await _testsSelectAppOrAction(canvas, 'Variables');
-  },
-};
-
-export const NoInstance: StoryFSM = {
-  args: {
-    qorus_instance: false,
   },
 };
 

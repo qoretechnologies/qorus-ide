@@ -22,7 +22,7 @@ import isArray from 'lodash/isArray';
 import map from 'lodash/map';
 import reduce from 'lodash/reduce';
 import size from 'lodash/size';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { isObject } from 'util';
@@ -105,7 +105,7 @@ export const fixOptions = (
     }
   });
 
-  return reduce(
+  const res = reduce(
     fixedValue,
     (newValue, option, optionName) => {
       if (!isObject(option) || !option?.type) {
@@ -122,6 +122,8 @@ export const fixOptions = (
     },
     {}
   );
+
+  return res;
 };
 
 export const flattenOptions = (options: IOptions): TFlatOptions => {
@@ -168,7 +170,7 @@ export type TOption = {
 };
 export type IOptions =
   | {
-      [optionName: string]: TOption;
+      [optionName: string]: TOption | undefined;
     }
   | undefined;
 
@@ -299,7 +301,7 @@ const templatesCache: { [key: string]: IReqoreTextareaProps['templates'] } = {};
 
 const Options = ({
   name,
-  value,
+  value = {},
   onChange,
   onDependableOptionChange,
   url,
@@ -394,9 +396,14 @@ const Options = ({
     }
   }, [url, qorus_instance, customUrl]);
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     setOptions(rest.options);
-  }, [rest.options]);
+  }, [JSON.stringify(rest.options)]);
+
+  useEffect(() => {
+    // Fix the value accorditong to the new options
+    onChange(name, fixOptions(value, options));
+  }, [JSON.stringify(options)]);
 
   useUpdateEffect(() => {
     if (operatorsUrl && qorus_instance) {
@@ -471,14 +478,14 @@ const Options = ({
       val !== undefined &&
       val !== currentValue[optionName]?.value
     ) {
-      onDependableOptionChange?.(optionName, val, availableOptions, options);
-
       // We also need to remove the value from all dependants
       forEach(options, (option, name) => {
         if (option.depends_on?.includes(optionName)) {
           updatedValue[name].value = undefined;
         }
       });
+
+      onDependableOptionChange?.(optionName, val, updatedValue, options);
     }
 
     onChange(name, updatedValue);
@@ -543,8 +550,7 @@ const Options = ({
     onChange(name, undefined);
   };
 
-  const fixedValue: IOptions = fixOptions(value, options);
-
+  const fixedValue: IOptions = value;
   const removeSelectedOption = (optionName: string) => {
     const newValue = cloneDeep(value);
 
@@ -586,7 +592,7 @@ const Options = ({
         return {
           ...newValue,
           [optionName]: {
-            type: getType(options[optionName].type, operators, option.op),
+            type: getType(options[optionName].type, operators, option?.op),
             value: option,
           },
         };

@@ -6,7 +6,7 @@ import {
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
 import { filterTemplatesByType } from '../../helpers/functions';
@@ -20,7 +20,11 @@ import LongStringField from './longString';
  * @returns A function that takes a string and returns a boolean.
  */
 export const isValueTemplate = (value?: any) => {
-  if (typeof value !== 'string' || !value?.startsWith('$') || !value?.includes(':')) {
+  if (
+    typeof value !== 'string' ||
+    !value?.startsWith('$') ||
+    !value?.includes(':')
+  ) {
     return false;
   }
 
@@ -78,6 +82,12 @@ export const TemplateField = ({
   const [templateValue, setTemplateValue] = useState<string | null>(value);
   const t = useContext(TextContext);
 
+  useEffect(() => {
+    if (isTemplate) {
+      setTemplateValue(value);
+    }
+  }, [value]);
+
   // When template key or template value change run the onChange function
   useUpdateEffect(() => {
     if (templateValue) {
@@ -101,7 +111,11 @@ export const TemplateField = ({
         name={name}
         {...rest}
         className={`${rest.className} template-selector`}
-        templates={allowTemplates ? filterTemplatesByType(templates, rest.type) : undefined}
+        templates={
+          allowTemplates
+            ? filterTemplatesByType(templates, rest.type)
+            : undefined
+        }
       />
     );
   }
@@ -121,12 +135,12 @@ export const TemplateField = ({
   return (
     <ReqoreTabs
       activeTab={isTemplate ? 'template' : 'custom'}
-      activeTabIntent="info"
+      activeTabIntent='info'
       fill
-      size="small"
+      size='small'
       flat
       padded={false}
-      tabsPadding="top"
+      tabsPadding='top'
       tabs={[
         {
           id: 'custom',
@@ -161,11 +175,15 @@ export const TemplateField = ({
       <ReqoreTabsContent tabId={'template'}>
         <ReqoreControlGroup fluid stack fill>
           <LongStringField
-            className="template-selector"
-            type="string"
-            name="templateVal"
+            className='template-selector'
+            type='string'
+            name='templateVal'
             value={templateValue}
-            templates={allowTemplates ? filterTemplatesByType(templates, rest.type) : undefined}
+            templates={
+              allowTemplates
+                ? filterTemplatesByType(templates, rest.type)
+                : undefined
+            }
             onChange={(_n, val) => setTemplateValue(val)}
           />
         </ReqoreControlGroup>

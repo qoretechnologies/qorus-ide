@@ -67,7 +67,9 @@ export const autoAlign = (states: IFSMStates, config?: IAutoAlignConfig) => {
 
     // Starting point of the grid
     const gridStartingPoint = { x: xAxisAllState[0], y: yAxisAllState[0] };
-    const noOfColumns = Math.round((_gridWidth - gridStartingPoint.x) / _columnWidth);
+    const noOfColumns = Math.round(
+      (_gridWidth - gridStartingPoint.x) / _columnWidth
+    );
     const noOfRows = Math.round(_gridHeight / _rowHeight);
 
     // Create the grid
@@ -106,16 +108,22 @@ export const autoAlign = (states: IFSMStates, config?: IAutoAlignConfig) => {
             if (!newCell?.occupied) {
               newCell.occupied = true;
               newCell.state = alignedStates[alignedStateKey];
-              const newCellIndex = gridOccupied.findIndex((cell) => newCell.id === cell.id);
+              const newCellIndex = gridOccupied.findIndex(
+                (cell) => newCell.id === cell.id
+              );
               gridOccupied[newCellIndex] = newCell;
             }
           }
         } else {
-          const newCell = _grid.find((_cell) => _cell.id === cell.id.toString());
+          const newCell = _grid.find(
+            (_cell) => _cell.id === cell.id.toString()
+          );
 
           newCell.occupied = true;
           newCell.state = alignedStates[alignedStateKey];
-          const newCellIndex = gridOccupied.findIndex((cell) => newCell.id === cell.id);
+          const newCellIndex = gridOccupied.findIndex(
+            (cell) => newCell.id === cell.id
+          );
           gridOccupied[newCellIndex] = newCell;
         }
       }
@@ -194,10 +202,15 @@ export const autoAlign = (states: IFSMStates, config?: IAutoAlignConfig) => {
         bottom: _grid[nextLineIndex].position,
       };
       // tackle states that are not overlapped by row
-      if (row.top.y <= state.position.y && row.bottom.y >= state.corners?.bottomLeftCorner.y!) {
+      if (
+        row.top.y <= state.position.y &&
+        row.bottom.y >= state.corners?.bottomLeftCorner.y!
+      ) {
         selectedGrid = _grid[i];
         if (selectedGrid.occupied) {
-          if (selectedGrid.state?.corners?.bottomLeftCorner.y! < state.position.y) {
+          if (
+            selectedGrid.state?.corners?.bottomLeftCorner.y! < state.position.y
+          ) {
             selectedGrid = _grid[nextLineIndex];
           }
         }
@@ -431,7 +444,9 @@ export const getTransitionByState = (
 ): IFSMTransition | null => {
   const { transitions } = states[stateId];
 
-  return transitions?.find((transition) => transition.state === targetId && !transition.fake);
+  return transitions?.find(
+    (transition) => transition.state === targetId && !transition.fake
+  );
 };
 
 /* A function that given an object of states with x and y coordinates
@@ -559,7 +574,10 @@ export const removeTransitionsWithStateId = (
 ) => {
   const newState = cloneDeep(states[targetStateId]);
 
-  if (newState.transitions && getTransitionByState(states, targetStateId, removedStateId)) {
+  if (
+    newState.transitions &&
+    getTransitionByState(states, targetStateId, removedStateId)
+  ) {
     newState.transitions = newState.transitions.reduce(
       (newTransitions: IFSMTransition[], transition: IFSMTransition) => {
         if (transition.state === removedStateId) {
@@ -575,10 +593,14 @@ export const removeTransitionsWithStateId = (
   return newState;
 };
 
-export const isFSMNameValid: (name: string) => boolean = (name) => validateField('string', name);
+export const isFSMNameValid: (name: string) => boolean = (name) =>
+  validateField('string', name);
 
 export const isFSMBlockConfigValid = (data: IFSMState): boolean => {
-  return size(data['block-config']) === 0 || validateField('system-options', data['block-config']);
+  return (
+    size(data['block-config']) === 0 ||
+    validateField('system-options', data['block-config'])
+  );
 };
 
 export const isFSMActionValid = (
@@ -630,13 +652,20 @@ export const isFSMActionValid = (
         return false;
       }
 
-      return validateField('var-action', state?.action?.value, { variableData });
+      return validateField('var-action', state?.action?.value, {
+        variableData,
+      });
     }
     case 'appaction': {
       return (
         validateField('string', state.action.value.app) &&
         validateField('string', state.action.value.action) &&
-        validateField('options', state.action.value.options, { optionSchema: optionsSchema }, true)
+        validateField(
+          'options',
+          state.action.value.options,
+          { optionSchema: optionsSchema },
+          true
+        )
       );
     }
     default: {
@@ -658,7 +687,8 @@ export const isStateValid = (
       isFSMNameValid(state.name) &&
       isFSMBlockConfigValid(state) &&
       (blockLogicType === 'custom'
-        ? size(state.states) !== 0 && every(state.states, (data) => data.isValid)
+        ? size(state.states) !== 0 &&
+          every(state.states, (data) => data.isValid)
         : validateField('string', state.fsm))
     );
   }
@@ -667,15 +697,18 @@ export const isStateValid = (
     return (
       isFSMNameValid(state.name) &&
       isConditionValid(state) &&
-      (!state['input-output-type'] || validateField('type-selector', state['input-output-type']))
+      (!state['input-output-type'] ||
+        validateField('type-selector', state['input-output-type']))
     );
   }
 
   return (
     isFSMNameValid(state.name) &&
     isFSMActionValid(state, actionType, metadata, optionsSchema) &&
-    (!state['input-type'] || validateField('type-selector', state['input-type'])) &&
-    (!state['output-type'] || validateField('type-selector', state['output-type']))
+    (!state['input-type'] ||
+      validateField('type-selector', state['input-type'])) &&
+    (!state['output-type'] ||
+      validateField('type-selector', state['output-type']))
   );
 };
 
@@ -704,7 +737,7 @@ export const removeFSMState = (
   );
 
   postMessage('remove-fsm-state', {
-    iface_id: interfaceId,
+    id: interfaceId,
     state_id: id,
   });
 
@@ -734,7 +767,10 @@ export const getRecursiveStatesConnectedtoState = (
   return connectedStates;
 };
 
-export const getStatesConnectedtoState = (id: string | number, states: IFSMStates): IFSMStates => {
+export const getStatesConnectedtoState = (
+  id: string | number,
+  states: IFSMStates
+): IFSMStates => {
   const connectedStates: IFSMStates = {};
 
   forEach(states, (state, stateId) => {
@@ -813,7 +849,9 @@ export const getBuiltInAppAndAction = (
   // Get all the built in apps
   const builtInApps = apps.filter((a) => a.builtin);
   // Get the built in app that has the action
-  const app = builtInApps.find((a) => a.actions.find((action) => action.action === type));
+  const app = builtInApps.find((a) =>
+    a.actions.find((action) => action.action === type)
+  );
   // Get the action
   const action = app?.actions.find((a) => a.action === type);
 
@@ -853,7 +891,10 @@ export const changeStateIdsToGenerated = (states: IFSMStates): IFSMStates => {
     }
 
     // We also need to change every template in all of action options
-    if (state.action?.type === 'appaction' && size((state.action.value as TAppAndAction).options)) {
+    if (
+      state.action?.type === 'appaction' &&
+      size((state.action.value as TAppAndAction).options)
+    ) {
       const fixedOptions: IOptions = reduce(
         (state.action.value as TAppAndAction).options,
         (newOptions, option, optionName) => {
@@ -893,7 +934,9 @@ export const changeStateIdsToGenerated = (states: IFSMStates): IFSMStates => {
   return fixedStates;
 };
 
-export const removeTransitionsFromStateGroup = (states: IFSMStates): IFSMStates => {
+export const removeTransitionsFromStateGroup = (
+  states: IFSMStates
+): IFSMStates => {
   return reduce(
     states,
     (newStates, state, stateId) => {
@@ -920,7 +963,11 @@ export const removeTransitionsFromStateGroup = (states: IFSMStates): IFSMStates 
   );
 };
 
-export const repositionStateGroup = (states: IFSMStates, x: number, y: number): IFSMStates => {
+export const repositionStateGroup = (
+  states: IFSMStates,
+  x: number,
+  y: number
+): IFSMStates => {
   // Get the left top most state
   const leftTopMostState: IFSMState = reduce(
     states,
@@ -945,8 +992,10 @@ export const repositionStateGroup = (states: IFSMStates, x: number, y: number): 
   return reduce(
     states,
     (newStates, state, stateId) => {
-      let newX = state.id === leftTopMostState.id ? x : state.position.x + xDiff;
-      let newY = state.id === leftTopMostState.id ? y : state.position.y + yDiff;
+      let newX =
+        state.id === leftTopMostState.id ? x : state.position.x + xDiff;
+      let newY =
+        state.id === leftTopMostState.id ? y : state.position.y + yDiff;
 
       if (newX < 0) {
         newX = 0;
@@ -979,13 +1028,21 @@ export const repositionStateGroup = (states: IFSMStates, x: number, y: number): 
   );
 };
 
-export const isAnyStateAtPosition = (states: IFSMStates, x: number, y: number): boolean => {
+export const isAnyStateAtPosition = (
+  states: IFSMStates,
+  x: number,
+  y: number
+): boolean => {
   return some(states, (state) => {
     return state.position.x === x && state.position.y === y;
   });
 };
 
-export const positionStateInFreeSpot = (states: IFSMStates, x: number, y: number) => {
+export const positionStateInFreeSpot = (
+  states: IFSMStates,
+  x: number,
+  y: number
+) => {
   let newX = x;
   let newY = y;
 
@@ -1018,7 +1075,15 @@ export const prepareFSMDataForPublishing = (
       states,
       (newStates, state, id) => ({
         ...newStates,
-        [id]: omit(state, ['isNew', 'corners', 'width', 'height', 'key', 'keyId', 'isValid']),
+        [id]: omit(state, [
+          'isNew',
+          'corners',
+          'width',
+          'height',
+          'key',
+          'keyId',
+          'isValid',
+        ]),
       }),
       {}
     ),
@@ -1029,7 +1094,10 @@ export const prepareFSMDataForPublishing = (
   return data;
 };
 
-export const buildMetadata = (data?: IFSMMetadata, context?: any): IFSMMetadata => {
+export const buildMetadata = (
+  data?: IFSMMetadata,
+  context?: any
+): IFSMMetadata => {
   const metadata: IFSMMetadata = {
     display_name: 'Untitled Qodex',
     autovar: data?.autovar || context?.autovar,

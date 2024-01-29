@@ -106,7 +106,6 @@ export const QodexAppActionOptions = memo(
             data?.data?.event_id === 'CONNECTION_UPDATED' ||
             data?.data?.event_id === 'CONNECTION_CREATED'
           ) {
-            console.log('OPTIONS AFTER UDPATE', value);
             load(value);
           }
         },
@@ -221,6 +220,7 @@ export const QodexAppActionOptions = memo(
         )}
         <Options
           flat
+          key={`id:${value?.qorus_app_connection?.value}`}
           zoomable
           padded={false}
           label={undefined}

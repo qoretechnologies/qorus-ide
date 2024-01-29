@@ -38,9 +38,9 @@ export const QodexFields = ({ value, onChange }: IQodexFieldsProps) => {
 
   return (
     <Options
-      label="Qodex settings"
-      name="fsm-fields"
-      placeholder="More..."
+      label='Qodex settings'
+      name='fsm-fields'
+      placeholder='More...'
       options={fields}
       value={value}
       onChange={(_name, metadata) => {

@@ -16,7 +16,12 @@ export function useQorusStorage<T>(
   const [storage, setStorage] = useState<any>({});
 
   const { value, loading, error, retry } = useAsyncRetry(async () => {
-    const data = await fetchData('/users/_current_/storage');
+    const data = await fetchData(
+      '/users/_current_/storage',
+      undefined,
+      undefined,
+      false
+    );
 
     return data.data;
   }, []);
@@ -34,7 +39,7 @@ export function useQorusStorage<T>(
 
     if (process.env.NODE_ENV !== 'production') return;
 
-    fetchData('/users/_current_/', 'PUT', { storage: updatedStorage });
+    fetchData('/users/_current_/', 'PUT', { storage: updatedStorage }, false);
   };
 
   return {

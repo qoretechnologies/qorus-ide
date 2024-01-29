@@ -10,7 +10,13 @@ import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
 import { camelCase, isEqual, reduce, size } from 'lodash';
 import { memo, useCallback, useContext, useState } from 'react';
 import { useDebounce, useUnmount, useUpdateEffect } from 'react-use';
-import { IFSMMetadata, IFSMState, IFSMStates, TAppAndAction, TFSMVariables } from '.';
+import {
+  IFSMMetadata,
+  IFSMState,
+  IFSMStates,
+  TAppAndAction,
+  TFSMVariables,
+} from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
@@ -74,7 +80,9 @@ export const FSMStateDetail = memo(
     const [blockLogicType, setBlockLogicType] = useState<'fsm' | 'custom'>(
       data.fsm ? 'fsm' : 'custom'
     );
-    const [actionType, setActionType] = useState<TAction>(data?.action?.type || 'none');
+    const [actionType, setActionType] = useState<TAction>(
+      data?.action?.type || 'none'
+    );
 
     const [isMetadataHidden, setIsMetadataHidden] = useState<boolean>(false);
     const [isSubmitLoading, setIsLoading] = useState<boolean>(false);
@@ -123,7 +131,12 @@ export const FSMStateDetail = memo(
       }
 
       return isStateValid(dataToSubmit, metadata, optionsSchema);
-    }, [autoVars.loading, JSON.stringify(dataToSubmit), JSON.stringify(optionsSchema), isLoading]);
+    }, [
+      autoVars.loading,
+      JSON.stringify(dataToSubmit),
+      JSON.stringify(optionsSchema),
+      isLoading,
+    ]);
 
     useDebounce(
       () => {
@@ -168,11 +181,19 @@ export const FSMStateDetail = memo(
     };
 
     const isCustomBlockFirstPage = () => {
-      return !isMetadataHidden && dataToSubmit.type === 'block' && blockLogicType === 'custom';
+      return (
+        !isMetadataHidden &&
+        dataToSubmit.type === 'block' &&
+        blockLogicType === 'custom'
+      );
     };
 
     const isCustomBlockSecondPage = () => {
-      return isMetadataHidden && dataToSubmit.type === 'block' && blockLogicType === 'custom';
+      return (
+        isMetadataHidden &&
+        dataToSubmit.type === 'block' &&
+        blockLogicType === 'custom'
+      );
     };
 
     const handleSubmitClick = (addNewStateOnSuccess?: boolean) => {
@@ -180,7 +201,7 @@ export const FSMStateDetail = memo(
         setIsLoading(true);
 
         postMessage?.('submit-fsm-state', {
-          iface_id: interfaceId,
+          id: interfaceId,
           state_id: dataToSubmit.id,
         });
 
@@ -272,7 +293,7 @@ export const FSMStateDetail = memo(
         flat
         label={data.name}
         onClose={handleClose}
-        className="fsm-state-detail"
+        className='fsm-state-detail'
         resizable={{
           enable: {
             left: true,
@@ -283,7 +304,9 @@ export const FSMStateDetail = memo(
             height: '100%',
           },
         }}
-        icon={FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]}
+        icon={
+          FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]
+        }
         iconImage={app?.logo}
         iconProps={{
           rounded: true,
@@ -294,7 +317,11 @@ export const FSMStateDetail = memo(
         transparent
         responsiveActions={false}
         responsiveTitle={false}
-        style={{ paddingLeft: 10, borderLeft: '1px dashed #cccccc30', borderRadius: 0 }}
+        style={{
+          paddingLeft: 10,
+          borderLeft: '1px dashed #cccccc30',
+          borderRadius: 0,
+        }}
         contentStyle={{
           display: 'flex',
           flexFlow: 'column',
@@ -326,7 +353,9 @@ export const FSMStateDetail = memo(
           },
           {
             show: isCustomBlockFirstPage(),
-            label: !isFSMBlockConfigValid(dataToSubmit) ? t('Fix to proceed') : t('Next'),
+            label: !isFSMBlockConfigValid(dataToSubmit)
+              ? t('Fix to proceed')
+              : t('Next'),
             disabled: !isFSMBlockConfigValid(dataToSubmit),
             className: 'state-next-button',
             icon: !isFSMBlockConfigValid(dataToSubmit)
@@ -348,19 +377,31 @@ export const FSMStateDetail = memo(
             show: (isLoading || !isDataValid()) && !isCustomBlockFirstPage(),
             className: 'state-submit-button',
             id: `state-${camelCase(dataToSubmit?.name)}-submit-button`,
-            icon: isLoading ? 'Loader5Line' : !isDataValid() ? 'ErrorWarningLine' : undefined,
+            icon: isLoading
+              ? 'Loader5Line'
+              : !isDataValid()
+              ? 'ErrorWarningLine'
+              : undefined,
             leftIconProps: {
-              animation: isLoading ? 'spin' : isDataValid() ? 'heartbeat' : undefined,
+              animation: isLoading
+                ? 'spin'
+                : isDataValid()
+                ? 'heartbeat'
+                : undefined,
             },
             customTheme: { main: 'transparent' },
-            effect: isLoading ? undefined : !isDataValid() ? WarningColorEffect : undefined,
+            effect: isLoading
+              ? undefined
+              : !isDataValid()
+              ? WarningColorEffect
+              : undefined,
             position: 'right',
             responsive: false,
           },
         ]}
       >
         <EditableMessage
-          size="small"
+          size='small'
           contentEffect={{
             color: '#d7d7d7',
           }}
@@ -373,8 +414,17 @@ export const FSMStateDetail = memo(
           fill
           fillParent
           tabs={[
-            { label: 'Configuration', id: 'configuration', icon: 'SettingsLine' },
-            { label: 'Types', id: 'info', icon: 'InformationLine', disabled: data.isNew },
+            {
+              label: 'Configuration',
+              id: 'configuration',
+              icon: 'SettingsLine',
+            },
+            {
+              label: 'Types',
+              id: 'info',
+              icon: 'InformationLine',
+              disabled: data.isNew,
+            },
             {
               label: 'Transitions',
               id: 'transitions',
@@ -384,15 +434,18 @@ export const FSMStateDetail = memo(
             },
           ]}
           activeTab={activeTab}
-          tabsPadding="top"
+          tabsPadding='top'
           padded={false}
           style={{ overflow: 'hidden' }}
         >
-          <ReqoreTabsContent tabId="info">
-            <InputOutputType inputProvider={inputProvider} outputProvider={outputProvider} />
+          <ReqoreTabsContent tabId='info'>
+            <InputOutputType
+              inputProvider={inputProvider}
+              outputProvider={outputProvider}
+            />
           </ReqoreTabsContent>
 
-          <ReqoreTabsContent tabId="configuration">
+          <ReqoreTabsContent tabId='configuration'>
             <FSMStateDialog
               key={data.id}
               actionType={actionType}
@@ -403,7 +456,11 @@ export const FSMStateDetail = memo(
               blockLogicType={blockLogicType}
               setBlockLogicType={setBlockLogicType}
               isNameValid={isFSMNameValid(dataToSubmit.name)}
-              isActionValid={isFSMActionValid(dataToSubmit, actionType, metadata)}
+              isActionValid={isFSMActionValid(
+                dataToSubmit,
+                actionType,
+                metadata
+              )}
               isCustomBlockSecondPage={isCustomBlockSecondPage()}
               isMetadataHidden={isMetadataHidden}
               setIsMetadataHidden={setIsMetadataHidden}
@@ -418,12 +475,14 @@ export const FSMStateDetail = memo(
               otherStates={reduce(
                 states,
                 (newStates, localState, sid) =>
-                  sid === id ? { ...newStates } : { ...newStates, [sid]: localState },
+                  sid === id
+                    ? { ...newStates }
+                    : { ...newStates, [sid]: localState },
                 {}
               )}
             />
           </ReqoreTabsContent>
-          <ReqoreTabsContent tabId="transitions">
+          <ReqoreTabsContent tabId='transitions'>
             <FSMTransitionOrderDialog
               transitions={states[id].transitions}
               id={id.toString()}

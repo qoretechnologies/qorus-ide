@@ -11,6 +11,8 @@ import { useContext, useMemo } from 'react';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
+  SaveColorEffect,
+  SelectorColorEffect,
   WarningColorEffect,
 } from '../../components/Field/multiPair';
 import Loader from '../../components/Loader';
@@ -43,7 +45,7 @@ export const InterfacesViewCollection = ({
   const { changeDraft, changeTab, qorus_instance, is_hosted_instance } =
     useContext(InitialContext);
 
-  const { value, loading, onDeleteRemoteClick, retry } =
+  const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
     useFetchInterfaces(type);
 
   const onDeleteClick = async (type, id?) => {
@@ -57,7 +59,6 @@ export const InterfacesViewCollection = ({
   };
 
   const getDraftsCount = () => {
-    console.log(value, type);
     return size(value.filter((item) => item.draft || item.hasDraft));
   };
 
@@ -152,8 +153,8 @@ export const InterfacesViewCollection = ({
               postMessage(
                 Messages.GET_INTERFACE_DATA,
                 {
-                  iface_kind: type,
-                  name: data?.name,
+                  type,
+                  id: data?.id,
                   include_tabs: true,
                 },
                 true
@@ -185,6 +186,16 @@ export const InterfacesViewCollection = ({
                     onDeleteClick(type, rest.id);
                   },
                 });
+              },
+            },
+            {
+              icon: 'ToggleLine',
+              effect: data?.enabled ? SaveColorEffect : SelectorColorEffect,
+              tooltip: data?.enabled ? 'Disable' : 'Enable',
+              size: 'tiny',
+              show: data?.supports_enable ? 'hover' : false,
+              onClick: () => {
+                onToggleEnabledClick(data.id, !data.enabled);
               },
             },
             {

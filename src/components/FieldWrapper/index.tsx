@@ -6,7 +6,9 @@ import {
   ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { IReqoreControlGroupProps } from '@qoretechnologies/reqore/dist/components/ControlGroup';
-import ReqoreIcon, { IReqoreIconProps } from '@qoretechnologies/reqore/dist/components/Icon';
+import ReqoreIcon, {
+  IReqoreIconProps,
+} from '@qoretechnologies/reqore/dist/components/Icon';
 import { IReqorePanelAction } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreTagAction } from '@qoretechnologies/reqore/dist/components/Tag';
 import { IReqoreTooltip } from '@qoretechnologies/reqore/dist/types/global';
@@ -18,7 +20,10 @@ import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
-import { TMessageListener, TPostMessage } from '../../hocomponents/withMessageHandler';
+import {
+  TMessageListener,
+  TPostMessage,
+} from '../../hocomponents/withMessageHandler';
 import { IQorusType } from '../Field/systemOptions';
 
 export interface IFieldWrapper {
@@ -41,7 +46,10 @@ export interface IFieldWrapper {
   inGroup?: boolean;
 }
 
-export const getGlobalDescriptionTooltip = (desc?: string, title?: string): IReqoreTooltip => ({
+export const getGlobalDescriptionTooltip = (
+  desc?: string,
+  title?: string
+): IReqoreTooltip => ({
   content: <ReactMarkdown>{desc}</ReactMarkdown>,
   intent: 'info',
   placement: 'right',
@@ -49,7 +57,10 @@ export const getGlobalDescriptionTooltip = (desc?: string, title?: string): IReq
   title,
 });
 
-export const getFieldDescriptionAction = (desc?: string, title?: string): IReqorePanelAction => ({
+export const getFieldDescriptionAction = (
+  desc?: string,
+  title?: string
+): IReqorePanelAction => ({
   as: ReqoreIcon,
   props: {
     icon: 'QuestionMark',
@@ -100,7 +111,7 @@ export const FieldWrapper = ({
   if (compact) {
     return (
       <ReqorePanel
-        size="small"
+        size='small'
         flat
         padded={false}
         ref={ref}
@@ -109,7 +120,11 @@ export const FieldWrapper = ({
           flexFlow: 'column',
         }}
       >
-        <ReqoreControlGroup fluid verticalAlign="flex-start" vertical={width < 400 || !inGroup}>
+        <ReqoreControlGroup
+          fluid
+          verticalAlign='flex-start'
+          vertical={width < 400 || !inGroup}
+        >
           {label || removable ? (
             <>
               <ReqoreTag
@@ -119,7 +134,13 @@ export const FieldWrapper = ({
                 label={label}
                 minimal
                 intent={isValid ? undefined : 'danger'}
-                icon={label ? (isValid ? 'CheckLine' : 'ErrorWarningLine') : undefined}
+                icon={
+                  label
+                    ? isValid
+                      ? 'CheckLine'
+                      : 'ErrorWarningLine'
+                    : undefined
+                }
                 actions={[
                   {
                     show: !!removable,
@@ -140,10 +161,10 @@ export const FieldWrapper = ({
     <ReqorePanel
       label={label}
       minimal
-      size="small"
+      size='small'
       responsiveTitle={false}
       collapsible={collapsible}
-      icon="PriceTagLine"
+      icon='PriceTagLine'
       intent={isValid ? undefined : 'danger'}
       badge={type}
       contentStyle={{
@@ -161,7 +182,7 @@ export const FieldWrapper = ({
     >
       {info && (
         <>
-          <ReqoreMessage intent="info" size="small">
+          <ReqoreMessage intent='info' size='small'>
             {info}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
@@ -193,7 +214,10 @@ export const ContentWrapper = styled.div`
   }
 `;
 
-export const ActionsWrapper = ({ children, ...rest }: IReqoreControlGroupProps) => (
+export const ActionsWrapper = ({
+  children,
+  ...rest
+}: IReqoreControlGroupProps) => (
   <ReqoreControlGroup {...rest}>{children}</ReqoreControlGroup>
 );
 
@@ -213,14 +237,26 @@ export interface IInterfaceCreatorPanel {
   fileName?: string;
   fields: IField[];
   selectedFields?: IField[];
-  setFields: (type: string, fields: IField[] | Function, activeId?: number) => void;
-  setSelectedFields: (type: string, fields: IField[] | Function, activeId?: number) => void;
+  setFields: (
+    type: string,
+    fields: IField[] | Function,
+    activeId?: number
+  ) => void;
+  setSelectedFields: (
+    type: string,
+    fields: IField[] | Function,
+    activeId?: number
+  ) => void;
   query?: string;
   setQuery: (type: string, value?: string) => void;
   selectedQuery?: string;
   setSelectedQuery: (type: string, value?: string) => void;
   activeId?: number;
-  onNameChange?: (activeId: number, newName: string, originalName?: string) => any;
+  onNameChange?: (
+    activeId: number,
+    newName: string,
+    originalName?: string
+  ) => any;
   isFormValid: (type: string, interfaceIndex?: number) => boolean;
   stepOneTitle?: string;
   stepTwoTitle?: string;
@@ -239,7 +275,11 @@ export interface IInterfaceCreatorPanel {
   initialData?: any;
   interfaceId?: string;
   initialInterfaceId?: string;
-  setInterfaceId: (interfaceType: string, id: string) => void;
+  setInterfaceId: (
+    interfaceType: string,
+    id: string,
+    interfaceIndex?: number
+  ) => void;
   disabledFields?: string[];
   hasClassConnections?: boolean;
   definitionsOnly?: boolean;
@@ -265,7 +305,11 @@ export interface IField {
   requestFieldData?: (name: string, key: string) => any;
   onChange?: IFieldChange;
   canBeNull?: boolean;
-  return_message?: { action?: string; object_type?: string; return_value?: string };
+  return_message?: {
+    action?: string;
+    object_type?: string;
+    return_value?: string;
+  };
   style?: React.CSSProperties;
   type?: string;
   default_value?: string | number | any;

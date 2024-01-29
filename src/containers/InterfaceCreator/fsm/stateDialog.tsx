@@ -4,18 +4,23 @@ import size from 'lodash/size';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
 import FSMView, {
-    IFSMMetadata,
-    IFSMState,
-    IFSMStates,
-    TAppAndAction,
-    TFSMVariables,
-    TVariableActionValue,
+  IFSMMetadata,
+  IFSMState,
+  IFSMStates,
+  TAppAndAction,
+  TFSMVariables,
+  TVariableActionValue,
 } from '.';
 import Content from '../../../components/Content';
 import CustomDialog from '../../../components/CustomDialog';
-import Connectors, { IProviderType } from '../../../components/Field/connectors';
+import Connectors, {
+  IProviderType,
+} from '../../../components/Field/connectors';
 import RadioField from '../../../components/Field/radioField';
-import { default as Select, default as SelectField } from '../../../components/Field/select';
+import {
+  default as Select,
+  default as SelectField,
+} from '../../../components/Field/select';
 import Options from '../../../components/Field/systemOptions';
 import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
@@ -23,21 +28,23 @@ import { Messages } from '../../../constants/messages';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
 import {
-    getRecursiveStatesConnectedtoState,
-    getStatesForTemplates,
-    getVariable,
-    removeFSMState,
+  getRecursiveStatesConnectedtoState,
+  getStatesForTemplates,
+  getVariable,
+  removeFSMState,
 } from '../../../helpers/fsm';
 import { getMaxExecutionOrderFromStates } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import withMessageHandler, { TPostMessage } from '../../../hocomponents/withMessageHandler';
+import withMessageHandler, {
+  TPostMessage,
+} from '../../../hocomponents/withMessageHandler';
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import ConfigItemManager from '../../ConfigItemManager';
 import ManageConfigButton from '../../ConfigItemManager/manageButton';
-import { QodexActionExec } from './ActionExec';
 import { QodexAppActionOptions } from './AppActionOptions';
 import ConnectorSelector from './connectorSelector';
 import { ConditionField } from './transitionDialog';
+import { QodexActionExec } from './ActionExec';
 
 export interface IFSMStateDialogProps {
   onClose: () => any;
@@ -111,7 +118,8 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   const [newData, setNewData] = useState<IFSMState>(data);
   const t = useContext(TextContext);
   const { qorus_instance } = useContext(InitialContext);
-  const [showConfigItemsManager, setShowConfigItemsManager] = useState<boolean>(false);
+  const [showConfigItemsManager, setShowConfigItemsManager] =
+    useState<boolean>(false);
 
   useUpdateEffect(() => {
     onSubmit(id, omit(newData, ['transitions']));
@@ -184,7 +192,8 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       if (value) {
         handleDataUpdate(
           'execution_order',
-          data?.execution_order || getMaxExecutionOrderFromStates(otherStates) + 1
+          data?.execution_order ||
+            getMaxExecutionOrderFromStates(otherStates) + 1
         );
       } else {
         handleDataUpdate('execution_order', null);
@@ -214,7 +223,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
         },
       });
     },
-    [newData.action?.value]
+    [JSON.stringify(newData.action?.value)]
   );
 
   const statesForTemplates = useMemo(() => {
@@ -282,9 +291,9 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             <Select
               value={actionValueType}
               fluid
-              description="The action to perform on the variable"
+              description='The action to perform on the variable'
               defaultItems={getActionValueTypeItems()}
-              className="fsm-action-type-selector"
+              className='fsm-action-type-selector'
               onChange={(_name, value) =>
                 handleDataUpdate('action', {
                   type: actionType,
@@ -310,9 +319,10 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                 readOnly
                 info={
                   <>
-                    <ReqoreMessage intent="info">
-                      This provider is read only because it is defined in a variable. You can edit
-                      the variable to change the provider configuration.
+                    <ReqoreMessage intent='info'>
+                      This provider is read only because it is defined in a
+                      variable. You can edit the variable to change the provider
+                      configuration.
                     </ReqoreMessage>
                     <ReqoreVerticalSpacer height={10} />
                   </>
@@ -362,7 +372,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             ) : null}
             {actionValueType && actionValueType === 'transaction' ? (
               <>
-                <ReqoreMessage intent="info">
+                <ReqoreMessage intent='info'>
                   Please select the transaction action you want to perform
                 </ReqoreMessage>
                 <ReqoreVerticalSpacer height={10} />
@@ -391,6 +401,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
         return (
           <>
             <QodexAppActionOptions
+              key={id}
               appName={actionValue?.app}
               actionName={actionValue?.action}
               connectedStates={statesForTemplates}
@@ -401,9 +412,11 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             />
             <ReqoreVerticalSpacer height={10} />
             <QodexActionExec
+              key={id}
               appName={actionValue?.app}
               actionName={actionValue?.action}
               options={actionValue?.options}
+              id={interfaceId}
             />
           </>
         );
@@ -421,20 +434,28 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               return_value: 'objects',
             }}
             autoSelect
-            placeholder="Select or create a Mapper"
-            onChange={(_name, value) => handleDataUpdate('action', { type: 'mapper', value })}
+            placeholder='Select or create a Mapper'
+            onChange={(_name, value) =>
+              handleDataUpdate('action', { type: 'mapper', value })
+            }
             value={newData?.action?.value}
             target_dir={target_dir}
-            name="action"
+            name='action'
             context={{
               default_values: newData?.injectedData
                 ? {
-                    name: `${newData.injectedData?.name ? `${newData.injectedData?.name}-` : ''}${
-                      newData.injectedData?.from
-                    }-${newData.injectedData?.to}`,
+                    name: `${
+                      newData.injectedData?.name
+                        ? `${newData.injectedData?.name}-`
+                        : ''
+                    }${newData.injectedData?.from}-${newData.injectedData?.to}`,
                     desc: `mapper to bridge ${newData.injectedData?.from} to ${
                       newData.injectedData?.to
-                    }${newData.injectedData?.name ? ` in flow ${newData.injectedData?.name}` : ''}`,
+                    }${
+                      newData.injectedData?.name
+                        ? ` in flow ${newData.injectedData?.name}`
+                        : ''
+                    }`,
                     version: '1.0',
                   }
                 : {
@@ -460,9 +481,11 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               return_value: 'objects',
             }}
             target_dir={target_dir}
-            onChange={(_name, value) => handleDataUpdate('action', { type: 'pipeline', value })}
+            onChange={(_name, value) =>
+              handleDataUpdate('action', { type: 'pipeline', value })
+            }
             value={newData?.action?.value}
-            name="action"
+            name='action'
             autoSelect
             reference={{
               iface_kind: 'pipeline',
@@ -475,7 +498,9 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
           <ConnectorSelector
             value={newData?.action?.value}
             target_dir={target_dir}
-            onChange={(value) => handleDataUpdate('action', { type: 'connector', value })}
+            onChange={(value) =>
+              handleDataUpdate('action', { type: 'connector', value })
+            }
             types={['input', 'input-output', 'output']}
           />
         );
@@ -483,12 +508,14 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       case 'apicall': {
         return (
           <Connectors
-            name="apicall"
+            name='apicall'
             inline
             minimal
             requiresRequest
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) => handleDataUpdate('action', { type: 'apicall', value })}
+            onChange={(_name, value) =>
+              handleDataUpdate('action', { type: 'apicall', value })
+            }
             value={newData?.action?.value}
           />
         );
@@ -496,12 +523,14 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       case 'send-message': {
         return (
           <Connectors
-            name="send-message"
+            name='send-message'
             inline
             minimal
             isMessage
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) => handleDataUpdate('action', { type: 'send-message', value })}
+            onChange={(_name, value) =>
+              handleDataUpdate('action', { type: 'send-message', value })
+            }
             value={newData?.action?.value}
           />
         );
@@ -519,7 +548,9 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             key={actionType}
             recordType={actionType}
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) => handleDataUpdate('action', { type: actionType, value })}
+            onChange={(_name, value) =>
+              handleDataUpdate('action', { type: actionType, value })
+            }
             value={newData?.action?.value}
           />
         );
@@ -574,8 +605,11 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       forEach(newData.states, (state: IFSMState, id: string) => {
         if (
           state.action?.type === 'var-action' &&
-          (state.action?.value as TVariableActionValue)?.var_type === 'autovar' &&
-          !variables?.autovar?.[(state.action?.value as TVariableActionValue).var_name]
+          (state.action?.value as TVariableActionValue)?.var_type ===
+            'autovar' &&
+          !variables?.autovar?.[
+            (state.action?.value as TVariableActionValue).var_name
+          ]
         ) {
           statesToRemove.push(id);
         }
@@ -596,7 +630,13 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
     }
 
     return variables;
-  }, [metadata.globalvar, newData.globalvar, newData.localvar, autoVars.value, newData.states]);
+  }, [
+    metadata.globalvar,
+    newData.globalvar,
+    newData.localvar,
+    autoVars.value,
+    newData.states,
+  ]);
 
   return (
     <>
@@ -623,17 +663,21 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                 predicate={(name) => fsmName !== name}
                 onChange={handleDataUpdate}
                 value={newData?.name}
-                name="name"
+                name='name'
               />
             </FieldWrapper>
           )}
 
           {newData.type === 'block' && (
             <>
-              <FieldGroup label="Block configuration">
-                <FieldWrapper label={t('field-label-block-logic')} isValid compact>
+              <FieldGroup label='Block configuration'>
+                <FieldWrapper
+                  label={t('field-label-block-logic')}
+                  isValid
+                  compact
+                >
                   <RadioField
-                    name="block-logic"
+                    name='block-logic'
                     onChange={(_name, value) => {
                       setBlockLogicType(value);
                     }}
@@ -645,9 +689,13 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                   />
                 </FieldWrapper>
               </FieldGroup>
-              <FieldWrapper label={t('field-label-block-config')} isValid compact>
+              <FieldWrapper
+                label={t('field-label-block-config')}
+                isValid
+                compact
+              >
                 <Options
-                  name="block-config"
+                  name='block-config'
                   onChange={handleDataUpdate}
                   value={newData?.['block-config']}
                   url={`/block/${newData?.['block-type'] || 'for'}`}
@@ -656,7 +704,10 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             </>
           )}
           {newData.type === 'block' && blockLogicType === 'fsm' ? (
-            <FieldWrapper label={t('FSM')} isValid={validateField('string', newData?.fsm)}>
+            <FieldWrapper
+              label={t('FSM')}
+              isValid={validateField('string', newData?.fsm)}
+            >
               <SelectField
                 get_message={{
                   action: 'creator-get-objects',
@@ -673,7 +724,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                 autoSelect
                 onChange={handleDataUpdate}
                 value={newData?.fsm}
-                name="fsm"
+                name='fsm'
               />
             </FieldWrapper>
           ) : null}
@@ -703,19 +754,24 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               ) : null}
             </>
           ) : null}
-          {newData.type === 'block' && newData['block-type'] !== 'transaction' ? (
-            <FieldGroup label="Types">
+          {newData.type === 'block' &&
+          newData['block-type'] !== 'transaction' ? (
+            <FieldGroup label='Types'>
               <FieldWrapper label={t('InputType')} isValid type={t('Optional')}>
                 <Connectors
-                  name="input-type"
+                  name='input-type'
                   isInitialEditing={data?.['input-type']}
                   onChange={handleDataUpdate}
                   value={newData?.['input-type']}
                 />
               </FieldWrapper>
-              <FieldWrapper label={t('OutputType')} isValid type={t('Optional')}>
+              <FieldWrapper
+                label={t('OutputType')}
+                isValid
+                type={t('Optional')}
+              >
                 <Connectors
-                  name="output-type"
+                  name='output-type'
                   isInitialEditing={data?.['output-type']}
                   onChange={handleDataUpdate}
                   value={newData?.['output-type']}
@@ -724,11 +780,19 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             </FieldGroup>
           ) : null}
           {newData.type === 'if' && (
-            <FieldGroup label="Condition configuration">
-              <ConditionField onChange={handleDataUpdate} data={newData} required />
-              <FieldWrapper label={t('InputOutputType')} isValid type={t('Optional')}>
+            <FieldGroup label='Condition configuration'>
+              <ConditionField
+                onChange={handleDataUpdate}
+                data={newData}
+                required
+              />
+              <FieldWrapper
+                label={t('InputOutputType')}
+                isValid
+                type={t('Optional')}
+              >
                 <Connectors
-                  name="input-output-type"
+                  name='input-output-type'
                   isInitialEditing={data['input-output-type']}
                   onChange={handleDataUpdate}
                   value={newData['input-output-type']}
@@ -772,7 +836,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
           onClose={() => setShowConfigItemsManager(false)}
         >
           <ConfigItemManager
-            type="fsm"
+            type='fsm'
             stateData={{
               id: newData.id,
               class_name: newData.action?.value?.['class'],
@@ -786,4 +850,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   );
 };
 
-export default withMessageHandler()(FSMStateDialog) as React.FC<IFSMStateDialogProps>;
+export default withMessageHandler()(
+  FSMStateDialog
+) as React.FC<IFSMStateDialogProps>;

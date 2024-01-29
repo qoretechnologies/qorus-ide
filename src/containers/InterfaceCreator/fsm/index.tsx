@@ -4,7 +4,6 @@ import {
   ReqoreMessage,
   ReqoreModal,
   ReqoreP,
-  ReqoreSpinner,
   ReqoreVerticalSpacer,
   useReqore,
   useReqoreProperty,
@@ -74,7 +73,6 @@ import {
 import {
   ITypeComparatorData,
   areTypesCompatible,
-  deleteDraft,
   fetchData,
   formatAndFixOptionsToKeyValuePairs,
   getDraftId,
@@ -86,9 +84,7 @@ import {
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
-import withMessageHandler, {
-  postMessage,
-} from '../../../hocomponents/withMessageHandler';
+import withMessageHandler from '../../../hocomponents/withMessageHandler';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
 import TinyGrid from '../../../images/graphy-dark.png';
@@ -804,11 +800,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       }
     },
     1500,
-    [metadata, states, inputCompatibility, outputCompatibility]
+    [JSON.stringify(metadata), JSON.stringify(states)]
   );
 
   useUpdateEffect(() => {
-    if (qorus_instance && isReady && !apps.loading) {
+    if (isReady && !apps.loading) {
       if (embedded || fsm) {
         let newStates = embedded ? states : cloneDeep(fsm?.states || {});
 
@@ -893,7 +889,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       setWrapperDimensions({ width, height });
     }
-  }, [qorus_instance, isReady, apps.loading]);
+  }, [isReady, apps.loading]);
 
   useEffect(() => {
     if (states && onStatesChange) {
@@ -1619,6 +1615,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           children: (
             <QodexTestRunModal
               apps={apps.apps}
+              id={interfaceId}
               data={{
                 type: 'fsm',
                 ...data,
@@ -1648,21 +1645,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       );
 
       if (result.ok) {
+        setInterfaceId(result.id);
+
         if (onSubmitSuccess) {
           onSubmitSuccess({
             ...metadata,
             states,
           });
-        }
-
-        const fileName = getDraftId(fsm, interfaceId);
-        deleteDraft('fsm', fileName, false);
-
-        if (result?.data?.fsm) {
-          init?.changeInitialData('fsm', result.data.fsm);
-        } else {
-          reset();
-          resetAllInterfaceData('fsm');
         }
       }
     };
@@ -2014,9 +2003,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   const reset = () => {
-    postMessage(Messages.RESET_CONFIG_ITEMS, {
-      iface_id: interfaceId,
-    });
     setStates(cloneDeep(fsm?.states || {}));
     setSelectedStates({});
     changeHistory.current = [JSON.stringify(cloneDeep(fsm?.states || {}))];
@@ -2363,11 +2349,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }
 
   if (!isReady || apps.loading) {
-    return (
-      <ReqoreSpinner iconColor='info' centered size='huge'>
-        {t('Loading...')}
-      </ReqoreSpinner>
-    );
+    return <Loader centered text={t('Loading...')} />;
   }
 
   if (showTransitionsToaster.current) {
