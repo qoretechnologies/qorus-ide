@@ -64,7 +64,8 @@ jobs:
           yarn install
           yarn build-prod
           yarn build-storybook --quiet
-          zip -r qorus-ide-develop.zip build
+          mkdir -p ./develop/ide && cp -R build/* develop/ide
+          zip -r qorus-ide-develop.zip develop
           chmod 644 qorus-ide-develop.zip
 
       - name: Publish to Chromatic
