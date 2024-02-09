@@ -1,7 +1,6 @@
 import {
+  ReqoreButton,
   ReqoreControlGroup,
-  ReqoreTabs,
-  ReqoreTabsContent,
   ReqoreTag,
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
@@ -11,7 +10,10 @@ import { useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
 import { filterTemplatesByType } from '../../helpers/functions';
 import Auto from './auto';
+import BooleanField from './boolean';
+import DateField from './date';
 import LongStringField from './longString';
+import Number from './number';
 
 /**
  * It checks if a string starts with a dollar sign, contains a colon, and if the text between the
@@ -61,12 +63,26 @@ export interface ITemplateFieldProps {
   name?: string;
   onChange?: (name: string, value: any) => void;
   // React element
-  component: React.FC<any>;
+  component?: React.FC<any>;
   interfaceContext?: string;
   allowTemplates?: boolean;
   templates?: IReqoreTextareaProps['templates'];
+  componentFromType?: boolean;
   [key: string]: any;
 }
+
+export const ComponentMap = {
+  string: LongStringField,
+  number: Number,
+  int: Number,
+  float: Number,
+  list: LongStringField,
+  hash: LongStringField,
+  binary: LongStringField,
+  bool: BooleanField,
+  boolean: BooleanField,
+  date: DateField,
+};
 
 export const TemplateField = ({
   value,
@@ -76,6 +92,7 @@ export const TemplateField = ({
   templates,
   interfaceContext,
   allowTemplates = true,
+  componentFromType,
   ...rest
 }: ITemplateFieldProps) => {
   const [isTemplate, setIsTemplate] = useState<boolean>(isValueTemplate(value));
@@ -95,30 +112,15 @@ export const TemplateField = ({
     }
   }, [templateValue]);
 
-  const disableTemplateTab =
-    !allowTemplates ||
-    (rest.type !== 'number' &&
-      rest.type !== 'boolean' &&
-      rest.type !== 'date' &&
-      rest.type !== 'bool' &&
-      rest.type !== 'int');
+  const showTemplateToggle =
+    allowTemplates &&
+    (rest.type === 'number' ||
+      rest.type === 'boolean' ||
+      rest.type === 'date' ||
+      rest.type === 'bool' ||
+      rest.type === 'int');
 
-  if (disableTemplateTab) {
-    return (
-      <Comp
-        value={value}
-        onChange={onChange}
-        name={name}
-        {...rest}
-        className={`${rest.className} template-selector`}
-        templates={
-          allowTemplates
-            ? filterTemplatesByType(templates, rest.type)
-            : undefined
-        }
-      />
-    );
-  }
+  const Component = componentFromType ? ComponentMap[rest.type] : Comp;
 
   if (rest.disabled) {
     if (isTemplate) {
@@ -133,61 +135,60 @@ export const TemplateField = ({
   }
 
   return (
-    <ReqoreTabs
-      activeTab={isTemplate ? 'template' : 'custom'}
-      activeTabIntent='info'
-      fill
-      size='small'
-      flat
-      padded={false}
-      tabsPadding='top'
-      tabs={[
-        {
-          id: 'custom',
-          label: t('Custom'),
-          icon: 'EditLine',
-          minimal: true,
-          flat: false,
-        },
-        {
-          id: 'template',
-          label: t('Template'),
-          icon: 'ExchangeDollarLine',
-          minimal: true,
-          flat: false,
-          fixed: true,
-        },
-      ]}
-      onTabChange={(newTabId: string): void => {
-        if (newTabId === 'custom') {
-          setIsTemplate(false);
-          setTemplateValue(null);
-          onChange(name, null);
-        } else {
-          setIsTemplate(true);
-          onChange(name, null);
-        }
-      }}
-    >
-      <ReqoreTabsContent tabId={'custom'}>
-        <Comp value={value} onChange={onChange} name={name} {...rest} />
-      </ReqoreTabsContent>
-      <ReqoreTabsContent tabId={'template'}>
-        <ReqoreControlGroup fluid stack fill>
-          <LongStringField
-            className='template-selector'
-            type='string'
-            name='templateVal'
-            value={templateValue}
-            templates={
-              allowTemplates
-                ? filterTemplatesByType(templates, rest.type)
-                : undefined
+    <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
+      {!isTemplate ? (
+        <Component
+          value={value}
+          onChange={onChange}
+          name={name}
+          {...rest}
+          className={`${rest.className} template-selector`}
+          templates={
+            allowTemplates
+              ? filterTemplatesByType(templates, rest.type)
+              : undefined
+          }
+        />
+      ) : (
+        <LongStringField
+          className='template-selector'
+          type='string'
+          name='templateVal'
+          value={templateValue}
+          templates={
+            allowTemplates
+              ? filterTemplatesByType(templates, rest.type)
+              : undefined
+          }
+          onChange={(_n, val) => setTemplateValue(val)}
+          {...rest}
+        />
+      )}
+
+      {showTemplateToggle && (
+        <ReqoreButton
+          fixed
+          icon='MoneyDollarCircleLine'
+          customTheme={{
+            main: isTemplate ? 'info:darken:1:0.3' : undefined,
+          }}
+          tooltip={isTemplate ? 'Use custom value' : 'Use a template'}
+          compact
+          flat={!isTemplate}
+          size={rest.size}
+          onClick={() => {
+            if (isTemplate) {
+              setIsTemplate(false);
+              setTemplateValue(null);
+              onChange(name, null);
+            } else {
+              setIsTemplate(true);
+              setTemplateValue(null);
+              onChange(name, null);
             }
-            onChange={(_n, val) => setTemplateValue(val)}
-          />
-        </ReqoreControlGroup>
-      </ReqoreTabsContent>
-    </ReqoreTabs>
+          }}
+        />
+      )}
+    </ReqoreControlGroup>
   );
 };

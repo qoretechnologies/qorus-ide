@@ -637,12 +637,12 @@ export const getDraftId = (
 };
 
 export const filterTemplatesByType = (
-  templates: IReqoreFormTemplates,
+  templates: IReqoreFormTemplates = {},
   fieldType: IQorusType = 'string'
 ): IReqoreFormTemplates => {
   const newTemplates = cloneDeep(templates);
 
-  newTemplates.items = newTemplates.items.reduce((newItems, item) => {
+  newTemplates.items = newTemplates.items?.reduce((newItems, item) => {
     if (item.divider) {
       return [...newItems, item];
     }
@@ -664,6 +664,24 @@ export const filterTemplatesByType = (
   }, []);
 
   return newTemplates;
+};
+
+export const findTemplate = (
+  templates: IReqoreFormTemplates,
+  value: string
+): IReqoreDropdownItem | undefined => {
+  let result: IReqoreDropdownItem | undefined = undefined;
+
+  templates.items?.forEach((item) => {
+    const val = item.items?.find((subItem) => subItem.value === value);
+
+    if (val) {
+      result = val;
+      return;
+    }
+  });
+
+  return result;
 };
 
 export const buildTemplates = (

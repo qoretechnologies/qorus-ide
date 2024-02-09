@@ -45,6 +45,17 @@ export interface IAutoFieldProps extends IField {
   disableSearchOptions?: boolean;
 }
 
+export const DefaultNoSoftTypes = [
+  { name: 'bool' },
+  { name: 'date' },
+  { name: 'string' },
+  { name: 'binary' },
+  { name: 'float' },
+  { name: 'list' },
+  { name: 'hash' },
+  { name: 'int' },
+];
+
 function AutoField<T = any>({
   name,
   onChange,
@@ -238,7 +249,9 @@ function AutoField<T = any>({
           type={currentType}
           fluid
           fixed={false}
+          showDescription={rest.showDescription}
           style={{ width: '100%' }}
+          size={rest.size}
         />
       );
     }
@@ -522,16 +535,7 @@ function AutoField<T = any>({
         { name: 'int' },
         { name: 'softint' },
       ]
-    : [
-        { name: 'bool' },
-        { name: 'date' },
-        { name: 'string' },
-        { name: 'binary' },
-        { name: 'float' },
-        { name: 'list' },
-        { name: 'hash' },
-        { name: 'int' },
-      ];
+    : DefaultNoSoftTypes;
 
   // Render type picker if the type is auto or any
   return (

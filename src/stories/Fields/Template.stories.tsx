@@ -24,6 +24,15 @@ export const StringComponent: StoryObj<typeof meta> = {
   },
 };
 
+export const BooleanComponent: StoryObj<typeof meta> = {
+  args: {
+    value: true,
+    type: 'boolean',
+    allowTemplates: true,
+    componentFromType: true,
+  },
+};
+
 export const TemplateValue: StoryObj<typeof meta> = {
   args: {
     component: Number,
@@ -37,7 +46,9 @@ export const ShowsTemplatesList: StoryObj<typeof meta> = {
   play: async () => {
     await waitFor(
       async () => {
-        await expect(document.querySelector('.template-selector')).toBeInTheDocument();
+        await expect(
+          document.querySelector('.template-selector')
+        ).toBeInTheDocument();
       },
       { timeout: 10000 }
     );
@@ -51,7 +62,25 @@ export const ShowsTemplatesListForString: StoryObj<typeof meta> = {
   play: async () => {
     await waitFor(
       async () => {
-        await expect(document.querySelector('.template-selector')).toBeInTheDocument();
+        await expect(
+          document.querySelector('.template-selector')
+        ).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(document.querySelector('.template-selector'));
+  },
+};
+
+export const ShowsTemplatesListForBoolean: StoryObj<typeof meta> = {
+  ...BooleanComponent,
+  play: async () => {
+    await waitFor(
+      async () => {
+        await expect(
+          document.querySelector('.template-selector')
+        ).toBeInTheDocument();
       },
       { timeout: 10000 }
     );
