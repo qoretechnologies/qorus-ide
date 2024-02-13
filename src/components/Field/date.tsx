@@ -6,8 +6,8 @@ import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import { getValueOrDefaultValue } from '../../helpers/validations';
 import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+  TMessageListener,
+  TPostMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -37,13 +37,17 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
   return_message,
   t,
   disabled,
+  ...rest
 }) => {
   const theme = useReqoreTheme();
   // Fetch data on mount
   useMount(() => {
     // Populate default value
     if (default_value) {
-      onChange(name, getValueOrDefaultValue(value, default_value || new Date(), false));
+      onChange(
+        name,
+        getValueOrDefaultValue(value, default_value || new Date(), false)
+      );
     }
     // Get backend data
     if (get_message && return_message) {
@@ -68,13 +72,14 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
 
   return (
     <StyledDateField
+      {...rest}
       theme={theme}
       // @ts-ignore
-      type="datetime-local"
+      type='datetime-local'
       disabled={disabled}
       placeholder={'YYYY-MM-DDT00:00:00Z'}
       // Make this datetime-local input have seconds
-      step="1"
+      step='1'
       fluid
       value={!value && !default_value ? undefined : value || default_value}
       onChange={handleInputChange}
@@ -83,6 +88,7 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
   );
 };
 
-export default compose(withMessageHandler(), withTextContext())(DateField) as FunctionComponent<
-  IDateField & IField & IFieldChange
->;
+export default compose(
+  withMessageHandler(),
+  withTextContext()
+)(DateField) as FunctionComponent<IDateField & IField & IFieldChange>;

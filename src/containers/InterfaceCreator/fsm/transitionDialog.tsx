@@ -3,26 +3,31 @@ import {
   ReqorePanel,
   ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
+import { size } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import every from 'lodash/every';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
 import uniq from 'lodash/uniq';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import styled from 'styled-components';
-import { IFSMState, IFSMStates, IFSMTransition } from '.';
+import { FSMContext, IFSMState, IFSMStates, IFSMTransition } from '.';
 import CustomDialog from '../../../components/CustomDialog';
+import {
+  ExpressionBuilder,
+  ExpressionDefaultValue,
+} from '../../../components/ExpressionBuilder';
 import { SaveColorEffect } from '../../../components/Field/multiPair';
 import MultiSelect from '../../../components/Field/multiSelect';
 import RadioField from '../../../components/Field/radioField';
 import String from '../../../components/Field/string';
-import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import Loader from '../../../components/Loader';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
-import { fetchData } from '../../../helpers/functions';
+import { prepareFSMDataForPublishing } from '../../../helpers/fsm';
+import { buildTemplates, fetchData } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import ConnectorSelector from './connectorSelector';
 
@@ -33,7 +38,11 @@ export interface IFSMTransitionDialogProps {
   editingData: { stateId: number; index: number }[];
 }
 
-export type TTransitionCondition = 'custom' | 'connector' | 'none';
+export type TTransitionCondition =
+  | 'custom'
+  | 'connector'
+  | 'none'
+  | 'expression';
 
 export interface IModifiedTransition {
   name: string;
@@ -63,7 +72,9 @@ export const getConditionType: (condition: any) => TTransitionCondition = (
   condition === null || condition === undefined
     ? 'none'
     : typeof condition === 'object'
-    ? 'connector'
+    ? condition?.class
+      ? 'connector'
+      : 'expression'
     : 'custom';
 
 export const isConditionValid: (
@@ -88,8 +99,10 @@ export const isConditionValid: (
 export const renderConditionField: (
   conditionType: TTransitionCondition,
   transitionData: IFSMTransition,
-  onChange: any
-) => any = (conditionType, transitionData, onChange) => {
+  onChange: any,
+  localTemplates: any
+) => any = (conditionType, transitionData, onChange, localTemplates) => {
+  console.log('conditionType', conditionType, transitionData?.condition);
   switch (conditionType) {
     case 'connector': {
       return (
@@ -111,15 +124,74 @@ export const renderConditionField: (
         />
       );
     }
+    case 'expression': {
+      return (
+        <ExpressionBuilder
+          value={transitionData?.condition}
+          onChange={(value) => onChange('condition', value)}
+          localTemplates={localTemplates}
+        />
+      );
+    }
     default:
       return null;
   }
 };
 
-export const ConditionField = ({ data, onChange, required }) => {
+export const ConditionField = ({
+  data,
+  onChange,
+  required,
+  connectedStates,
+  id,
+}) => {
   const t = useContext(TextContext);
+  const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
+  const [templates, setTemplates] = useState<any>();
+  const { metadata, states } = useContext(FSMContext);
 
   const conditionType = getConditionType(data.condition);
+
+  const fetchTemplates = useCallback(async () => {
+    if (!size(connectedStates)) {
+      setLoadingTemplates(false);
+      return;
+    }
+
+    setLoadingTemplates(true);
+
+    // Set the initial templates
+    setTemplates(buildTemplates());
+
+    // Get everything after "latest/" in action.options_url
+    // TODO: Param FSM with the whole FSM
+    // fsm_context: workflow | service | job
+    //
+    const response = await fetchData(`fsms/getStateData?context=ui`, 'PUT', {
+      fsm: prepareFSMDataForPublishing(metadata, states),
+      current_state: id,
+    });
+
+    console.log(response);
+
+    if (response.ok) {
+      setLoadingTemplates(false);
+
+      const data = response.data;
+
+      setTemplates(
+        buildTemplates(data, states, 'Use data from connected actions')
+      );
+    }
+  }, [JSON.stringify(connectedStates)]);
+
+  useEffect(() => {
+    fetchTemplates();
+  }, [JSON.stringify(connectedStates)]);
+
+  if (loadingTemplates) {
+    return <Loader text='Loading...' />;
+  }
 
   return (
     <>
@@ -132,26 +204,38 @@ export const ConditionField = ({ data, onChange, required }) => {
         <RadioField
           name='conditionType'
           onChange={(_name, value) => {
+            console.log(value);
             onChange(
               'condition',
               value === 'none'
                 ? null
                 : value === 'custom'
                 ? ''
+                : value === 'expression'
+                ? ExpressionDefaultValue
                 : { class: null }
             );
           }}
           value={conditionType || 'none'}
           items={
             required
-              ? [{ value: 'custom' }, { value: 'connector' }]
-              : [{ value: 'custom' }, { value: 'connector' }, { value: 'none' }]
+              ? [
+                  { value: 'custom' },
+                  { value: 'connector' },
+                  { value: 'expression' },
+                ]
+              : [
+                  { value: 'custom' },
+                  { value: 'connector' },
+                  { value: 'expression' },
+                  { value: 'none' },
+                ]
           }
         />
         {conditionType && conditionType !== 'none' ? (
           <>
             <ReqoreVerticalSpacer height={10} />
-            {renderConditionField(conditionType, data, onChange)}
+            {renderConditionField(conditionType, data, onChange, templates)}
           </>
         ) : null}
       </FieldWrapper>
@@ -211,7 +295,7 @@ export const TransitionEditor = ({
   };
 
   return (
-    <FieldGroup label={t('Info')} isValid>
+    <>
       {transitionData.branch && (
         <FieldWrapper label={t('Branch')} isValid compact>
           <RadioField
@@ -245,7 +329,7 @@ export const TransitionEditor = ({
           </FieldWrapper>
         </>
       )}
-    </FieldGroup>
+    </>
   );
 };
 

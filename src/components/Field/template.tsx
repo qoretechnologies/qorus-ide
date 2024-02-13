@@ -14,6 +14,7 @@ import BooleanField from './boolean';
 import DateField from './date';
 import LongStringField from './longString';
 import Number from './number';
+import { IQorusType } from './systemOptions';
 
 /**
  * It checks if a string starts with a dollar sign, contains a colon, and if the text between the
@@ -61,7 +62,7 @@ export const getTemplateValue = (value?: string) => {
 export interface ITemplateFieldProps {
   value?: any;
   name?: string;
-  onChange?: (name: string, value: any) => void;
+  onChange?: (name: string, value: any, type?: IQorusType) => void;
   // React element
   component?: React.FC<any>;
   interfaceContext?: string;
@@ -112,15 +113,23 @@ export const TemplateField = ({
     }
   }, [templateValue]);
 
+  const type = rest.type || rest.defaultType;
+
   const showTemplateToggle =
     allowTemplates &&
-    (rest.type === 'number' ||
-      rest.type === 'boolean' ||
-      rest.type === 'date' ||
-      rest.type === 'bool' ||
-      rest.type === 'int');
+    (type === 'number' ||
+      type === 'boolean' ||
+      type === 'date' ||
+      type === 'bool' ||
+      type === 'int' ||
+      type === 'integer' ||
+      type === 'float' ||
+      type === 'auto' ||
+      type === 'any');
 
-  const Component = componentFromType ? ComponentMap[rest.type] : Comp;
+  console.log(type, allowTemplates, showTemplateToggle);
+
+  const Component = componentFromType ? ComponentMap[type] : Comp;
 
   if (rest.disabled) {
     if (isTemplate) {
@@ -144,9 +153,7 @@ export const TemplateField = ({
           {...rest}
           className={`${rest.className} template-selector`}
           templates={
-            allowTemplates
-              ? filterTemplatesByType(templates, rest.type)
-              : undefined
+            allowTemplates ? filterTemplatesByType(templates, type) : undefined
           }
         />
       ) : (
@@ -156,9 +163,7 @@ export const TemplateField = ({
           name='templateVal'
           value={templateValue}
           templates={
-            allowTemplates
-              ? filterTemplatesByType(templates, rest.type)
-              : undefined
+            allowTemplates ? filterTemplatesByType(templates, type) : undefined
           }
           onChange={(_n, val) => setTemplateValue(val)}
           {...rest}

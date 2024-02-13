@@ -66,7 +66,6 @@ import SourceDirectories from './project_config/sourceDirs';
 import { DraftsProvider } from './providers/Drafts';
 import { ReleasePackageContainer as ReleasePackage } from './release_package/ReleasePackage';
 import { Dashboard } from './views/dashboard';
-const md5 = require('md5');
 
 const GlobalStyle = createGlobalStyle`
   html, body, #root {
@@ -78,6 +77,10 @@ const GlobalStyle = createGlobalStyle`
 
   .reqore-tree, .reqore-tree-textarea {
     height: 100%;
+  }
+
+  .color-picker {
+    background-color: transparent !important;
   }
 `;
 

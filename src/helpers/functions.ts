@@ -736,6 +736,28 @@ export const buildTemplates = (
   } as IReqoreDropdownProps;
 };
 
+export const getTypesAccepted = (
+  types: IQorusType[] = []
+): { name: IQorusType }[] | undefined => {
+  if (!size(types)) {
+    return undefined;
+  }
+
+  const _types = cloneDeep(types).filter(
+    (type) => type !== 'nothing' && type !== 'null'
+  );
+
+  if (size(_types) === 1) {
+    if (_types[0] === 'auto' || _types[0] === 'any') {
+      return undefined;
+    }
+
+    return [{ name: _types[0] }];
+  }
+
+  return _types.map((type) => ({ name: type }));
+};
+
 export const isTypeStringCompatible = (type: string) => {
   const strongType = type.replace('*', '').replace('soft', '');
 

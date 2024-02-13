@@ -41,10 +41,10 @@ import withMessageHandler, {
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import ConfigItemManager from '../../ConfigItemManager';
 import ManageConfigButton from '../../ConfigItemManager/manageButton';
+import { QodexActionExec } from './ActionExec';
 import { QodexAppActionOptions } from './AppActionOptions';
 import ConnectorSelector from './connectorSelector';
 import { ConditionField } from './transitionDialog';
-import { QodexActionExec } from './ActionExec';
 
 export interface IFSMStateDialogProps {
   onClose: () => any;
@@ -405,7 +405,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               appName={actionValue?.app}
               actionName={actionValue?.action}
               connectedStates={statesForTemplates}
-              fullConnectedStates={connectedStates}
               value={actionValue?.options}
               onChange={handleAppActionFieldChange}
               id={id}
@@ -784,6 +783,8 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               <ConditionField
                 onChange={handleDataUpdate}
                 data={newData}
+                id={id}
+                connectedStates={statesForTemplates}
                 required
               />
               <FieldWrapper

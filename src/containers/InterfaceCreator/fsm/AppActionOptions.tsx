@@ -3,7 +3,7 @@ import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/T
 import { size } from 'lodash';
 import { memo, useCallback, useContext, useEffect, useState } from 'react';
 import { useDebounce, useMount, useUpdateEffect } from 'react-use';
-import { FSMContext, IFSMStates, TFSMStateAction } from '.';
+import { FSMContext, TFSMStateAction } from '.';
 import { IApp, IAppAction } from '../../../components/AppCatalogue';
 import Options, {
   IOptions,
@@ -26,7 +26,6 @@ export interface IQodexAppActionOptionsProps {
   value: IOptions;
   onChange: (name: string, value: IOptions) => void;
   connectedStates?: TQodexStatesForTemplates;
-  fullConnectedStates?: IFSMStates;
   id?: string;
 }
 

@@ -142,6 +142,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
 export type IQorusType =
   | 'string'
   | 'int'
+  | 'integer'
   | 'list'
   | 'bool'
   | 'boolean'
@@ -159,7 +160,10 @@ export type IQorusType =
   | 'data-provider'
   | 'file-as-string'
   | 'connection'
-  | 'number';
+  | 'number'
+  | 'nothing'
+  | 'null'
+  | 'color';
 
 export type TOperatorValue = string | string[] | undefined | null;
 

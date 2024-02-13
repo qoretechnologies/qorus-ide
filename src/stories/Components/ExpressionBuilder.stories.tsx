@@ -174,7 +174,7 @@ export const WithIntType: Story = {
   args: {
     type: 'int',
     value: {
-      exp: 'CONTAINS',
+      exp: 'GREATER-THAN-OR-EQUALS',
       args: [
         {
           type: 'int',
@@ -182,7 +182,7 @@ export const WithIntType: Story = {
         },
         {
           type: 'int',
-          value: 'es',
+          value: 20,
         },
       ],
     },
@@ -190,5 +190,19 @@ export const WithIntType: Story = {
 };
 
 export const WithSelectableType: Story = {
-  args: {},
+  args: {
+    value: {
+      exp: 'EQUALS',
+      args: [
+        {
+          type: 'bool',
+          value: '$local:test-bool',
+        },
+        {
+          type: 'bool',
+          value: true,
+        },
+      ],
+    },
+  },
 };

@@ -10,17 +10,19 @@ import {
 import { TReqoreHexColor } from '@qoretechnologies/reqore/dist/components/Effect';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { getReadableColorFrom } from '@qoretechnologies/reqore/dist/helpers/colors';
-import { clone, cloneDeep, debounce, set, size } from 'lodash';
+import { clone, cloneDeep, set, size } from 'lodash';
 import { darken, rgba } from 'polished';
 import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
-import { fetchData } from '../../helpers/functions';
+import { fetchData, getTypesAccepted } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
-import { DefaultNoSoftTypes } from '../Field/auto';
+import { useTemplates } from '../../hooks/useTemplates';
+import auto, { DefaultNoSoftTypes } from '../Field/auto';
 import Select from '../Field/select';
-import { IQorusType } from '../Field/systemOptions';
+import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
 
+export const ExpressionDefaultValue = { args: [] };
 export const StyledExpressionItem = styled.div`
   position: relative;
   overflow: unset;
@@ -62,7 +64,6 @@ const StyledExpressionItemLabel = styled.div`
 export interface IExpression {
   exp?: string;
   args?: IExpression[];
-  template?: string;
   value?: any;
   type?: IQorusType;
 }
@@ -76,15 +77,18 @@ export interface IExpressionSchema {
   type: number;
   varargs: boolean;
   subtype: 1 | 2;
-  args: {
-    type_code: IQorusType;
-    type: IQorusType;
-  }[];
+  args: (Omit<IOptionsSchemaArg, 'type'> & {
+    type: {
+      base_type: IQorusType;
+      name: string;
+      types_accepted: IQorusType[];
+    };
+  })[];
   symbol: string;
 }
 
 export interface IExpressionBuilderProps {
-  templates?: IReqoreFormTemplates;
+  localTemplates?: IReqoreFormTemplates;
   value?: IExpression;
   isChild?: boolean;
   level?: number;
@@ -97,7 +101,7 @@ export interface IExpressionBuilderProps {
 export interface IExpressionProps extends IExpressionBuilderProps {}
 
 export const Expression = ({
-  templates,
+  localTemplates,
   value = { args: [] },
   isChild,
   type,
@@ -106,7 +110,7 @@ export const Expression = ({
 }: IExpressionProps) => {
   const [firstArgument, ...rest] = value.args;
 
-  const firstParamType = firstArgument?.type || type;
+  const firstParamType = firstArgument?.type || type || 'string';
 
   const expressions = useAsyncRetry<IExpressionSchema[]>(async () => {
     if (!firstParamType) {
@@ -176,81 +180,101 @@ export const Expression = ({
     );
   };
 
-  const updateArg = debounce(
-    (val: string | number | boolean, index: number = 0) => {
-      const args = clone(value.args);
+  const updateArg = (
+    val: string | number | boolean,
+    index: number = 0,
+    type?: IQorusType
+  ) => {
+    const args = clone(value.args);
 
-      args[index] = {
-        ...args[index],
-        value: val,
-      };
+    args[index] = {
+      ...args[index],
+      value: val,
+      type: type || args[index]?.type,
+    };
 
-      console.log(
-        'UPDATING ARG',
-        val,
-        {
-          ...value,
-          args,
-        },
-        path
-      );
-      // let _type = type;
-      // // Check if the value is a template
-      // if (typeof val === 'string' && val.startsWith('$')) {
-      //   const template = findTemplate(templates, val);
-      //   if (template) {
-      //     _type = template.badge as IQorusType;
-      //   }
-      // }
+    console.log('UPDATING ARG', val, index, type);
+    // let _type = type;
+    // // Check if the value is a template
+    // if (typeof val === 'string' && val.startsWith('$')) {
+    //   const template = findTemplate(templates, val);
+    //   if (template) {
+    //     _type = template.badge as IQorusType;
+    //   }
+    // }
 
-      onValueChange(
-        {
-          ...value,
-          args,
-        },
-        path
-      );
-    },
-    300
-  );
+    onValueChange(
+      {
+        ...value,
+        args,
+      },
+      path
+    );
+  };
 
   const selectedExpression = expressions.value?.find(
     (exp) => exp.name === value.exp
   );
   const restOfArgs = selectedExpression?.args.slice(1);
 
+  console.log(
+    'SELECTED EXPRESSION',
+    selectedExpression,
+    value.exp,
+    expressions,
+    firstArgument,
+    firstParamType
+  );
+
   return (
     <StyledExpressionItem
       isChild={isChild}
       as={ReqoreControlGroup}
       fluid={false}
+      fill
       size='small'
       style={{
         marginLeft: isChild ? 30 : undefined,
       }}
     >
-      <Select
-        name='type'
-        defaultItems={DefaultNoSoftTypes}
-        value={firstArgument?.type || type}
-        onChange={(_name, value) => {
-          updateType(value);
-        }}
-      />
-      {firstParamType && (
-        <TemplateField
-          componentFromType
-          key={firstParamType}
-          type={firstParamType}
-          value={firstArgument?.value}
-          onChange={(name, value) => {
-            updateArg(value);
+      {!type && (
+        <Select
+          name='type'
+          defaultItems={DefaultNoSoftTypes}
+          value={firstArgument?.type || type || 'string'}
+          onChange={(_name, value) => {
+            updateType(value);
           }}
-          templates={templates}
-          allowTemplates
-          fluid={false}
-          fixed={true}
         />
+      )}
+      {firstParamType && (
+        <ReqoreControlGroup vertical>
+          <ReqoreP
+            size='tiny'
+            effect={{
+              uppercase: true,
+              spaced: 1,
+              weight: 'bold',
+              opacity: 0.6,
+            }}
+          >
+            {selectedExpression?.args[0].display_name}
+          </ReqoreP>
+          <TemplateField
+            component={auto}
+            key={firstParamType}
+            type={firstParamType}
+            defaultType={firstParamType}
+            value={firstArgument?.value}
+            onChange={(name, value) => {
+              updateArg(value);
+            }}
+            templates={localTemplates}
+            allowTemplates
+            fluid={false}
+            fixed={true}
+          />
+        </ReqoreControlGroup>
       )}
       {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
         <Select
@@ -273,21 +297,52 @@ export const Expression = ({
           size='small'
         />
       ) : null}
-      {restOfArgs?.map((arg, index) => (
-        <TemplateField
-          key={index}
-          componentFromType
-          type={firstParamType}
-          value={rest[index]?.value}
-          templates={templates}
-          allowTemplates
-          onChange={(_name, value) => {
-            updateArg(value, index + 1);
-          }}
-          fluid={false}
-          fixed={true}
-        />
-      ))}
+      {firstArgument?.value !== undefined &&
+      firstArgument?.value !== null &&
+      validateField(firstParamType, firstArgument?.value) &&
+      selectedExpression
+        ? restOfArgs?.map((arg, index) => (
+            <ReqoreControlGroup vertical>
+              <ReqoreP
+                size='tiny'
+                effect={{
+                  uppercase: true,
+                  spaced: 1,
+                  weight: 'bold',
+                  opacity: 0.6,
+                }}
+              >
+                {arg.display_name}
+              </ReqoreP>
+              <TemplateField
+                key={index}
+                component={auto}
+                noSoft
+                defaultType={arg.type.base_type}
+                defaultInternalType={
+                  size(getTypesAccepted(arg.type.types_accepted)) === 1
+                    ? getTypesAccepted(arg.type.types_accepted)[0].name
+                    : rest[index]?.type || firstParamType
+                }
+                type={
+                  size(getTypesAccepted(arg.type.types_accepted)) === 1
+                    ? getTypesAccepted(arg.type.types_accepted)[0].name
+                    : rest[index]?.type || firstParamType
+                }
+                allowedTypes={getTypesAccepted(arg.type.types_accepted)}
+                canBeNull={false}
+                value={rest[index]?.value}
+                templates={localTemplates}
+                allowTemplates
+                onChange={(_name, value, type) => {
+                  updateArg(value, index + 1, type);
+                }}
+                fluid={false}
+                fixed={true}
+              />
+            </ReqoreControlGroup>
+          ))
+        : null}
       {validateField(firstParamType, firstArgument?.value) &&
       selectedExpression ? (
         <>
@@ -320,8 +375,8 @@ export const Expression = ({
 };
 
 export const ExpressionBuilder = ({
-  templates,
-  value = { args: [] },
+  localTemplates,
+  value = ExpressionDefaultValue,
   isChild,
   level = 0,
   path,
@@ -329,7 +384,16 @@ export const ExpressionBuilder = ({
   onChange,
   onValueChange,
 }: IExpressionBuilderProps) => {
+  const templates = useTemplates(true, localTemplates);
   const theme = useReqoreTheme();
+
+  if (templates.loading) {
+    return (
+      <ReqoreSpinner type={5} size='small'>
+        Loading...
+      </ReqoreSpinner>
+    );
+  }
 
   const handleChange = (newValue, newPath) => {
     if (onChange) {
@@ -372,6 +436,7 @@ export const ExpressionBuilder = ({
           size='small'
           fill
           style={{ position: 'relative' }}
+          wrap
         >
           <StyledExpressionItemLabel
             as={ReqoreP}
@@ -397,7 +462,7 @@ export const ExpressionBuilder = ({
           {value.args?.map((arg, index) => (
             <ExpressionBuilder
               value={arg}
-              templates={templates}
+              localTemplates={templates.value}
               key={index}
               isChild
               path={`${path ? `${path}.` : ''}args.${index}`}
@@ -413,7 +478,7 @@ export const ExpressionBuilder = ({
 
   return (
     <Expression
-      templates={templates}
+      localTemplates={templates.value}
       value={value}
       isChild={isChild}
       type={type}
