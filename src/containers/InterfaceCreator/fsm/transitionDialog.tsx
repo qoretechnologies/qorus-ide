@@ -102,7 +102,6 @@ export const renderConditionField: (
   onChange: any,
   localTemplates: any
 ) => any = (conditionType, transitionData, onChange, localTemplates) => {
-  console.log('conditionType', conditionType, transitionData?.condition);
   switch (conditionType) {
     case 'connector': {
       return (
@@ -172,8 +171,6 @@ export const ConditionField = ({
       current_state: id,
     });
 
-    console.log(response);
-
     if (response.ok) {
       setLoadingTemplates(false);
 
@@ -204,7 +201,6 @@ export const ConditionField = ({
         <RadioField
           name='conditionType'
           onChange={(_name, value) => {
-            console.log(value);
             onChange(
               'condition',
               value === 'none'

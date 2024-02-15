@@ -67,6 +67,7 @@ export interface ISelectField extends IField {
   context?: any;
   className?: string;
   showDescription?: boolean;
+  minimal?: boolean;
 }
 
 export const StyledDialogSelectItem = styled.div`
@@ -441,20 +442,22 @@ const SelectField: React.FC<
             : 'ArrowDownSFill'
         }
         rightIcon={filteredItems[0].desc ? 'ListUnordered' : undefined}
-        effect={{
-          gradient: {
-            colors: {
-              0: value ? 'info' : 'main',
-              100: hasError(items, value || filteredItems[0].name)
-                ? 'danger:darken'
-                : hasWarning(items, value || filteredItems[0].name)
-                ? 'warning'
-                : value
-                ? 'info'
-                : 'main',
+        effect={
+          !rest.minimal && {
+            gradient: {
+              colors: {
+                0: value ? 'info' : 'main',
+                100: hasError(items, value || filteredItems[0].name)
+                  ? 'danger:darken'
+                  : hasWarning(items, value || filteredItems[0].name)
+                  ? 'warning'
+                  : value
+                  ? 'info'
+                  : 'main',
+              },
             },
-          },
-        }}
+          }
+        }
         {...rest}
       />
     );
@@ -628,21 +631,23 @@ const SelectField: React.FC<
                   'Select from available values'
                 )}
                 disabled={disabled}
-                effect={{
-                  gradient: {
-                    direction: 'to right',
-                    colors: {
-                      0: value ? 'info' : 'main',
-                      100: hasError(items, value)
-                        ? 'danger:darken'
-                        : hasWarning(items, value)
-                        ? 'warning'
-                        : value
-                        ? 'info'
-                        : 'main',
+                effect={
+                  !rest.minimal && {
+                    gradient: {
+                      direction: 'to right',
+                      colors: {
+                        0: value ? 'info' : 'main',
+                        100: hasError(items, value)
+                          ? 'danger:darken'
+                          : hasWarning(items, value)
+                          ? 'warning'
+                          : value
+                          ? 'info'
+                          : 'main',
+                      },
                     },
-                  },
-                }}
+                  }
+                }
                 className={className}
               >
                 {value
@@ -686,12 +691,14 @@ const SelectField: React.FC<
                   className: 'q-select-input',
                 }}
                 description={getItemShortDescription(value) || description}
-                effect={{
-                  gradient: {
-                    direction: 'to left',
-                    colors: value ? 'info' : 'main',
-                  },
-                }}
+                effect={
+                  !rest.minimal && {
+                    gradient: {
+                      direction: 'to left',
+                      colors: value ? 'info' : 'main',
+                    },
+                  }
+                }
               >
                 {value
                   ? getLabel(items, value)

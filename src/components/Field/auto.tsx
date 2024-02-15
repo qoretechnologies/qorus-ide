@@ -53,15 +53,15 @@ export interface IAutoFieldProps extends IField {
 }
 
 export const DefaultNoSoftTypes = [
-  { name: 'bool' },
-  { name: 'date' },
-  { name: 'string' },
-  { name: 'binary' },
-  { name: 'float' },
-  { name: 'list' },
-  { name: 'hash' },
-  { name: 'int' },
-  { name: 'color' },
+  { name: 'bool', display_name: 'True/False' },
+  { name: 'date', display_name: 'Date' },
+  { name: 'string', display_name: 'Text' },
+  { name: 'binary', display_name: 'Binary' },
+  { name: 'float', display_name: 'Decimal' },
+  { name: 'list', display_name: 'List' },
+  { name: 'hash', display_name: 'Key/Value {}' },
+  { name: 'int', display_name: 'Integer' },
+  { name: 'color', display_name: 'Color' },
 ];
 
 function AutoField<T = any>({
@@ -185,7 +185,6 @@ function AutoField<T = any>({
   });
 
   const _canBeNull = (type = currentType) => {
-    console.log(type);
     if (type === 'any' || type === 'Any' || canBeNull) {
       return true;
     }
@@ -558,8 +557,6 @@ function AutoField<T = any>({
     }
   };
 
-  console.log(allowedTypes, defaultType, currentType);
-
   const showPicker =
     size(allowedTypes) > 1 ||
     (!isSetToNull &&
@@ -589,8 +586,6 @@ function AutoField<T = any>({
         ]
       : DefaultNoSoftTypes);
 
-  console.log(canBeNull, _canBeNull());
-
   // Render type picker if the type is auto or any
   return (
     <div
@@ -603,9 +598,11 @@ function AutoField<T = any>({
         overflowY: arg_schema && level === 0 ? 'auto' : undefined,
       }}
     >
-      <ReqoreControlGroup fill>
+      <ReqoreControlGroup fill={rest.fill}>
         {showPicker && (
           <SelectField
+            flat
+            minimal={rest.minimal}
             size={rest.size}
             name='type'
             defaultItems={types}

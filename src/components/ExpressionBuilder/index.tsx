@@ -10,7 +10,7 @@ import {
 import { TReqoreHexColor } from '@qoretechnologies/reqore/dist/components/Effect';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { getReadableColorFrom } from '@qoretechnologies/reqore/dist/helpers/colors';
-import { clone, cloneDeep, set, size } from 'lodash';
+import { clone, cloneDeep, get, set, size, unset } from 'lodash';
 import { darken, rgba } from 'polished';
 import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
@@ -22,18 +22,18 @@ import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
 
-export const ExpressionDefaultValue = { args: [] };
+export const ExpressionDefaultValue = { args: [{ is_context: true }] };
 export const StyledExpressionItem = styled.div`
   position: relative;
   overflow: unset;
 
-  ${({ isChild }) =>
+  ${({ isChild, isAndOr }) =>
     isChild &&
     css`
       &::before {
         content: '';
         position: absolute;
-        top: 11px;
+        bottom: ${isAndOr ? '50%' : '11px'};
         left: -10px;
         width: 10px;
         height: 1px;
@@ -66,6 +66,7 @@ export interface IExpression {
   args?: IExpression[];
   value?: any;
   type?: IQorusType;
+  is_context?: boolean;
 }
 
 export interface IExpressionSchema {
@@ -95,14 +96,14 @@ export interface IExpressionBuilderProps {
   type?: IQorusType;
   path?: string;
   onChange?: (value: IExpression) => void;
-  onValueChange?: (value: IExpression, path: string) => void;
+  onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
 }
 
 export interface IExpressionProps extends IExpressionBuilderProps {}
 
 export const Expression = ({
   localTemplates,
-  value = { args: [] },
+  value = ExpressionDefaultValue,
   isChild,
   type,
   path,
@@ -142,16 +143,14 @@ export const Expression = ({
     );
   }
 
-  const updateType = (val: IQorusType) => {
-    console.log('UPDATING TYPE');
+  const updateType = (val: IQorusType, isContext?: boolean) => {
     onValueChange(
       {
         args: [
           {
-            ...firstArgument,
             type: val,
+            is_context: isContext || false,
           },
-          ...rest,
         ],
       },
       path
@@ -159,7 +158,6 @@ export const Expression = ({
   };
 
   const updateExp = (val: string) => {
-    console.log('UPDATING EXP');
     onValueChange(
       {
         ...value,
@@ -170,11 +168,10 @@ export const Expression = ({
   };
 
   const updateExpToAndOr = (val: 'AND' | 'OR') => {
-    console.log('UPDATING ARG TO AND OR OR');
     onValueChange(
       {
         exp: val,
-        args: [value, { args: [] }],
+        args: [value, ExpressionDefaultValue],
       },
       path
     );
@@ -193,16 +190,6 @@ export const Expression = ({
       type: type || args[index]?.type,
     };
 
-    console.log('UPDATING ARG', val, index, type);
-    // let _type = type;
-    // // Check if the value is a template
-    // if (typeof val === 'string' && val.startsWith('$')) {
-    //   const template = findTemplate(templates, val);
-    //   if (template) {
-    //     _type = template.badge as IQorusType;
-    //   }
-    // }
-
     onValueChange(
       {
         ...value,
@@ -212,26 +199,22 @@ export const Expression = ({
     );
   };
 
+  const handleRemoveClick = () => {
+    onValueChange?.(undefined, path, true);
+  };
+
   const selectedExpression = expressions.value?.find(
     (exp) => exp.name === value.exp
   );
   const restOfArgs = selectedExpression?.args.slice(1);
-
-  console.log(
-    'SELECTED EXPRESSION',
-    selectedExpression,
-    value.exp,
-    expressions,
-    firstArgument,
-    firstParamType
-  );
 
   return (
     <StyledExpressionItem
       isChild={isChild}
       as={ReqoreControlGroup}
       fluid={false}
-      fill
+      wrap
+      verticalAlign='flex-end'
       size='small'
       style={{
         marginLeft: isChild ? 30 : undefined,
@@ -240,11 +223,21 @@ export const Expression = ({
       {!type && (
         <Select
           name='type'
-          defaultItems={DefaultNoSoftTypes}
-          value={firstArgument?.type || type || 'string'}
+          defaultItems={[{ name: 'Context' }, ...DefaultNoSoftTypes]}
+          value={
+            firstArgument?.is_context
+              ? 'Context'
+              : firstArgument?.type || type || 'Context'
+          }
           onChange={(_name, value) => {
-            updateType(value);
+            updateType(
+              value === 'Context' ? undefined : value,
+              value === 'Context'
+            );
           }}
+          minimal
+          flat
+          customTheme={{ main: 'info:darken:1:0.1' }}
         />
       )}
       {firstParamType && (
@@ -262,15 +255,20 @@ export const Expression = ({
           </ReqoreP>
           <TemplateField
             component={auto}
+            minimal
             key={firstParamType}
-            type={firstParamType}
-            defaultType={firstParamType}
+            type={firstArgument?.is_context ? 'Context' : firstParamType}
+            defaultType={firstArgument?.is_context ? 'Context' : firstParamType}
             value={firstArgument?.value}
-            onChange={(name, value) => {
-              updateArg(value);
+            onChange={(name, value, type) => {
+              if (type !== 'any' && type !== 'auto') {
+                updateArg(value, 0, type);
+              }
             }}
             templates={localTemplates}
             allowTemplates
+            allowCustomValues={!firstArgument?.is_context}
+            filterTemplates={!firstArgument?.is_context}
             fluid={false}
             fixed={true}
           />
@@ -278,6 +276,8 @@ export const Expression = ({
       )}
       {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
         <Select
+          minimal
+          flat
           value={value?.exp}
           fluid={false}
           fixed={true}
@@ -316,6 +316,7 @@ export const Expression = ({
               </ReqoreP>
               <TemplateField
                 key={index}
+                minimal
                 component={auto}
                 noSoft
                 defaultType={arg.type.base_type}
@@ -370,6 +371,16 @@ export const Expression = ({
           />
         </>
       ) : null}
+      <ReqoreButton
+        minimal
+        flat
+        compact
+        intent='danger'
+        textAlign='center'
+        icon='DeleteBinLine'
+        fixed
+        onClick={handleRemoveClick}
+      />
     </StyledExpressionItem>
   );
 };
@@ -384,7 +395,7 @@ export const ExpressionBuilder = ({
   onChange,
   onValueChange,
 }: IExpressionBuilderProps) => {
-  const templates = useTemplates(true, localTemplates);
+  const templates = useTemplates(!isChild, localTemplates);
   const theme = useReqoreTheme();
 
   if (templates.loading) {
@@ -395,7 +406,11 @@ export const ExpressionBuilder = ({
     );
   }
 
-  const handleChange = (newValue, newPath) => {
+  const handleChange = (
+    newValue: IExpression,
+    newPath: string,
+    remove?: boolean
+  ) => {
     if (onChange) {
       if (!newPath) {
         onChange(newValue);
@@ -404,11 +419,40 @@ export const ExpressionBuilder = ({
 
       let clonedValue = cloneDeep(value);
 
-      set(clonedValue, newPath, newValue);
+      if (remove) {
+        unset(clonedValue, newPath);
+        const pathArray = newPath.split('.');
+
+        pathArray.pop();
+
+        const parentPath = pathArray.join('.');
+        let parent = get(clonedValue, parentPath);
+
+        parent = parent.filter((item: any) => item);
+
+        if (size(parent) === 1) {
+          pathArray.pop();
+
+          const grandParentPath = pathArray.join('.');
+
+          if (grandParentPath === '') {
+            onChange(parent[0]);
+            return;
+          }
+
+          console.log('grandParentPath', grandParentPath, parent[0]);
+
+          set(clonedValue, grandParentPath, parent[0]);
+        } else {
+          set(clonedValue, parentPath, parent);
+        }
+      } else {
+        set(clonedValue, newPath, newValue);
+      }
 
       onChange(clonedValue);
     } else if (onValueChange) {
-      onValueChange(newValue, newPath);
+      onValueChange(newValue, newPath, remove);
     }
   };
 
@@ -417,6 +461,7 @@ export const ExpressionBuilder = ({
       <StyledExpressionItem
         as={ReqorePanel}
         isChild={isChild}
+        isAndOr
         minimal
         size='small'
         flat
@@ -434,7 +479,6 @@ export const ExpressionBuilder = ({
           vertical
           fluid
           size='small'
-          fill
           style={{ position: 'relative' }}
           wrap
         >
@@ -450,9 +494,7 @@ export const ExpressionBuilder = ({
             }}
             onClick={() => {
               handleChange(
-                {
-                  args: [],
-                },
+                ExpressionDefaultValue,
                 `${path ? `${path}.` : ''}args.${size(value.args)}`
               );
             }}

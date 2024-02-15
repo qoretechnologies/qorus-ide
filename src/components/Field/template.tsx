@@ -1,6 +1,7 @@
 import {
   ReqoreButton,
   ReqoreControlGroup,
+  ReqoreDropdown,
   ReqoreTag,
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
@@ -69,6 +70,8 @@ export interface ITemplateFieldProps {
   allowTemplates?: boolean;
   templates?: IReqoreTextareaProps['templates'];
   componentFromType?: boolean;
+  alloweCustomValues?: boolean;
+  filterTemplates?: boolean;
   [key: string]: any;
 }
 
@@ -93,10 +96,14 @@ export const TemplateField = ({
   templates,
   interfaceContext,
   allowTemplates = true,
+  allowCustomValues = true,
+  filterTemplates = true,
   componentFromType,
   ...rest
 }: ITemplateFieldProps) => {
-  const [isTemplate, setIsTemplate] = useState<boolean>(isValueTemplate(value));
+  const [isTemplate, setIsTemplate] = useState<boolean>(
+    isValueTemplate(value) || !allowCustomValues
+  );
   const [templateValue, setTemplateValue] = useState<string | null>(value);
   const t = useContext(TextContext);
 
@@ -116,6 +123,7 @@ export const TemplateField = ({
   const type = rest.type || rest.defaultType;
 
   const showTemplateToggle =
+    allowCustomValues &&
     allowTemplates &&
     (type === 'number' ||
       type === 'boolean' ||
@@ -126,8 +134,6 @@ export const TemplateField = ({
       type === 'float' ||
       type === 'auto' ||
       type === 'any');
-
-  console.log(type, allowTemplates, showTemplateToggle);
 
   const Component = componentFromType ? ComponentMap[type] : Comp;
 
@@ -145,7 +151,7 @@ export const TemplateField = ({
 
   return (
     <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
-      {!isTemplate ? (
+      {!isTemplate && (
         <Component
           value={value}
           onChange={onChange}
@@ -153,22 +159,45 @@ export const TemplateField = ({
           {...rest}
           className={`${rest.className} template-selector`}
           templates={
-            allowTemplates ? filterTemplatesByType(templates, type) : undefined
+            allowTemplates
+              ? filterTemplates
+                ? filterTemplatesByType(templates, type)
+                : templates
+              : undefined
           }
         />
-      ) : (
+      )}
+      {isTemplate && !showTemplateToggle && allowCustomValues ? (
         <LongStringField
           className='template-selector'
           type='string'
           name='templateVal'
           value={templateValue}
           templates={
-            allowTemplates ? filterTemplatesByType(templates, type) : undefined
+            allowTemplates
+              ? filterTemplates
+                ? filterTemplatesByType(templates, type)
+                : templates
+              : undefined
           }
           onChange={(_n, val) => setTemplateValue(val)}
           {...rest}
         />
-      )}
+      ) : null}
+      {isTemplate && (!allowCustomValues || showTemplateToggle) ? (
+        <ReqoreDropdown
+          onItemSelect={(item) =>
+            onChange(name, item.value, item.badge as IQorusType)
+          }
+          items={
+            filterTemplates
+              ? filterTemplatesByType(templates, type)?.items
+              : templates?.items
+          }
+          label={value || 'Select Template'}
+          filterable
+        />
+      ) : null}
 
       {showTemplateToggle && (
         <ReqoreButton

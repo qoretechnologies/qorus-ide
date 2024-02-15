@@ -118,6 +118,7 @@ export const FieldWrapper = ({
         contentStyle={{
           display: 'flex',
           flexFlow: 'column',
+          overflowX: 'hidden',
         }}
       >
         <ReqoreControlGroup
@@ -170,6 +171,7 @@ export const FieldWrapper = ({
       contentStyle={{
         display: 'flex',
         flexFlow: 'column',
+        overflowX: 'hidden',
       }}
       unMountContentOnCollapse={false}
       actions={[

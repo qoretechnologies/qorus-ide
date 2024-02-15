@@ -1,48 +1,40 @@
-import { ReqoreSpinner } from '@qoretechnologies/reqore';
 import { StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import {
   ExpressionBuilder,
   IExpression,
 } from '../../components/ExpressionBuilder';
-import { useTemplates } from '../../hooks/useTemplates';
 import { StoryMeta } from '../types';
 
 const meta = {
   component: ExpressionBuilder,
   title: 'Components/Expression Builder',
   render: (args) => {
-    const { loading, value } = useTemplates(true, {
-      label: 'Testing',
-      items: [
-        {
-          label: 'Testing bool',
-          badge: 'Test',
-          items: [
-            { label: 'Testing bool', badge: 'bool', value: '$local:some-bool' },
-          ],
-        },
-      ],
-    });
     const [exp, setExp] = useState<IExpression>(args.value);
 
-    if (loading) {
-      return (
-        <ReqoreSpinner type={5} size='small'>
-          Loading...
-        </ReqoreSpinner>
-      );
-    }
-
-    console.log('IN STORYBOOK RENDER', exp);
+    console.log(exp);
 
     return (
       <ExpressionBuilder
         {...args}
-        templates={value}
+        localTemplates={{
+          label: 'Testing',
+          items: [
+            {
+              label: 'Testing bool',
+              badge: 'Test',
+              items: [
+                {
+                  label: 'Testing bool',
+                  badge: 'bool',
+                  value: '$local:some-bool',
+                },
+              ],
+            },
+          ],
+        }}
         value={exp}
         onChange={(value) => {
-          console.log('IN STORYBOOK ON CHANGE', exp);
           setExp(value);
         }}
       />
@@ -125,15 +117,15 @@ export const WithComplexValue: Story = {
               ],
             },
             {
-              exp: 'STARTS-WITH',
+              exp: 'GREATER-THAN-OR-EQUALS',
               args: [
                 {
-                  type: 'string',
-                  value: 'test',
+                  type: 'int',
+                  value: '23',
                 },
                 {
                   type: 'string',
-                  value: 't',
+                  value: '$local:id',
                 },
               ],
             },
@@ -153,11 +145,12 @@ export const WithComplexValue: Story = {
           ],
         },
         {
-          exp: 'ENDS-WITH',
+          exp: 'LESS-THAN',
           args: [
             {
-              type: 'string',
-              value: '$local:str',
+              type: 'int',
+              value: '$local:input',
+              is_context: true,
             },
             {
               type: 'string',

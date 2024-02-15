@@ -779,7 +779,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             </FieldGroup>
           ) : null}
           {newData.type === 'if' && (
-            <FieldGroup label='Condition configuration'>
+            <>
               <ConditionField
                 onChange={handleDataUpdate}
                 data={newData}
@@ -799,7 +799,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                   value={newData['input-output-type']}
                 />
               </FieldWrapper>
-            </FieldGroup>
+            </>
           )}
         </ContentWrapper>
         {isCustomBlockSecondPage ? (
