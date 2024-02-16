@@ -113,6 +113,13 @@ export const TemplateField = ({
     }
   }, [value]);
 
+  useEffect(() => {
+    if (!isTemplate && isValueTemplate(value)) {
+      setIsTemplate(true);
+      setTemplateValue(value);
+    }
+  }, [JSON.stringify(value)]);
+
   // When template key or template value change run the onChange function
   useUpdateEffect(() => {
     if (templateValue) {
@@ -125,15 +132,18 @@ export const TemplateField = ({
   const showTemplateToggle =
     allowCustomValues &&
     allowTemplates &&
-    (type === 'number' ||
-      type === 'boolean' ||
+    (type === 'boolean' ||
       type === 'date' ||
       type === 'bool' ||
-      type === 'int' ||
-      type === 'integer' ||
-      type === 'float' ||
       type === 'auto' ||
       type === 'any');
+
+  const templateSupportsCustomValues =
+    allowCustomValues &&
+    (type === 'string' || type === 'list' || type === 'hash');
+  const showTemplatesDropdown =
+    allowTemplates &&
+    (!allowCustomValues || (isTemplate && !templateSupportsCustomValues));
 
   const Component = componentFromType ? ComponentMap[type] : Comp;
 
@@ -148,6 +158,8 @@ export const TemplateField = ({
 
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
+
+  console.log(value);
 
   return (
     <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
@@ -167,7 +179,7 @@ export const TemplateField = ({
           }
         />
       )}
-      {isTemplate && !showTemplateToggle && allowCustomValues ? (
+      {isTemplate && templateSupportsCustomValues ? (
         <LongStringField
           className='template-selector'
           type='string'
@@ -184,22 +196,42 @@ export const TemplateField = ({
           {...rest}
         />
       ) : null}
-      {isTemplate && (!allowCustomValues || showTemplateToggle) ? (
-        <ReqoreDropdown
-          onItemSelect={(item) =>
-            onChange(name, item.value, item.badge as IQorusType)
-          }
-          items={
-            filterTemplates
-              ? filterTemplatesByType(templates, type)?.items
-              : templates?.items
-          }
-          label={value || 'Select Template'}
-          filterable
-        />
+      {showTemplatesDropdown ? (
+        <ReqoreControlGroup stack>
+          <ReqoreDropdown
+            onItemSelect={(item) =>
+              onChange(name, item.value, item.badge as IQorusType)
+            }
+            items={
+              filterTemplates
+                ? filterTemplatesByType(templates, type)?.items
+                : templates?.items
+            }
+            label={value || 'Select Template'}
+            filterable
+          />
+          {allowCustomValues || value ? (
+            <ReqoreButton
+              fixed
+              icon='CloseLine'
+              tooltip='Remove template value'
+              compact
+              flat
+              size={rest.size}
+              onClick={() => {
+                if (allowCustomValues) {
+                  setIsTemplate(false);
+                }
+
+                setTemplateValue(null);
+                onChange(name, null);
+              }}
+            />
+          ) : null}
+        </ReqoreControlGroup>
       ) : null}
 
-      {showTemplateToggle && (
+      {showTemplateToggle && !isTemplate ? (
         <ReqoreButton
           fixed
           icon='MoneyDollarCircleLine'
@@ -211,18 +243,12 @@ export const TemplateField = ({
           flat={!isTemplate}
           size={rest.size}
           onClick={() => {
-            if (isTemplate) {
-              setIsTemplate(false);
-              setTemplateValue(null);
-              onChange(name, null);
-            } else {
-              setIsTemplate(true);
-              setTemplateValue(null);
-              onChange(name, null);
-            }
+            setIsTemplate(true);
+            setTemplateValue(null);
+            onChange(name, null);
           }}
         />
-      )}
+      ) : null}
     </ReqoreControlGroup>
   );
 };

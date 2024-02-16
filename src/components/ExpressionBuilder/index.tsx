@@ -22,7 +22,7 @@ import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
 
-export const ExpressionDefaultValue = { args: [{ is_context: true }] };
+export const ExpressionDefaultValue = { args: [] };
 export const StyledExpressionItem = styled.div`
   position: relative;
   overflow: unset;
@@ -66,7 +66,6 @@ export interface IExpression {
   args?: IExpression[];
   value?: any;
   type?: IQorusType;
-  is_context?: boolean;
 }
 
 export interface IExpressionSchema {
@@ -143,13 +142,12 @@ export const Expression = ({
     );
   }
 
-  const updateType = (val: IQorusType, isContext?: boolean) => {
+  const updateType = (val: IQorusType) => {
     onValueChange(
       {
         args: [
           {
             type: val,
-            is_context: isContext || false,
           },
         ],
       },
@@ -208,6 +206,8 @@ export const Expression = ({
   );
   const restOfArgs = selectedExpression?.args.slice(1);
 
+  console.log(!firstArgument?.type);
+
   return (
     <StyledExpressionItem
       isChild={isChild}
@@ -220,26 +220,19 @@ export const Expression = ({
         marginLeft: isChild ? 30 : undefined,
       }}
     >
-      {!type && (
-        <Select
-          name='type'
-          defaultItems={[{ name: 'Context' }, ...DefaultNoSoftTypes]}
-          value={
-            firstArgument?.is_context
-              ? 'Context'
-              : firstArgument?.type || type || 'Context'
-          }
-          onChange={(_name, value) => {
-            updateType(
-              value === 'Context' ? undefined : value,
-              value === 'Context'
-            );
-          }}
-          minimal
-          flat
-          customTheme={{ main: 'info:darken:1:0.1' }}
-        />
-      )}
+      <Select
+        name='type'
+        defaultItems={[{ name: 'Context' }, ...DefaultNoSoftTypes]}
+        value={firstArgument?.type || type || 'Context'}
+        onChange={(_name, value) => {
+          updateType(value === 'Context' ? undefined : value);
+        }}
+        minimal
+        flat
+        customTheme={{ main: 'info:darken:1:0.1' }}
+        disabled={!!type}
+      />
+
       {firstParamType && (
         <ReqoreControlGroup vertical>
           <ReqoreP
@@ -257,8 +250,8 @@ export const Expression = ({
             component={auto}
             minimal
             key={firstParamType}
-            type={firstArgument?.is_context ? 'Context' : firstParamType}
-            defaultType={firstArgument?.is_context ? 'Context' : firstParamType}
+            type={firstParamType}
+            defaultType={firstParamType}
             value={firstArgument?.value}
             onChange={(name, value, type) => {
               if (type !== 'any' && type !== 'auto') {
@@ -267,8 +260,8 @@ export const Expression = ({
             }}
             templates={localTemplates}
             allowTemplates
-            allowCustomValues={!firstArgument?.is_context}
-            filterTemplates={!firstArgument?.is_context}
+            allowCustomValues={!!firstArgument?.type}
+            filterTemplates={!!firstArgument?.type}
             fluid={false}
             fixed={true}
           />
@@ -314,33 +307,49 @@ export const Expression = ({
               >
                 {arg.display_name}
               </ReqoreP>
-              <TemplateField
-                key={index}
-                minimal
-                component={auto}
-                noSoft
-                defaultType={arg.type.base_type}
-                defaultInternalType={
-                  size(getTypesAccepted(arg.type.types_accepted)) === 1
-                    ? getTypesAccepted(arg.type.types_accepted)[0].name
-                    : rest[index]?.type || firstParamType
-                }
-                type={
-                  size(getTypesAccepted(arg.type.types_accepted)) === 1
-                    ? getTypesAccepted(arg.type.types_accepted)[0].name
-                    : rest[index]?.type || firstParamType
-                }
-                allowedTypes={getTypesAccepted(arg.type.types_accepted)}
-                canBeNull={false}
-                value={rest[index]?.value}
-                templates={localTemplates}
-                allowTemplates
-                onChange={(_name, value, type) => {
-                  updateArg(value, index + 1, type);
-                }}
-                fluid={false}
-                fixed={true}
-              />
+              <ReqoreControlGroup>
+                <Select
+                  name='type'
+                  defaultItems={getTypesAccepted(arg.type.types_accepted)}
+                  value={
+                    size(getTypesAccepted(arg.type.types_accepted)) === 1
+                      ? getTypesAccepted(arg.type.types_accepted)[0].name
+                      : rest[index]?.type || firstParamType
+                  }
+                  onChange={(_name, value) => {
+                    updateArg(undefined, index + 1, value as IQorusType);
+                  }}
+                  minimal
+                  flat
+                  customTheme={{ main: 'info:darken:1:0.1' }}
+                />
+                <TemplateField
+                  key={index}
+                  minimal
+                  component={auto}
+                  noSoft
+                  defaultType={arg.type.base_type}
+                  defaultInternalType={
+                    size(getTypesAccepted(arg.type.types_accepted)) === 1
+                      ? getTypesAccepted(arg.type.types_accepted)[0].name
+                      : rest[index]?.type || firstParamType
+                  }
+                  type={
+                    size(getTypesAccepted(arg.type.types_accepted)) === 1
+                      ? getTypesAccepted(arg.type.types_accepted)[0].name
+                      : rest[index]?.type || firstParamType
+                  }
+                  canBeNull={false}
+                  value={rest[index]?.value}
+                  templates={localTemplates}
+                  allowTemplates
+                  onChange={(_name, value, type) => {
+                    updateArg(value, index + 1, type);
+                  }}
+                  fluid={false}
+                  fixed={true}
+                />
+              </ReqoreControlGroup>
             </ReqoreControlGroup>
           ))
         : null}

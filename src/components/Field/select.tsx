@@ -677,6 +677,7 @@ const SelectField: React.FC<
                 filterable
                 key={value}
                 disabled={disabled}
+                readOnly={reqoreItems.length === 0}
                 wrap
                 className={className}
                 paging={{
