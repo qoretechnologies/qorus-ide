@@ -1,6 +1,7 @@
 import {
   ReqoreMessage,
   ReqoreP,
+  ReqoreSpinner,
   ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { FunctionComponent, useContext } from 'react';
@@ -27,7 +28,7 @@ export interface IInterfaceSelector {
 
 export const InterfaceSelector: FunctionComponent<
   ILongStringField & IField & IFieldChange
-> = ({ name, onChange, value, default_value, type }) => {
+> = ({ name, onChange, value, default_value, type, ...rest }) => {
   // Get the qorus instance
   const { qorus_instance } = useContext<{ qorus_instance?: string }>(
     InitialContext
@@ -70,11 +71,16 @@ export const InterfaceSelector: FunctionComponent<
 
   // If interfaces are not loaded yet, return a loading indicator
   if (loading) {
-    return <ReqoreP>Loading...</ReqoreP>;
+    return (
+      <ReqoreSpinner type={5} size={rest.size}>
+        Loading...
+      </ReqoreSpinner>
+    );
   }
 
   return (
     <SelectField
+      {...rest}
       defaultItems={interfaces.data.map((i) => ({ name: i }))}
       value={value || default_value}
       name={name}

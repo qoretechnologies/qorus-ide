@@ -884,6 +884,7 @@ const Options = ({
                   allowTemplates={
                     !!(allowTemplates && options[optionName].supports_templates)
                   }
+                  fluid
                   templates={templates.value}
                   component={AutoField}
                   {...getTypeAndCanBeNull(

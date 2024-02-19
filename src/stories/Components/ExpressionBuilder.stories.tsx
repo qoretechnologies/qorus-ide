@@ -12,8 +12,6 @@ const meta = {
   render: (args) => {
     const [exp, setExp] = useState<IExpression>(args.value);
 
-    console.log(exp);
-
     return (
       <ExpressionBuilder
         {...args}
@@ -150,7 +148,6 @@ export const WithComplexValue: Story = {
             {
               type: 'int',
               value: '$local:input',
-              is_context: true,
             },
             {
               type: 'string',

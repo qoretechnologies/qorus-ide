@@ -9,7 +9,13 @@ import every from 'lodash/every';
 import forEach from 'lodash/forEach';
 import map from 'lodash/map';
 import uniq from 'lodash/uniq';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import useMount from 'react-use/lib/useMount';
 import styled from 'styled-components';
 import { FSMContext, IFSMState, IFSMStates, IFSMTransition } from '.';
@@ -26,10 +32,12 @@ import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import Loader from '../../../components/Loader';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
-import { prepareFSMDataForPublishing } from '../../../helpers/fsm';
+import {
+  getStatesForTemplates,
+  prepareFSMDataForPublishing,
+} from '../../../helpers/fsm';
 import { buildTemplates, fetchData } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import ConnectorSelector from './connectorSelector';
 
 export interface IFSMTransitionDialogProps {
   onClose: () => any;
@@ -38,11 +46,7 @@ export interface IFSMTransitionDialogProps {
   editingData: { stateId: number; index: number }[];
 }
 
-export type TTransitionCondition =
-  | 'custom'
-  | 'connector'
-  | 'none'
-  | 'expression';
+export type TTransitionCondition = 'custom' | 'none' | 'expression';
 
 export interface IModifiedTransition {
   name: string;
@@ -66,28 +70,21 @@ const StyledTransitionWrapper = styled.div`
   }
 `;
 
-export const getConditionType: (condition: any) => TTransitionCondition = (
-  condition
-) =>
-  condition === null || condition === undefined
+export const getConditionType: (
+  condition: any,
+  required?: boolean
+) => TTransitionCondition = (condition, required) => {
+  return condition === null || condition === undefined
     ? 'none'
     : typeof condition === 'object'
-    ? condition?.class
-      ? 'connector'
-      : 'expression'
+    ? 'expression'
     : 'custom';
+};
 
 export const isConditionValid: (
   transitionData: IFSMTransition | IFSMState
 ) => boolean = (transitionData) => {
   const condition = getConditionType(transitionData.condition);
-
-  if (condition === 'connector') {
-    return (
-      !!transitionData?.condition?.['class'] &&
-      !!transitionData?.condition?.connector
-    );
-  }
 
   if (condition === 'custom') {
     return validateField('string', transitionData?.condition);
@@ -103,15 +100,6 @@ export const renderConditionField: (
   localTemplates: any
 ) => any = (conditionType, transitionData, onChange, localTemplates) => {
   switch (conditionType) {
-    case 'connector': {
-      return (
-        <ConnectorSelector
-          value={transitionData?.condition}
-          onChange={(value) => onChange('condition', value)}
-          types={['condition']}
-        />
-      );
-    }
     case 'custom': {
       return (
         <String
@@ -138,18 +126,20 @@ export const renderConditionField: (
 };
 
 export const ConditionField = ({
-  data,
+  data: { condition = ExpressionDefaultValue, ...rest },
   onChange,
   required,
-  connectedStates,
   id,
 }) => {
   const t = useContext(TextContext);
   const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
   const [templates, setTemplates] = useState<any>();
   const { metadata, states } = useContext(FSMContext);
-
-  const conditionType = getConditionType(data.condition);
+  const conditionType = getConditionType(condition, required);
+  const connectedStates = useMemo(
+    () => getStatesForTemplates(id, states),
+    [JSON.stringify(states), id]
+  );
 
   const fetchTemplates = useCallback(async () => {
     if (!size(connectedStates)) {
@@ -194,7 +184,7 @@ export const ConditionField = ({
     <>
       <FieldWrapper
         label={t('Condition')}
-        isValid={isConditionValid(data)}
+        isValid={isConditionValid({ condition, ...rest })}
         type={t('Optional')}
         compact
       >
@@ -207,23 +197,16 @@ export const ConditionField = ({
                 ? null
                 : value === 'custom'
                 ? ''
-                : value === 'expression'
-                ? ExpressionDefaultValue
-                : { class: null }
+                : ExpressionDefaultValue
             );
           }}
-          value={conditionType || 'none'}
+          value={conditionType || 'expression'}
           items={
             required
-              ? [
-                  { value: 'custom' },
-                  { value: 'connector' },
-                  { value: 'expression' },
-                ]
+              ? [{ value: 'expression' }, { value: 'custom' }]
               : [
-                  { value: 'custom' },
-                  { value: 'connector' },
                   { value: 'expression' },
+                  { value: 'custom' },
                   { value: 'none' },
                 ]
           }
@@ -231,14 +214,19 @@ export const ConditionField = ({
         {conditionType && conditionType !== 'none' ? (
           <>
             <ReqoreVerticalSpacer height={10} />
-            {renderConditionField(conditionType, data, onChange, templates)}
+            {renderConditionField(
+              conditionType,
+              { condition, ...rest },
+              onChange,
+              templates
+            )}
           </>
         ) : null}
       </FieldWrapper>
       {conditionType === 'custom' && (
         <FieldWrapper
           label={t('field-label-lang')}
-          isValid={validateField('string', data?.language || 'qore')}
+          isValid={validateField('string', rest.language || 'qore')}
           compact
         >
           <RadioField
@@ -246,7 +234,7 @@ export const ConditionField = ({
             onChange={(name, value) => {
               onChange(name, value);
             }}
-            value={data?.language || 'qore'}
+            value={rest?.language || 'qore'}
             items={[
               {
                 value: 'qore',
@@ -269,6 +257,7 @@ export const TransitionEditor = ({
   transitionData,
   errors,
   qorus_instance,
+  id,
 }) => {
   const t = useContext(TextContext);
 
@@ -306,7 +295,11 @@ export const TransitionEditor = ({
       )}
       {!transitionData.branch && (
         <>
-          <ConditionField onChange={onChange} data={transitionData} />
+          <ConditionField
+            onChange={onChange}
+            data={transitionData}
+            id={transitionData.state}
+          />
           <FieldWrapper
             label={t('Errors')}
             isValid
@@ -344,6 +337,7 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
       (modifiedData, { stateId, index }) => ({
         ...modifiedData,
         [`${stateId}:${index}`]: {
+          id: stateId,
           name: `${states[stateId].name} -> ${
             states[states[stateId].transitions[index].state].name
           }`,
@@ -464,6 +458,7 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
                         handleDataUpdate(id, name, value)
                       }
                       transitionData={transitionData.data}
+                      id={id}
                       errors={errors}
                       qorus_instance={qorus_instance}
                     />

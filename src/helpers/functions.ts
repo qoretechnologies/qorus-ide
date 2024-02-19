@@ -37,6 +37,7 @@ import {
   addMessageListener,
   postMessage,
 } from '../hocomponents/withMessageHandler';
+import { IQorusTypeObject } from '../hooks/useQorusTypes';
 import { isStateValid } from './fsm';
 const md5 = require('md5');
 
@@ -737,8 +738,9 @@ export const buildTemplates = (
 };
 
 export const getTypesAccepted = (
-  types: IQorusType[] = []
-): { name: IQorusType }[] | undefined => {
+  types: IQorusType[] = [],
+  qorusTypes?: IQorusTypeObject[]
+): IQorusTypeObject[] | undefined => {
   if (!size(types)) {
     return undefined;
   }
@@ -752,10 +754,14 @@ export const getTypesAccepted = (
       return undefined;
     }
 
-    return [{ name: _types[0] }];
+    return [
+      qorusTypes?.find((t) => t.name === _types[0]) || { name: _types[0] },
+    ];
   }
 
-  return _types.map((type) => ({ name: type }));
+  return _types.map(
+    (type) => qorusTypes?.find((t) => t.name === type) || { name: type }
+  );
 };
 
 export const isTypeStringCompatible = (type: string) => {

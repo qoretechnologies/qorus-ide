@@ -38,6 +38,7 @@ import shortid from 'shortid';
 import styled, { css, keyframes } from 'styled-components';
 import Content from '../../../components/Content';
 import { DragSelectArea } from '../../../components/DragSelectArea';
+import { IExpression } from '../../../components/ExpressionBuilder';
 import { IProviderType } from '../../../components/Field/connectors';
 import {
   PositiveColorEffect,
@@ -143,9 +144,7 @@ export interface IDraggableItem {
 export interface IFSMTransition {
   state?: string;
   fsm?: number;
-  condition?: {
-    type: string;
-  };
+  condition?: string | IExpression;
   language?: string;
   fake?: boolean;
   errors?: string[];
@@ -563,7 +562,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               : undefined,
           id,
           states: item.name === 'block' ? {} : undefined,
-          condition: item.name === 'if' ? '' : undefined,
+          condition: undefined,
           action:
             item.name === 'state'
               ? {
@@ -3116,7 +3115,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                     return result;
                                   });
                                 }}
-                                key={index}
+                                key={Date.now()}
                                 name={`fsm-transition${
                                   isError
                                     ? '-error'

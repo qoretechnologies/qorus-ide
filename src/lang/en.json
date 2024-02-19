@@ -1,0 +1,4198 @@
+[
+  {
+    "id": "ConfirmDeployFile",
+    "text": "Are you sure you want to deploy this file?"
+  },
+  {
+    "id": "UsingLocaleSettings ${ locale }",
+    "text": "Using locale settings '${ locale }'"
+  },
+  {
+    "id": "UsingDefaultLocale ${ locale }",
+    "text": "Using default locale '${ locale }'"
+  },
+  {
+    "id": "SwaggerValidatorError ${ error }",
+    "text": "Swagger validator error: ${ error }"
+  },
+  {
+    "id": "QorusProjectNotSet",
+    "text": "Qorus project has not been set"
+  },
+  {
+    "id": "QorusProjectNotFound",
+    "text": "Qorus project definition not found"
+  },
+  {
+    "id": "UnableFindPairFile ${ file }",
+    "text": "Unable to find the pair file for ${ file }"
+  },
+  {
+    "id": "UnableToDetermineProjectPath",
+    "text": "Unable to determine project configuration file location"
+  },
+  {
+    "id": "UnableDetermineRepository",
+    "text": "Unable to determine repository"
+  },
+  {
+    "id": "UnableDetermineRepositoryBranch",
+    "text": "Unable to determine repository branch"
+  },
+  {
+    "id": "OpenUrlInBrowser",
+    "text": "Open URL in an external browser"
+  },
+  {
+    "id": "OpeningUrlInExternalBrowser ${ name } ${ url }",
+    "text": "Opening ${ name } (${ url }) in an external browser"
+  },
+  {
+    "id": "OpenUrlInExternalBrowserError ${ error }",
+    "text": "Error in opening URL in an external browser: ${ error }"
+  },
+  {
+    "id": "NoQorusWithGivenUrlFound ${ url }",
+    "text": "No Qorus instance with URL ${ url } found"
+  },
+  {
+    "id": "SelectedFilesAndDirsNotFromOneProject",
+    "text": "Selected files and directories are not from the same project"
+  },
+  {
+    "id": "NoFilesOrDirsSelected",
+    "text": "No files or directories selected"
+  },
+  {
+    "id": "LoginSuccessful",
+    "text": "Login successful"
+  },
+  {
+    "id": "LoginCancelled",
+    "text": "Login cancelled"
+  },
+  {
+    "id": "LoginError",
+    "text": "Login failed"
+  },
+  {
+    "id": "QorusLoginTitle",
+    "text": "Qorus Login"
+  },
+  {
+    "id": "Login-buttonText",
+    "text": "Login"
+  },
+  {
+    "id": "Login-buttonTitle",
+    "text": "Login to a Qorus instance"
+  },
+  {
+    "id": "QorusConfigTitle",
+    "text": "Qorus Project Configuration"
+  },
+  {
+    "id": "QorusProjectConfig",
+    "text": "Project configuration"
+  },
+  {
+    "id": "ProjectConfig",
+    "text": "Project"
+  },
+  {
+    "id": "ProjectConfig-buttonTitle",
+    "text": "Project configuration"
+  },
+  {
+    "id": "ReleasePackage",
+    "text": "Make release"
+  },
+  {
+    "id": "ReleasePackage-buttonTitle",
+    "text": "Make a release package"
+  },
+  {
+    "id": "DeleteInterfaces",
+    "text": "Delete interfaces"
+  },
+  {
+    "id": "DeleteInterfaces-buttonTitle",
+    "text": "Delete Qorus interfaces"
+  },
+  {
+    "id": "CreateInterface",
+    "text": "Create interface"
+  },
+  {
+    "id": "CreateInterface-buttonTitle",
+    "text": "Create Qorus interface"
+  },
+  {
+    "id": "LoggedOut",
+    "text": "Logged out"
+  },
+  {
+    "id": "SendingLoginRequest",
+    "text": "Sending login request ..."
+  },
+  {
+    "id": "SendingRequest ${ id } ${ url }",
+    "text": "Sending request (id: \"${ id }\"): ${ url }"
+  },
+  {
+    "id": "GettingResponse ${ id } ${ response }",
+    "text": "Response (id: \"${ id }\"): ${ response }"
+  },
+  {
+    "id": "UnableOpenLoginPage",
+    "text": "Unable to open the login page"
+  },
+  {
+    "id": "UnableOpenConfigPage",
+    "text": "Unable to open the project configuration page"
+  },
+  {
+    "id": "UnableOpenReleasePage",
+    "text": "Unable to open the release package creator page"
+  },
+  {
+    "id": "UnableOpenDeleteInterfacesPage",
+    "text": "Unable to open the delete interfaces page"
+  },
+  {
+    "id": "UnableOpenQorusConfigPage",
+    "text": "Unable to open the Qorus manager page"
+  },
+  {
+    "id": "NoTokenForUrl ${ url }",
+    "text": "No authentication token for URL ${ url }"
+  },
+  {
+    "id": "UnauthorizedOperationAtUrl ${ url }",
+    "text": "Unauthorized operation at ${ url }"
+  },
+  {
+    "id": "NothingToDeploy",
+    "text": "Nothing to deploy"
+  },
+  {
+    "id": "MissingDeploymentData",
+    "text": "Missing deployment data"
+  },
+  {
+    "id": "NotDeployableFile ${ path }",
+    "text": "Not a deployable file: ${ path }"
+  },
+  {
+    "id": "CannotLoadFileOutsideWorkspaceFolder ${ path }",
+    "text": "Cannot load a file that is not contained in a workspace folder ${ path }"
+  },
+  {
+    "id": "DeployingDirectory ${ dir }",
+    "text": "Deploying directory: ${ dir }"
+  },
+  {
+    "id": "HostUnreachable ${ url }",
+    "text": "Host unreachable: ${ url }"
+  },
+  {
+    "id": "AuthNeeded ${ url }",
+    "text": "Authentication needed for ${ url }"
+  },
+  {
+    "id": "AuthNotNeeded ${ url }",
+    "text": "Authentication not needed for ${ url }"
+  },
+  {
+    "id": "AuthFailed",
+    "text": "Authentication failed"
+  },
+  {
+    "id": "GettingInfoError",
+    "text": "Error in getting info"
+  },
+  {
+    "id": "GettingInterfacesError ${ iface_kind }",
+    "text": "Error in getting list of ${ iface_kind }"
+  },
+  {
+    "id": "AttemptToSetInactiveNotActiveInstance ${ url }",
+    "text": "Attempt to set inactive a Qorus instance that is not active: ${ url }"
+  },
+  {
+    "id": "NoActiveQorusInstance",
+    "text": "Active Qorus instance has not been set"
+  },
+  {
+    "id": "UnableGetActiveQorusInstanceData",
+    "text": "Unable to obtain active Qorus instance data"
+  },
+  {
+    "id": "FilesToDeploy",
+    "text": "Files to deploy:"
+  },
+  {
+    "id": "DeploymentHasStarted ${ name } ${ url }",
+    "text": "Deployment to ${ name } - ${ url } has started ..."
+  },
+  {
+    "id": "ResponseIdUndefined",
+    "text": "Response ID is undefined"
+  },
+  {
+    "id": "Error401 ${ url }",
+    "text": "Error 401 - Unauthorized (${ url })"
+  },
+  {
+    "id": "Error409 ${ url }",
+    "text": "Error 409 - Conflict (${ url })"
+  },
+  {
+    "id": "ErrorN ${ N } ${ url }",
+    "text": "Error ${ N } (${ url })"
+  },
+  {
+    "id": "ErrorOpeningFile ${ file } ${ err }",
+    "text": "Error opening file ${ file }: ${ err }"
+  },
+  {
+    "id": "DeploymentStartFailed",
+    "text": "Deployment failed to start"
+  },
+  {
+    "id": "DeletionStartFailed",
+    "text": "Deletion failed to start"
+  },
+  {
+    "id": "DeploymentFailed",
+    "text": "Deployment failed"
+  },
+  {
+    "id": "DeploymentFailed ${ deployment_id }",
+    "text": "Deployment failed (ID: ${ deployment_id })"
+  },
+  {
+    "id": "DeletedIfaceCodeFile ${ iface } ${ file }",
+    "text": "Deleted ${ iface } code file: ${ file }"
+  },
+  {
+    "id": "DeletedIfaceMetaFile ${ iface } ${ file }",
+    "text": "Deleted ${ iface } metadata file: ${ file }"
+  },
+  {
+    "id": "FailedDeletingIfaceCodeFile ${ iface } ${ file } ${ err }",
+    "text": "Failed deleting ${ iface } code file ${ file }: ${ err }"
+  },
+  {
+    "id": "FailedDeletingIfaceMetaFile ${ iface } ${ file } ${ err }",
+    "text": "Failed deleting ${ iface } metadata file ${ file }: ${ err }"
+  },
+  {
+    "id": "RequestIdInfo ${ request_id }",
+    "text": " (ID: ${ request_id })"
+  },
+  {
+    "id": "fileDoesNotExist ${ path }",
+    "text": "file ${ path } does not exist"
+  },
+  {
+    "id": "DeploymentRunning",
+    "text": "Qorus code deployment is running"
+  },
+  {
+    "id": "DeletionRunning",
+    "text": "Qorus interface deletion is running"
+  },
+  {
+    "id": "DeploymentRunning ${ deployment_id }",
+    "text": "Qorus code deployment is running (ID: ${ deployment_id })"
+  },
+  {
+    "id": "CancellingDeployment",
+    "text": "Cancelling deployment"
+  },
+  {
+    "id": "CancellingDeletion",
+    "text": "Cancelling deletion"
+  },
+  {
+    "id": "CancellingDeployment ${ deployment_id }",
+    "text": "Cancelling deployment (ID: ${ deployment_id })"
+  },
+  {
+    "id": "DeploymentCancellationFailed",
+    "text": "Deployment cancellation failed"
+  },
+  {
+    "id": "DeletionCancellationFailed",
+    "text": "Deletion cancellation failed"
+  },
+  {
+    "id": "DeploymentCancellationFailed ${ deployment_id }",
+    "text": "Deployment cancellation failed (ID: ${ deployment_id })"
+  },
+  {
+    "id": "CancellationRequestSent ${ deployment_id }",
+    "text": "Cancellation request sent (ID: ${ deployment_id })"
+  },
+  {
+    "id": "checkingDeploymentProgress",
+    "text": "checking deployment progress"
+  },
+  {
+    "id": "checkingDeletionProgress",
+    "text": "checking deletion progress"
+  },
+  {
+    "id": "seconds ${ sec }",
+    "text": "${ sec }s"
+  },
+  {
+    "id": "checkingDeploymentProgress ${ deployment_id } ${ sec }",
+    "text": "${ sec }s   checking deployment progress (ID: ${ deployment_id }) ... "
+  },
+  {
+    "id": "requestResponse ${ response }",
+    "text": "... response: ${ response }"
+  },
+  {
+    "id": "requestStatus ${ status }",
+    "text": "... status: ${ status }"
+  },
+  {
+    "id": "YouCanOpenQorusLog",
+    "text": "Open the log for more details."
+  },
+  {
+    "id": "OpenQorusLogButton",
+    "text": "Open log"
+  },
+  {
+    "id": "DeploymentFinishedSuccessfully",
+    "text": "Deployment finished successfully"
+  },
+  {
+    "id": "DeletionFinishedSuccessfully",
+    "text": "Deletion finished successfully"
+  },
+  {
+    "id": "DeploymentFinishedSuccessfully ${ deployment_id }",
+    "text": "Deployment finished successfully (ID: ${ deployment_id })"
+  },
+  {
+    "id": "DeploymentCancelled",
+    "text": "Deployment cancelled"
+  },
+  {
+    "id": "DeletionCancelled",
+    "text": "Deletion cancelled"
+  },
+  {
+    "id": "DeletionFailed",
+    "text": "Deletion failed"
+  },
+  {
+    "id": "DeploymentCancelled ${ deployment_id }",
+    "text": "Deployment cancelled (ID: ${ deployment_id })"
+  },
+  {
+    "id": "CheckingDeploymentStatusFailed",
+    "text": "Checking deployment status failed"
+  },
+  {
+    "id": "CheckingDeletionStatusFailed",
+    "text": "Checking deletion status failed"
+  },
+  {
+    "id": "CheckingDeploymentStatusFailed ${ deployment_id }",
+    "text": "Checking deployment status failed (ID: ${ deployment_id })"
+  },
+  {
+    "id": "QorusInstance ${ name } ${ url }",
+    "text": "Qorus instance '${ name }'\n${ url }"
+  },
+  {
+    "id": "nowActive",
+    "text": ">>   now active   <<"
+  },
+  {
+    "id": "version3",
+    "text": "(version 3)"
+  },
+  {
+    "id": "Environment ${ env_name }",
+    "text": "Environment ${ env_name }"
+  },
+  {
+    "id": "MainUrl",
+    "text": "Main URL"
+  },
+  {
+    "id": "OpenUrl",
+    "text": "Open URL"
+  },
+  {
+    "id": "SetActiveInstance",
+    "text": "Set as active Qorus instance"
+  },
+  {
+    "id": "GettingInfo ${ url }",
+    "text": "Getting info from ${ url } ..."
+  },
+  {
+    "id": "RequestTimedOut ${ url }",
+    "text": "Request timed out: ${ url }"
+  },
+  {
+    "id": "ReferencedObjectNotFound ${ type } ${ name }",
+    "text": "Referenced ${ type } '${ name }' not found"
+  },
+  {
+    "id": "ConnectionRefused ${ url }",
+    "text": "Connection to ${ url } refused"
+  },
+  {
+    "id": "ButtonOk",
+    "text": "OK"
+  },
+  {
+    "id": "ButtonCancel",
+    "text": "Cancel"
+  },
+  {
+    "id": "ButtonDelete",
+    "text": "Delete"
+  },
+  {
+    "id": "ButtonReload",
+    "text": "Reload"
+  },
+  {
+    "id": "ButtonSave",
+    "text": "Save"
+  },
+  {
+    "id": "ButtonOverwrite",
+    "text": "Overwrite"
+  },
+  {
+    "id": "ButtonLogin",
+    "text": "Log in"
+  },
+  {
+    "id": "ConfirmInitializeProjectConfig",
+    "text": "Project configuration does not exist. Do you want it to be initialized?"
+  },
+  {
+    "id": "ProjectConfigHasBeenInitialized",
+    "text": "Project configuration has now been initialized, complete now the configuration."
+  },
+  {
+    "id": "ProjectConfigFileHasChangedOnDisk",
+    "text": "Project configuration file has changed on disk"
+  },
+  {
+    "id": "ConfigChangedOnDiskDialogQuestion",
+    "text": "Project configuration file has changed on disk. Do you want to reload or overwrite it?"
+  },
+  {
+    "id": "BadEditDataRecreateQuestion",
+    "text": "The source code cannot be parsed or is inconsistent with the metadata. Do you want to re-create the interface as new? Any custom code will be lost."
+  },
+  {
+    "id": "LangChangeRecreateQuestion",
+    "text": "Do you want to re-create the interface as new with another language? Any custom code will be lost."
+  },
+  {
+    "id": "OpenUi",
+    "text": "Open UI"
+  },
+  {
+    "id": "LabelDescription",
+    "text": "Description:"
+  },
+  {
+    "id": "LabelUsername",
+    "text": "Username:"
+  },
+  {
+    "id": "LabelPassword",
+    "text": "Password:"
+  },
+  {
+    "id": "LoginHeader",
+    "text": "Login to Qorus instance"
+  },
+  {
+    "id": "at",
+    "text": "at"
+  },
+  {
+    "id": "options",
+    "text": "options"
+  },
+  {
+    "id": "Environments",
+    "text": "Environments"
+  },
+  {
+    "id": "QorusInstancesIn",
+    "text": "Qorus instances in"
+  },
+  {
+    "id": "QorusInstances",
+    "text": "Qorus instances"
+  },
+  {
+    "id": "Name",
+    "text": "Name"
+  },
+  {
+    "id": "Url",
+    "text": "URL"
+  },
+  {
+    "id": "Urls",
+    "text": "URLs"
+  },
+  {
+    "id": "EditUrl",
+    "text": "Edit URL"
+  },
+  {
+    "id": "EditMainUrl",
+    "text": "Edit main URL"
+  },
+  {
+    "id": "AddUrl",
+    "text": "Add URL"
+  },
+  {
+    "id": "PropertiesOfQorusInstance",
+    "text": "Properties of Qorus instance"
+  },
+  {
+    "id": "CustomUrls",
+    "text": "Other links"
+  },
+  {
+    "id": "Remove",
+    "text": "Remove"
+  },
+  {
+    "id": "AddNew",
+    "text": "Add new"
+  },
+  {
+    "id": "Edit",
+    "text": "Edit"
+  },
+  {
+    "id": "Next",
+    "text": "Next"
+  },
+  {
+    "id": "Yes",
+    "text": "Yes"
+  },
+  {
+    "id": "No",
+    "text": "No"
+  },
+  {
+    "id": "YesWithDep",
+    "text": " Yes - with all dependencies "
+  },
+  {
+    "id": "YesWithoutDep",
+    "text": " Yes - without dependencies "
+  },
+  {
+    "id": "MoveUp",
+    "text": "Move up one position"
+  },
+  {
+    "id": "EditQorus",
+    "text": "Edit Qorus instance"
+  },
+  {
+    "id": "AddEnv",
+    "text": "Add environment"
+  },
+  {
+    "id": "AddEnvironment",
+    "text": "Add environment"
+  },
+  {
+    "id": "EditEnv",
+    "text": "Edit environment"
+  },
+  {
+    "id": "EditEnvironment",
+    "text": "Edit environment"
+  },
+  {
+    "id": "AddQorus",
+    "text": "Add Qorus instance"
+  },
+  {
+    "id": "ConfirmDeleteInterface",
+    "text": "Do you really want to delete this interface?"
+  },
+  {
+    "id": "ConfirmDeleteInterface ${ iface_kind } ${ name }",
+    "text": "Do you really want to delete ${ iface_kind } ${ name }?"
+  },
+  {
+    "id": "ConfirmDeployInterface ${ iface_kind } ${ name }",
+    "text": "Do you really want to deploy ${ iface_kind } ${ name }?"
+  },
+  {
+    "id": "ConfirmDeployCurrentFile",
+    "text": "Do you really want to deploy the current file?"
+  },
+  {
+    "id": "ConfirmDeployAllInterfaces",
+    "text": "Do you really want to deploy all interfaces?"
+  },
+  {
+    "id": "ConfirmDeployDirectory ${ dir }",
+    "text": "Do you really want to deploy directory ${ dir }?"
+  },
+  {
+    "id": "ConfirmDeployFilesAndDirs",
+    "text": "Do you really want to deploy selected files and directories?"
+  },
+  {
+    "id": "ConfirmDeletion",
+    "text": "Confirm deletion"
+  },
+  {
+    "id": "ConfirmRemoveEnvPre",
+    "text": "Do you really want to remove environment "
+  },
+  {
+    "id": "ConfirmRemoveEnvPost",
+    "text": " with all its Qorus instances?"
+  },
+  {
+    "id": "ConfirmRemoveQorusPre",
+    "text": "Do you really want to remove Qorus instance "
+  },
+  {
+    "id": "ConfirmRemoveQorusPost",
+    "text": " with all its data?"
+  },
+  {
+    "id": "ConfirmRemoveUrlPre",
+    "text": "Do you really want to remove URL "
+  },
+  {
+    "id": "ConfirmRemoveUrlPost",
+    "text": "?"
+  },
+  {
+    "id": "ConfirmRemoveDir",
+    "text": "Do you really want to remove directory "
+  },
+  {
+    "id": "ConfirmRemoveInterfaces",
+    "text": "Do you really want to remove selected "
+  },
+  {
+    "id": "MandatoryInput",
+    "text": "Mandatory input"
+  },
+  {
+    "id": "ReleaseType",
+    "text": "Release type"
+  },
+  {
+    "id": "releaseTypeFull",
+    "text": "full"
+  },
+  {
+    "id": "releaseTypeIncremental",
+    "text": "incremental"
+  },
+  {
+    "id": "FullRelease",
+    "text": "Full release"
+  },
+  {
+    "id": "IncrementalRelease",
+    "text": "Incremental release"
+  },
+  {
+    "id": "CreateFullRelease",
+    "text": "Create full release"
+  },
+  {
+    "id": "CreateIncrementalRelease",
+    "text": "Create incremental release"
+  },
+  {
+    "id": "UseExistingRelease",
+    "text": "Use existing release file"
+  },
+  {
+    "id": "CurrentBranchInfo",
+    "text": "Git information"
+  },
+  {
+    "id": "ReleaseNoRepository",
+    "text": "No repository detected, some release features are disabled."
+  },
+  {
+    "id": "QoreLangClientNotFound",
+    "text": "Qore Language Client Unavailable"
+  },
+  {
+    "id": "branch",
+    "text": "branch"
+  },
+  {
+    "id": "commit",
+    "text": "commit"
+  },
+  {
+    "id": "GitBranchNotUpToDate",
+    "text": "Your branch is not synchronized with remote. Some release features will not work until you synchronize your changes."
+  },
+  {
+    "id": "ReleasePackageTitle",
+    "text": "Make a release package"
+  },
+  {
+    "id": "ReleasePackage",
+    "text": "Make release"
+  },
+  {
+    "id": "QorusWebviewTitle",
+    "text": "Qorus Webview"
+  },
+  {
+    "id": "CreateQorusInterface",
+    "text": "Create interface"
+  },
+  {
+    "id": "filterByTag",
+    "text": "filter by tag"
+  },
+  {
+    "id": "filterByBranchName",
+    "text": "filter by branch name"
+  },
+  {
+    "id": "filterByCommitHash",
+    "text": "filter by commit hash"
+  },
+  {
+    "id": "CreatePackage",
+    "text": "Create package"
+  },
+  {
+    "id": "PackageContents",
+    "text": "Package contents"
+  },
+  {
+    "id": "SelectCommit",
+    "text": "Select commit"
+  },
+  {
+    "id": "SelectBranch",
+    "text": "Select branch"
+  },
+  {
+    "id": "SelectedCommit",
+    "text": "Selected commit"
+  },
+  {
+    "id": "SelectedBranch",
+    "text": "Selected branch"
+  },
+  {
+    "id": "DeployPackage",
+    "text": "Deploy package"
+  },
+  {
+    "id": "FollowingTmpFilesWereCreated",
+    "text": "The following temporary files have been created"
+  },
+  {
+    "id": "ReleaseFileWillBeSent",
+    "text": "The release file will be sent to the currently active Qorus instance"
+  },
+  {
+    "id": "NewReleaseFileWillBeSent",
+    "text": "The following release file has been created and will be sent to the currently active Qorus instance"
+  },
+  {
+    "id": "ExistingReleaseFileWillBeSent",
+    "text": "The following release file will be sent to the currently active Qorus instance"
+  },
+  {
+    "id": "Back",
+    "text": "Back"
+  },
+  {
+    "id": "Close",
+    "text": "Close"
+  },
+  {
+    "id": "ClosePage",
+    "text": "Close Page"
+  },
+  {
+    "id": "ErrorInInitializingGitExtension",
+    "text": "Error in initializing Git extension"
+  },
+  {
+    "id": "ErrorInActivatingGitExtension",
+    "text": "Error in activating Git extension"
+  },
+  {
+    "id": "UnableDetermineProjectFolder",
+    "text": "Unable to determine project folder"
+  },
+  {
+    "id": "PackageDeploymentNotSupportedForQorus3",
+    "text": "Package deployment is not supported for Qorus version < 4"
+  },
+  {
+    "id": "WaitForDeploymentResult1",
+    "text": "Package has been sent. Deployment is in progress."
+  },
+  {
+    "id": "WaitForDeploymentResult2",
+    "text": "(You will see the result in the message area.)"
+  },
+  {
+    "id": "PackageDeploymentFailed",
+    "text": "Deployment failed"
+  },
+  {
+    "id": "NoMethodsDescribed",
+    "text": "No methods described in metadata."
+  },
+  {
+    "id": "Continue",
+    "text": "Continue"
+  },
+  {
+    "id": "PickReleaseFile",
+    "text": "Select release file"
+  },
+  {
+    "id": "SaveReleaseFile",
+    "text": "Save release file"
+  },
+  {
+    "id": "QorusRelaseFilePicker",
+    "text": "Qorus release"
+  },
+  {
+    "id": "ReleaseFileCanBeSaved",
+    "text": "You can also save the release file for future use"
+  },
+  {
+    "id": "ReleaseFileSaveError ${ error }",
+    "text": "Saving release file failed: ${ error }"
+  },
+  {
+    "id": "ReleaseFileHasBeenSavedAs",
+    "text": "Release file has been saved as"
+  },
+  {
+    "id": "SourceDirs",
+    "text": "Source directories"
+  },
+  {
+    "id": "AddRemoveDir",
+    "text": "Add / Remove directory"
+  },
+  {
+    "id": "FileNotInSourceDirs ${ file }",
+    "text": "File ${ file } is not in any of the configured source directories"
+  },
+  {
+    "id": "NotProjectSubdir ${ dir }",
+    "text": "Selected directory ${ dir } is not a project subdirectory"
+  },
+  {
+    "id": "DirAlreadyInConfig ${ dir }",
+    "text": "Selected directory already is in the list: ${ dir }"
+  },
+  {
+    "id": "ColumnHeader-name",
+    "text": "Name"
+  },
+  {
+    "id": "ColumnHeader-version",
+    "text": "Version"
+  },
+  {
+    "id": "ColumnHeader-id",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-workflowid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-serviceid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-jobid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-classid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-constantid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-mapperid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-function_instanceid",
+    "text": "ID"
+  },
+  {
+    "id": "ColumnHeader-description",
+    "text": "Description"
+  },
+  {
+    "id": "ColumnHeader-desc",
+    "text": "Description"
+  },
+  {
+    "id": "ColumnHeader-type",
+    "text": "Type"
+  },
+  {
+    "id": "ColumnHeader-language",
+    "text": "Language"
+  },
+  {
+    "id": "ColumnHeader-stepid",
+    "text": "ID"
+  },
+  {
+    "id": "Active",
+    "text": "Active"
+  },
+  {
+    "id": "Attach",
+    "text": "Attach"
+  },
+  {
+    "id": "Authors",
+    "text": "Authors"
+  },
+  {
+    "id": "Autostart",
+    "text": "Autostart"
+  },
+  {
+    "id": "BinaryResources",
+    "text": "Binary Resources"
+  },
+  {
+    "id": "Class",
+    "text": "Class"
+  },
+  {
+    "id": "Classes",
+    "text": "Classes"
+  },
+  {
+    "id": "Connections",
+    "text": "Connections"
+  },
+  {
+    "id": "Constants",
+    "text": "Constants"
+  },
+  {
+    "id": "Detach",
+    "text": "Detach"
+  },
+  {
+    "id": "ErrorHandler",
+    "text": "Error Handler"
+  },
+  {
+    "id": "Errors",
+    "text": "Errors"
+  },
+  {
+    "id": "Event",
+    "text": "Sync Event"
+  },
+  {
+    "id": "Events",
+    "text": "Sync Events"
+  },
+  {
+    "id": "Functions",
+    "text": "Functions"
+  },
+  {
+    "id": "Groups",
+    "text": "Groups"
+  },
+  {
+    "id": "Types",
+    "text": "Types"
+  },
+  {
+    "id": "Job",
+    "text": "Job"
+  },
+  {
+    "id": "Jobs",
+    "text": "Jobs"
+  },
+  {
+    "id": "Mappers",
+    "text": "Mappers"
+  },
+  {
+    "id": "MapperCode",
+    "text": "Mapper Code"
+  },
+  {
+    "id": "MaxInstances",
+    "text": "Max Instances"
+  },
+  {
+    "id": "Methods",
+    "text": "Methods"
+  },
+  {
+    "id": "Modules",
+    "text": "Modules"
+  },
+  {
+    "id": "OneTimeInit",
+    "text": "One-time Init"
+  },
+  {
+    "id": "Queue",
+    "text": "Queue"
+  },
+  {
+    "id": "Queues",
+    "text": "Queues"
+  },
+  {
+    "id": "Refresh",
+    "text": "Refresh"
+  },
+  {
+    "id": "Remote",
+    "text": "Remote"
+  },
+  {
+    "id": "Requires",
+    "text": "Requires"
+  },
+  {
+    "id": "Resources",
+    "text": "Resources"
+  },
+  {
+    "id": "RunSkipped",
+    "text": "Run Skipped"
+  },
+  {
+    "id": "Service",
+    "text": "Service"
+  },
+  {
+    "id": "Services",
+    "text": "Services"
+  },
+  {
+    "id": "ServiceType",
+    "text": "Service Type"
+  },
+  {
+    "id": "SingleInstance",
+    "text": "Single Instance"
+  },
+  {
+    "id": "SLAThreshold",
+    "text": "SLA Threshold"
+  },
+  {
+    "id": "Steps",
+    "text": "Steps"
+  },
+  {
+    "id": "Tags",
+    "text": "Tags"
+  },
+  {
+    "id": "Templates",
+    "text": "Templates"
+  },
+  {
+    "id": "TextResources",
+    "text": "Text Resources"
+  },
+  {
+    "id": "UserInteraction",
+    "text": "User Interaction"
+  },
+  {
+    "id": "ValueMaps",
+    "text": "Value Maps"
+  },
+  {
+    "id": "Workflow",
+    "text": "Workflow"
+  },
+  {
+    "id": "Workflows",
+    "text": "Workflows"
+  },
+  {
+    "id": "classes",
+    "text": "classes"
+  },
+  {
+    "id": "constants",
+    "text": "constants"
+  },
+  {
+    "id": "functions",
+    "text": "functions"
+  },
+  {
+    "id": "jobs",
+    "text": "jobs"
+  },
+  {
+    "id": "mappers",
+    "text": "mappers"
+  },
+  {
+    "id": "services",
+    "text": "services"
+  },
+  {
+    "id": "workflows",
+    "text": "workflows"
+  },
+  {
+    "id": "Other",
+    "text": "Other"
+  },
+  {
+    "id": "DeleteSelected",
+    "text": "Delete selected "
+  },
+  {
+    "id": "CodeInfoUpdateStarted ${ dir }",
+    "text": "${ dir } - Code info update started"
+  },
+  {
+    "id": "CodeInfoUpdateFinished ${ dir }",
+    "text": "${ dir } - Code info update finished"
+  },
+  {
+    "id": "CodeInfoUpdateFailed ${ dir }",
+    "text": "${ dir } - Code info update failed"
+  },
+  {
+    "id": "NotExecutableFile ${ path }",
+    "text": "Not an executable file: ${ path }"
+  },
+  {
+    "id": "TestingDirectory ${ dir }",
+    "text": "Testing directory: ${ dir }"
+  },
+  {
+    "id": "TestNotSupportedForQorus3",
+    "text": "Execution of files is not supported for Qorus version < 4"
+  },
+  {
+    "id": "FilesToTest",
+    "text": "Files to execute:"
+  },
+  {
+    "id": "TestHasStarted ${ name } ${ url }",
+    "text": "Execution to ${ name } - ${ url } has started ..."
+  },
+  {
+    "id": "TestStartFailed",
+    "text": "Execution failed to start"
+  },
+  {
+    "id": "CancellingTest",
+    "text": "Cancelling execution"
+  },
+  {
+    "id": "TestCancellationFailed",
+    "text": "Execution cancellation failed"
+  },
+  {
+    "id": "checkingTestProgress",
+    "text": "checking execution progress"
+  },
+  {
+    "id": "TestFinishedSuccessfully",
+    "text": "Execution finished successfully"
+  },
+  {
+    "id": "TestCancelled",
+    "text": "Execution cancelled"
+  },
+  {
+    "id": "TestFailed",
+    "text": "Execution failed"
+  },
+  {
+    "id": "CheckingTestStatusFailed",
+    "text": "Checking execution status failed"
+  },
+  {
+    "id": "NoExecutableFilesInDir ${ dir }",
+    "text": "No executable files in the directory ${ dir }"
+  },
+  {
+    "id": "TestRunning",
+    "text": "Qorus file execution is running"
+  },
+  {
+    "id": "NothingToTest",
+    "text": "Nothing to test"
+  },
+  {
+    "id": "TargetDir",
+    "text": "Target directory"
+  },
+  {
+    "id": "Unknown",
+    "text": "Unknown"
+  },
+  {
+    "id": "Project",
+    "text": "Project"
+  },
+  {
+    "id": "ActiveQorusInstance",
+    "text": "Active Qorus instance"
+  },
+  {
+    "id": "N/A",
+    "text": "N/A"
+  },
+  {
+    "id": "WorkspaceFolderChangedResetWebview",
+    "text": "Webview has been reset because current workspace folder has changed"
+  },
+  {
+    "id": "WorkspaceFolderChangedOrUnsetCloseWebview",
+    "text": "Webview has been closed because current workspace folder has changed or has not been set"
+  },
+  {
+    "id": "WorkspaceFolderUnsetCloseWebview",
+    "text": "Webview has been closed because current workspace folder has not been set"
+  },
+  {
+    "id": "WorkspaceFolderUnsetCannotOpenWebview",
+    "text": "Webview cannot be opened since there's no open workspace folder"
+  },
+  {
+    "id": "field-label-target_dir",
+    "text": "Target directory"
+  },
+  {
+    "id": "field-label-api-manager",
+    "text": "API Manager"
+  },
+  {
+    "id": "field-label-newDir",
+    "text": "New subdirectory"
+  },
+  {
+    "id": "field-label-processor",
+    "text": "Processor"
+  },
+  {
+    "id": "field-label-mapper",
+    "text": "Mapper"
+  },
+  {
+    "id": "field-label-service",
+    "text": "Service"
+  },
+  {
+    "id": "field-label-workflow",
+    "text": "Workflow"
+  },
+  {
+    "id": "field-label-job",
+    "text": "Job"
+  },
+  {
+    "id": "field-label-value-map",
+    "text": "Value map"
+  },
+  {
+    "id": "field-label-connection",
+    "text": "Connection"
+  },
+  {
+    "id": "field-label-data-provider",
+    "text": "Data provider"
+  },
+  {
+    "id": "field-label-pipeline",
+    "text": "Pipeline"
+  },
+  {
+    "id": "field-desc-pipeline",
+    "text": "Any data pipelines accessible and used by the interface"
+  },
+  {
+    "id": "field-label-input-provider",
+    "text": "Input provider"
+  },
+  {
+    "id": "field-label-input-provider-options",
+    "text": "Input provider options"
+  },
+  {
+    "id": "field-desc-input-provider",
+    "text": "Input provider"
+  },
+  {
+    "id": "field-desc-api-manager",
+    "text": "A server-side API definition with API endpoints that can be served from this Qorus service."
+  },
+  {
+    "id": "field-label-system-options",
+    "text": "System options"
+  },
+  {
+    "id": "field-desc-system-options",
+    "text": "System options DESCRIPTION PLEASE FILL ME"
+  },
+  {
+    "id": "field-label-connector",
+    "text": "Connector"
+  },
+  {
+    "id": "field-label-apicall",
+    "text": "API Call"
+  },
+  {
+    "id": "field-label-message",
+    "text": "Send message"
+  },
+  {
+    "id": "field-label-search-single",
+    "text": "Single search"
+  },
+  {
+    "id": "field-label-search",
+    "text": "Search"
+  },
+  {
+    "id": "field-label-update",
+    "text": "Update"
+  },
+  {
+    "id": "field-label-delete",
+    "text": "Delete"
+  },
+  {
+    "id": "field-label-create",
+    "text": "Create"
+  },
+  {
+    "id": "field-desc-connector",
+    "text": "Connectors used for building blocks"
+  },
+  {
+    "id": "field-label-custom",
+    "text": "Runtime free-form expression"
+  },
+  {
+    "id": "field-label-expression",
+    "text": "Expression Builder"
+  },
+  {
+    "id": "field-desc-custom",
+    "text": "A custom expression for the transtion; must return a boolean True (= make the transition) or False (= do not make the transition)"
+  },
+  {
+    "id": "field-desc-processor",
+    "text": "Determines whether this class is used as a processor class"
+  },
+  {
+    "id": "field-desc-target_dir",
+    "text": "Directory where the code will be saved"
+  },
+  {
+    "id": "field-label-config_target_dir",
+    "text": "Configuration items target directory"
+  },
+  {
+    "id": "field-desc-config_target_dir",
+    "text": "Directory where the configuration items will be saved"
+  },
+  {
+    "id": "field-label-target_file",
+    "text": "Target file"
+  },
+  {
+    "id": "field-desc-target_file",
+    "text": "Name of the file the code will be saved as"
+  },
+  {
+    "id": "field-label-config_target_file",
+    "text": "Configuration items target file"
+  },
+  {
+    "id": "field-desc-config_target_file",
+    "text": "Name of the file with the configuration items"
+  },
+  {
+    "id": "field-label-class-name",
+    "text": "Class name"
+  },
+  {
+    "id": "field-label-errors",
+    "text": "Errors"
+  },
+  {
+    "id": "field-desc-class-name",
+    "text": "Class name"
+  },
+  {
+    "id": "field-label-class-class-name",
+    "text": "Class name"
+  },
+  {
+    "id": "field-desc-class-class-name",
+    "text": "Both interface name and class code name"
+  },
+  {
+    "id": "field-label-base-class-name",
+    "text": "Base class name"
+  },
+  {
+    "id": "field-label-business",
+    "text": "Business error"
+  },
+  {
+    "id": "field-desc-business",
+    "text": "Business error"
+  },
+  {
+    "id": "field-label-level",
+    "text": "Level"
+  },
+  {
+    "id": "field-desc-level",
+    "text": "Level"
+  },
+  {
+    "id": "field-label-retry-delay",
+    "text": "Retry delay"
+  },
+  {
+    "id": "field-desc-retry-delay",
+    "text": "Retry delay"
+  },
+  {
+    "id": "field-label-severity",
+    "text": "Severity"
+  },
+  {
+    "id": "field-desc-severity",
+    "text": "Severity"
+  },
+  {
+    "id": "field-label-status",
+    "text": "Status"
+  },
+  {
+    "id": "field-desc-status",
+    "text": "Status"
+  },
+  {
+    "id": "field-desc-base-class-name",
+    "text": "Inherited class name"
+  },
+  {
+    "id": "field-label-lang",
+    "text": "Language"
+  },
+  {
+    "id": "field-desc-lang",
+    "text": "Programming language"
+  },
+  {
+    "id": "field-label-sensitive",
+    "text": "Sensitive"
+  },
+  {
+    "id": "field-desc-sensitive",
+    "text": "Is it a sensitive data?"
+  },
+  {
+    "id": "field-label-codes",
+    "text": "Mapper code"
+  },
+  {
+    "id": "field-desc-codes",
+    "text": "Classes with mapper methods"
+  },
+  {
+    "id": "field-label-service",
+    "text": "Service"
+  },
+  {
+    "id": "field-desc-service",
+    "text": "The name of the service"
+  },
+  {
+    "id": "field-label-version",
+    "text": "Version"
+  },
+  {
+    "id": "field-desc-version",
+    "text": "Version string for the interface object"
+  },
+  {
+    "id": "field-label-for",
+    "text": "for"
+  },
+  {
+    "id": "field-label-true",
+    "text": "True"
+  },
+  {
+    "id": "field-label-false",
+    "text": "False"
+  },
+  {
+    "id": "field-label-foreach",
+    "text": "foreach"
+  },
+  {
+    "id": "field-label-transaction",
+    "text": "transaction"
+  },
+  {
+    "id": "field-label-while",
+    "text": "while"
+  },
+  {
+    "id": "field-label-block-logic",
+    "text": "Block logic"
+  },
+  {
+    "id": "field-label-block-type",
+    "text": "Block type"
+  },
+  {
+    "id": "field-label-block-config",
+    "text": "Block config"
+  },
+  {
+    "id": "field-label-serviceversion",
+    "text": "Version"
+  },
+  {
+    "id": "field-desc-serviceversion",
+    "text": "Version string for the service object"
+  },
+  {
+    "id": "field-label-servicedesc",
+    "text": "Description"
+  },
+  {
+    "id": "field-desc-servicedesc",
+    "text": "Description of the service object"
+  },
+  {
+    "id": "field-label-author",
+    "text": "Author"
+  },
+  {
+    "id": "field-desc-author",
+    "text": "The author of the object for display and tracking purposes"
+  },
+  {
+    "id": "field-label-serviceauthor",
+    "text": "Author"
+  },
+  {
+    "id": "field-desc-serviceauthor",
+    "text": "The optional author of the code object"
+  },
+  {
+    "id": "field-label-patch",
+    "text": "Patch"
+  },
+  {
+    "id": "field-desc-patch",
+    "text": "Optional patch string; does not affect version compatibility; this value should be updated every time the same version of the service object is updated in the database."
+  },
+  {
+    "id": "field-label-remote",
+    "text": "Remote"
+  },
+  {
+    "id": "field-desc-remote",
+    "text": "The optional remote status of the service, indicating if the service will run in an independent qsvc process (always False for system services; see qorus-client.remote for how the default value is set by oload when loading user services)"
+  },
+  {
+    "id": "field-label-groups",
+    "text": "Groups"
+  },
+  {
+    "id": "field-desc-groups",
+    "text": "One or more interface groups that the object is a member of"
+  },
+  {
+    "id": "field-label-event",
+    "text": "Sync Event"
+  },
+  {
+    "id": "field-label-event-handlers",
+    "text": "Event handlers"
+  },
+  {
+    "id": "field-label-step",
+    "text": "Step"
+  },
+  {
+    "id": "field-desc-event",
+    "text": "The name of the event associated with the step"
+  },
+  {
+    "id": "field-desc-event-handlers",
+    "text": "Event handlers associated with this service"
+  },
+  {
+    "id": "field-label-queue",
+    "text": "Queue"
+  },
+  {
+    "id": "field-desc-queue",
+    "text": "The name of the queue associated with the step"
+  },
+  {
+    "id": "field-label-constants",
+    "text": "Constants"
+  },
+  {
+    "id": "field-desc-constants",
+    "text": "An optional list of constant objects to load into the service program object"
+  },
+  {
+    "id": "field-label-classes",
+    "text": "Classes"
+  },
+  {
+    "id": "field-desc-classes",
+    "text": "An optional list of class objects to load into the service program object"
+  },
+  {
+    "id": "field-label-requires",
+    "text": "Requires"
+  },
+  {
+    "id": "field-desc-requires",
+    "text": "An optional list of other classes required by the class"
+  },
+  {
+    "id": "field-label-mapper_options",
+    "text": "Options"
+  },
+  {
+    "id": "field-desc-mapper_options",
+    "text": "Mapper options"
+  },
+  {
+    "id": "field-desc-state-mapper",
+    "text": "This state performs data transformations on input data using a Qorus mapper.  This state optionally accepts input data for processing and returns the output data after data transformation."
+  },
+  {
+    "id": "field-desc-state-pipeline",
+    "text": "This state executes a data pipeline, allowing potentially large volumes of data to be efficiently processed.  This state optionally accepts input data but provides no output data."
+  },
+  {
+    "id": "field-desc-state-connector",
+    "text": "This state executes a class connector on the input data and returns the output data produced by the connector."
+  },
+  {
+    "id": "field-desc-state-apicall",
+    "text": "This state calls a data provider API using the request-response integration pattern; the state's input can optionally be used as the API request data, and the response data is returned as the state's output data."
+  },
+  {
+    "id": "field-desc-state-search-single",
+    "text": "This state makes a search for a single record in a record-based data provider.  The search criteria is defined in the state and can use any contextual data available including input data.  The output data is the single record retrieved."
+  },
+  {
+    "id": "field-desc-state-search",
+    "text": "This state makes a search for a record set in a record-based data provider.  The search criteria is defined in the state and can use any contextual data available including input data.  The output data is a list of record data retrieved."
+  },
+  {
+    "id": "field-desc-state-create",
+    "text": "This state creates records in a record-based data provider.  The record(s) to be created are defined in the state and can use any contextual data available including input data.  The output data is the list of record(s) created."
+  },
+  {
+    "id": "field-desc-state-update",
+    "text": "This state updates records in a record-based data provider.  The search and update criteria are defined in the state and can use any contextual data available including input data.  The output data indicates how many records were updated."
+  },
+  {
+    "id": "field-desc-state-delete",
+    "text": "This state deletes records in a record-based data provider.  The search criteria is defined in the state and can use any contextual data available including input data.  The output data indicates how many records were deleted."
+  },
+  {
+    "id": "field-label-functions",
+    "text": "Functions"
+  },
+  {
+    "id": "field-label-fsm",
+    "text": "Finite State Machine"
+  },
+  {
+    "id": "field-desc-fsm",
+    "text": "Any Finite State Machines accessible and used by this interface"
+  },
+  {
+    "id": "field-desc-functions",
+    "text": "An optional list of functions to load into the service program object"
+  },
+  {
+    "id": "field-label-service_modules",
+    "text": "Service modules"
+  },
+  {
+    "id": "field-label-modules",
+    "text": "Modules"
+  },
+  {
+    "id": "field-desc-modules",
+    "text": "Qore-language modules to be loaded into the program container automatically"
+  },
+  {
+    "id": "field-desc-service_modules",
+    "text": "lists modules providing base classes for class-based services"
+  },
+  {
+    "id": "field-label-lock",
+    "text": "Lock"
+  },
+  {
+    "id": "field-desc-lock",
+    "text": "Must be either none, read, or write (default none), to determine how the service's RWLock will be grabbed before the method is executed"
+  },
+  {
+    "id": "field-label-service-autostart",
+    "text": "Autostart"
+  },
+  {
+    "id": "field-label-stateless",
+    "text": "Stateless"
+  },
+  {
+    "id": "field-desc-stateless",
+    "text": "Is the service stateless?"
+  },
+  {
+    "id": "field-label-scaling-min-replicas",
+    "text": "Scaling - min replicas"
+  },
+  {
+    "id": "field-desc-scaling-min-replicas",
+    "text": "Minimum number of replicas"
+  },
+  {
+    "id": "field-label-scaling-max-replicas",
+    "text": "Scaling - max replicas"
+  },
+  {
+    "id": "field-desc-scaling-max-replicas",
+    "text": "Maximum number of replicas"
+  },
+  {
+    "id": "field-label-scaling-cpu",
+    "text": "Scaling - CPU usage (%)"
+  },
+  {
+    "id": "field-desc-scaling-cpu",
+    "text": "CPU usage (%)"
+  },
+  {
+    "id": "field-label-scaling-memory",
+    "text": "Scaling - memory usage"
+  },
+  {
+    "id": "field-desc-scaling-memory",
+    "text": "Memory usage"
+  },
+  {
+    "id": "field-label-container-memory-request",
+    "text": "Container memory request"
+  },
+  {
+    "id": "field-desc-container-memory-request",
+    "text": "Container memory request"
+  },
+  {
+    "id": "field-label-container-memory-limit",
+    "text": "Container memory limit"
+  },
+  {
+    "id": "field-desc-container-memory-limit",
+    "text": "Container memory limit"
+  },
+  {
+    "id": "field-label-container-cpu-request",
+    "text": "Container cpu request"
+  },
+  {
+    "id": "field-desc-container-cpu-request",
+    "text": "Container cpu request"
+  },
+  {
+    "id": "field-label-container-cpu-limit",
+    "text": "Container cpu limit"
+  },
+  {
+    "id": "field-desc-container-cpu-limit",
+    "text": "Container cpu limit"
+  },
+  {
+    "id": "field-desc-service-autostart",
+    "text": "The value of the autostart property of the service (default: False, managed by operations)"
+  },
+  {
+    "id": "field-label-workflow-autostart",
+    "text": "Autostart"
+  },
+  {
+    "id": "field-desc-workflow-autostart",
+    "text": "The number of workflow execution instances to start when the system starts"
+  },
+  {
+    "id": "field-label-staticdata-type",
+    "text": "Static data type"
+  },
+  {
+    "id": "field-desc-staticdata-type",
+    "text": "Static data type"
+  },
+  {
+    "id": "field-label-internal",
+    "text": "Internal"
+  },
+  {
+    "id": "field-desc-internal",
+    "text": "If this boolean flag is set to True, then the method will not be automatically exported through the any network interface"
+  },
+  {
+    "id": "field-label-write",
+    "text": "Write"
+  },
+  {
+    "id": "field-desc-write",
+    "text": "If this boolean flag is set to True, then the method will be marked as a write method, meaning that external callers will have to have the CALL-USER-SERVICES-RW role to call the method if RBAC security is enabled"
+  },
+  {
+    "id": "field-label-mappers",
+    "text": "Mappers"
+  },
+  {
+    "id": "field-desc-mappers",
+    "text": "An optional list of mappers to register with the service so they are available with the UserApi::getMapper() call"
+  },
+  {
+    "id": "field-label-vmaps",
+    "text": "Value maps"
+  },
+  {
+    "id": "field-desc-vmaps",
+    "text": "An optional list of value maps to register with the service so they can be used with the UserApi::getValueMap() call"
+  },
+  {
+    "id": "field-label-resource",
+    "text": "Resource"
+  },
+  {
+    "id": "field-desc-resource",
+    "text": "Each resource line describes one or more files (if wildcards are used) that will be loaded into the database as service file resources for use in serivces that provide HTML UI services; using this tag the resource type will be derived from the file name (either \"text\", \"binary\", or \"template\")"
+  },
+  {
+    "id": "field-label-text-resource",
+    "text": "Text resource"
+  },
+  {
+    "id": "field-desc-text-resource",
+    "text": "Defines text file resources (accepts wildcards)"
+  },
+  {
+    "id": "field-label-bin-resource",
+    "text": "Bin resource"
+  },
+  {
+    "id": "field-desc-bin-resource",
+    "text": "Defines binary file resources (accepts wildcards)"
+  },
+  {
+    "id": "field-label-template",
+    "text": "Template"
+  },
+  {
+    "id": "field-desc-template",
+    "text": "Defines template file resources (accepts wildcards)"
+  },
+  {
+    "id": "field-label-define-auth-label",
+    "text": "Define auth label"
+  },
+  {
+    "id": "field-desc-define-auth-label",
+    "text": "Defines an authentication label with an associated value"
+  },
+  {
+    "id": "field-label-tags",
+    "text": "Tags"
+  },
+  {
+    "id": "field-desc-tags",
+    "text": "Option tag definition in the format \"key: value\"; for Java services, entries in the classpath can be added here by adding a colon-separated list of path names to the \"classpath\" tag; note also that $OMQ_DIR (or any other server-side environment variable) can be used in classpath entries and will be resolved to the Qorus directory"
+  },
+  {
+    "id": "field-label-active",
+    "text": "Active"
+  },
+  {
+    "id": "field-desc-active",
+    "text": "A boolean value giving the active status of the job; if not present, the default is True"
+  },
+  {
+    "id": "field-label-dateformat",
+    "text": "Date format"
+  },
+  {
+    "id": "field-desc-dateformat",
+    "text": "Date format"
+  },
+  {
+    "id": "field-label-raw",
+    "text": "raw"
+  },
+  {
+    "id": "field-desc-raw",
+    "text": "Raw"
+  },
+  {
+    "id": "field-label-valuetype",
+    "text": "Value type"
+  },
+  {
+    "id": "field-desc-valuetype",
+    "text": "Value type"
+  },
+  {
+    "id": "field-label-value-maps",
+    "text": "Value maps"
+  },
+  {
+    "id": "field-desc-value-maps",
+    "text": "Value maps"
+  },
+  {
+    "id": "field-label-exception",
+    "text": "Exception"
+  },
+  {
+    "id": "field-desc-exception",
+    "text": "Exception"
+  },
+  {
+    "id": "field-label-run-skipped",
+    "text": "Run skipped"
+  },
+  {
+    "id": "field-desc-run-skipped",
+    "text": "A boolean value telling the system if the job should be run immediately if the last scheduled run was missed due to system downtime; if not present, the default is True"
+  },
+  {
+    "id": "field-label-single-instance",
+    "text": "Single instance"
+  },
+  {
+    "id": "field-desc-single-instance",
+    "text": "A boolean value telling the system if the job can only be run on one Qorus instance at a time; if not present, the default is False"
+  },
+  {
+    "id": "field-label-expiry-date",
+    "text": "Expiry date"
+  },
+  {
+    "id": "field-desc-expiry-date",
+    "text": "An optional expiration date; the job will not be run (and will be automatically set to inactive) when the expiration date is reached"
+  },
+  {
+    "id": "field-label-schedule",
+    "text": "Schedule"
+  },
+  {
+    "id": "field-desc-schedule",
+    "text": "Defines the periodicity for running the job"
+  },
+  {
+    "id": "field-label-name",
+    "text": "Name"
+  },
+  {
+    "id": "field-desc-name",
+    "text": "The name of the object"
+  },
+  {
+    "id": "field-label-sla_threshold",
+    "text": "SLA threshold"
+  },
+  {
+    "id": "field-desc-sla_threshold",
+    "text": "The amount of time as an integer in seconds in which each workflow order should get a final status"
+  },
+  {
+    "id": "field-label-max_instances",
+    "text": "Max instances"
+  },
+  {
+    "id": "field-desc-max_instances",
+    "text": "The maximum number of workflow execution instances that can be started"
+  },
+  {
+    "id": "field-label-attach",
+    "text": "Attach"
+  },
+  {
+    "id": "field-desc-attach",
+    "text": "Attach function description (ex: \"my_attach:1.0\"); cannot be supplied if \"class\" is used"
+  },
+  {
+    "id": "field-label-detach",
+    "text": "Detach"
+  },
+  {
+    "id": "field-desc-detach",
+    "text": "Detach function description (ex: \"my_detach:1.0\"); cannot be supplied if \"class\" is used"
+  },
+  {
+    "id": "field-label-onetimeinit",
+    "text": "One-time init"
+  },
+  {
+    "id": "field-desc-onetimeinit",
+    "text": "One time initialization function description (ex: \"my_workflow_init:1.0\"); cannot be supplied if \"class\" is used"
+  },
+  {
+    "id": "field-label-error_handler",
+    "text": "Error handler"
+  },
+  {
+    "id": "field-desc-error_handler",
+    "text": "Error handler function description (ex: \"my_error_handler:1.0\"); cannot be supplied if \"class\" is used"
+  },
+  {
+    "id": "field-label-errorfunction",
+    "text": "Error function"
+  },
+  {
+    "id": "field-desc-errorfunction",
+    "text": "Error function description (ex: \"my_error_func:1.0\"); cannot be supplied if \"class\" is used"
+  },
+  {
+    "id": "field-label-workflow_options",
+    "text": "Options"
+  },
+  {
+    "id": "field-desc-workflow_options",
+    "text": "A hash defining valid workflow options"
+  },
+  {
+    "id": "field-label-keylist",
+    "text": "Key list"
+  },
+  {
+    "id": "field-desc-keylist",
+    "text": "A list of valid workflow keys"
+  },
+  {
+    "id": "field-label-statuses",
+    "text": "Statuses"
+  },
+  {
+    "id": "field-label-any",
+    "text": "Any"
+  },
+  {
+    "id": "field-desc-any",
+    "text": "Means that there are no type restrictions for the value; a value of any type can be provided to a field this type"
+  },
+  {
+    "id": "field-desc-statuses",
+    "text": "A hash defining extended custom statuses descriptions as a single character key - string description"
+  },
+  {
+    "id": "field-label-type",
+    "text": "Type"
+  },
+  {
+    "id": "field-desc-type",
+    "text": "The type of the configuration item"
+  },
+  {
+    "id": "field-label-mappertype",
+    "text": "Type"
+  },
+  {
+    "id": "field-desc-mappertype",
+    "text": "The type of mapper"
+  },
+  {
+    "id": "field-label-can_be_undefined",
+    "text": "Can be undefined"
+  },
+  {
+    "id": "field-desc-can_be_undefined",
+    "text": "Can the value of the configuration item be undefined?"
+  },
+  {
+    "id": "field-label-default_value",
+    "text": "Default value"
+  },
+  {
+    "id": "field-desc-default_value",
+    "text": "The default value of the configuration item"
+  },
+  {
+    "id": "field-label-strictly_local",
+    "text": "Strictly local"
+  },
+  {
+    "id": "field-desc-strictly_local",
+    "text": "Allow the item to be overridden at the next level?"
+  },
+  {
+    "id": "field-label-config_group",
+    "text": "Config group"
+  },
+  {
+    "id": "field-desc-config_group",
+    "text": "The group of the configuration item"
+  },
+  {
+    "id": "field-label-allowed_values",
+    "text": "Allowed values"
+  },
+  {
+    "id": "field-desc-allowed_values",
+    "text": "The list of allowed values for the configuration item if defined"
+  },
+  {
+    "id": "field-label-Queue",
+    "text": "Queue"
+  },
+  {
+    "id": "field-desc-Queue",
+    "text": "Queue"
+  },
+  {
+    "id": "field-label-Group",
+    "text": "Group"
+  },
+  {
+    "id": "field-desc-Group",
+    "text": "Group"
+  },
+  {
+    "id": "field-label-Event",
+    "text": "Sync Event"
+  },
+  {
+    "id": "field-desc-Event",
+    "text": "Workflow Sync Event"
+  },
+  {
+    "id": "field-label-code",
+    "text": "Code"
+  },
+  {
+    "id": "field-label-desc",
+    "text": "Description"
+  },
+  {
+    "id": "field-label-description",
+    "text": "Description"
+  },
+  {
+    "id": "field-desc-desc",
+    "text": "Description"
+  },
+  {
+    "id": "field-desc-description",
+    "text": "Description"
+  },
+  {
+    "id": "field-label-label",
+    "text": "Label"
+  },
+  {
+    "id": "field-desc-label",
+    "text": "The label"
+  },
+  {
+    "id": "field-label-key",
+    "text": "Key"
+  },
+  {
+    "id": "field-desc-key",
+    "text": "The key for the key-value pair"
+  },
+  {
+    "id": "field-label-value",
+    "text": "Value"
+  },
+  {
+    "id": "field-desc-value",
+    "text": "The value for the key-value pair"
+  },
+  {
+    "id": "field-label-qore",
+    "text": "Qore"
+  },
+  {
+    "id": "field-desc-qore",
+    "text": "Indicates that the code is written in Qore"
+  },
+  {
+    "id": "field-label-python",
+    "text": "Python"
+  },
+  {
+    "id": "field-desc-python",
+    "text": "Indicates that the code is written in Python"
+  },
+  {
+    "id": "field-label-java",
+    "text": "Java"
+  },
+  {
+    "id": "field-desc-java",
+    "text": "Indicates that the code is written in Java"
+  },
+  {
+    "id": "field-label-none",
+    "text": "None"
+  },
+  {
+    "id": "field-desc-none",
+    "text": "None"
+  },
+  {
+    "id": "field-label-read",
+    "text": "Read"
+  },
+  {
+    "id": "field-desc-read",
+    "text": "Indicates that the service method's read lock will be acquired during method execution"
+  },
+  {
+    "id": "field-label-write",
+    "text": "Write"
+  },
+  {
+    "id": "field-write-read",
+    "text": "Indicates that the service method's write lock will be acquired during method execution"
+  },
+  {
+    "id": "field-label-string",
+    "text": "string"
+  },
+  {
+    "id": "field-desc-string",
+    "text": "Restricts the value to strings"
+  },
+  {
+    "id": "field-label-int",
+    "text": "int"
+  },
+  {
+    "id": "field-desc-int",
+    "text": "Restricts the value to integers"
+  },
+  {
+    "id": "field-label-bool",
+    "text": "bool"
+  },
+  {
+    "id": "field-desc-bool",
+    "text": "Restricts the value to True and False"
+  },
+  {
+    "id": "field-label-float",
+    "text": "float"
+  },
+  {
+    "id": "field-desc-float",
+    "text": "Restricts the value to floating-point values"
+  },
+  {
+    "id": "field-label-date",
+    "text": "date"
+  },
+  {
+    "id": "field-desc-date",
+    "text": "Restricts the value to date/time values"
+  },
+  {
+    "id": "field-label-hash",
+    "text": "hash"
+  },
+  {
+    "id": "field-desc-hash",
+    "text": "Restricts the value to hash values"
+  },
+  {
+    "id": "field-label-list",
+    "text": "list"
+  },
+  {
+    "id": "field-desc-list",
+    "text": "Restricts the value to list values"
+  },
+  {
+    "id": "field-label-class-connectors",
+    "text": "Connectors"
+  },
+  {
+    "id": "field-desc-class-connectors",
+    "text": "Connectors used for building blocks"
+  },
+  {
+    "id": "field-label-context",
+    "text": "Context"
+  },
+  {
+    "id": "field-desc-context",
+    "text": "Context"
+  },
+  {
+    "id": "InputMethod",
+    "text": "Input method"
+  },
+  {
+    "id": "OutputMethod",
+    "text": "Output method"
+  },
+  {
+    "id": "ConfigFileDoesNotExist",
+    "text": "Config file does not exist"
+  },
+  {
+    "id": "CannotReadConfigFile",
+    "text": "Unable to read config file"
+  },
+  {
+    "id": "PleaseSelect",
+    "text": "Please select"
+  },
+  {
+    "id": "Submit",
+    "text": "Submit"
+  },
+  {
+    "id": "Reset",
+    "text": "Reset"
+  },
+  {
+    "id": "Filter",
+    "text": "Filter..."
+  },
+  {
+    "id": "FilterAvailableFields",
+    "text": "Filter available fields..."
+  },
+  {
+    "id": "FilterAvailableMethods",
+    "text": "Filter methods..."
+  },
+  {
+    "id": "FilterSelectedFields",
+    "text": "Filter selected fields..."
+  },
+  {
+    "id": "LoadingFields",
+    "text": "Loading fields..."
+  },
+  {
+    "id": "SelectAll",
+    "text": "Select all"
+  },
+  {
+    "id": "UnknownWebviewMessage ${ msg }",
+    "text": "Unknown webview message ${ msg }"
+  },
+  {
+    "id": "UnknownInterfaceProperty ${ property }",
+    "text": "Unknown Qorus interface property: ${ property }"
+  },
+  {
+    "id": "InvalidIfaceKind ${ kind } ${ context }",
+    "text": "Invalid Qorus interface kind '${ kind }'; context: ${ context }"
+  },
+  {
+    "id": "QopError ${ msg }",
+    "text": "Running Qorus object parser failed: ${ msg }"
+  },
+  {
+    "id": "DirInConfigDoesNotExist ${ dir }",
+    "text": "Directory ${ dir } in project configuration does not exist"
+  },
+  {
+    "id": "InvalidDirInConfig ${ dir }",
+    "text": "Directory ${ dir } in project configuration is not valid and will be removed"
+  },
+  {
+    "id": "FixedDirInConfig ${ dir } ${ fixed_dir }",
+    "text": "Directory ${ dir } in project configuration has been renamed to ${ fixed_dir }"
+  },
+  {
+    "id": "SubdirHasBeenCreated ${ dir }",
+    "text": "Subdirectory ${ dir } has been created"
+  },
+  {
+    "id": "SubdirHasBeenCreatedAndAddedToSourceDirs ${ dir }",
+    "text": "Subdirectory ${ dir } has been created and added to the source directories"
+  },
+  {
+    "id": "AddMethod",
+    "text": "Add Method"
+  },
+  {
+    "id": "EditMethod",
+    "text": "Edit Method"
+  },
+  {
+    "id": "DeleteMethod",
+    "text": "Delete Method"
+  },
+  {
+    "id": "EditService",
+    "text": "Edit Service"
+  },
+  {
+    "id": "EditJob",
+    "text": "Edit Job"
+  },
+  {
+    "id": "EditStep",
+    "text": "Edit Step"
+  },
+  {
+    "id": "EditSteps",
+    "text": "Edit Steps"
+  },
+  {
+    "id": "EditClass",
+    "text": "Edit Class"
+  },
+  {
+    "id": "EditWorkflow",
+    "text": "Edit Workflow"
+  },
+  {
+    "id": "EditMapperCode",
+    "text": "Edit Mapper Code Class"
+  },
+  {
+    "id": "SrcAndYamlMismatch ${ field } ${ src_file } ${ value1 } ${ value2 }",
+    "text": "Mismatch in source and yaml file at ${ field }: ${ src_file }: ${ value1 }, yaml info: ${ value2 }"
+  },
+  {
+    "id": "SrcMethodNotInYaml ${ method } ${ src_file }",
+    "text": "Mismatch in source and yaml file: method ${ method } in ${ src_file } is not present in the yaml file"
+  },
+  {
+    "id": "SrcAndYamlBaseClassMismatch ${ base_class_name } ${ src_file }",
+    "text": "Mismatch in source and yaml file: base class ${ base_class_name } stated in the yaml file is not a base class in the source file ${ src_file }"
+  },
+  {
+    "id": "FileCreatedInDir ${ file } ${ dir }",
+    "text": "File ${ file } has been created in ${ dir }"
+  },
+  {
+    "id": "2FilesCreatedInDir ${ file1 } ${ file2 } ${ dir }",
+    "text": "Files ${ file1 } and ${ file2 } have been created in ${ dir }"
+  },
+  {
+    "id": "3FilesCreatedInDir ${ file1 } ${ file2 } ${ file3 } ${ dir }",
+    "text": "Files ${ file1 }, ${ file2 } and ${ file3 } have been created in ${ dir }"
+  },
+  {
+    "id": "WriteFileError ${ file } ${ error }",
+    "text": "Writing file ${ file } failed: ${ error }"
+  },
+  {
+    "id": "RemoveFileError ${ file } ${ error }",
+    "text": "Removing file ${ file } failed: ${ error }"
+  },
+  {
+    "id": "OrigFileRemoved ${ file }",
+    "text": "Original file ${ file } has been removed"
+  },
+  {
+    "id": "AddMethodsTitle",
+    "text": "1. Add Methods"
+  },
+  {
+    "id": "SelectFieldsTitle",
+    "text": "1. Select Fields"
+  },
+  {
+    "id": "SelectFieldsSecondStep",
+    "text": "2. Select Fields"
+  },
+  {
+    "id": "FillDataTitle",
+    "text": "2. Fill Data"
+  },
+  {
+    "id": "FillValues",
+    "text": "Fill Values"
+  },
+  {
+    "id": "AddValue",
+    "text": "Select keys"
+  },
+  {
+    "id": "ManageOutputMapping",
+    "text": "Manage output mappings"
+  },
+  {
+    "id": "FillDataThirdStep",
+    "text": "3. Fill Data"
+  },
+  {
+    "id": "AddMethod",
+    "text": "Add Method"
+  },
+  {
+    "id": "AddMethodTooltip",
+    "text": "Add new method to the current service."
+  },
+  {
+    "id": "BackTooltip",
+    "text": "Go to previous step."
+  },
+  {
+    "id": "ResetTooltip",
+    "text": "Reset all forms to their initial state."
+  },
+  {
+    "id": "SelectAllTooltip",
+    "text": "Add all fields"
+  },
+  {
+    "id": "CreateServiceTipTitle",
+    "text": "Creating a service"
+  },
+  {
+    "id": "CreateWorkflowTipTitle",
+    "text": "Creating a workflow"
+  },
+  {
+    "id": "CreateStepsTipTitle",
+    "text": "Creating Workflow steps"
+  },
+  {
+    "id": "CreateStepsTip",
+    "text": "This page serves to create the workflow diagram steps. Clicking on each button on a single step, you can either add a sequential, or parallel step"
+  },
+  {
+    "id": "CreateServiceTip",
+    "text": "To create a service, select all the desired fields and fill them"
+  },
+  {
+    "id": "CreateWorkflowTip",
+    "text": "To create a workflow, select all the desired fields and fill them"
+  },
+  {
+    "id": "CreateMethodsTipTitle",
+    "text": "Creating service methods"
+  },
+  {
+    "id": "CreateMethodTip",
+    "text": "Every service needs its methods, otherwise it's a pretty useless service. Add methods, select fields and fill it with data."
+  },
+  {
+    "id": "UnrecognizedMethodName ${ name }",
+    "text": "Unrecognized method name: ${ name }"
+  },
+  {
+    "id": "QorusServiceDesc",
+    "text": "The base class for Qorus services"
+  },
+  {
+    "id": "QorusJobDesc",
+    "text": "The abstract class for Qorus jobs"
+  },
+  {
+    "id": "QorusWorkflowDesc",
+    "text": "Base class for workflow classes"
+  },
+  {
+    "id": "QorusAsyncStepDesc",
+    "text": "The abstract class for asynchronous steps"
+  },
+  {
+    "id": "QorusEventStepDesc",
+    "text": "The abstract class for workflow synchronization event steps"
+  },
+  {
+    "id": "QorusNormalStepDesc",
+    "text": "The abstract class for normal steps"
+  },
+  {
+    "id": "QorusSubworkflowStepDesc",
+    "text": "The abstract class for subworkflow steps"
+  },
+  {
+    "id": "QorusAsyncArrayStepDesc",
+    "text": "The abstract class for asynchronous array steps"
+  },
+  {
+    "id": "QorusEventArrayStepDesc",
+    "text": "The abstract class for workflow synchronization event array steps"
+  },
+  {
+    "id": "QorusNormalArrayStepDesc",
+    "text": "The abstract class for normal array steps"
+  },
+  {
+    "id": "QorusSubworkflowArrayStepDesc",
+    "text": "The abstract class for subworkflow array steps"
+  },
+  {
+    "id": "QorusAsyncStep",
+    "text": "Asynchronous Step"
+  },
+  {
+    "id": "QorusEventStep",
+    "text": "Synchronization Event Step"
+  },
+  {
+    "id": "QorusNormalStep",
+    "text": "Normal Step"
+  },
+  {
+    "id": "QorusSubworkflowStep",
+    "text": "Subworkflow Step"
+  },
+  {
+    "id": "QorusAsyncArrayStep",
+    "text": "Array Asynchronous Step"
+  },
+  {
+    "id": "QorusEventArrayStep",
+    "text": "Array Synchronization Event Step"
+  },
+  {
+    "id": "QorusNormalArrayStep",
+    "text": "Array Normal Step"
+  },
+  {
+    "id": "QorusSubworkflowArrayStep",
+    "text": "Array Subworkflow Step"
+  },
+  {
+    "id": "CannotDeleteTheOnlyOneServiceMethod",
+    "text": "Cannot delete service method since it is the only one and each service must have at least one method"
+  },
+  {
+    "id": "CannotDeleteTheOnlyOneMapperCodeMethod",
+    "text": "Cannot delete the last method since there must at least one method left"
+  },
+  {
+    "id": "InvalidDeletedMethodIndex",
+    "text": "Invalid index of the method to be deleted"
+  },
+  {
+    "id": "ServiceMethodHasBeenDeleted ${ method }",
+    "text": "Service method ${ method } has been deleted"
+  },
+  {
+    "id": "MapperCodeMethodHasBeenDeleted ${ method }",
+    "text": "Mapper code method ${ method } has been deleted"
+  },
+  {
+    "id": "ConfirmDeleteMethod ${ method }",
+    "text": "Do you really want to delete method ${ method }?"
+  },
+  {
+    "id": "CodeInfoUpdateTimedOut",
+    "text": "Code information cache update timed out, pending: "
+  },
+  {
+    "id": "DefaultInitMethodDesc",
+    "text": "The init method"
+  },
+  {
+    "id": "file_tree_info_update_pending",
+    "text": "getting file tree information"
+  },
+  {
+    "id": "yaml_info_update_pending",
+    "text": "getting information from yaml files"
+  },
+  {
+    "id": "lang_client_info_update_pending",
+    "text": "getting information from language server"
+  },
+  {
+    "id": "modules_info_update_pending",
+    "text": "getting module information"
+  },
+  {
+    "id": "objects_info_update_pending",
+    "text": "getting information from qorus object parser"
+  },
+  {
+    "id": "edit_info_info_update_pending",
+    "text": "getting original data information needed for editing"
+  },
+  {
+    "id": "pending",
+    "text": "pending"
+  },
+  {
+    "id": "finished",
+    "text": "finished"
+  },
+  {
+    "id": "updateStatus",
+    "text": "update status:"
+  },
+  {
+    "id": "AddSteps",
+    "text": "Add Workflow Steps"
+  },
+  {
+    "id": "DescribeYourFSM",
+    "text": "Fill in the details"
+  },
+  {
+    "id": "CreateFlowDiagram",
+    "text": "Create Flow Diagram"
+  },
+  {
+    "id": "AddStepsTitle",
+    "text": "1. Add Workflow Steps"
+  },
+  {
+    "id": "StepsDiagram",
+    "text": "2. Workflow Step Diagram"
+  },
+  {
+    "id": "NoStepsAdded",
+    "text": "No steps added"
+  },
+  {
+    "id": "DiagramIsEmpty",
+    "text": "Diagram is empty"
+  },
+  {
+    "id": "DiagramEmptyDescription",
+    "text": "Start by adding steps in the left column"
+  },
+  {
+    "id": "Before",
+    "text": "before"
+  },
+  {
+    "id": "After",
+    "text": "after"
+  },
+  {
+    "id": "AddNewStep",
+    "text": "Add new step"
+  },
+  {
+    "id": "AddNewStepBefore",
+    "text": "Add new step at the beginning"
+  },
+  {
+    "id": "AddNewStepAfter",
+    "text": "Add new step at the end"
+  },
+  {
+    "id": "AddParallelStepBefore",
+    "text": "Add parallel step before"
+  },
+  {
+    "id": "AddParallelStepAfter",
+    "text": "Add parallel step after"
+  },
+  {
+    "id": "AddSequentialStepBefore",
+    "text": "Add sequential step before"
+  },
+  {
+    "id": "AddSequentialStepAfter",
+    "text": "Add sequential step after"
+  },
+  {
+    "id": "OrSelectExisting",
+    "text": "Select existing"
+  },
+  {
+    "id": "MissingEditData",
+    "text": "Missing edit data"
+  },
+  {
+    "id": "AddConfigItem",
+    "text": "Add new config item"
+  },
+  {
+    "id": "ConfigItemNotFound ${ name }",
+    "text": "Config item '${ name }' not found"
+  },
+  {
+    "id": "table.actions",
+    "text": "Actions"
+  },
+  {
+    "id": "button.show-descriptions",
+    "text": "Show descriptions"
+  },
+  {
+    "id": "ConfigItemsManager",
+    "text": "Config Item Manager"
+  },
+  {
+    "id": "SetCustomValue",
+    "text": "Set custom value or"
+  },
+  {
+    "id": "SetDefaultValue",
+    "text": "Set default value"
+  },
+  {
+    "id": "datetime.24h",
+    "text": "24h"
+  },
+  {
+    "id": "datetime.all",
+    "text": "All"
+  },
+  {
+    "id": "datetime.apply",
+    "text": "Apply"
+  },
+  {
+    "id": "ConfigAnyType",
+    "text": "This config item can be set to any type"
+  },
+  {
+    "id": "SelectConfigItemType",
+    "text": "Select config item type"
+  },
+  {
+    "id": "ConfigSelectFromPredefined",
+    "text": "Select from predefined values"
+  },
+  {
+    "id": "ConfigPredefinedValues",
+    "text": "This config item can only be set from predefined values"
+  },
+  {
+    "id": "ConfigValueSameAsDefault",
+    "text": "The value submitted is same as default value, but will\n                          not change when default value is changed in the\n                          future"
+  },
+  {
+    "id": "PleaseSelectConfigItem",
+    "text": "Please select config item above"
+  },
+  {
+    "id": "GettingDocSymbolsTimedOut",
+    "text": "Getting document symbols timed out"
+  },
+  {
+    "id": "GettingExtensionContextTimedOut",
+    "text": "Getting extension context timed out"
+  },
+  {
+    "id": "button.add-new",
+    "text": "Add new"
+  },
+  {
+    "id": "button.add-new-value",
+    "text": "Add new value"
+  },
+  {
+    "id": "ConfigItemValues",
+    "text": "Config Item Values"
+  },
+  {
+    "id": "GlobalConfigAffectsAll",
+    "text": "a global config item will affect all interfaces using this value"
+  },
+  {
+    "id": "SetItemValue",
+    "text": "Set item value"
+  },
+  {
+    "id": "ConfigCustomTemplate",
+    "text": "Config item template"
+  },
+  {
+    "id": "ConfigTemplatesFormat",
+    "text": "Template config items are in format - "
+  },
+  {
+    "id": "button.group-up",
+    "text": "Show grouped"
+  },
+  {
+    "id": "button.ungroup",
+    "text": "Show all"
+  },
+  {
+    "id": "button.edit-this-value",
+    "text": "Edit config item value"
+  },
+  {
+    "id": "button.remove-this-value",
+    "text": "Remove config item value"
+  },
+  {
+    "id": "button.show-descriptions",
+    "text": "Show descriptions"
+  },
+  {
+    "id": "UnableFindYamlForClass ${ class }",
+    "text": "Unable to find yaml file for class ${ class }"
+  },
+  {
+    "id": "UnableFindYamlForSrc ${ file }",
+    "text": "Unable to find yaml file for source file ${ file }"
+  },
+  {
+    "id": "UnableFindConfigItemsForClass ${ class }",
+    "text": "Unable to find config items file for class ${ class }"
+  },
+  {
+    "id": "ManageConfigItems",
+    "text": "Config items "
+  },
+  {
+    "id": "ConfigItemEditor",
+    "text": "Config item editor "
+  },
+  {
+    "id": "UnknownConfigItem ${ name }",
+    "text": "Unknown config item '${ name }'"
+  },
+  {
+    "id": "AncestorDoesNotHaveConfigItem ${ type } ${ ancestor } ${ item }",
+    "text": "Ancestor ${ type } ${ ancestor } does not have config item ${ item }"
+  },
+  {
+    "id": "AncestorDoesNotExist ${type} ${ ancestor } ${ item }",
+    "text": "Ancestor ${type} ${ ancestor } referenced by config item ${ item } does not exist"
+  },
+  {
+    "id": "AddNewEnvironment",
+    "text": "Add new environment"
+  },
+  {
+    "id": "NoInstances",
+    "text": "No instances"
+  },
+  {
+    "id": "NoDirectories",
+    "text": "No directories"
+  },
+  {
+    "id": "NoDataAvailable",
+    "text": "No data available"
+  },
+  {
+    "id": "AddInstance",
+    "text": "Add new instance"
+  },
+  {
+    "id": "AddSourceDirectory",
+    "text": "Add source directory"
+  },
+  {
+    "id": "ManageSourceDirectories",
+    "text": "Manage source directories"
+  },
+  {
+    "id": "OtherUrls",
+    "text": "Other URLs"
+  },
+  {
+    "id": "AddNewUrl",
+    "text": "Add new URL"
+  },
+  {
+    "id": "NoUrls",
+    "text": "No URLs"
+  },
+  {
+    "id": "ConfigChangedOnDisk",
+    "text": "Configuration changed on disk"
+  },
+  {
+    "id": "MarkdownSupported",
+    "text": "Markdown supported"
+  },
+  {
+    "id": "MarkdownPreview",
+    "text": "Markdown preview"
+  },
+  {
+    "id": "MyDirectories",
+    "text": "Source Directories Management"
+  },
+  {
+    "id": "SourceDirectoriesInfo",
+    "text": "Source directories are used to narrow which files should the extension scan, index and also display in the hierarchy view. If have trouble working with a certain file or you do not see an interface in the hierarchy view, it is probably because it is not in a source directory. Below you can find a list of source directories and also add new ones."
+  },
+  {
+    "id": "Type",
+    "text": "Type"
+  },
+  {
+    "id": "UserConnections",
+    "text": "User connections"
+  },
+  {
+    "id": "Datasources",
+    "text": "Datasource connections"
+  },
+  {
+    "id": "SelectDataProvider",
+    "text": "Data provider"
+  },
+  {
+    "id": "CurrentDataProvider",
+    "text": "Current data provider"
+  },
+  {
+    "id": "FactoryOptions",
+    "text": "Factory options"
+  },
+  {
+    "id": "InputProvider",
+    "text": "Select input"
+  },
+  {
+    "id": "OutputProvider",
+    "text": "Select output"
+  },
+  {
+    "id": "MapperNoInputFields",
+    "text": "No fields available. Please make sure input provider was selected"
+  },
+  {
+    "id": "MapperNoOutputFields",
+    "text": "No fields available. Please make sure output provider was selected"
+  },
+  {
+    "id": "NoInstanceTitle",
+    "text": "Active instance not set"
+  },
+  {
+    "id": "NoInstance",
+    "text": "This item can only be created with an active Qorus instance selected"
+  },
+  {
+    "id": "AddFunctionsTitle",
+    "text": "1. Add New Methods"
+  },
+  {
+    "id": "AddFunction",
+    "text": "Add Method"
+  },
+  {
+    "id": "MapperCodeNotFound ${ name }",
+    "text": "Mapper code '${ name }' not found"
+  },
+  {
+    "id": "OpenInterface",
+    "text": "Open interface"
+  },
+  {
+    "id": "UnexpectedIfaceId",
+    "text": "Unexpected interface ID"
+  },
+  {
+    "id": "NoDescriptionFound",
+    "text": "No description found"
+  },
+  {
+    "id": "ManageClassConnections",
+    "text": "Class connections"
+  },
+  {
+    "id": "ClassConnectionsManager",
+    "text": "Class Connections Manager"
+  },
+  {
+    "id": "AddClassConnectionsTitle",
+    "text": "Connections"
+  },
+  {
+    "id": "NoMapper",
+    "text": "No mapper yet"
+  },
+  {
+    "id": "AddConnection",
+    "text": "Add connection"
+  },
+  {
+    "id": "PleaseSelectClass",
+    "text": "Please select class"
+  },
+  {
+    "id": "AddNewConnector",
+    "text": "Add new connector"
+  },
+  {
+    "id": "NoConnectionSelected",
+    "text": "No connection selected"
+  },
+  {
+    "id": "NoConnectionSelectedDescription",
+    "text": "Start by creating or selecting a connection in the left panel"
+  },
+  {
+    "id": "AddInitialConnector",
+    "text": "Add initial connector"
+  },
+  {
+    "id": "InputConnError",
+    "text": "Fetching input provider data failed, please check the input connection status. You won't be able to edit the input fields for this Mapper. You can, however, replace the input data provider."
+  },
+  {
+    "id": "OutputConnError",
+    "text": "Fetching output provider data failed, please check the output connection status. You won't be able to edit the output fields for this Mapper. You can, however, replace the output data provider."
+  },
+  {
+    "id": "IncorrectKeysRemoved",
+    "text": "incorrect keys were removed from the mapper."
+  },
+  {
+    "id": "SelectNoItems",
+    "text": "No data available to select"
+  },
+  {
+    "id": "NoMappersMatchConnectors",
+    "text": "There are no mappers available matching the criteria of selected connectors. Please create new mapper."
+  },
+  {
+    "id": "ClassChangesWarning",
+    "text": "Changing and deleting classes will reset all class connections data!"
+  },
+  {
+    "id": "ErrorReadingGlobalConfigItemValues",
+    "text": "Error in reading global config item values"
+  },
+  {
+    "id": "WorkflowConfigItemValueForNonWorkflow",
+    "text": "Only workflow can set workflow level config item value"
+  },
+  {
+    "id": "WorkflowConfigItemValueNotFound ${ name }",
+    "text": "Workflow level config item value ${ name } not found"
+  },
+  {
+    "id": "CannotDetermineConfigItemValueType",
+    "text": "Cannot determine config item value type"
+  },
+  {
+    "id": "UnknownType",
+    "text": "Unknown data type! Cannot display appropriate field."
+  },
+  {
+    "id": "AutoFieldSelectType",
+    "text": "Please select type"
+  },
+  {
+    "id": "ConfigFormatIncorrect",
+    "text": "Value is not in correct format"
+  },
+  {
+    "id": "InvalidDate",
+    "text": "Invalid date provided"
+  },
+  {
+    "id": "TriggerNoMethodsAvailable",
+    "text": "No service methods available. To add a trigger to a service building block, please create at least one method."
+  },
+  {
+    "id": "StepBaseClassMissing",
+    "text": "The base class of the step is missing, please add base class first."
+  },
+  {
+    "id": "NoMapperFieldsAvailable",
+    "text": "No fields available for factory type"
+  },
+  {
+    "id": "ClassWithoutConnectorsWarning",
+    "text": "The class selected does not have any connectors"
+  },
+  {
+    "id": "ActiveInstanceProvidersConnectors",
+    "text": "An active instance is required to add input / output providers."
+  },
+  {
+    "id": "ActiveInstanceRequired",
+    "text": "An active instance is required to manage this part."
+  },
+  {
+    "id": "AddNewMapper",
+    "text": "Add new mapper"
+  },
+  {
+    "id": "AddNewMapperField",
+    "text": "Add custom mapper field"
+  },
+  {
+    "id": "AddNewField",
+    "text": "Add custom field"
+  },
+  {
+    "id": "UnableToRetrieveTypes",
+    "text": "Unable to retrieve types from active qorus instance."
+  },
+  {
+    "id": "ConfigItemIsType",
+    "text": "This config item is of type: "
+  },
+  {
+    "id": "SelectExistingTypeOrNew",
+    "text": "Select existing type or add new..."
+  },
+  {
+    "id": "TargetDirUnknown",
+    "text": "Target directory unknown"
+  },
+  {
+    "id": "FailedCreateDir ${ dir }",
+    "text": "Creating directory ${ dir } failed"
+  },
+  {
+    "id": "StaticData",
+    "text": "Static data"
+  },
+  {
+    "id": "StaticDataFieldDesc",
+    "text": "Static data provided by context"
+  },
+  {
+    "id": "ConfirmDialogTitle",
+    "text": "Please confirm your action"
+  },
+  {
+    "id": "ConfirmRemoveItem",
+    "text": "Are you sure you want to remove this item?"
+  },
+  {
+    "id": "ConfirmRemoveConnector",
+    "text": "Are you sure you want to remove this connector?"
+  },
+  {
+    "id": "ConfirmRemoveOption",
+    "text": "Are you sure you want to remove this option?"
+  },
+  {
+    "id": "ConfirmRemoveField",
+    "text": "Are you sure you want to remove this field?"
+  },
+  {
+    "id": "RemoveField",
+    "text": "Remove field"
+  },
+  {
+    "id": "Connection",
+    "text": "Connection"
+  },
+  {
+    "id": "ResetFieldToOriginal",
+    "text": "Reset field to original value"
+  },
+  {
+    "id": "ConfirmRemoveTrigger",
+    "text": "Are you sure you want to remove this trigger?"
+  },
+  {
+    "id": "ConfirmRemoveMapper",
+    "text": "Are you sure you want to remove this mapper?"
+  },
+  {
+    "id": "ConfirmRemoveConnector",
+    "text": "Are you sure you want to remove this connector?"
+  },
+  {
+    "id": "ConfirmRemoveConnection",
+    "text": "Are you sure you want to remove this connection?"
+  },
+  {
+    "id": "ConfirmRemoveConfigItem",
+    "text": "Are you sure you want to remove this config item?"
+  },
+  {
+    "id": "ConfirmRemoveInstance",
+    "text": "Are you sure you want to remove this instance?"
+  },
+  {
+    "id": "ConfirmRemoveSourceDir",
+    "text": "Are you sure you want to remove this source directory?"
+  },
+  {
+    "id": "ConfirmRemoveEnv",
+    "text": "Are you sure you want to remove this environment?"
+  },
+  {
+    "id": "WildcardReplace",
+    "text": "Wildcards (*) need to be replaced with an actual value. If you wish to change this value later, please select the wildcard (*) again."
+  },
+  {
+    "id": "AllowedValuesWarningType",
+    "text": "Allowed values property is not supported for the selected type"
+  },
+  {
+    "id": "IfaceAlreadyExists ${ iface } ${ name }",
+    "text": "${ iface } with name ${ name } already exists"
+  },
+  {
+    "id": "ClassAlreadyExists ${ iface } ${ name }",
+    "text": "${ iface } with class ${ name } already exists"
+  },
+  {
+    "id": "FileAlreadyExists ${ file }",
+    "text": "File ${ file } already exists"
+  },
+  {
+    "id": "DirAlreadyExists ${ dir }",
+    "text": "Directory ${ dir } already exists"
+  },
+  {
+    "id": "IfaceSavedSuccessfully ${ iface } ${ name }",
+    "text": "${ iface } ${ name } has been saved successfully"
+  },
+  {
+    "id": "ReloadingWebview",
+    "text": "Reloading webview ..."
+  },
+  {
+    "id": "Draft",
+    "text": "Draft"
+  },
+  {
+    "id": "SavingDraft",
+    "text": "Saving draft..."
+  },
+  {
+    "id": "DraftSaved",
+    "text": "Draft saved"
+  },
+  {
+    "id": "DraftsDescription",
+    "text": "Drafts are unfinished interfaces that were automatically saved for you"
+  },
+  {
+    "id": "DeleteInterfaceDrafts",
+    "text": "Delete all drafts for this interface?"
+  },
+  {
+    "id": "DeleteAllDrafts",
+    "text": "Delete all drafts? Are you sure?"
+  },
+  {
+    "id": "DeleteDraft",
+    "text": "Are you sure you want to delete this draft?"
+  },
+  {
+    "id": "DiscardChanges",
+    "text": "Are you sure you want to discard any unsaved changes?"
+  },
+  {
+    "id": "DiscardChangesButton",
+    "text": "Discard unsaved changes"
+  },
+  {
+    "id": "FieldsSelected",
+    "text": "Fields selected"
+  },
+  {
+    "id": "Status",
+    "text": "Status"
+  },
+  {
+    "id": "Valid",
+    "text": "Valid"
+  },
+  {
+    "id": "invalid",
+    "text": "Invalid"
+  },
+  {
+    "id": "RemoveValue",
+    "text": "Remove value"
+  },
+  {
+    "id": "AddErrorsTitle",
+    "text": "1. Add Errors"
+  },
+  {
+    "id": "AddError",
+    "text": "Add Error"
+  },
+  {
+    "id": "UnfinishedWork",
+    "text": "You have unsaved work, are you sure you want to leave? Leaving will result in your work being saved as a draft."
+  },
+  {
+    "id": "ResetFieldsConfirm",
+    "text": "You have unsaved work, are you sure you want to reset?"
+  },
+  {
+    "id": "ConfigItemUpdatedSuccessfully ${ name }",
+    "text": "Data of config item ${ name } has been stored successfully"
+  },
+  {
+    "id": "NotAQorusInterfaceFile ${ file }",
+    "text": "${ file } is not a Qorus interface file"
+  },
+  {
+    "id": "InvalidClassName ${ name }",
+    "text": "Invalid class name: ${ name }"
+  },
+  {
+    "id": "ActiveQorusLost",
+    "text": "Connection to active Qorus instance has been lost"
+  },
+  {
+    "id": "PingNotOK ${ url }",
+    "text": "Ping did not return 'OK': ${ url }"
+  },
+  {
+    "id": "ActiveQorusPingError",
+    "text": "Active Qorus instance ping error"
+  },
+  {
+    "id": "EditItem",
+    "text": "Edit item"
+  },
+  {
+    "id": "EditThisItem",
+    "text": "Edit this item"
+  },
+  {
+    "id": "EditInterface",
+    "text": "Edit interface"
+  },
+  {
+    "id": "CreateInterface",
+    "text": "Create interface"
+  },
+  {
+    "id": "CreateAndAddNewItem",
+    "text": "Create and select new item"
+  },
+  {
+    "id": "AddAnother",
+    "text": "Add another item"
+  },
+  {
+    "id": "EditMethodName",
+    "text": "Edit method name"
+  },
+  {
+    "id": "EditMethodNameTriggerWarning",
+    "text": "Editing method name will also change the associated trigger name, if applicable!"
+  },
+  {
+    "id": "YamlDataNotFound ${ iface_kind } ${ name }",
+    "text": "Data for ${ iface_kind } ${ name } not found"
+  },
+  {
+    "id": "AllowedCharsOnly",
+    "text": "Only characters a-z, 0-9 and _ are allowed for this field"
+  },
+  {
+    "id": "NoEditInfo ${ file }",
+    "text": "Unable to get edit info for file ${ file }"
+  },
+  {
+    "id": "Optional",
+    "text": "Optional"
+  },
+  {
+    "id": "Arguments",
+    "text": "Arguments"
+  },
+  {
+    "id": "Options",
+    "text": "Options"
+  },
+  {
+    "id": "InputType",
+    "text": "Input type"
+  },
+  {
+    "id": "OutputType",
+    "text": "Output type"
+  },
+  {
+    "id": "InputOutputType",
+    "text": "Input & output type"
+  },
+  {
+    "id": "TransitionErrorsNoInstance",
+    "text": "Active Qorus instance is required to display list of server errors"
+  },
+  {
+    "id": "EditingTransition",
+    "text": "Editing transition(s)"
+  },
+  {
+    "id": "EditingState",
+    "text": "Editing state"
+  },
+  {
+    "id": "ManagePipeElement",
+    "text": "Manage pipeline element"
+  },
+  {
+    "id": "field-label-triggers",
+    "text": "Triggers"
+  },
+  {
+    "id": "field-label-connection_options",
+    "text": "Options"
+  },
+  {
+    "id": "field-label-url",
+    "text": "URL"
+  },
+  {
+    "id": "field-desc-triggers",
+    "text": "Indicates how the associated actions will be triggered"
+  },
+  {
+    "id": "field-label-event-connector",
+    "text": "Event connector"
+  },
+  {
+    "id": "field-desc-event-connector",
+    "text": "An event-driven connector"
+  },
+  {
+    "id": "field-label-trigger",
+    "text": "Trigger"
+  },
+  {
+    "id": "field-desc-trigger",
+    "text": "Indicates how the associated action will be triggered"
+  },
+  {
+    "id": "field-label-errors_errors",
+    "text": "Errors"
+  },
+  {
+    "id": "field-desc-errors_errors",
+    "text": "Errors"
+  },
+  {
+    "id": "field-label-workflow_errors",
+    "text": "Errors"
+  },
+  {
+    "id": "field-desc-workflow_errors",
+    "text": "Errors"
+  },
+  {
+    "id": "field-label-FATAL",
+    "text": "FATAL"
+  },
+  {
+    "id": "field-label-MAJOR",
+    "text": "MAJOR"
+  },
+  {
+    "id": "field-label-MINOR",
+    "text": "MINOR"
+  },
+  {
+    "id": "field-label-WARNING",
+    "text": "WARNING"
+  },
+  {
+    "id": "field-label-INFO",
+    "text": "INFO"
+  },
+  {
+    "id": "field-label-NONE",
+    "text": "NONE"
+  },
+  {
+    "id": "field-label-AUTO",
+    "text": "AUTO"
+  },
+  {
+    "id": "field-label-GLOBAL",
+    "text": "GLOBAL"
+  },
+  {
+    "id": "field-label-WORKFLOW",
+    "text": "WORKFLOW"
+  },
+  {
+    "id": "field-label-ERROR",
+    "text": "ERROR"
+  },
+  {
+    "id": "field-label-RETRY",
+    "text": "RETRY"
+  },
+  {
+    "id": "TriggerManager",
+    "text": "Manage trigger"
+  },
+  {
+    "id": "FSMs",
+    "text": "Finite State Machines"
+  },
+  {
+    "id": "FiniteStateMachine",
+    "text": "Finite State Machine"
+  },
+  {
+    "id": "Pipelines",
+    "text": "Pipelines"
+  },
+  {
+    "id": "field-label-options",
+    "text": "Options"
+  },
+  {
+    "id": "field-desc-options",
+    "text": "Options for the object"
+  },
+  {
+    "id": "ActionStrategy",
+    "text": "Action strategy"
+  },
+  {
+    "id": "MaxThreadCount",
+    "text": "Max thread count"
+  },
+  {
+    "id": "ShowMetadata",
+    "text": "Show metadata"
+  },
+  {
+    "id": "NothingToSelect",
+    "text": "Nothing to select"
+  },
+  {
+    "id": "HideMetadata",
+    "text": "Hide metadata"
+  },
+  {
+    "id": "OrigIfaceFileDoesNotExist ${ file }",
+    "text": "The original interface file ${ file } does not exist"
+  },
+  {
+    "id": "ErrorParsingFile ${ file }",
+    "text": "Error in parsing file ${ file }"
+  },
+  {
+    "id": "ErrorParsingFileOrNoSymbolsFound ${ file }",
+    "text": "Error in parsing file ${ file } or no symbols found"
+  },
+  {
+    "id": "Initial",
+    "text": "Initial"
+  },
+  {
+    "id": "Final",
+    "text": "Final"
+  },
+  {
+    "id": "AllTransitionsRemoved",
+    "text": "All transitions were removed"
+  },
+  {
+    "id": "RemoveAllTransitions",
+    "text": "Remove all transitions"
+  },
+  {
+    "id": "ConfirmResetField",
+    "text": "Are you sure you want to reset this field to it's original value? Note: The original value may have been inherited."
+  },
+  {
+    "id": "PleaseSelectFSM",
+    "text": " - Please select an FSM to add triggers"
+  },
+  {
+    "id": "NoTriggersYet",
+    "text": "No triggers added yet"
+  },
+  {
+    "id": "FSMSelectTargetState",
+    "text": "Please select the target state by left clicking, or click anywhere else to cancel."
+  },
+  {
+    "id": "Minimap",
+    "text": "Minimap"
+  },
+  {
+    "id": "ToggleMinimap",
+    "text": "Toggle minimap"
+  },
+  {
+    "id": "Toolbar",
+    "text": "Toolbar"
+  },
+  {
+    "id": "ToggleToolbar",
+    "text": "Toggle toolbar"
+  },
+  {
+    "id": "Recenter",
+    "text": "Recenter diagram"
+  },
+  {
+    "id": "Branch",
+    "text": "Branch"
+  },
+  {
+    "id": "EditTransitionsOrder",
+    "text": "Edit transitions order"
+  },
+  {
+    "id": "PreviousOutputElementCompatible",
+    "text": "Previous element is compatible"
+  },
+  {
+    "id": "PreviousOutputElementIncompatible",
+    "text": "Previous element is incompatible!"
+  },
+  {
+    "id": "NextInputElementCompatible",
+    "text": "Next element is compatible"
+  },
+  {
+    "id": "NextInputElementIncompatible",
+    "text": "Next element is incompatible!"
+  },
+  {
+    "id": "EditStatesOrder",
+    "text": "Edit initial states order"
+  },
+  {
+    "id": "CreateNewDir",
+    "text": "Create new directory"
+  },
+  {
+    "id": "AddingNewDirectoryTo",
+    "text": "Subdirectory will be created in "
+  },
+  {
+    "id": "MultipleSubdirectoriesNewDir",
+    "text": "It can contain further subdirectories that will be created as well (ex: my/new/dir)."
+  },
+  {
+    "id": "CreateFolder",
+    "text": "Create"
+  },
+  {
+    "id": "CreateFolderAndAddSource",
+    "text": "Create and add to sources"
+  },
+  {
+    "id": "TransitionToState",
+    "text": "Transition to state"
+  },
+  {
+    "id": "NoDescription",
+    "text": "No description available"
+  },
+  {
+    "id": "CheckingCompatibility",
+    "text": "Checking compatibility..."
+  },
+  {
+    "id": "PipelineElementIncompatible",
+    "text": "Parent element is not compatible!"
+  },
+  {
+    "id": "PipelineElementCompatible",
+    "text": "Elements are compatible."
+  },
+  {
+    "id": "IncompatibleTransitionsRemoved",
+    "text": "incompatible transitions removed. This is most likely due to a type change in affected states."
+  },
+  {
+    "id": "SelectItem",
+    "text": "Select item"
+  },
+  {
+    "id": "CannotManageBlock",
+    "text": "Blocks can only be managed with an active Qorus instance."
+  },
+  {
+    "id": "LoadingCompatibilityCheck",
+    "text": "Checking compatibility..."
+  },
+  {
+    "id": "MoveItemUp",
+    "text": "Move item up"
+  },
+  {
+    "id": "NoOptionsAvailable",
+    "text": "There are no options available for the selected criteria."
+  },
+  {
+    "id": "MoveItemDown",
+    "text": "Move item down"
+  },
+  {
+    "id": "Missing",
+    "text": "Missing"
+  },
+  {
+    "id": "TransitionErrors",
+    "text": "Error(s)"
+  },
+  {
+    "id": "TransitionOrderCondition",
+    "text": "condition"
+  },
+  {
+    "id": "LoadingOptions",
+    "text": "Loading options ..."
+  },
+  {
+    "id": "NoOptionsSelected",
+    "text": "No options selected. Please select an option below."
+  },
+  {
+    "id": "NoArgument",
+    "text": "No arguments selected. Please select an argument below."
+  },
+  {
+    "id": "AddNewOption",
+    "text": "Add option"
+  },
+  {
+    "id": "AddArgument",
+    "text": "Add argument"
+  },
+  {
+    "id": "ErrorLoadingOptions",
+    "text": "There was an error loading options:"
+  },
+  {
+    "id": "OptionsQorusInstanceRequired",
+    "text": "An active instance is required to manage options."
+  },
+  {
+    "id": "InterfacesQorusInstanceRequired",
+    "text": "An active instance is required to manage this item."
+  },
+  {
+    "id": "RemoveSelectedOption",
+    "text": "Are you sure you wish to remove the selected option?"
+  },
+  {
+    "id": "ManageTransitions",
+    "text": "Manage transitions"
+  },
+  {
+    "id": "ManageExecutionOrder",
+    "text": "Set execution order"
+  },
+  {
+    "id": "DuplicateConfigItemName ${ name } ${ prefix } ${ iface_type_1 } ${ iface_name_1 } ${ iface_type_2 } ${ iface_name_2 }",
+    "text": "Duplicate config item name \"${ name }\", prefix \"${ prefix }\": ${ iface_type_1 } \"${ iface_name_1 }\" and ${ iface_type_2 } \"${ iface_name_2 }\""
+  },
+  {
+    "id": "ConfigItemAlreadyExists ${ name } ${ prefix } ${ iface_type } ${ iface_name }",
+    "text": "Config item with name \"${ name }\" and prefix \"${ prefix }\" already exists in ${ iface_type } \"${ iface_name }\""
+  },
+  {
+    "id": "AddElement",
+    "text": "Add child element"
+  },
+  {
+    "id": "RemovedIncompatibleContext",
+    "text": "The current context for this mapper is incompatible with the stored context. Context relations were removed."
+  },
+  {
+    "id": "AddQueue",
+    "text": "Add queue"
+  },
+  {
+    "id": "tutorial-controls",
+    "text": "Tutorial controls"
+  },
+  {
+    "id": "PrevStep",
+    "text": "Previous step"
+  },
+  {
+    "id": "NextStep",
+    "text": "Next step"
+  },
+  {
+    "id": "RestartTutorial",
+    "text": "Restart tutorial"
+  },
+  {
+    "id": "PlayTutorial",
+    "text": "Play tutorial automatically"
+  },
+  {
+    "id": "PauseTutorial",
+    "text": "Pause tutorial"
+  },
+  {
+    "id": "CloseTutorial",
+    "text": "Close tutorial"
+  },
+  {
+    "id": "tutorial-controls-content",
+    "text": "\n  ### Welcome to the tutorial\n\n  Move between tips by clicking on the **arrows above** or use **[LEFT]** and **[RIGHT]** keys.\n\n  Click on the **X** or press the **[ESC]** to close the tutorial at any time.\n\n  The tutorial can also be set to _play_ through all it's steps automatically by clicking on the **play** icon or pressing the **[SPACE]** key.\n"
+  },
+  {
+    "id": "tutorial-fsm-title",
+    "text": "Finite State Machine"
+  },
+  {
+    "id": "tutorial-fsm-content",
+    "text": "Finite State Machines allow for arbitrary logic to be implemented in Qorus.\n\nEach state implements some logic or data processing, and then the execution of the Finite State Machine can move to\none or more states until the execution is completed.\n\nEach transition from one state to another can be conditional on logic attached to the transition, which can use any\navailable data to decide to move to the next state or not.\n\nFinite State Machines can be attached to service methods, workflow steps, and jobs, allowing for arbitrary logic to\nbe implemented without the need for explicit coding.\n"
+  },
+  {
+    "id": "tutorial-fsm-fields-title",
+    "text": "Finite State Machine Fields"
+  },
+  {
+    "id": "tutorial-fsm-fields-content",
+    "text": "\n ### Target Directory\n This will give the directory where the Finite State Machine configuration is stored on the file system.\n\n ### Name\n The Finite State Machine must have a unique name that is used as the label or reference from interfaces or other\n Finite State Machines.\n\n ### Description\n The description should explain to other users what the Finite State Machine does and also describe any data input\n requirements or output data produced.\n"
+  },
+  {
+    "id": "tutorial-fsm-tools-title",
+    "text": "Finite State Machine Toolbar"
+  },
+  {
+    "id": "tutorial-fsm-tools-content",
+    "text": "\n Drag and drop these boxes on the diagram below. These boxes represent the states of the Finite State Machine.\n\n There are 4 types of states:\n\n ### Mapper\n Drag a mapper element to the diagram to add a data mapper to the Finite State Machine.\n\n ### Pipeline\n Pipelines provide more complex processing for record-based data, supporting multiple streams and record filters /\n generators / grouping.\n\n ### Connector\n Connectors allow building-block-specific functionality to be employed in a Finite State Machine.\n\n ### FSM\n The FSM element allows a Finite State Machine to be called from another Finite State Machine.\n "
+  },
+  {
+    "id": "tutorial-fsm-diagram-title",
+    "text": "Finite State Machine Diagram"
+  },
+  {
+    "id": "tutorial-fsm-diagram-content",
+    "text": "\nThis area is the design area where the logic flow is implement and where individual elements can be customized.\n\n**Moving states:** Drag and move a state around to change it's position.\n\n**Connecting states:** Double click on a state and select the target available state. State will indicate it's availability as a valid target by wiggling.\n\n**Managing state:** Hovering on a state provides the controls for _editing_ and _deleting_ a state. Right clicking on a state provides even more actions.\n\nTo move around the diagram, hold the **[SHIFT]** key and drag the view around. You can also use the minimap (described in the next tip).\n"
+  },
+  {
+    "id": "tutorial-fsm-toolbar-title",
+    "text": "Finite State Machine Minimap"
+  },
+  {
+    "id": "tutorial-fsm-toolbar-content",
+    "text": "\n  Use this IDE element to see where you are in the context of the entire Finite State Machine diagram; the\n  minimap can also be used to quickly navigate to any part of the diagram, or to locate elements that are outside the\n  current viewing area in the main diagram area.\n\n  Simply drag and move the visible area to position yourself anywhere available on the diagram.\n\n  Both the minimap and whole toolbar can be closed for your convenience.\n"
+  },
+  {
+    "id": "tutorial-pipeline-title",
+    "text": "Data Pipeline"
+  },
+  {
+    "id": "tutorial-pipeline-content",
+    "text": "Data pipelines allow for simple or complex data processing logic to be defined graphically.\n\nThe data processed in data pipelines is typically record-based data, such as from a database or as processed from a\ntext file or other data source.  Each stage in a pipeline is a processor, which can transform, filter, or even\ngenerate new data to be processed by the next step.\n\nData can be split multiple times, so multiple different outputs can be produced from a single input source.  To split\ndata processing, multiple queues can be added as the last step in a queue.\n\nThe input data is taken from the Finite State Machine context that triggers the pipeline, or from the input data\nprovider configured here.\n\nData pipelines are only used as elements in a Finite State Machine.\n"
+  },
+  {
+    "id": "tutorial-pipeline-fields-title",
+    "text": "Data Pipeline Fields"
+  },
+  {
+    "id": "tutorial-pipeline-fields-content",
+    "text": "\n### Target Directory\nThis will give the directory where the data pipeline configuration is stored on the file system.\n\n### Name\nThe data pipeline must have a unique name that is used as the label or reference from Finite State Machines.\n\n### Description\nThe description should explain to other users what the data pipeline does and also describe any data input\nrequirements or output data produced.\n"
+  },
+  {
+    "id": "tutorial-pipeline-diagram-title",
+    "text": "Data Pipeline Diagram"
+  },
+  {
+    "id": "tutorial-pipeline-diagram-content",
+    "text": "\nThis area is the design area where the data pipeline flow is implement and where individual elements can be customized.\n\n**Adding an element:** Right-click on the start element or on a queue and select `Add child element`\n\n**Editing or deleting elements:** Right-click on an element and select the desired operation\n\nTo move around the diagram, drag the view around with the mouse.\n"
+  },
+  {
+    "id": "pipeline-start-title",
+    "text": "Data Pipeline Start Element"
+  },
+  {
+    "id": "pipeline-start-content",
+    "text": "This element is the initial start which provides a control for adding elements to the pipeline"
+  },
+  {
+    "id": "AllowAPIArguments",
+    "text": "Allow API Arguments"
+  },
+  {
+    "id": "RequestArguments",
+    "text": "Arguments"
+  },
+  {
+    "id": "AllowAPIArgumentsDesc",
+    "text": "Specify literal API arguments in this flow state rather than using the state's input data as arguments"
+  },
+  {
+    "id": "AddArgument",
+    "text": "Add argument"
+  },
+  {
+    "id": "FailedDuplicatingIfaceCodeFile",
+    "text": "Failed to duplicate interface code file"
+  },
+  {
+    "id": "FailedDuplicatingIfaceMetaFile",
+    "text": "Failed to duplicate interface meta file"
+  },
+  {
+    "id": "APICallTakesNoArgs",
+    "text": "API call takes no arguments"
+  },
+  {
+    "id": "ApiManagerSchema",
+    "text": "API Schema Type"
+  },
+  {
+    "id": "ApiManagerProviderOptions",
+    "text": "Options"
+  },
+  {
+    "id": "ApiManagerEndpoints",
+    "text": "API Endpoints"
+  },
+  {
+    "id": "RemoveEndpoint",
+    "text": "Are you sure you wish to remove the endpoint?"
+  },
+  {
+    "id": "ManageEndpoints",
+    "text": "Select Endpoint"
+  },
+  {
+    "id": "ValueIsEmpty",
+    "text": "Value is empty, please select a value from the list below"
+  },
+  {
+    "id": "SelectCustomReleaseInterfaces",
+    "text": "Select interfaces to include in the release"
+  },
+  {
+    "id": "Working",
+    "text": "Working..."
+  },
+  {
+    "id": "CreateCustomRelease",
+    "text": "Create custom release"
+  },
+  {
+    "id": "CreateRelease",
+    "text": "Create release"
+  },
+  {
+    "id": "SelectFiltered",
+    "text": "Select filtered"
+  },
+  {
+    "id": "FSMInputTypeError",
+    "text": "Input type is incompatible with one or more initial states"
+  },
+  {
+    "id": "FSMOutputTypeError",
+    "text": "Output type is incompatible with one or more final states"
+  },
+  {
+    "id": "searchArguments",
+    "text": "Search arguments"
+  },
+  {
+    "id": "updateArguments",
+    "text": "Update arguments"
+  },
+  {
+    "id": "deleteArguments",
+    "text": "Delete arguments"
+  },
+  {
+    "id": "createArguments",
+    "text": "Create arguments"
+  },
+  {
+    "id": "SearchOptions",
+    "text": "Search options"
+  },
+  {
+    "id": "LoadingArgs",
+    "text": "Loading arguments..."
+  },
+  {
+    "id": "NoArgs",
+    "text": "No arguments available"
+  },
+  {
+    "id": "search-single",
+    "text": "Single search"
+  },
+  {
+    "id": "ActionValue",
+    "text": "Action value"
+  },
+  {
+    "id": "AddAnotherRecord",
+    "text": "Add record"
+  },
+  {
+    "id": "MessageType",
+    "text": "Message type"
+  },
+  {
+    "id": "MesasgeData",
+    "text": "Message data"
+  }
+]

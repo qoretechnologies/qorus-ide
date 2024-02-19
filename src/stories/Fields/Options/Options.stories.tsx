@@ -131,6 +131,12 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
   colorOption: {
     type: 'color',
     required: true,
+    value: {
+      r: 255,
+      g: 0,
+      b: 0,
+      a: 1,
+    },
   },
 });
 

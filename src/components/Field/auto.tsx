@@ -488,6 +488,7 @@ function AutoField<T = any>({
       case 'connection': {
         return (
           <InterfaceSelector
+            {...rest}
             type={currentType}
             name={name}
             value={value}
@@ -624,18 +625,18 @@ function AutoField<T = any>({
             {isSetToNull ? 'Unset null' : 'Set as null'}
           </ReqoreButton>
         )}
-        {type === 'connection' ? (
-          <ConnectionManagement
-            selectedConnection={value}
-            onChange={(value) => handleChange(name, value)}
-            allowedValues={rest.allowed_values}
-            // TODO: Change this to dynamic URL
-            redirectUri='https://hq.qoretechnologies.com:8092/grant'
-            app={rest.app}
-            action={rest.action}
-          />
-        ) : null}
       </ReqoreControlGroup>
+      {type === 'connection' ? (
+        <ConnectionManagement
+          selectedConnection={value}
+          onChange={(value) => handleChange(name, value)}
+          allowedValues={rest.allowed_values}
+          // TODO: Change this to dynamic URL
+          redirectUri='https://hq.qoretechnologies.com:8092/grant'
+          app={rest.app}
+          action={rest.action}
+        />
+      ) : null}
     </div>
   );
 }

@@ -16,8 +16,9 @@ import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
 import { fetchData, getTypesAccepted } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
+import { useQorusTypes } from '../../hooks/useQorusTypes';
 import { useTemplates } from '../../hooks/useTemplates';
-import auto, { DefaultNoSoftTypes } from '../Field/auto';
+import auto from '../Field/auto';
 import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
@@ -108,6 +109,7 @@ export const Expression = ({
   path,
   onValueChange,
 }: IExpressionProps) => {
+  const types = useQorusTypes();
   const [firstArgument, ...rest] = value.args;
 
   const firstParamType = firstArgument?.type || type || 'string';
@@ -124,7 +126,7 @@ export const Expression = ({
     return data.data;
   }, [firstParamType]);
 
-  if (expressions.loading) {
+  if (expressions.loading || types.loading) {
     return (
       <StyledExpressionItem
         isChild={isChild}
@@ -206,8 +208,6 @@ export const Expression = ({
   );
   const restOfArgs = selectedExpression?.args.slice(1);
 
-  console.log(!firstArgument?.type);
-
   return (
     <StyledExpressionItem
       isChild={isChild}
@@ -222,13 +222,14 @@ export const Expression = ({
     >
       <Select
         name='type'
-        defaultItems={[{ name: 'Context' }, ...DefaultNoSoftTypes]}
-        value={firstArgument?.type || type || 'Context'}
+        defaultItems={types.value}
+        value={firstArgument?.type || type || 'ctx'}
         onChange={(_name, value) => {
-          updateType(value === 'Context' ? undefined : value);
+          updateType(value === 'ctx' ? undefined : value);
         }}
         minimal
         flat
+        showDescription={false}
         customTheme={{ main: 'info:darken:1:0.1' }}
         disabled={!!type}
       />
@@ -310,10 +311,19 @@ export const Expression = ({
               <ReqoreControlGroup>
                 <Select
                   name='type'
-                  defaultItems={getTypesAccepted(arg.type.types_accepted)}
+                  defaultItems={getTypesAccepted(
+                    arg.type.types_accepted,
+                    types.value
+                  )}
+                  showDescription={false}
                   value={
-                    size(getTypesAccepted(arg.type.types_accepted)) === 1
-                      ? getTypesAccepted(arg.type.types_accepted)[0].name
+                    size(
+                      getTypesAccepted(arg.type.types_accepted, types.value)
+                    ) === 1
+                      ? getTypesAccepted(
+                          arg.type.types_accepted,
+                          types.value
+                        )[0].name
                       : rest[index]?.type || firstParamType
                   }
                   onChange={(_name, value) => {
@@ -448,8 +458,6 @@ export const ExpressionBuilder = ({
             onChange(parent[0]);
             return;
           }
-
-          console.log('grandParentPath', grandParentPath, parent[0]);
 
           set(clonedValue, grandParentPath, parent[0]);
         } else {
