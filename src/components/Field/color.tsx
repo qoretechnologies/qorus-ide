@@ -2,7 +2,9 @@ import { SketchPicker } from 'react-color';
 import styled from 'styled-components';
 import { IField } from '../FieldWrapper';
 
-export interface IColorFieldProps extends IField {}
+export interface IColorFieldProps extends IField {
+  value: { r: number; g: number; b: number; a: number };
+}
 
 export const StyledColorWrapper = styled.div`
   .color-picker {
@@ -33,7 +35,7 @@ export const ColorField = ({
   return (
     <StyledColorWrapper>
       <SketchPicker
-        onChangeComplete={(color) => onChange(name, color)}
+        onChangeComplete={(color) => onChange(name, color.rgb)}
         color={value}
         readOnly={disabled || read_only}
         disableAlpha

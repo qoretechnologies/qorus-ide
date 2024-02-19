@@ -159,8 +159,6 @@ export const TemplateField = ({
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
 
-  console.log(value);
-
   return (
     <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
       {!isTemplate && (
