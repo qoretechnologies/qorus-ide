@@ -59,7 +59,7 @@ export const useFetchActionOptions = ({
 
   useEffect(() => {
     if (loadOnMount) {
-      load();
+      load(undefined, false);
     }
   }, []);
 
