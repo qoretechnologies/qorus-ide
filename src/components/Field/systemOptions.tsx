@@ -196,13 +196,16 @@ export interface IOptionsSchemaArg {
   sensitive?: boolean;
   desc?: string;
   arg_schema?: IOptionsSchema;
+
   supports_templates?: boolean;
+  supports_expressions?: boolean;
 
   app?: string;
   action?: string;
 
   depends_on?: string[];
   has_dependents?: boolean;
+  on_change?: string[];
 
   display_name?: string;
   short_desc?: string;
@@ -250,6 +253,10 @@ export interface IOperatorsSchema {
   [operatorName: string]: IOperator;
 }
 
+export interface IOptionsOnChangeMeta {
+  events?: string[];
+}
+
 export interface IOptionsProps
   extends Omit<IReqoreCollectionProps, 'onChange'> {
   name: string;
@@ -257,7 +264,11 @@ export interface IOptionsProps
   customUrl?: string;
   value?: IOptions | TFlatOptions;
   options?: IOptionsSchema;
-  onChange: (name: string, value?: IOptions) => void;
+  onChange: (
+    name: string,
+    value?: IOptions,
+    meta?: IOptionsOnChangeMeta
+  ) => void;
   onDependableOptionChange?: (
     name: string,
     value: TOption,
@@ -475,6 +486,8 @@ const Options = ({
       },
     };
 
+    const meta: IOptionsOnChangeMeta = {};
+
     // Check if this option has dependents and if the value has changed
     // If it has, call the onDependableOptionChange function
     if (
@@ -492,7 +505,12 @@ const Options = ({
       onDependableOptionChange?.(optionName, val, updatedValue, options);
     }
 
-    onChange(name, updatedValue);
+    // Check if this option has on_change events
+    if (size(options[optionName].on_change)) {
+      meta.events = options[optionName].on_change;
+    }
+
+    onChange(name, updatedValue, meta);
   };
 
   const handleOperatorChange = (

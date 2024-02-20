@@ -103,7 +103,6 @@ export const validateField: (
     case 'workflow':
     case 'service':
     case 'job':
-
     case 'softstring':
     case 'select-string':
     case 'file-string':
@@ -121,6 +120,8 @@ export const validateField: (
       }
 
       let isValid = true;
+
+      console.log(field, value, type);
 
       // Check if this field has to be a valid identifier
       if (field?.has_to_be_valid_identifier) {

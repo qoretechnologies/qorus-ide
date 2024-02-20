@@ -85,14 +85,6 @@ export const QodexAppActionOptions = memo(
       connectedStates,
     });
 
-    useDebounce(
-      () => {
-        onChange('options', value);
-      },
-      300,
-      [value]
-    );
-
     useUpdateEffect(() => {
       setValue(outsideValue);
     }, [JSON.stringify(outsideValue)]);
@@ -105,7 +97,7 @@ export const QodexAppActionOptions = memo(
             data?.data?.event_id === 'CONNECTION_UPDATED' ||
             data?.data?.event_id === 'CONNECTION_CREATED'
           ) {
-            load(value);
+            load(value, false);
           }
         },
         true
@@ -132,6 +124,14 @@ export const QodexAppActionOptions = memo(
         setOptions(options);
       },
     });
+
+    useDebounce(
+      () => {
+        onChange('options', value);
+      },
+      300,
+      [value]
+    );
 
     const fetchTemplates = useCallback(async () => {
       if (!size(connectedStates)) {
@@ -176,6 +176,8 @@ export const QodexAppActionOptions = memo(
     useEffect(() => {
       fetchTemplates();
     }, [JSON.stringify(connectedStates)]);
+
+    console.log('OPTIONS', options, value);
 
     return (
       <>
@@ -227,7 +229,17 @@ export const QodexAppActionOptions = memo(
           options={options}
           value={value}
           onDependableOptionChange={handleDependableOptionChange}
-          onChange={(_name, options) => setValue(options)}
+          onChange={(_name, newValue, meta) => {
+            if (meta?.events) {
+              meta.events.forEach((event) => {
+                if (event === 'refetch') {
+                  load(newValue, false);
+                }
+              });
+            }
+
+            setValue(newValue);
+          }}
           name='options'
           sortable={false}
           stringTemplates={templates}
