@@ -535,7 +535,7 @@ function AutoField<T = any>({
           />
         );
       }
-      case 'color': {
+      case 'rgbcolor': {
         return (
           <ColorField
             {...rest}
