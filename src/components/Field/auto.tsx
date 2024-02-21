@@ -61,7 +61,7 @@ export const DefaultNoSoftTypes = [
   { name: 'list', display_name: 'List' },
   { name: 'hash', display_name: 'Key/Value {}' },
   { name: 'int', display_name: 'Integer' },
-  { name: 'color', display_name: 'Color' },
+  { name: 'rgbcolor', display_name: 'RGB Color' },
 ];
 
 function AutoField<T = any>({
@@ -583,7 +583,7 @@ function AutoField<T = any>({
           { name: 'hash' },
           { name: 'int' },
           { name: 'softint' },
-          { name: 'color' },
+          { name: 'rgbcolor' },
         ]
       : DefaultNoSoftTypes);
 

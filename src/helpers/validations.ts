@@ -273,7 +273,7 @@ export const validateField: (
       }
       return true;
     }
-    case 'color': {
+    case 'rgbcolor': {
       return (
         isValidSixCharHex(value?.hex) ||
         ((value?.rgb?.r || value?.rgb?.r === 0) &&
