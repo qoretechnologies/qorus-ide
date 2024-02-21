@@ -8,12 +8,12 @@ test('Renders default <Auto /> field with no type', () => {
 
   render(
     <ReqoreUIProvider>
-      <Auto onChange={onChange} name="test" />
+      <Auto onChange={onChange} name='test' />
     </ReqoreUIProvider>
   );
 
   expect(document.querySelector('.reqore-dropdown-control')).toBeTruthy();
-  expect(document.querySelectorAll('.reqore-button').length).toBe(2);
+  expect(document.querySelectorAll('.reqore-button').length).toBe(1);
 
   expect(onChange).toHaveBeenLastCalledWith('test', undefined, 'any', true);
 });
@@ -24,7 +24,7 @@ test('Renders default <Auto /> field with no type, type can be selected', () => 
 
   render(
     <ReqoreUIProvider>
-      <Auto onChange={onChange} name="test" />
+      <Auto onChange={onChange} name='test' />
     </ReqoreUIProvider>
   );
 
@@ -68,13 +68,18 @@ test('Renders default <Auto /> field type determined from value', () => {
 
   render(
     <ReqoreUIProvider>
-      <Auto onChange={onChange} name="test" value={{ key: 'value' }} />
+      <Auto onChange={onChange} name='test' value={{ key: 'value' }} />
     </ReqoreUIProvider>
   );
 
   expect(document.querySelectorAll('.reqore-textarea').length).toBe(1);
 
-  expect(onChange).toHaveBeenLastCalledWith('test', { key: 'value' }, 'hash', false);
+  expect(onChange).toHaveBeenLastCalledWith(
+    'test',
+    { key: 'value' },
+    'hash',
+    false
+  );
 });
 
 test('Renders default <Auto /> field with default type', () => {
@@ -82,7 +87,7 @@ test('Renders default <Auto /> field with default type', () => {
 
   render(
     <ReqoreUIProvider>
-      <Auto onChange={onChange} name="test" defaultType="bool" />
+      <Auto onChange={onChange} name='test' defaultType='bool' />
     </ReqoreUIProvider>
   );
 
@@ -96,7 +101,12 @@ test('Renders default <Auto /> field with default internal type', () => {
 
   render(
     <ReqoreUIProvider>
-      <Auto onChange={onChange} name="test" defaultInternalType="bool" value={false} />
+      <Auto
+        onChange={onChange}
+        name='test'
+        defaultInternalType='bool'
+        value={false}
+      />
     </ReqoreUIProvider>
   );
 
@@ -112,8 +122,8 @@ test('Renders default <Auto /> field with outside defined can be null', () => {
     <ReqoreUIProvider>
       <Auto
         onChange={onChange}
-        name="test"
-        defaultInternalType="bool"
+        name='test'
+        defaultInternalType='bool'
         value={false}
         requestFieldData={(name, key) => {
           if (name === 'can_be_undefined' && key === 'value') {
@@ -138,7 +148,7 @@ test('Renders default <Auto /> field with outside defined type', () => {
     <ReqoreUIProvider>
       <Auto
         onChange={onChange}
-        name="test"
+        name='test'
         value={[1, 2, 3]}
         requestFieldData={(name, key) => {
           if (name === 'type_depends_on' && key === 'value') {

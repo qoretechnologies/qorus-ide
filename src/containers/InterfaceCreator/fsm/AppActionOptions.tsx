@@ -177,8 +177,6 @@ export const QodexAppActionOptions = memo(
       fetchTemplates();
     }, [JSON.stringify(connectedStates)]);
 
-    console.log('OPTIONS', options, value);
-
     return (
       <>
         {loading && (

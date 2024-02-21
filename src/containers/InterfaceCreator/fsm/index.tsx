@@ -1768,6 +1768,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     const startStateData = getStateBoundingRect(startStateId);
     const endStateData = getStateBoundingRect(endStateId);
 
+    if (endStateData.width === 0) {
+      endStateData.width = STATE_WIDTH;
+      endStateData.height = 120;
+    }
+
     const endOfStartState = x1 + startStateData.width;
     const endOfEndState = x2 + endStateData.width;
 
@@ -1816,6 +1821,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   ): string => {
     const startStateData = getStateBoundingRect(startStateId);
     const endStateData = getStateBoundingRect(endStateId);
+
+    if (endStateData.width === 0) {
+      endStateData.width = STATE_WIDTH;
+      endStateData.height = 120;
+    }
+
     const linesGap = (startStateData.height * 0.9) / startStateCountPerSide;
     const endLinesGap = (endStateData.height * 0.9) / endStateCountPerSide;
 

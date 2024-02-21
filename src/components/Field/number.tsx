@@ -53,6 +53,7 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   });
 
   const handleChange = (value: number | string): void => {
+    console.log(value);
     onChange?.(
       name,
       type === 'int' || type === 'number'
@@ -71,16 +72,40 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
     onChange(name, null);
   };
 
+  if (templates?.items) {
+    return (
+      <ReqoreDropdown
+        {...rest}
+        component={ReqoreInput}
+        fluid={fill}
+        icon='MoneyDollarCircleLine'
+        items={templates?.items}
+        filterable
+        value={value ?? default_value ?? ''}
+        onItemSelect={(item) => onChange(name, item.value)}
+        onChange={handleInputChange}
+        type='number'
+        // @ts-ignore
+        step={type === 'int' || type === 'number' ? 1 : 0.1}
+        onClearClick={handleResetClick}
+        focusRules={
+          autoFocus
+            ? {
+                type: 'auto',
+                viewportOnly: true,
+              }
+            : undefined
+        }
+      />
+    );
+  }
+
   return (
-    <ReqoreDropdown
+    <ReqoreInput
       {...rest}
-      component={ReqoreInput}
       fluid={fill}
       icon='MoneyDollarCircleLine'
-      items={templates?.items}
-      filterable
       value={value ?? default_value ?? ''}
-      onItemSelect={(item) => onChange(name, item.value)}
       onChange={handleInputChange}
       type='number'
       // @ts-ignore

@@ -44,8 +44,6 @@ export const validateField: (
   field?: IField & { optionSchema?: IOptionsSchema } & Record<string, any>,
   canBeNull?: boolean
 ) => boolean = (type, value, field, canBeNull) => {
-  console.log({ type, value, field, canBeNull });
-
   if (!type) {
     return false;
   }
@@ -122,8 +120,6 @@ export const validateField: (
       }
 
       let isValid = true;
-
-      console.log(field, value, type);
 
       // Check if this field has to be a valid identifier
       if (field?.has_to_be_valid_identifier) {

@@ -1,5 +1,4 @@
 import _, { noop } from 'lodash';
-import { STATE_WIDTH } from '../containers/InterfaceCreator/fsm/state';
 
 /**
  * Graph node with all its attributes and nodes above and below.
@@ -414,8 +413,8 @@ export const getStateBoundingRect = (stateId: string): DOMRect => {
 
   if (!state) {
     return {
-      width: STATE_WIDTH,
-      height: 120,
+      width: 0,
+      height: 0,
       x: 0,
       y: 0,
       left: 0,

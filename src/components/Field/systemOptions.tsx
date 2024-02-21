@@ -35,6 +35,7 @@ import {
 } from '../../helpers/validations';
 import { useTemplates } from '../../hooks/useTemplates';
 import { Description } from '../Description';
+import { IExpression } from '../ExpressionBuilder';
 import AutoField from './auto';
 import { NegativeColorEffect, PositiveColorEffect } from './multiPair';
 import { OptionFieldMessages } from './optionFieldMessages';
@@ -188,7 +189,7 @@ export interface IOptionFieldMessage {
 
 export interface IOptionsSchemaArg {
   type: IQorusType | IQorusType[];
-  value?: any;
+  value?: unknown | IExpression;
   default_value?: any;
   required?: boolean;
   preselected?: boolean;
@@ -198,6 +199,7 @@ export interface IOptionsSchemaArg {
   arg_schema?: IOptionsSchema;
 
   supports_templates?: boolean;
+
   supports_expressions?: boolean;
 
   app?: string;

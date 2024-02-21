@@ -1,4 +1,6 @@
+import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
+import { waitFor } from '@storybook/testing-library';
 import { useState } from 'react';
 import {
   ExpressionBuilder,
@@ -43,7 +45,14 @@ const meta = {
 export default meta;
 export type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+  },
+};
 export const WithSimpleValue: Story = {
   args: {
     value: {
@@ -59,6 +68,12 @@ export const WithSimpleValue: Story = {
         },
       ],
     },
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
   },
 };
 
@@ -158,6 +173,12 @@ export const WithComplexValue: Story = {
       ],
     },
   },
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(6),
+      { timeout: 10000 }
+    );
+  },
 };
 
 export const WithIntType: Story = {
@@ -177,12 +198,18 @@ export const WithIntType: Story = {
       ],
     },
   },
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+  },
 };
 
 export const WithSelectableType: Story = {
   args: {
     value: {
-      exp: 'EQUALS',
+      exp: 'EQUALS-BOOL',
       args: [
         {
           type: 'bool',
@@ -194,5 +221,11 @@ export const WithSelectableType: Story = {
         },
       ],
     },
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
   },
 };

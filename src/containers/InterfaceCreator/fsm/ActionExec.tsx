@@ -86,11 +86,6 @@ export const QodexActionExec = memo(
     }, [JSON.stringify(options)]);
 
     useEffect(() => {
-      console.log(
-        'ARE OPTIONS VALID',
-        validateField('options', options, { optionSchema: data }),
-        action.action_code_str
-      );
       // Only execute action automatically if it's an event
       if (areOptionsValid() && action.action_code_str === 'EVENT') {
         executeAction();

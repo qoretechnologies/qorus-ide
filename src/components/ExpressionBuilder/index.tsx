@@ -95,6 +95,7 @@ export interface IExpressionBuilderProps {
   level?: number;
   type?: IQorusType;
   path?: string;
+  index?: number;
   onChange?: (value: IExpression) => void;
   onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
 }
@@ -106,10 +107,12 @@ export const Expression = ({
   value = ExpressionDefaultValue,
   isChild,
   type,
+  level,
   path,
   onValueChange,
 }: IExpressionProps) => {
   const types = useQorusTypes();
+  const theme = useReqoreTheme();
   const [firstArgument, ...rest] = value.args;
 
   const firstParamType = firstArgument?.type || type || 'string';
@@ -132,12 +135,12 @@ export const Expression = ({
         isChild={isChild}
         as={ReqoreControlGroup}
         fluid={false}
-        size='small'
+        size='normal'
         style={{
           marginLeft: isChild ? 30 : undefined,
         }}
       >
-        <ReqoreSpinner iconColor='pending' type={5} size='small'>
+        <ReqoreSpinner iconColor='pending' type={5} size='normal'>
           Loading...
         </ReqoreSpinner>
       </StyledExpressionItem>
@@ -210,196 +213,202 @@ export const Expression = ({
 
   return (
     <StyledExpressionItem
+      as={ReqorePanel}
+      flat
       isChild={isChild}
-      as={ReqoreControlGroup}
-      fluid={false}
-      wrap
-      verticalAlign='flex-end'
-      size='small'
+      className='expression'
+      customTheme={{
+        main: darken(`0.0${level * 25}`, theme.main) as TReqoreHexColor,
+      }}
       style={{
         marginLeft: isChild ? 30 : undefined,
       }}
     >
-      <Select
-        name='type'
-        defaultItems={types.value}
-        value={firstArgument?.type || type || 'ctx'}
-        onChange={(_name, value) => {
-          updateType(value === 'ctx' ? undefined : value);
-        }}
-        minimal
-        flat
-        showDescription={false}
-        customTheme={{ main: 'info:darken:1:0.1' }}
-        disabled={!!type}
-      />
-
-      {firstParamType && (
-        <ReqoreControlGroup vertical>
-          <ReqoreP
-            size='tiny'
-            effect={{
-              uppercase: true,
-              spaced: 1,
-              weight: 'bold',
-              opacity: 0.6,
-            }}
-          >
-            {selectedExpression?.args[0].display_name}
-          </ReqoreP>
-          <TemplateField
-            component={auto}
-            minimal
-            key={firstParamType}
-            type={firstParamType}
-            defaultType={firstParamType}
-            value={firstArgument?.value}
-            onChange={(name, value, type) => {
-              if (type !== 'any' && type !== 'auto') {
-                updateArg(value, 0, type);
-              }
-            }}
-            templates={localTemplates}
-            allowTemplates
-            allowCustomValues={!!firstArgument?.type}
-            filterTemplates={!!firstArgument?.type}
-            fluid={false}
-            fixed={true}
-          />
-        </ReqoreControlGroup>
-      )}
-      {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
+      <ReqoreControlGroup
+        fluid={false}
+        wrap
+        verticalAlign='flex-end'
+        size='normal'
+      >
+        {firstParamType && (
+          <ReqoreControlGroup vertical>
+            <ReqoreP
+              size='tiny'
+              effect={{
+                uppercase: true,
+                spaced: 1,
+                weight: 'bold',
+                opacity: 0.6,
+              }}
+            >
+              {selectedExpression?.args[0].display_name}
+            </ReqoreP>
+            <TemplateField
+              component={auto}
+              minimal
+              key={firstParamType}
+              type={firstParamType}
+              defaultType={firstParamType}
+              value={firstArgument?.value}
+              onChange={(name, value, type) => {
+                if (type !== 'any' && type !== 'auto') {
+                  updateArg(value, 0, type);
+                }
+              }}
+              templates={localTemplates}
+              allowTemplates
+              allowCustomValues={!!firstArgument?.type}
+              filterTemplates={!!firstArgument?.type}
+              fluid={false}
+              fixed={true}
+            />
+          </ReqoreControlGroup>
+        )}
         <Select
+          name='type'
+          defaultItems={types.value}
+          value={firstArgument?.type || type || 'ctx'}
+          onChange={(_name, value) => {
+            updateType(value === 'ctx' ? undefined : value);
+          }}
           minimal
           flat
-          value={value?.exp}
-          fluid={false}
-          fixed={true}
-          defaultItems={expressions.value
-            ?.filter((exp) => exp.subtype !== 2)
-            .map((exp) => ({
-              name: exp.name,
-              value: exp.name,
-              display_name: exp.display_name,
-              short_desc: exp.desc,
-              badge: exp.symbol,
-            }))}
-          onChange={(_name, value) => {
-            updateExp(value);
-          }}
           showDescription={false}
-          size='small'
+          customTheme={{ main: 'info:darken:1:0.1' }}
+          disabled={!!type}
         />
-      ) : null}
-      {firstArgument?.value !== undefined &&
-      firstArgument?.value !== null &&
-      validateField(firstParamType, firstArgument?.value) &&
-      selectedExpression
-        ? restOfArgs?.map((arg, index) => (
-            <ReqoreControlGroup vertical>
-              <ReqoreP
-                size='tiny'
-                effect={{
-                  uppercase: true,
-                  spaced: 1,
-                  weight: 'bold',
-                  opacity: 0.6,
-                }}
-              >
-                {arg.display_name}
-              </ReqoreP>
-              <ReqoreControlGroup>
-                <Select
-                  name='type'
-                  defaultItems={getTypesAccepted(
-                    arg.type.types_accepted,
-                    types.value
-                  )}
-                  showDescription={false}
-                  value={
-                    size(
-                      getTypesAccepted(arg.type.types_accepted, types.value)
-                    ) === 1
-                      ? getTypesAccepted(
-                          arg.type.types_accepted,
-                          types.value
-                        )[0].name
-                      : rest[index]?.type || firstParamType
-                  }
-                  onChange={(_name, value) => {
-                    updateArg(undefined, index + 1, value as IQorusType);
-                  }}
-                  minimal
-                  flat
-                  customTheme={{ main: 'info:darken:1:0.1' }}
-                />
-                <TemplateField
-                  key={index}
-                  minimal
-                  component={auto}
-                  noSoft
-                  defaultType={arg.type.base_type}
-                  defaultInternalType={
-                    size(getTypesAccepted(arg.type.types_accepted)) === 1
-                      ? getTypesAccepted(arg.type.types_accepted)[0].name
-                      : rest[index]?.type || firstParamType
-                  }
-                  type={
-                    size(getTypesAccepted(arg.type.types_accepted)) === 1
-                      ? getTypesAccepted(arg.type.types_accepted)[0].name
-                      : rest[index]?.type || firstParamType
-                  }
-                  canBeNull={false}
-                  value={rest[index]?.value}
-                  templates={localTemplates}
-                  allowTemplates
-                  onChange={(_name, value, type) => {
-                    updateArg(value, index + 1, type);
-                  }}
-                  fluid={false}
-                  fixed={true}
-                />
-              </ReqoreControlGroup>
-            </ReqoreControlGroup>
-          ))
-        : null}
-      {validateField(firstParamType, firstArgument?.value) &&
-      selectedExpression ? (
-        <>
-          <ReqoreButton
+        {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
+          <Select
             minimal
             flat
-            compact
-            label='AND'
-            textAlign='center'
-            icon='AddLine'
-            fixed
-            onClick={() => {
-              updateExpToAndOr('AND');
+            value={value?.exp}
+            fluid={false}
+            fixed={true}
+            defaultItems={expressions.value
+              ?.filter((exp) => exp.subtype !== 2)
+              .map((exp) => ({
+                name: exp.name,
+                value: exp.name,
+                display_name: exp.display_name,
+                short_desc: exp.desc,
+                badge: exp.symbol,
+              }))}
+            onChange={(_name, value) => {
+              updateExp(value);
             }}
+            showDescription={false}
+            size='normal'
           />
+        ) : null}
+        {firstArgument?.value !== undefined &&
+        firstArgument?.value !== null &&
+        validateField(firstParamType, firstArgument?.value) &&
+        selectedExpression
+          ? restOfArgs?.map((arg, index) => (
+              <ReqoreControlGroup vertical>
+                <ReqoreP
+                  size='tiny'
+                  effect={{
+                    uppercase: true,
+                    spaced: 1,
+                    weight: 'bold',
+                    opacity: 0.6,
+                  }}
+                >
+                  {arg.display_name}
+                </ReqoreP>
+                <ReqoreControlGroup>
+                  <TemplateField
+                    key={index}
+                    minimal
+                    component={auto}
+                    noSoft
+                    defaultType={arg.type.base_type}
+                    defaultInternalType={
+                      size(getTypesAccepted(arg.type.types_accepted)) === 1
+                        ? getTypesAccepted(arg.type.types_accepted)[0].name
+                        : rest[index]?.type || firstParamType
+                    }
+                    type={
+                      size(getTypesAccepted(arg.type.types_accepted)) === 1
+                        ? getTypesAccepted(arg.type.types_accepted)[0].name
+                        : rest[index]?.type || firstParamType
+                    }
+                    canBeNull={false}
+                    value={rest[index]?.value}
+                    templates={localTemplates}
+                    allowTemplates
+                    onChange={(_name, value, type) => {
+                      updateArg(value, index + 1, type);
+                    }}
+                    fluid={false}
+                    fixed={true}
+                  />
+                  <Select
+                    name='type'
+                    defaultItems={getTypesAccepted(
+                      arg.type.types_accepted,
+                      types.value
+                    )}
+                    showDescription={false}
+                    value={
+                      size(
+                        getTypesAccepted(arg.type.types_accepted, types.value)
+                      ) === 1
+                        ? getTypesAccepted(
+                            arg.type.types_accepted,
+                            types.value
+                          )[0].name
+                        : rest[index]?.type || firstParamType
+                    }
+                    onChange={(_name, value) => {
+                      updateArg(undefined, index + 1, value as IQorusType);
+                    }}
+                    minimal
+                    flat
+                    customTheme={{ main: 'info:darken:1:0.1' }}
+                  />
+                </ReqoreControlGroup>
+              </ReqoreControlGroup>
+            ))
+          : null}
+        <ReqoreControlGroup stack>
+          {validateField(firstParamType, firstArgument?.value) &&
+          selectedExpression ? (
+            <>
+              <ReqoreButton
+                flat
+                compact
+                label='AND'
+                textAlign='center'
+                icon='AddLine'
+                fixed
+                onClick={() => {
+                  updateExpToAndOr('AND');
+                }}
+              />
+              <ReqoreButton
+                flat
+                compact
+                label='OR'
+                textAlign='center'
+                icon='AddLine'
+                fixed
+                onClick={() => updateExpToAndOr('OR')}
+              />
+            </>
+          ) : null}
           <ReqoreButton
-            minimal
             flat
             compact
-            label='OR'
+            intent='danger'
             textAlign='center'
-            icon='AddLine'
+            icon='DeleteBinLine'
             fixed
-            onClick={() => updateExpToAndOr('OR')}
+            onClick={handleRemoveClick}
           />
-        </>
-      ) : null}
-      <ReqoreButton
-        minimal
-        flat
-        compact
-        intent='danger'
-        textAlign='center'
-        icon='DeleteBinLine'
-        fixed
-        onClick={handleRemoveClick}
-      />
+        </ReqoreControlGroup>
+      </ReqoreControlGroup>
     </StyledExpressionItem>
   );
 };
@@ -409,6 +418,7 @@ export const ExpressionBuilder = ({
   value = ExpressionDefaultValue,
   isChild,
   level = 0,
+  index = 0,
   path,
   type,
   onChange,
@@ -419,7 +429,7 @@ export const ExpressionBuilder = ({
 
   if (templates.loading) {
     return (
-      <ReqoreSpinner type={5} size='small'>
+      <ReqoreSpinner type={5} size='normal'>
         Loading...
       </ReqoreSpinner>
     );
@@ -480,7 +490,7 @@ export const ExpressionBuilder = ({
         isChild={isChild}
         isAndOr
         minimal
-        size='small'
+        size='normal'
         flat
         customTheme={{
           main: darken(`0.0${level * 25}`, theme.main) as TReqoreHexColor,
@@ -495,7 +505,7 @@ export const ExpressionBuilder = ({
         <ReqoreControlGroup
           vertical
           fluid
-          size='small'
+          size='normal'
           style={{ position: 'relative' }}
           wrap
         >
@@ -526,6 +536,7 @@ export const ExpressionBuilder = ({
               isChild
               path={`${path ? `${path}.` : ''}args.${index}`}
               level={level + 1}
+              index={index}
               type={type}
               onValueChange={handleChange}
             />
@@ -541,7 +552,9 @@ export const ExpressionBuilder = ({
       value={value}
       isChild={isChild}
       type={type}
+      level={level}
       path={path}
+      index={index}
       onValueChange={handleChange}
     />
   );

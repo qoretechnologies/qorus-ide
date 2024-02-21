@@ -1,6 +1,7 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import statesObj from '../../../__tests__/helpers/json/fsmStates.json';
 import FSMView from '../../containers/InterfaceCreator/fsm';
 import fsm from '../Data/fsm.json';
 import fsmWithoutInitialState from '../Data/fsmWithoutInitialState.json';
@@ -41,7 +42,10 @@ type StoryFSM = StoryObj<typeof meta>;
 export const New: StoryFSM = {};
 export const Existing: StoryFSM = {
   args: {
-    fsm: qodex,
+    fsm: {
+      ...qodex,
+      states: statesObj,
+    },
   },
 };
 export const ExistingFSMWithInitialState: StoryFSM = {
