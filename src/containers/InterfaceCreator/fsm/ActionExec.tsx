@@ -76,7 +76,6 @@ export const QodexActionExec = memo(
     };
 
     const areOptionsValid = useCallback(() => {
-      console.log(options, data, action);
       return (
         size(data) && validateField('options', options, { optionSchema: data })
       );
@@ -87,12 +86,16 @@ export const QodexActionExec = memo(
     }, [JSON.stringify(options)]);
 
     useEffect(() => {
-      console.log(areOptionsValid() && action.action_code_str === 'EVENT');
+      console.log(
+        'ARE OPTIONS VALID',
+        validateField('options', options, { optionSchema: data }),
+        action.action_code_str
+      );
       // Only execute action automatically if it's an event
       if (areOptionsValid() && action.action_code_str === 'EVENT') {
         executeAction();
       }
-    }, [JSON.stringify(data)]);
+    }, [JSON.stringify(data), JSON.stringify(options)]);
 
     if (loading) {
       return (

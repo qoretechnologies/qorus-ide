@@ -44,6 +44,8 @@ export const validateField: (
   field?: IField & { optionSchema?: IOptionsSchema } & Record<string, any>,
   canBeNull?: boolean
 ) => boolean = (type, value, field, canBeNull) => {
+  console.log({ type, value, field, canBeNull });
+
   if (!type) {
     return false;
   }

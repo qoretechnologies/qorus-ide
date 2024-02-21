@@ -233,7 +233,7 @@ export const QodexAppActionOptions = memo(
             if (meta?.events) {
               meta.events.forEach((event) => {
                 if (event === 'refetch') {
-                  load(newValue, false);
+                  load(newValue);
                 }
               });
             }
