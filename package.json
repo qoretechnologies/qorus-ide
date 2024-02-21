@@ -131,7 +131,7 @@
     "update-reqore": "yarn add @qoretechnologies/reqore@beta",
     "storybook": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN storybook dev -p 6006",
     "build-storybook": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN storybook build",
-    "test-storybook": "DEBUG_PRINT_LIMIT=0 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Components --maxWorkers=1 && STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Views --maxWorkers=1 && test-storybook src/Stories/Fields --maxWorkers=1 && test-storybook src/Stories/Interfaces --maxWorkers=1 && test-storybook src/Stories/Tests --maxWorkers=1",
+    "test-storybook": "DEBUG_PRINT_LIMIT=0 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Components --maxWorkers=1 && DEBUG_PRINT_LIMIT=0 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Views --maxWorkers=1 && DEBUG_PRINT_LIMIT=0 test-storybook src/Stories/Fields --maxWorkers=1 && DEBUG_PRINT_LIMIT=0 test-storybook src/Stories/Interfaces --maxWorkers=1 && DEBUG_PRINT_LIMIT=0 test-storybook src/Stories/Tests --maxWorkers=1",
     "test-storybook-full": "DEBUG_PRINT_LIMIT=0 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook",
     "install-playwright": "npx playwright install --with-deps",
     "chromatic": "npx chromatic --project-token=chpt_1aaa74dd9c1b035"
