@@ -1,11 +1,12 @@
 import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { fireEvent } from '@storybook/testing-library';
 import LongStringField from '../../components/Field/longString';
 import Number from '../../components/Field/number';
 import { TemplateField } from '../../components/Field/template';
 import { buildTemplates } from '../../helpers/functions';
 import templates from '../Data/templates.json';
+import { _testsOpenTemplates } from '../Tests/utils';
 
 const meta = {
   component: TemplateField,
@@ -33,10 +34,19 @@ export const BooleanComponent: StoryObj<typeof meta> = {
   },
 };
 
+export const NumberComponent: StoryObj<typeof meta> = {
+  args: {
+    value: 25,
+    type: 'int',
+    allowTemplates: true,
+    componentFromType: true,
+  },
+};
+
 export const TemplateValue: StoryObj<typeof meta> = {
   args: {
     component: Number,
-    type: 'number',
+    type: 'int',
     value: '$config:something',
   },
 };
@@ -44,47 +54,49 @@ export const TemplateValue: StoryObj<typeof meta> = {
 export const ShowsTemplatesList: StoryObj<typeof meta> = {
   ...TemplateValue,
   play: async () => {
-    await waitFor(
-      async () => {
-        await expect(
-          document.querySelector('.template-selector')
-        ).toBeInTheDocument();
-      },
-      { timeout: 10000 }
-    );
-
-    await fireEvent.click(document.querySelector('.template-selector'));
+    await _testsOpenTemplates();
   },
 };
 
 export const ShowsTemplatesListForString: StoryObj<typeof meta> = {
   ...StringComponent,
   play: async () => {
-    await waitFor(
-      async () => {
-        await expect(
-          document.querySelector('.template-selector')
-        ).toBeInTheDocument();
-      },
-      { timeout: 10000 }
-    );
-
-    await fireEvent.click(document.querySelector('.template-selector'));
+    await _testsOpenTemplates();
   },
 };
 
 export const ShowsTemplatesListForBoolean: StoryObj<typeof meta> = {
   ...BooleanComponent,
   play: async () => {
-    await waitFor(
-      async () => {
-        await expect(
-          document.querySelector('.template-selector')
-        ).toBeInTheDocument();
-      },
-      { timeout: 10000 }
-    );
+    await fireEvent.click(document.querySelector('.template-toggle'));
 
-    await fireEvent.click(document.querySelector('.template-selector'));
+    await _testsOpenTemplates();
+  },
+};
+
+export const ShowsTemplatesListForNumber: StoryObj<typeof meta> = {
+  ...NumberComponent,
+  play: async () => {
+    await _testsOpenTemplates();
+  },
+};
+
+export const TemplateValueCanBeRemoved: StoryObj<typeof meta> = {
+  args: {
+    value: '$config:boolean',
+    type: 'boolean',
+    allowTemplates: true,
+    componentFromType: true,
+  },
+  play: async () => {
+    await expect(
+      document.querySelector('.template-selector')
+    ).toBeInTheDocument();
+
+    await fireEvent.click(document.querySelector('.template-remove'));
+
+    await expect(
+      document.querySelector('.reqore-checkbox')
+    ).toBeInTheDocument();
   },
 };

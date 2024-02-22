@@ -197,6 +197,7 @@ export const TemplateField = ({
       {showTemplatesDropdown ? (
         <ReqoreControlGroup stack>
           <ReqoreDropdown
+            className='template-selector'
             onItemSelect={(item) =>
               onChange(name, item.value, item.badge as IQorusType)
             }
@@ -205,7 +206,7 @@ export const TemplateField = ({
                 ? filterTemplatesByType(templates, type)?.items
                 : templates?.items
             }
-            label={value || 'Select Template'}
+            label={isValueTemplate(value) ? value : 'Select Template'}
             filterable
           />
           {allowCustomValues || value ? (
@@ -213,6 +214,7 @@ export const TemplateField = ({
               fixed
               icon='CloseLine'
               tooltip='Remove template value'
+              className='template-remove'
               compact
               flat
               size={rest.size}
@@ -233,6 +235,7 @@ export const TemplateField = ({
         <ReqoreButton
           fixed
           icon='MoneyDollarCircleLine'
+          className='template-toggle'
           customTheme={{
             main: isTemplate ? 'info:darken:1:0.3' : undefined,
           }}

@@ -177,7 +177,7 @@ export const Basic: StoryObj<typeof meta> = {
         expect(
           document.querySelectorAll('.reqore-collection-item.system-option')
             .length
-        ).toBe(13),
+        ).toBe(14),
       {
         timeout: 10000,
       }
@@ -216,13 +216,13 @@ export const OptionalOpened: StoryObj<typeof meta> = {
 
     await waitFor(
       () =>
-        expect(canvas.getAllByText('AddNewOption (14)')[0]).toBeInTheDocument(),
+        expect(canvas.queryAllByText(/AddNewOption/)[0]).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
 
-    await fireEvent.click(canvas.getAllByText('AddNewOption (14)')[0]);
+    await fireEvent.click(canvas.queryAllByText(/AddNewOption/)[0]);
   },
 };
 
@@ -268,10 +268,58 @@ export const NonExistentOptionsFiltered: StoryObj<typeof meta> = {
       }
     );
 
-    await expect(rest.args.onChange).toHaveBeenCalledWith(undefined, {
-      option1: { type: 'string', value: 'option1a' },
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      undefined,
+      {
+        option1: { type: 'string', value: 'option1a' },
+        option2: { type: 'string', value: 'option2' },
+        option3: { type: 'string', value: 'option3' },
+      },
+      {}
+    );
+  },
+};
+
+export const OptionsWithOnChangeTriggerEvents: StoryObj<typeof meta> = {
+  args: {
+    value: {
+      optionWithRefetchAndReset: { type: 'string', value: 'option1' },
       option2: { type: 'string', value: 'option2' },
-      option3: { type: 'string', value: 'option3' },
-    });
+    },
+    options: {
+      optionWithRefetchAndReset: {
+        type: 'string',
+        on_change: ['refetch', 'reset'],
+      },
+      option2: { type: 'string' },
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () =>
+        expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await fireEvent.change(
+      document.querySelectorAll('.system-option .reqore-textarea')[1],
+      {
+        target: { value: 'option1a' },
+      }
+    );
+
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      undefined,
+      {
+        optionWithRefetchAndReset: { type: 'string', value: 'option1a' },
+        option2: { type: 'string', value: 'option2' },
+      },
+      {
+        events: ['refetch', 'reset'],
+      }
+    );
   },
 };
