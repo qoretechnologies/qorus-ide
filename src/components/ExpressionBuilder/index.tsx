@@ -165,6 +165,7 @@ export const Expression = ({
       {
         ...value,
         exp: val,
+        args: [value.args[0]],
       },
       path
     );
@@ -214,6 +215,7 @@ export const Expression = ({
   return (
     <StyledExpressionItem
       as={ReqorePanel}
+      intent={validateField('expression', value) ? undefined : 'danger'}
       flat
       isChild={isChild}
       className='expression'
@@ -251,6 +253,7 @@ export const Expression = ({
               defaultType={firstParamType}
               value={firstArgument?.value}
               onChange={(name, value, type) => {
+                console.log('onchange', value, type);
                 if (type !== 'any' && type !== 'auto') {
                   updateArg(value, 0, type);
                 }
@@ -269,7 +272,7 @@ export const Expression = ({
           defaultItems={types.value}
           value={firstArgument?.type || type || 'ctx'}
           onChange={(_name, value) => {
-            updateType(value === 'ctx' ? undefined : value);
+            updateType(value === 'context' ? undefined : value);
           }}
           minimal
           flat
@@ -281,6 +284,7 @@ export const Expression = ({
           <Select
             minimal
             flat
+            className='expression-operator-selector'
             value={value?.exp}
             fluid={false}
             fixed={true}
@@ -319,7 +323,7 @@ export const Expression = ({
                 </ReqoreP>
                 <ReqoreControlGroup>
                   <TemplateField
-                    key={index}
+                    key={`${value?.exp}${index}`}
                     minimal
                     component={auto}
                     noSoft
@@ -378,6 +382,7 @@ export const Expression = ({
             <>
               <ReqoreButton
                 flat
+                className='expression-and'
                 compact
                 label='AND'
                 textAlign='center'
@@ -390,6 +395,7 @@ export const Expression = ({
               <ReqoreButton
                 flat
                 compact
+                className='expression-or'
                 label='OR'
                 textAlign='center'
                 icon='AddLine'
@@ -398,9 +404,11 @@ export const Expression = ({
               />
             </>
           ) : null}
+
           <ReqoreButton
             flat
             compact
+            className='expression-group-remove'
             intent='danger'
             textAlign='center'
             icon='DeleteBinLine'
@@ -512,6 +520,7 @@ export const ExpressionBuilder = ({
           <StyledExpressionItemLabel
             as={ReqoreP}
             color='transparent'
+            className='expression-operator'
             intent='pending'
             size='tiny'
             effect={{

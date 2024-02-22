@@ -1,11 +1,16 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { waitFor } from '@storybook/testing-library';
+import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { useState } from 'react';
 import {
   ExpressionBuilder,
   IExpression,
 } from '../../components/ExpressionBuilder';
+import {
+  _testsOpenTemplates,
+  _testsSelectItemFromCollection,
+  sleep,
+} from '../Tests/utils';
 import { StoryMeta } from '../types';
 
 const meta = {
@@ -226,6 +231,135 @@ export const WithSelectableType: Story = {
     await waitFor(
       () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
       { timeout: 10000 }
+    );
+  },
+};
+
+export const ArgsChangeWhenOperatorChanges: Story = {
+  ...WithSimpleValue,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+
+    await expect(
+      document.querySelectorAll('.expression .reqore-textarea')
+    ).toHaveLength(2);
+
+    await _testsSelectItemFromCollection(canvas, 'is between', 'contains')();
+
+    await expect(
+      document.querySelectorAll('.expression .reqore-textarea')
+    ).toHaveLength(3);
+  },
+};
+
+export const NewGroupsCanBeCreated: Story = {
+  ...WithSimpleValue,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(document.querySelector('.expression-and'));
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(2),
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(document.querySelector('.expression-or'));
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(3),
+      { timeout: 10000 }
+    );
+  },
+};
+
+export const GroupsCanBeDeleted: Story = {
+  ...WithComplexValue,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(6),
+      { timeout: 10000 }
+    );
+
+    await sleep(1000);
+
+    await fireEvent.click(
+      document.querySelectorAll('.expression-group-remove')[1]
+    );
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(5),
+      { timeout: 10000 }
+    );
+  },
+};
+
+export const ExpressionIsResetWhenValueIsRemoved: Story = {
+  ...WithIntType,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(
+      document.querySelectorAll('.expression .template-remove')[0]
+    );
+
+    await expect(
+      document.querySelector('.expression-operator-selector')
+    ).not.toBeInTheDocument();
+  },
+};
+
+export const NewExpression: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      { timeout: 10000 }
+    );
+
+    await _testsOpenTemplates();
+
+    await sleep(300);
+
+    await fireEvent.click(canvas.getAllByText(/Context Data/)[0]);
+
+    await sleep(300);
+
+    await fireEvent.click(canvas.getAllByText(/Interface Name/)[0]);
+
+    await sleep(300);
+
+    await _testsSelectItemFromCollection(canvas, 'ends with')();
+
+    await sleep(300);
+
+    await fireEvent.change(
+      document.querySelectorAll('.expression .reqore-textarea')[1],
+      {
+        target: { value: 'test' },
+      }
+    );
+
+    await fireEvent.click(
+      document.querySelector('.expression .reqore-checkbox')
     );
   },
 };

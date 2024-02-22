@@ -190,7 +190,15 @@ export const TemplateField = ({
                 : templates
               : undefined
           }
-          onChange={(_n, val) => setTemplateValue(val)}
+          onChange={(_n, val) => {
+            if (!val) {
+              setIsTemplate(false);
+              setTemplateValue(null);
+              onChange(name, null);
+            } else {
+              setTemplateValue(val);
+            }
+          }}
           {...rest}
         />
       ) : null}

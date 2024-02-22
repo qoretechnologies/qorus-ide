@@ -9,6 +9,7 @@ import isObject from 'lodash/isPlainObject';
 import size from 'lodash/size';
 import uniqWith from 'lodash/uniqWith';
 import { isBoolean, isNull, isString, isUndefined } from 'util';
+import { IExpression } from '../components/ExpressionBuilder';
 import { TApiManagerEndpoint } from '../components/Field/apiManager';
 import {
   IProviderType,
@@ -758,6 +759,27 @@ export const validateField: (
         validateField('string', getProtocol(value)) &&
         validateField('string', getAddress(value))
       );
+    }
+    case 'expression': {
+      const castedValue = value as IExpression;
+
+      if (!castedValue) {
+        return false;
+      }
+
+      if (castedValue.type) {
+        return validateField(castedValue.type, castedValue.value, {
+          has_to_have_value: true,
+        });
+      }
+
+      if (size(castedValue.args) === 0) {
+        return false;
+      }
+
+      return castedValue.args.every((arg) => {
+        return validateField('expression', arg);
+      });
     }
     case 'nothing':
       return false;
