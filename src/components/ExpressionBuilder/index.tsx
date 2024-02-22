@@ -253,7 +253,6 @@ export const Expression = ({
               defaultType={firstParamType}
               value={firstArgument?.value}
               onChange={(name, value, type) => {
-                console.log('onchange', value, type);
                 if (type !== 'any' && type !== 'auto') {
                   updateArg(value, 0, type);
                 }

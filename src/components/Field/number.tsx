@@ -53,7 +53,6 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   });
 
   const handleChange = (value: number | string): void => {
-    console.log(value);
     onChange?.(
       name,
       type === 'int' || type === 'number'

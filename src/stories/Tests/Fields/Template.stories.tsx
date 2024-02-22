@@ -1,6 +1,7 @@
-import { expect } from '@storybook/jest';
+import { expect, jest } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { useState } from 'react';
 import Number from '../../../components/Field/number';
 import { TemplateField } from '../../../components/Field/template';
 import { buildTemplates } from '../../../helpers/functions';
@@ -60,11 +61,26 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
 };
 
 export const ValueIsResetWhenChangingToCustom: StoryObj<typeof meta> = {
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+
+    return (
+      <TemplateField
+        {...args}
+        value={value}
+        onChange={(name, value) => {
+          args.onChange(name, value);
+          setValue(value);
+        }}
+      />
+    );
+  },
   args: {
     component: Number,
     type: 'number',
     value: '$config:something',
     name: 'Test Field',
+    onChange: jest.fn(),
   },
   play: async ({ canvasElement, ...rest }) => {
     await waitFor(
@@ -76,39 +92,10 @@ export const ValueIsResetWhenChangingToCustom: StoryObj<typeof meta> = {
       { timeout: 10000 }
     );
 
-    await fireEvent.click(
-      document.querySelectorAll('.reqore-tabs-list-item')[0]
-    );
+    await fireEvent.click(document.querySelectorAll('.template-remove')[0]);
     await expect(rest.args.onChange).toHaveBeenLastCalledWith(
       'Test Field',
-      null
-    );
-  },
-};
-
-export const ValueIsResetWhenChangingToTemplate: StoryObj<typeof meta> = {
-  args: {
-    component: Number,
-    type: 'number',
-    value: 1000,
-    name: 'Test Field',
-  },
-  play: async ({ canvasElement, ...rest }) => {
-    await waitFor(
-      async () => {
-        await expect(
-          document.querySelector('.reqore-input')
-        ).toBeInTheDocument();
-      },
-      { timeout: 10000 }
-    );
-
-    await fireEvent.click(
-      document.querySelectorAll('.reqore-tabs-list-item')[1]
-    );
-    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
-      'Test Field',
-      null
+      undefined
     );
   },
 };

@@ -194,7 +194,7 @@ export const TemplateField = ({
             if (!val) {
               setIsTemplate(false);
               setTemplateValue(null);
-              onChange(name, null);
+              onChange(name, undefined);
             } else {
               setTemplateValue(val);
             }
@@ -232,7 +232,7 @@ export const TemplateField = ({
                 }
 
                 setTemplateValue(null);
-                onChange(name, null);
+                onChange(name, undefined);
               }}
             />
           ) : null}
@@ -254,7 +254,7 @@ export const TemplateField = ({
           onClick={() => {
             setIsTemplate(true);
             setTemplateValue(null);
-            onChange(name, null);
+            onChange(name, undefined);
           }}
         />
       ) : null}
