@@ -842,8 +842,7 @@ const Options = ({
                           <SelectField
                             fixed
                             defaultItems={map(operators, (operator) => ({
-                              name: operator.name,
-                              desc: operator.desc,
+                              ...operator,
                             }))}
                             disabled={readOnly}
                             value={operator && `${operators?.[operator].name}`}
