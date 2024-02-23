@@ -241,15 +241,22 @@ export const ArgsChangeWhenOperatorChanges: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      () =>
+        expect(
+          document.querySelectorAll('.expression .reqore-textarea')
+        ).toHaveLength(2),
       { timeout: 10000 }
     );
 
-    await expect(
-      document.querySelectorAll('.expression .reqore-textarea')
-    ).toHaveLength(2);
-
     await _testsSelectItemFromCollection(canvas, 'is between', 'contains')();
+
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.expression .reqore-textarea')
+        ).toHaveLength(3),
+      { timeout: 10000 }
+    );
 
     await expect(
       document.querySelectorAll('.expression .reqore-textarea')
@@ -312,7 +319,10 @@ export const ExpressionIsResetWhenValueIsRemoved: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
+      () =>
+        expect(
+          document.querySelectorAll('.expression .template-remove')
+        ).toHaveLength(1),
       { timeout: 10000 }
     );
 
