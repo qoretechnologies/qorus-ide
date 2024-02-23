@@ -105,7 +105,7 @@ export interface IExpressionBuilderProps {
   path?: string;
   index?: number;
   returnType?: IQorusType;
-  onChange?: (value: IExpression) => void;
+  onChange?: (value: IExpression, remove?: boolean) => void;
   onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
 }
 
@@ -279,7 +279,6 @@ export const Expression = ({
               value={firstArgument?.value}
               isFunction={firstArgument?.is_expression}
               onChange={(name, value, type, isFunction) => {
-                console.log('FIRST PARAM ONCHANGE');
                 if (type !== 'any' && type !== 'auto') {
                   updateArg(value, 0, type, isFunction);
                 }
@@ -375,7 +374,6 @@ export const Expression = ({
                     templates={localTemplates}
                     allowTemplates
                     onChange={(_name, value, type, isFunction) => {
-                      console.log(index + 1, 'PARAM ONCHANGE');
                       updateArg(value, index + 1, type, isFunction);
                     }}
                     fluid={false}
@@ -436,7 +434,6 @@ export const Expression = ({
               />
             </>
           ) : null}
-
           <ReqoreButton
             flat
             compact
@@ -483,7 +480,7 @@ export const ExpressionBuilder = ({
   ) => {
     if (onChange) {
       if (!newPath) {
-        onChange(newValue);
+        onChange(newValue, remove);
         return;
       }
 
@@ -506,7 +503,7 @@ export const ExpressionBuilder = ({
           const grandParentPath = pathArray.join('.');
 
           if (grandParentPath === '') {
-            onChange(parent[0]);
+            onChange(parent[0], remove);
             return;
           }
 
@@ -518,7 +515,7 @@ export const ExpressionBuilder = ({
         set(clonedValue, newPath, newValue);
       }
 
-      onChange(clonedValue);
+      onChange(clonedValue, remove);
     } else if (onValueChange) {
       onValueChange(newValue, newPath, remove);
     }

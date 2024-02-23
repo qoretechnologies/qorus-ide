@@ -697,7 +697,9 @@ export const validateField: (
 
           return typeof optionData !== 'object'
             ? validateField(getTypeFromValue(optionData), optionData)
-            : validateField(optionData.type, optionData.value);
+            : validateField(optionData.type, optionData.value, {
+                isFunction: optionData.is_expression,
+              });
         });
 
         return isValid;

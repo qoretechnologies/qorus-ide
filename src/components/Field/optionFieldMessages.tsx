@@ -1,7 +1,14 @@
-import { ReqoreControlGroup, ReqoreTag, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
+import {
+  ReqoreControlGroup,
+  ReqoreTag,
+  ReqoreVerticalSpacer,
+} from '@qoretechnologies/reqore';
 import { size } from 'lodash';
 import { useMemo } from 'react';
-import { hasAllDependenciesFullfilled, validateField } from '../../helpers/validations';
+import {
+  hasAllDependenciesFullfilled,
+  validateField,
+} from '../../helpers/validations';
 import { IOptions, IOptionsSchema, TOption, getType } from './systemOptions';
 
 export interface IOptionFieldMessagesProps {
@@ -31,6 +38,7 @@ export const OptionFieldMessages = ({
       if (
         !validateField(getType(option.type), option.value, {
           has_to_have_value: true,
+          isFunction: option.is_expression,
           ...schema,
         })
       ) {
@@ -42,7 +50,9 @@ export const OptionFieldMessages = ({
       }
     }
 
-    if (!hasAllDependenciesFullfilled(optionSchema.depends_on, allOptions, schema)) {
+    if (
+      !hasAllDependenciesFullfilled(optionSchema.depends_on, allOptions, schema)
+    ) {
       result.push('Some dependencies are not fullfilled');
     }
 
@@ -56,9 +66,15 @@ export const OptionFieldMessages = ({
   return (
     <>
       <ReqoreVerticalSpacer height={5} />
-      <ReqoreControlGroup size="small" wrap>
+      <ReqoreControlGroup size='small' wrap>
         {messages.map((message, index) => (
-          <ReqoreTag minimal icon="ErrorWarningLine" key={index} intent="danger" label={message} />
+          <ReqoreTag
+            minimal
+            icon='ErrorWarningLine'
+            key={index}
+            intent='danger'
+            label={message}
+          />
         ))}
       </ReqoreControlGroup>
     </>

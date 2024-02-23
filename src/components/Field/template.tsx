@@ -11,7 +11,11 @@ import { useContext, useEffect, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
 import { fetchData, filterTemplatesByType } from '../../helpers/functions';
-import { ExpressionBuilder, IExpressionSchema } from '../ExpressionBuilder';
+import {
+  ExpressionBuilder,
+  IExpression,
+  IExpressionSchema,
+} from '../ExpressionBuilder';
 import Auto from './auto';
 import BooleanField from './boolean';
 import DateField from './date';
@@ -190,18 +194,26 @@ export const TemplateField = ({
 
   if (isFunction) {
     return (
-      <ExpressionBuilder
-        value={value}
-        type={type}
-        returnType={type}
-        onChange={(v) => {
-          onChange(name, v, type, true);
-        }}
-      />
+      <>
+        <ExpressionBuilder
+          value={value}
+          type={type}
+          returnType={type}
+          onChange={(
+            expressionValue: IExpression | undefined,
+            remove: boolean
+          ) => {
+            onChange(
+              name,
+              expressionValue || value?.args[0]?.value,
+              type,
+              !remove
+            );
+          }}
+        />
+      </>
     );
   }
-
-  console.log(value);
 
   return (
     <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>

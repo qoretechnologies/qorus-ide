@@ -454,18 +454,6 @@ const Options = ({
     type?: string,
     isFunction?: boolean
   ) => {
-    console.log(
-      'optionName',
-      optionName,
-      'currentValue',
-      currentValue,
-      'val',
-      val,
-      'type',
-      type,
-      'isFunction',
-      isFunction
-    );
     // Check if this option is already added
     if (!currentValue[optionName]) {
       // If it's not, add potential default operators
