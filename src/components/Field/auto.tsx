@@ -1,7 +1,7 @@
 import {
   ReqoreButton,
   ReqoreControlGroup,
-  ReqoreMessage,
+  ReqoreTag,
 } from '@qoretechnologies/reqore';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
@@ -338,10 +338,13 @@ function AutoField<T = any>({
           const transformedValue =
             typeof value === 'string' ? maybeParseYaml(value) : value;
 
+          console.log(arg_schema);
+
           return map(arg_schema, (schema, option) => {
             return (
               <SubField
                 title={option}
+                key={option}
                 {...schema}
                 desc={`${schema.desc}`}
                 descTitle={`${currentPath}${option}`}
@@ -549,11 +552,16 @@ function AutoField<T = any>({
         return null;
       case 'auto':
         return (
-          <ReqoreMessage intent='info'>Please select data type</ReqoreMessage>
+          <ReqoreTag
+            intent='warning'
+            minimal
+            icon='ErrorWarningLine'
+            label='Please select data type'
+          />
         );
       default:
         return (
-          <ReqoreMessage intent='danger'>{t('UnknownType')}</ReqoreMessage>
+          <ReqoreTag intent='danger' icon='SpamLine' label={t('UnknownType')} />
         );
     }
   };
@@ -599,7 +607,7 @@ function AutoField<T = any>({
         overflowY: arg_schema && level === 0 ? 'auto' : undefined,
       }}
     >
-      <ReqoreControlGroup fill={rest.fill}>
+      <ReqoreControlGroup fill={rest.fill} vertical={arg_schema}>
         {showPicker && (
           <SelectField
             flat
