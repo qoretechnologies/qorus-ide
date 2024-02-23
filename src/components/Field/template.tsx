@@ -196,7 +196,10 @@ export const TemplateField = ({
     return (
       <>
         <ExpressionBuilder
-          value={value}
+          value={{
+            is_expression: true,
+            value,
+          }}
           type={type}
           returnType={type}
           onChange={(
@@ -312,13 +315,15 @@ export const TemplateField = ({
             onChange(
               name,
               {
-                exp: func.name,
-                args: [
-                  {
-                    type,
-                    value,
-                  },
-                ],
+                value: {
+                  exp: func.name,
+                  args: [
+                    {
+                      type,
+                      value,
+                    },
+                  ],
+                },
               },
               undefined,
               true

@@ -61,17 +61,20 @@ export const Default: Story = {
 export const WithSimpleValue: Story = {
   args: {
     value: {
-      exp: 'CONTAINS',
-      args: [
-        {
-          type: 'string',
-          value: '$local:input',
-        },
-        {
-          type: 'string',
-          value: 'es',
-        },
-      ],
+      is_expression: true,
+      value: {
+        exp: 'CONTAINS',
+        args: [
+          {
+            type: 'string',
+            value: '$local:input',
+          },
+          {
+            type: 'string',
+            value: 'es',
+          },
+        ],
+      },
     },
   },
   play: async ({ canvasElement }) => {
@@ -85,97 +88,126 @@ export const WithSimpleValue: Story = {
 export const WithComplexValue: Story = {
   args: {
     value: {
-      exp: 'AND',
-      args: [
-        {
-          exp: 'OR',
-          args: [
-            {
-              exp: 'CONTAINS',
+      is_expression: true,
+      value: {
+        exp: 'AND',
+        args: [
+          {
+            value: {
+              exp: 'OR',
+              args: [
+                {
+                  value: {
+                    exp: 'CONTAINS',
+                    args: [
+                      {
+                        type: 'string',
+                        value: '$local:input',
+                      },
+                      {
+                        type: 'string',
+                        value: 'es',
+                      },
+                    ],
+                  },
+                  is_expression: true,
+                },
+                {
+                  value: {
+                    exp: 'AND',
+                    args: [
+                      {
+                        value: {
+                          exp: 'STARTS-WITH',
+                          args: [
+                            {
+                              type: 'string',
+                              value: 'test',
+                            },
+                            {
+                              type: 'string',
+                              value: 't',
+                            },
+                          ],
+                        },
+                        is_expression: true,
+                      },
+
+                      {
+                        value: {
+                          exp: 'STARTS-WITH',
+                          args: [
+                            {
+                              type: 'string',
+                              value: 'test',
+                            },
+                            {
+                              type: 'string',
+                              value: 't',
+                            },
+                          ],
+                        },
+                        is_expression: true,
+                      },
+                    ],
+                  },
+                  is_expression: true,
+                },
+
+                {
+                  value: {
+                    exp: 'GREATER-THAN-OR-EQUALS',
+                    args: [
+                      {
+                        type: 'int',
+                        value: '23',
+                      },
+                      {
+                        type: 'string',
+                        value: '$local:id',
+                      },
+                    ],
+                  },
+                  is_expression: true,
+                },
+              ],
+            },
+            is_expression: true,
+          },
+          {
+            value: {
+              exp: 'ENDS-WITH',
               args: [
                 {
                   type: 'string',
+                  value: '$local:str',
+                },
+                {
+                  type: 'string',
+                  value: '$local:p',
+                },
+              ],
+            },
+            is_expression: true,
+          },
+          {
+            value: {
+              exp: 'LESS-THAN',
+              args: [
+                {
+                  type: 'int',
                   value: '$local:input',
                 },
                 {
                   type: 'string',
-                  value: 'es',
+                  value: '$local:p',
                 },
               ],
             },
-            {
-              exp: 'AND',
-              args: [
-                {
-                  exp: 'STARTS-WITH',
-                  args: [
-                    {
-                      type: 'string',
-                      value: 'test',
-                    },
-                    {
-                      type: 'string',
-                      value: 't',
-                    },
-                  ],
-                },
-                {
-                  exp: 'STARTS-WITH',
-                  args: [
-                    {
-                      type: 'string',
-                      value: 'test',
-                    },
-                    {
-                      type: 'string',
-                      value: 't',
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              exp: 'GREATER-THAN-OR-EQUALS',
-              args: [
-                {
-                  type: 'int',
-                  value: '23',
-                },
-                {
-                  type: 'string',
-                  value: '$local:id',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          exp: 'ENDS-WITH',
-          args: [
-            {
-              type: 'string',
-              value: '$local:str',
-            },
-            {
-              type: 'string',
-              value: '$local:p',
-            },
-          ],
-        },
-        {
-          exp: 'LESS-THAN',
-          args: [
-            {
-              type: 'int',
-              value: '$local:input',
-            },
-            {
-              type: 'string',
-              value: '$local:p',
-            },
-          ],
-        },
-      ],
+            is_expression: true,
+          },
+        ],
+      },
     },
   },
   play: async ({ canvasElement }) => {
@@ -190,17 +222,19 @@ export const WithIntType: Story = {
   args: {
     type: 'int',
     value: {
-      exp: 'GREATER-THAN-OR-EQUALS',
-      args: [
-        {
-          type: 'int',
-          value: '$local:input',
-        },
-        {
-          type: 'int',
-          value: 20,
-        },
-      ],
+      value: {
+        exp: 'GREATER-THAN-OR-EQUALS',
+        args: [
+          {
+            type: 'int',
+            value: '$local:input',
+          },
+          {
+            type: 'int',
+            value: 20,
+          },
+        ],
+      },
     },
   },
   play: async ({ canvasElement }) => {
@@ -214,17 +248,19 @@ export const WithIntType: Story = {
 export const WithSelectableType: Story = {
   args: {
     value: {
-      exp: 'EQUALS-BOOL',
-      args: [
-        {
-          type: 'bool',
-          value: '$local:test-bool',
-        },
-        {
-          type: 'bool',
-          value: true,
-        },
-      ],
+      value: {
+        exp: 'EQUALS-BOOL',
+        args: [
+          {
+            type: 'bool',
+            value: '$local:test-bool',
+          },
+          {
+            type: 'bool',
+            value: true,
+          },
+        ],
+      },
     },
   },
   play: async ({ canvasElement }) => {
@@ -366,6 +402,15 @@ export const NewExpression: Story = {
       {
         target: { value: 'test' },
       }
+    );
+
+    await waitFor(
+      () => {
+        expect(
+          document.querySelector('.expression .reqore-checkbox')
+        ).toBeInTheDocument();
+      },
+      { timeout: 10000 }
     );
 
     await fireEvent.click(

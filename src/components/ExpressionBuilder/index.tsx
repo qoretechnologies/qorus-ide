@@ -27,7 +27,7 @@ import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
 
-export const ExpressionDefaultValue = { args: [] };
+export const ExpressionDefaultValue: IExpression = { value: { args: [] } };
 export const StyledExpressionItem = styled.div`
   position: relative;
   overflow: unset;
@@ -65,11 +65,12 @@ const StyledExpressionItemLabel = styled.div`
   border-right: 1px solid
     ${({ theme }) => rgba(getReadableColorFrom(theme.main), 0.3)};
 `;
-
-export interface IExpression {
+export interface IExpressionValue {
   exp?: string;
   args?: IExpression[];
-  value?: any;
+}
+export interface IExpression {
+  value?: IExpressionValue | any;
   type?: IQorusType;
   is_expression?: boolean;
 }
@@ -123,7 +124,7 @@ export const Expression = ({
 }: IExpressionProps) => {
   const types = useQorusTypes();
   const theme = useReqoreTheme();
-  const [firstArgument, ...rest] = value.args;
+  const [firstArgument, ...rest] = value.value.args;
 
   const firstParamType = firstArgument?.type || type || 'string';
 
@@ -162,11 +163,13 @@ export const Expression = ({
   const updateType = (val: IQorusType) => {
     onValueChange(
       {
-        args: [
-          {
-            type: val,
-          },
-        ],
+        value: {
+          args: [
+            {
+              type: val,
+            },
+          ],
+        },
       },
       path
     );
@@ -176,8 +179,11 @@ export const Expression = ({
     onValueChange(
       {
         ...value,
-        exp: val,
-        args: [value.args[0]],
+        value: {
+          ...value.value,
+          exp: val,
+          args: [value.value.args[0]],
+        },
       },
       path
     );
@@ -186,8 +192,11 @@ export const Expression = ({
   const updateExpToAndOr = (val: 'AND' | 'OR') => {
     onValueChange(
       {
-        exp: val,
-        args: [value, ExpressionDefaultValue],
+        value: {
+          exp: val,
+          args: [value, ExpressionDefaultValue],
+        },
+        is_expression: true,
       },
       path
     );
@@ -199,7 +208,7 @@ export const Expression = ({
     type?: IQorusType,
     isFunction?: boolean
   ) => {
-    const args = clone(value.args);
+    const args = clone(value.value.args);
 
     args[index] = {
       ...args[index],
@@ -211,7 +220,10 @@ export const Expression = ({
     onValueChange(
       {
         ...value,
-        args,
+        value: {
+          ...value.value,
+          args,
+        },
       },
       path
     );
@@ -222,7 +234,7 @@ export const Expression = ({
   };
 
   const selectedExpression = expressions.value?.find(
-    (exp) => exp.name === value.exp
+    (exp) => exp.name === value.value.exp
   );
   const restOfArgs = selectedExpression?.args.slice(1);
 
@@ -310,7 +322,7 @@ export const Expression = ({
             minimal
             flat
             className='expression-operator-selector'
-            value={value?.exp}
+            value={value?.value?.exp}
             fluid={false}
             fixed={true}
             defaultItems={expressions.value
@@ -350,7 +362,7 @@ export const Expression = ({
                 </ReqoreP>
                 <ReqoreControlGroup>
                   <TemplateField
-                    key={`${value?.exp}${index}`}
+                    key={`${value?.value.exp}${index}`}
                     minimal
                     component={auto}
                     noSoft
@@ -503,11 +515,11 @@ export const ExpressionBuilder = ({
           const grandParentPath = pathArray.join('.');
 
           if (grandParentPath === '') {
-            onChange(parent[0], remove);
+            onChange(parent[0].value, remove);
             return;
           }
 
-          set(clonedValue, grandParentPath, parent[0]);
+          set(clonedValue, grandParentPath, parent[0].value);
         } else {
           set(clonedValue, parentPath, parent);
         }
@@ -521,7 +533,10 @@ export const ExpressionBuilder = ({
     }
   };
 
-  if (value.exp === 'AND' || value.exp === 'OR') {
+  if (
+    value.is_expression &&
+    (value.value.exp === 'AND' || value.value.exp === 'OR')
+  ) {
     return (
       <StyledExpressionItem
         as={ReqorePanel}
@@ -561,19 +576,19 @@ export const ExpressionBuilder = ({
             onClick={() => {
               handleChange(
                 ExpressionDefaultValue,
-                `${path ? `${path}.` : ''}args.${size(value.args)}`
+                `${path ? `${path}.` : ''}value.args.${size(value.value.args)}`
               );
             }}
           >
-            {value.exp} <ReqoreIcon icon='AddLine' size='tiny' />
+            {value.value.exp} <ReqoreIcon icon='AddLine' size='tiny' />
           </StyledExpressionItemLabel>
-          {value.args?.map((arg, index) => (
+          {value.value.args?.map((arg, index) => (
             <ExpressionBuilder
               value={arg}
               localTemplates={templates.value}
               key={index}
               isChild
-              path={`${path ? `${path}.` : ''}args.${index}`}
+              path={`${path ? `${path}.` : ''}value.args.${index}`}
               level={level + 1}
               index={index}
               type={type}

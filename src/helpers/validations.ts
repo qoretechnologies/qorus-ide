@@ -75,7 +75,7 @@ export const validateField: (
   // Check if the field is a function (Qorus function expression)
   if (field?.isFunction) {
     // Validate it as an expression
-    return validateField('expression', value);
+    return validateField('expression', { value });
   }
 
   // Check individual types
@@ -782,11 +782,11 @@ export const validateField: (
         });
       }
 
-      if (size(castedValue.args) === 0) {
+      if (size(castedValue.value?.args) === 0) {
         return false;
       }
 
-      return castedValue.args.every((arg) => {
+      return castedValue.value?.args.every((arg) => {
         return validateField('expression', arg);
       });
     }
