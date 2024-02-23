@@ -338,8 +338,6 @@ function AutoField<T = any>({
           const transformedValue =
             typeof value === 'string' ? maybeParseYaml(value) : value;
 
-          console.log(arg_schema);
-
           return map(arg_schema, (schema, option) => {
             return (
               <SubField
