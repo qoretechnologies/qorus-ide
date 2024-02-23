@@ -95,6 +95,7 @@ export const fixOptions = (
       (option.required && !fixedValue[name])
     ) {
       fixedValue[name] = {
+        is_expression: fixedValue[name]?.is_expression,
         type: getType(option.type, operators, fixedValue[name]?.op),
         value:
           (typeof fixedValue[name] === 'object'
@@ -115,6 +116,7 @@ export const fixOptions = (
           [optionName]: {
             type: getType(options[optionName].type, operators, option?.op),
             value: option,
+            is_expression: option?.is_expression,
           },
         };
       }
@@ -171,6 +173,7 @@ export type TOperatorValue = string | string[] | undefined | null;
 export type TOption = {
   type: IQorusType;
   value: any;
+  is_expression?: boolean;
   op?: TOperatorValue;
 };
 export type IOptions =
@@ -448,8 +451,21 @@ const Options = ({
     optionName: string,
     currentValue: any = {},
     val?: any,
-    type?: string
+    type?: string,
+    isFunction?: boolean
   ) => {
+    console.log(
+      'optionName',
+      optionName,
+      'currentValue',
+      currentValue,
+      'val',
+      val,
+      'type',
+      type,
+      'isFunction',
+      isFunction
+    );
     // Check if this option is already added
     if (!currentValue[optionName]) {
       // If it's not, add potential default operators
@@ -485,6 +501,7 @@ const Options = ({
         ...currentValue[optionName],
         type,
         value: val,
+        is_expression: isFunction,
       },
     };
 
@@ -637,16 +654,21 @@ const Options = ({
     {}
   );
 
-  const isOptionValid = (optionName: string, type: IQorusType, value: any) => {
+  const isOptionValid = (
+    optionName: string,
+    type: IQorusType,
+    optionValue: any
+  ) => {
     // If the option is not required and undefined it's valid :)
     if (
       !options[optionName].required &&
-      (value === undefined || value === '')
+      (optionValue === undefined || optionValue === '')
     ) {
       return true;
     }
 
-    return validateField(getType(type), value, {
+    return validateField(getType(type), optionValue, {
+      isFunction: value[optionName]?.is_expression,
       has_to_have_value: true,
       ...options[optionName],
     });
@@ -903,6 +925,7 @@ const Options = ({
                   allowTemplates={
                     !!(allowTemplates && options[optionName].supports_templates)
                   }
+                  allowFunctions={!!options[optionName].supports_expressions}
                   fluid
                   templates={templates.value}
                   component={AutoField}
@@ -913,16 +936,18 @@ const Options = ({
                   )}
                   className='system-option'
                   name={optionName}
-                  onChange={(optionName, val) => {
+                  onChange={(optionName, val, givenType, isFunction) => {
                     if (val !== undefined && val !== other.value) {
                       handleValueChange(
                         optionName,
                         fixedValue,
                         val,
-                        getTypeAndCanBeNull(
-                          type,
-                          options[optionName].allowed_values
-                        ).type
+                        givenType ||
+                          getTypeAndCanBeNull(
+                            type,
+                            options[optionName].allowed_values
+                          ).type,
+                        isFunction
                       );
                     }
                   }}
@@ -930,6 +955,7 @@ const Options = ({
                   arg_schema={options[optionName].arg_schema}
                   noSoft={!!rest?.options}
                   value={other.value}
+                  isFunction={other.is_expression}
                   sensitive={options[optionName].sensitive}
                   default_value={options[optionName].default_value}
                   allowed_values={options[optionName].allowed_values}

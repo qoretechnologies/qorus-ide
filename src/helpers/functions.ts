@@ -19,6 +19,7 @@ import set from 'lodash/set';
 import size from 'lodash/size';
 import shortid from 'shortid';
 import { apiHost, apiToken } from '../common/vscode';
+import { TExpressionSchemaArg } from '../components/ExpressionBuilder';
 import { IProviderType } from '../components/Field/connectors';
 import { IOptions, IQorusType } from '../components/Field/systemOptions';
 import { interfaceKindTransform } from '../constants/interfaces';
@@ -762,6 +763,33 @@ export const getTypesAccepted = (
   return _types.map(
     (type) => qorusTypes?.find((t) => t.name === type) || { name: type }
   );
+};
+
+export const getExpressionArgumentType = (
+  arg: TExpressionSchemaArg,
+  qorusTypes?: IQorusTypeObject[],
+  currentType?: IQorusType,
+  firstArgType?: IQorusType
+): IQorusType => {
+  const acceptedTypes = getTypesAccepted(arg.type.types_accepted, qorusTypes);
+
+  // If there is only one accepted type, return it
+  if (size(acceptedTypes) === 1) {
+    return acceptedTypes[0]?.name;
+  }
+
+  if (currentType) {
+    return currentType;
+  }
+
+  // Check if this type exists in the accepted types
+  const type = acceptedTypes?.find((t) => t.name === firstArgType);
+
+  if (type) {
+    return type.name;
+  }
+
+  return arg.type.base_type;
 };
 
 export const isTypeStringCompatible = (type: string) => {

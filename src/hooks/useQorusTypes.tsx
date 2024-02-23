@@ -1,10 +1,11 @@
 import { IReqoreIconName } from '@qoretechnologies/reqore/dist/types/icons';
 import { useAsyncRetry } from 'react-use';
+import { IQorusType } from '../components/Field/systemOptions';
 import { fetchData } from '../helpers/functions';
 
 export interface IQorusTypeObject {
   display_name?: string;
-  name: string;
+  name: IQorusType;
   desc?: string;
   short_desc?: string;
   icon?: IReqoreIconName;

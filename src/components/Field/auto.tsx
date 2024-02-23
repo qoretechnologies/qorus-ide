@@ -593,19 +593,25 @@ function AutoField<T = any>({
         ]
       : DefaultNoSoftTypes);
 
-  // Render type picker if the type is auto or any
-  return (
+  if (arg_schema) {
     <div
       style={{
         flexFlow: column || arg_schema ? 'column' : 'row',
-        marginLeft: arg_schema ? 10 * level : 0,
+        marginLeft: 10 * level,
         overflow: 'hidden',
         flex: '1 1 auto',
-        maxHeight: arg_schema && level === 0 ? '500px' : undefined,
-        overflowY: arg_schema && level === 0 ? 'auto' : undefined,
+        maxHeight: level === 0 ? '500px' : undefined,
+        overflowY: level === 0 ? 'auto' : undefined,
       }}
     >
-      <ReqoreControlGroup fill={rest.fill} vertical={arg_schema}>
+      {renderField(currentInternalType)}
+    </div>;
+  }
+
+  // Render type picker if the type is auto or any
+  return (
+    <ReqoreControlGroup fill={rest.fill} fluid={rest.fluid} fixed={rest.fixed}>
+      <ReqoreControlGroup vertical>
         {showPicker && (
           <SelectField
             flat
@@ -631,19 +637,19 @@ function AutoField<T = any>({
             {isSetToNull ? 'Unset null' : 'Set as null'}
           </ReqoreButton>
         )}
+        {type === 'connection' ? (
+          <ConnectionManagement
+            selectedConnection={value}
+            onChange={(value) => handleChange(name, value)}
+            allowedValues={rest.allowed_values}
+            // TODO: Change this to dynamic URL
+            redirectUri='https://hq.qoretechnologies.com:8092/grant'
+            app={rest.app}
+            action={rest.action}
+          />
+        ) : null}
       </ReqoreControlGroup>
-      {type === 'connection' ? (
-        <ConnectionManagement
-          selectedConnection={value}
-          onChange={(value) => handleChange(name, value)}
-          allowedValues={rest.allowed_values}
-          // TODO: Change this to dynamic URL
-          redirectUri='https://hq.qoretechnologies.com:8092/grant'
-          app={rest.app}
-          action={rest.action}
-        />
-      ) : null}
-    </div>
+    </ReqoreControlGroup>
   );
 }
 

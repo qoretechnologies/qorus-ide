@@ -72,6 +72,12 @@ export const validateField: (
     // Check if the template has both the key and value
     return !!getTemplateKey(value) && !!getTemplateValue(value);
   }
+  // Check if the field is a function (Qorus function expression)
+  if (field?.isFunction) {
+    // Validate it as an expression
+    return validateField('expression', value);
+  }
+
   // Check individual types
   switch (type) {
     case 'bool':
@@ -770,6 +776,7 @@ export const validateField: (
       if (castedValue.type) {
         return validateField(castedValue.type, castedValue.value, {
           has_to_have_value: true,
+          isFunction: castedValue.is_expression,
         });
       }
 

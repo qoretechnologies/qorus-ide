@@ -1,12 +1,27 @@
 import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { useState } from 'react';
 import Options from '../../../components/Field/systemOptions';
 import { Basic } from '../../Fields/Options/Options.stories';
 
 const meta = {
   component: Options,
   title: 'Tests/Fields/Options',
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+
+    return (
+      <Options
+        {...args}
+        value={value}
+        onChange={(name, value) => {
+          setValue(value);
+          args.onChange?.(name, value);
+        }}
+      />
+    );
+  },
 } as Meta<typeof Options>;
 
 export default meta;
@@ -55,19 +70,30 @@ export const DependantsResetWhenParentChanges: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => expect(canvas.getAllByDisplayValue('$local:test')[0]).toBeInTheDocument(), {
-      timeout: 10000,
-    });
     await waitFor(
       () =>
-        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(4),
+        expect(
+          canvas.getAllByDisplayValue('$local:test')[0]
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.reqore-collection-item.system-option')
+            .length
+        ).toBe(4),
       {
         timeout: 10000,
       }
     );
 
     await fireEvent.change(
-      document.querySelectorAll('.system-option.reqore-panel')[3].querySelector('.reqore-textarea'),
+      document
+        .querySelectorAll('.system-option.reqore-panel')[3]
+        .querySelector('.reqore-textarea'),
       {
         target: { value: 'My value changed' },
       }

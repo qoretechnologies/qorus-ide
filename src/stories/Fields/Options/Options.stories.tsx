@@ -323,3 +323,63 @@ export const OptionsWithOnChangeTriggerEvents: StoryObj<typeof meta> = {
     );
   },
 };
+
+export const OptionWithExpression: StoryObj<typeof meta> = {
+  args: {
+    options: {
+      optionWithExpression: {
+        type: 'string',
+        display_name: 'Expression option',
+        short_desc: 'Option with expression support',
+        supports_expressions: true,
+        supports_templates: true,
+        required: true,
+        preselected: true,
+      },
+    },
+    value: {
+      optionWithExpression: {
+        type: 'string',
+        value: {
+          exp: 'SUBSTR',
+          args: [
+            {
+              type: 'string',
+              value: {
+                exp: 'SUBSTR',
+                args: [
+                  {
+                    type: 'string',
+                    value: '$local:name',
+                  },
+                  {
+                    value: 1,
+                    type: 'int',
+                    is_expression: false,
+                  },
+                  {
+                    value: 1,
+                    type: 'int',
+                    is_expression: false,
+                  },
+                ],
+              },
+              is_expression: true,
+            },
+            {
+              value: 1,
+              type: 'int',
+              is_expression: false,
+            },
+            {
+              value: 2,
+              type: 'int',
+              is_expression: false,
+            },
+          ],
+        },
+        is_expression: true,
+      },
+    },
+  },
+};

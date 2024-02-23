@@ -1,4 +1,5 @@
 import { ReqoreDropdown, ReqoreInput } from '@qoretechnologies/reqore';
+import { IReqoreInputProps } from '@qoretechnologies/reqore/dist/components/Input';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ChangeEvent, FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
@@ -73,8 +74,11 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
 
   if (templates?.items) {
     return (
-      <ReqoreDropdown
+      <ReqoreDropdown<IReqoreInputProps>
         {...rest}
+        wrapperStyle={{
+          width: '100px',
+        }}
         component={ReqoreInput}
         fluid={fill}
         icon='MoneyDollarCircleLine'
@@ -103,6 +107,9 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
     <ReqoreInput
       {...rest}
       fluid={fill}
+      wrapperStyle={{
+        width: '100px',
+      }}
       icon='MoneyDollarCircleLine'
       value={value ?? default_value ?? ''}
       onChange={handleInputChange}

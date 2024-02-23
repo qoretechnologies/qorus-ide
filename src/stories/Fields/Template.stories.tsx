@@ -1,6 +1,7 @@
 import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { fireEvent } from '@storybook/testing-library';
+import auto from '../../components/Field/auto';
 import LongStringField from '../../components/Field/longString';
 import Number from '../../components/Field/number';
 import { TemplateField } from '../../components/Field/template';
@@ -98,5 +99,66 @@ export const TemplateValueCanBeRemoved: StoryObj<typeof meta> = {
     await expect(
       document.querySelector('.reqore-checkbox')
     ).toBeInTheDocument();
+  },
+};
+
+export const TemplateWithFunctions: StoryObj<typeof meta> = {
+  args: {
+    allowFunctions: true,
+    type: 'string',
+    defaultType: 'string',
+    component: auto,
+    fixed: true,
+    fluid: false,
+  },
+};
+
+export const TemplateWithFunctionValue: StoryObj<typeof meta> = {
+  args: {
+    allowFunctions: true,
+    isFunction: true,
+    value: {
+      exp: 'SUBSTR',
+      args: [
+        { type: 'string', value: '$local:name' },
+        { type: 'int', value: '$local:start' },
+        { type: 'int', value: 10 },
+      ],
+    },
+    type: 'string',
+    defaultType: 'string',
+    component: auto,
+    fixed: true,
+    fluid: false,
+  },
+};
+
+export const TemplateWithNestedFunctionValue: StoryObj<typeof meta> = {
+  args: {
+    allowFunctions: true,
+    isFunction: true,
+    value: {
+      exp: 'SUBSTR',
+      args: [
+        { type: 'string', value: '$local:name' },
+        {
+          type: 'int',
+          value: {
+            exp: 'PLUS-INT',
+            args: [
+              { type: 'int', value: '$local:start' },
+              { type: 'int', value: '5' },
+            ],
+          },
+          is_expression: true,
+        },
+        { type: 'int', value: 10 },
+      ],
+    },
+    type: 'string',
+    defaultType: 'string',
+    component: auto,
+    fixed: true,
+    fluid: false,
   },
 };

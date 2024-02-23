@@ -14,7 +14,11 @@ import { clone, cloneDeep, get, set, size, unset } from 'lodash';
 import { darken, rgba } from 'polished';
 import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
-import { fetchData, getTypesAccepted } from '../../helpers/functions';
+import {
+  fetchData,
+  getExpressionArgumentType,
+  getTypesAccepted,
+} from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import { useQorusTypes } from '../../hooks/useQorusTypes';
 import { useTemplates } from '../../hooks/useTemplates';
@@ -67,10 +71,20 @@ export interface IExpression {
   args?: IExpression[];
   value?: any;
   type?: IQorusType;
+  is_expression?: boolean;
 }
+
+export type TExpressionSchemaArg = Omit<IOptionsSchemaArg, 'type'> & {
+  type: {
+    base_type: IQorusType;
+    name: string;
+    types_accepted: IQorusType[];
+  };
+};
 
 export interface IExpressionSchema {
   desc: string;
+  short_desc: string;
   display_name: string;
   name: string;
   return_type: IQorusType;
@@ -78,13 +92,7 @@ export interface IExpressionSchema {
   type: number;
   varargs: boolean;
   subtype: 1 | 2;
-  args: (Omit<IOptionsSchemaArg, 'type'> & {
-    type: {
-      base_type: IQorusType;
-      name: string;
-      types_accepted: IQorusType[];
-    };
-  })[];
+  args: TExpressionSchemaArg[];
   symbol: string;
 }
 
@@ -96,6 +104,7 @@ export interface IExpressionBuilderProps {
   type?: IQorusType;
   path?: string;
   index?: number;
+  returnType?: IQorusType;
   onChange?: (value: IExpression) => void;
   onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
 }
@@ -110,6 +119,7 @@ export const Expression = ({
   level,
   path,
   onValueChange,
+  returnType = 'bool',
 }: IExpressionProps) => {
   const types = useQorusTypes();
   const theme = useReqoreTheme();
@@ -123,7 +133,9 @@ export const Expression = ({
     }
 
     const data = await fetchData(
-      `/system/expressions?return_type=bool&first_arg_type=${firstParamType}`
+      `/system/expressions?return_type=${returnType}${
+        returnType === 'bool' ? `&first_arg_type=${firstParamType}` : ''
+      }`
     );
 
     return data.data;
@@ -184,7 +196,8 @@ export const Expression = ({
   const updateArg = (
     val: string | number | boolean,
     index: number = 0,
-    type?: IQorusType
+    type?: IQorusType,
+    isFunction?: boolean
   ) => {
     const args = clone(value.args);
 
@@ -192,6 +205,7 @@ export const Expression = ({
       ...args[index],
       value: val,
       type: type || args[index]?.type,
+      is_expression: isFunction,
     };
 
     onValueChange(
@@ -215,7 +229,13 @@ export const Expression = ({
   return (
     <StyledExpressionItem
       as={ReqorePanel}
-      intent={validateField('expression', value) ? undefined : 'danger'}
+      intent={
+        validateField('expression', value)
+          ? returnType !== 'bool'
+            ? 'info'
+            : undefined
+          : 'danger'
+      }
       flat
       isChild={isChild}
       className='expression'
@@ -224,6 +244,10 @@ export const Expression = ({
       }}
       style={{
         marginLeft: isChild ? 30 : undefined,
+        borderStyle: returnType !== 'bool' ? 'dashed' : undefined,
+      }}
+      contentStyle={{
+        overflowX: 'hidden',
       }}
     >
       <ReqoreControlGroup
@@ -233,7 +257,7 @@ export const Expression = ({
         size='normal'
       >
         {firstParamType && (
-          <ReqoreControlGroup vertical>
+          <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
             <ReqoreP
               size='tiny'
               effect={{
@@ -248,13 +272,16 @@ export const Expression = ({
             <TemplateField
               component={auto}
               minimal
+              allowFunctions
               key={firstParamType}
               type={firstParamType}
               defaultType={firstParamType}
               value={firstArgument?.value}
-              onChange={(name, value, type) => {
+              isFunction={firstArgument?.is_expression}
+              onChange={(name, value, type, isFunction) => {
+                console.log('FIRST PARAM ONCHANGE');
                 if (type !== 'any' && type !== 'auto') {
-                  updateArg(value, 0, type);
+                  updateArg(value, 0, type, isFunction);
                 }
               }}
               templates={localTemplates}
@@ -305,7 +332,9 @@ export const Expression = ({
         ) : null}
         {firstArgument?.value !== undefined &&
         firstArgument?.value !== null &&
-        validateField(firstParamType, firstArgument?.value) &&
+        validateField(firstParamType, firstArgument?.value, {
+          isFunction: firstArgument?.is_expression,
+        }) &&
         selectedExpression
           ? restOfArgs?.map((arg, index) => (
               <ReqoreControlGroup vertical>
@@ -326,23 +355,28 @@ export const Expression = ({
                     minimal
                     component={auto}
                     noSoft
+                    allowFunctions
+                    isFunction={rest[index]?.is_expression}
                     defaultType={arg.type.base_type}
-                    defaultInternalType={
-                      size(getTypesAccepted(arg.type.types_accepted)) === 1
-                        ? getTypesAccepted(arg.type.types_accepted)[0].name
-                        : rest[index]?.type || firstParamType
-                    }
-                    type={
-                      size(getTypesAccepted(arg.type.types_accepted)) === 1
-                        ? getTypesAccepted(arg.type.types_accepted)[0].name
-                        : rest[index]?.type || firstParamType
-                    }
+                    defaultInternalType={getExpressionArgumentType(
+                      arg,
+                      types.value,
+                      rest[index]?.type,
+                      firstParamType
+                    )}
+                    type={getExpressionArgumentType(
+                      arg,
+                      types.value,
+                      rest[index]?.type,
+                      firstParamType
+                    )}
                     canBeNull={false}
                     value={rest[index]?.value}
                     templates={localTemplates}
                     allowTemplates
-                    onChange={(_name, value, type) => {
-                      updateArg(value, index + 1, type);
+                    onChange={(_name, value, type, isFunction) => {
+                      console.log(index + 1, 'PARAM ONCHANGE');
+                      updateArg(value, index + 1, type, isFunction);
                     }}
                     fluid={false}
                     fixed={true}
@@ -354,16 +388,12 @@ export const Expression = ({
                       types.value
                     )}
                     showDescription={false}
-                    value={
-                      size(
-                        getTypesAccepted(arg.type.types_accepted, types.value)
-                      ) === 1
-                        ? getTypesAccepted(
-                            arg.type.types_accepted,
-                            types.value
-                          )[0].name
-                        : rest[index]?.type || firstParamType
-                    }
+                    value={getExpressionArgumentType(
+                      arg,
+                      types.value,
+                      rest[index]?.type,
+                      firstParamType
+                    )}
                     onChange={(_name, value) => {
                       updateArg(undefined, index + 1, value as IQorusType);
                     }}
@@ -376,8 +406,11 @@ export const Expression = ({
             ))
           : null}
         <ReqoreControlGroup stack>
-          {validateField(firstParamType, firstArgument?.value) &&
-          selectedExpression ? (
+          {validateField(firstParamType, firstArgument?.value, {
+            isFunction: firstArgument?.is_expression,
+          }) &&
+          selectedExpression &&
+          returnType === 'bool' ? (
             <>
               <ReqoreButton
                 flat
@@ -428,6 +461,7 @@ export const ExpressionBuilder = ({
   index = 0,
   path,
   type,
+  returnType,
   onChange,
   onValueChange,
 }: IExpressionBuilderProps) => {
@@ -547,6 +581,7 @@ export const ExpressionBuilder = ({
               index={index}
               type={type}
               onValueChange={handleChange}
+              returnType={returnType}
             />
           ))}
         </ReqoreControlGroup>
@@ -560,6 +595,7 @@ export const ExpressionBuilder = ({
       value={value}
       isChild={isChild}
       type={type}
+      returnType={returnType}
       level={level}
       path={path}
       index={index}

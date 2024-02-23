@@ -2,14 +2,16 @@ import {
   ReqoreButton,
   ReqoreControlGroup,
   ReqoreDropdown,
+  ReqoreSpinner,
   ReqoreTag,
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { useContext, useEffect, useState } from 'react';
-import { useUpdateEffect } from 'react-use';
+import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
-import { filterTemplatesByType } from '../../helpers/functions';
+import { fetchData, filterTemplatesByType } from '../../helpers/functions';
+import { ExpressionBuilder, IExpressionSchema } from '../ExpressionBuilder';
 import Auto from './auto';
 import BooleanField from './boolean';
 import DateField from './date';
@@ -63,15 +65,22 @@ export const getTemplateValue = (value?: string) => {
 export interface ITemplateFieldProps {
   value?: any;
   name?: string;
-  onChange?: (name: string, value: any, type?: IQorusType) => void;
+  onChange?: (
+    name: string,
+    value: any,
+    type?: IQorusType,
+    isFunction?: boolean
+  ) => void;
   // React element
   component?: React.FC<any>;
   interfaceContext?: string;
   allowTemplates?: boolean;
   templates?: IReqoreTextareaProps['templates'];
   componentFromType?: boolean;
-  alloweCustomValues?: boolean;
+  allowCustomValues?: boolean;
+  allowFunctions?: boolean;
   filterTemplates?: boolean;
+  isFunction?: boolean;
   [key: string]: any;
 }
 
@@ -96,11 +105,25 @@ export const TemplateField = ({
   templates,
   interfaceContext,
   allowTemplates = true,
+  allowFunctions,
   allowCustomValues = true,
   filterTemplates = true,
   componentFromType,
+  isFunction,
   ...rest
 }: ITemplateFieldProps) => {
+  const type = rest.type || rest.defaultType;
+
+  const functions = useAsyncRetry<IExpressionSchema[]>(async () => {
+    if (!allowFunctions) {
+      return [];
+    }
+
+    const data = await fetchData(`/system/expressions?return_type=${type}`);
+
+    return data.data;
+  }, [type]);
+
   const [isTemplate, setIsTemplate] = useState<boolean>(
     isValueTemplate(value) || !allowCustomValues
   );
@@ -111,7 +134,7 @@ export const TemplateField = ({
     if (isTemplate) {
       setTemplateValue(value);
     }
-  }, [value]);
+  }, [JSON.stringify(value)]);
 
   useEffect(() => {
     if (!isTemplate && isValueTemplate(value)) {
@@ -123,11 +146,9 @@ export const TemplateField = ({
   // When template key or template value change run the onChange function
   useUpdateEffect(() => {
     if (templateValue) {
-      onChange?.(name, templateValue);
+      onChange?.(name, templateValue, type, isFunction);
     }
-  }, [templateValue]);
-
-  const type = rest.type || rest.defaultType;
+  }, [JSON.stringify(templateValue)]);
 
   const showTemplateToggle =
     allowCustomValues &&
@@ -147,6 +168,14 @@ export const TemplateField = ({
 
   const Component = componentFromType ? ComponentMap[type] : Comp;
 
+  if (allowFunctions && functions.loading) {
+    return (
+      <ReqoreSpinner type={5} iconColor='info'>
+        Loading...{' '}
+      </ReqoreSpinner>
+    );
+  }
+
   if (rest.disabled) {
     if (isTemplate) {
       return (
@@ -158,6 +187,21 @@ export const TemplateField = ({
 
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
+
+  if (isFunction) {
+    return (
+      <ExpressionBuilder
+        value={value}
+        type={type}
+        returnType={type}
+        onChange={(v) => {
+          onChange(name, v, type, true);
+        }}
+      />
+    );
+  }
+
+  console.log(value);
 
   return (
     <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
@@ -238,6 +282,38 @@ export const TemplateField = ({
           ) : null}
         </ReqoreControlGroup>
       ) : null}
+
+      {allowFunctions && (
+        <ReqoreDropdown
+          items={functions.value?.map((func) => ({
+            label: func.display_name,
+            description: func.short_desc,
+            value: func.name,
+          }))}
+          className='function-selector'
+          icon='Functions'
+          onItemSelect={(item) => {
+            const func = functions.value.find((f) => f.name === item.value);
+            setIsTemplate(false);
+            setTemplateValue(null);
+
+            onChange(
+              name,
+              {
+                exp: func.name,
+                args: [
+                  {
+                    type,
+                    value,
+                  },
+                ],
+              },
+              undefined,
+              true
+            );
+          }}
+        />
+      )}
 
       {showTemplateToggle && !isTemplate ? (
         <ReqoreButton
