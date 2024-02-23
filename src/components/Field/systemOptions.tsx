@@ -489,9 +489,14 @@ const Options = ({
         ...currentValue[optionName],
         type,
         value: val,
-        is_expression: isFunction,
       },
     };
+
+    if (isFunction) {
+      updatedValue[optionName].is_expression = true;
+    } else {
+      delete updatedValue[optionName].is_expression;
+    }
 
     const meta: IOptionsOnChangeMeta = {};
 
