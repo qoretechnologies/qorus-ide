@@ -27,7 +27,10 @@ import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
 
-export const ExpressionDefaultValue: IExpression = { value: { args: [] } };
+export const ExpressionDefaultValue: IExpression = {
+  value: { args: [] },
+  is_expression: true,
+};
 export const StyledExpressionItem = styled.div`
   position: relative;
   overflow: unset;
