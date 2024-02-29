@@ -463,6 +463,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     x: number;
     y: number;
     fromState?: string | number;
+    branch?: IFSMTransition['branch'];
   }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
@@ -507,7 +508,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     y,
     onSuccess?: (stateId: string) => any,
     isInjectedTriggerState?: boolean,
-    fromState?: string
+    fromState?: string,
+    branch?: IFSMTransition['branch']
   ) => {
     const parentStateId = parseInt(parentStateName) || 0;
     const generatedId = shortid.generate();
@@ -527,6 +529,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           ...(newStates[fromState].transitions || []),
           {
             state: id,
+            branch,
           },
         ];
 
@@ -1366,9 +1369,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const handleNewStateClick = useCallback(
-    (id) => {
+    (id: string, branch: IFSMTransition['branch']) => {
       const onConfirm = () => {
-        setIsAddingNewStateAt({ x: 0, y: 0, fromState: id });
+        setIsAddingNewStateAt({ x: 0, y: 0, fromState: id, branch });
       };
 
       if (hasUnsavedState) {
@@ -2294,7 +2297,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 isFirstTriggerState ? 50 : y,
                 undefined,
                 undefined,
-                addingNewStateAt.fromState
+                addingNewStateAt.fromState,
+                addingNewStateAt.branch
               );
 
               setIsAddingNewStateAt(undefined);
@@ -2658,6 +2662,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             label: 'Test run',
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
+            className: 'fsm-test-run',
             icon: 'PlayLine',
             effect: PositiveColorEffect,
           },

@@ -76,6 +76,7 @@ export interface IExpression {
   value?: IExpressionValue | any;
   type?: IQorusType;
   is_expression?: boolean;
+  required?: boolean;
 }
 
 export type TExpressionSchemaArg = Omit<IOptionsSchemaArg, 'type'> & {
@@ -179,13 +180,24 @@ export const Expression = ({
   };
 
   const updateExp = (val: string) => {
+    const args = [value.value.args[0]];
+
+    // Check if this expression has variable arguments
+    const selectedExpression = expressions.value?.find(
+      (exp) => exp.name === val
+    );
+
+    if (selectedExpression.varargs) {
+      args.push({});
+    }
+
     onValueChange(
       {
         ...value,
         value: {
           ...value.value,
           exp: val,
-          args: [value.value.args[0]],
+          args,
         },
       },
       path
@@ -205,11 +217,27 @@ export const Expression = ({
     );
   };
 
+  const removeVarArg = (index: number) => {
+    const args = value.value.args.filter((_, i) => i !== index);
+
+    onValueChange(
+      {
+        ...value,
+        value: {
+          ...value.value,
+          args,
+        },
+      },
+      path
+    );
+  };
+
   const updateArg = (
-    val: string | number | boolean,
+    val: any,
     index: number = 0,
     type?: IQorusType,
-    isFunction?: boolean
+    isFunction?: boolean,
+    isRequired?: boolean
   ) => {
     const args = clone(value.value.args);
 
@@ -218,6 +246,7 @@ export const Expression = ({
       value: val,
       type: type || args[index]?.type,
       is_expression: isFunction,
+      required: isRequired,
     };
 
     onValueChange(
@@ -239,7 +268,16 @@ export const Expression = ({
   const selectedExpression = expressions.value?.find(
     (exp) => exp.name === value.value.exp
   );
-  const restOfArgs = selectedExpression?.args.slice(1);
+  let restOfArgs = selectedExpression?.args.slice(1);
+
+  if (selectedExpression?.varargs) {
+    restOfArgs = [
+      ...restOfArgs,
+      ...rest.map(() => ({
+        ...selectedExpression.args[0],
+      })),
+    ];
+  }
 
   return (
     <StyledExpressionItem
@@ -322,7 +360,6 @@ export const Expression = ({
         />
         {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
           <Select
-            minimal
             flat
             className='expression-operator-selector'
             value={value?.value?.exp}
@@ -351,7 +388,11 @@ export const Expression = ({
         }) &&
         selectedExpression
           ? restOfArgs?.map((arg, index) => (
-              <ReqoreControlGroup vertical>
+              <ReqoreControlGroup
+                vertical
+                key={`${value?.value.exp}${index}-group`}
+                wrap
+              >
                 <ReqoreP
                   size='tiny'
                   effect={{
@@ -363,7 +404,7 @@ export const Expression = ({
                 >
                   {arg.display_name}
                 </ReqoreP>
-                <ReqoreControlGroup>
+                <ReqoreControlGroup verticalAlign='flex-end'>
                   <TemplateField
                     key={`${value?.value.exp}${index}`}
                     minimal
@@ -385,15 +426,37 @@ export const Expression = ({
                       firstParamType
                     )}
                     canBeNull={false}
-                    value={rest[index]?.value}
+                    value={rest[index]?.value || arg.default_value}
                     templates={localTemplates}
                     allowTemplates
                     onChange={(_name, value, type, isFunction) => {
-                      updateArg(value, index + 1, type, isFunction);
+                      updateArg(
+                        value,
+                        index + 1,
+                        type,
+                        isFunction,
+                        arg.required
+                      );
                     }}
                     fluid={false}
                     fixed={true}
                   />
+                  {selectedExpression.varargs && size(rest) > 1 ? (
+                    <ReqoreButton
+                      flat
+                      compact
+                      customTheme={{
+                        main: 'warning:darken:1:0.5',
+                      }}
+                      fixed
+                      className='expression-remove-arg'
+                      icon='CloseLine'
+                      tooltip='Remove argument'
+                      onClick={() => {
+                        removeVarArg(index + 1);
+                      }}
+                    />
+                  ) : null}
                   <Select
                     name='type'
                     defaultItems={getTypesAccepted(
@@ -418,6 +481,24 @@ export const Expression = ({
               </ReqoreControlGroup>
             ))
           : null}
+        {selectedExpression?.varargs && (
+          <ReqoreButton
+            flat
+            compact
+            className='expression-add-arg'
+            tooltip='Add argument'
+            icon='AddLine'
+            fixed
+            onClick={() => {
+              updateArg(
+                undefined,
+                size(value.value.args),
+                firstParamType,
+                false
+              );
+            }}
+          />
+        )}
         <ReqoreControlGroup stack>
           {validateField(firstParamType, firstArgument?.value, {
             isFunction: firstArgument?.is_expression,

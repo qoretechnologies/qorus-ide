@@ -776,6 +776,10 @@ export const validateField: (
       }
 
       if (castedValue.type) {
+        if (!castedValue.required && !castedValue.value) {
+          return true;
+        }
+
         return validateField(castedValue.type, castedValue.value, {
           has_to_have_value: true,
           isFunction: castedValue.is_expression,

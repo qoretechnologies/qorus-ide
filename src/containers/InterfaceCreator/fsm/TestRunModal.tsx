@@ -9,7 +9,7 @@ import { map, size } from 'lodash';
 import { useAsyncRetry } from 'react-use';
 import { IFSMMetadata, IFSMStates } from '.';
 import { IApp } from '../../../components/AppCatalogue';
-import { getAppAndAction } from '../../../helpers/fsm';
+import { getAppAndAction, getBuiltInAppAndAction } from '../../../helpers/fsm';
 import { fetchData } from '../../../helpers/functions';
 
 export interface IQodexTestRunModalProps {
@@ -90,11 +90,15 @@ export const QodexTestRunModal = ({
       items={map(
         responseList,
         ({ success, key, response }, index): IReqoreCollectionItemProps => {
-          const { app } = getAppAndAction(
+          let { app } = getAppAndAction(
             apps,
-            data.states[key].action.value.app,
-            data.states[key].action.value.action
+            data.states[key].action?.value?.app,
+            data.states[key].action?.value?.action
           );
+
+          if (!app) {
+            ({ app } = getBuiltInAppAndAction(apps, data.states[key].type));
+          }
 
           return {
             label: `[${size(responseList) - index}] ${data.states[key].name}`,

@@ -418,3 +418,113 @@ export const NewExpression: Story = {
     );
   },
 };
+
+export const ExpressionWithIntReturnType: Story = {
+  args: {
+    type: 'int',
+    returnType: 'int',
+    value: {
+      value: {
+        exp: 'PLUS-INT',
+        args: [
+          {
+            type: 'int',
+            value: '$local:id',
+          },
+          {
+            type: 'int',
+            value: 20,
+          },
+          {
+            type: 'int',
+            value: '$local:time',
+          },
+          {
+            type: 'int',
+            value: 10,
+          },
+        ],
+      },
+      is_expression: true,
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.expression .template-remove')
+        ).toHaveLength(2),
+      { timeout: 10000 }
+    );
+  },
+};
+
+export const VariableArgumentsCanBeRemoved: Story = {
+  ...ExpressionWithIntReturnType,
+  play: async ({ canvasElement, ...rest }) => {
+    await ExpressionWithIntReturnType.play({ canvasElement, ...rest });
+
+    await fireEvent.click(document.querySelector('.expression-remove-arg'));
+
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.expression-remove-arg')
+        ).toHaveLength(2),
+      { timeout: 10000 }
+    );
+  },
+};
+
+export const VariableArgumentsCanBeAdded: Story = {
+  ...ExpressionWithIntReturnType,
+  play: async ({ canvasElement, ...rest }) => {
+    await ExpressionWithIntReturnType.play({ canvasElement, ...rest });
+
+    await fireEvent.click(document.querySelector('.expression-remove-arg'));
+
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.expression-remove-arg')
+        ).toHaveLength(2),
+      { timeout: 10000 }
+    );
+
+    await fireEvent.click(document.querySelector('.expression-add-arg'));
+
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.expression-remove-arg')
+        ).toHaveLength(3),
+      { timeout: 10000 }
+    );
+  },
+};
+
+export const FunctionsInsideExpression: Story = {
+  ...NewExpression,
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await NewExpression.play({ canvasElement, ...rest });
+
+    await sleep(300);
+
+    await fireEvent.click(document.querySelector('.function-selector'));
+    await waitFor(() => fireEvent.click(canvas.queryAllByText(/substr/)[0]), {
+      timeout: 10000,
+    });
+    await waitFor(
+      () => expect(document.querySelectorAll('.reqore-input')).toHaveLength(2),
+      {
+        timeout: 10000,
+      }
+    );
+
+    await fireEvent.change(document.querySelectorAll('.reqore-input')[0], {
+      target: { value: 10 },
+    });
+  },
+};

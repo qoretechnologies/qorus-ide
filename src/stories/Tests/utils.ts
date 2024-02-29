@@ -122,22 +122,30 @@ export async function _testsManageVariableFromCatalogue(variableName: string) {
 }
 
 export async function _testsSelectAppOrAction(canvas, appOrAction: string) {
-  await waitFor(() => canvas.getByText(appOrAction, { selector: 'h4' }), {
-    timeout: 10000,
-  });
-  await fireEvent.click(canvas.getByText(appOrAction, { selector: 'h4' }));
+  await waitFor(
+    () => canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' }),
+    {
+      timeout: 10000,
+    }
+  );
+  await fireEvent.click(
+    canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' })
+  );
 }
 
 export async function _testsOpenAppCatalogueFromState(
-  stateId?: number | string
+  stateId?: number | string,
+  branch?: 'true' | 'false'
 ) {
+  const className = `.add-new-state-after${branch ? `-${branch}` : ''}`;
+
   if (!stateId) {
-    await fireEvent.click(document.querySelector('.add-new-state-after'));
+    await fireEvent.click(document.querySelector(className));
     return;
   }
 
   await fireEvent.click(
-    document.querySelector(`#state-${stateId} .add-new-state-after`)
+    document.querySelector(`#state-${stateId} ${className}`)
   );
 }
 
@@ -179,10 +187,11 @@ export async function _testsAddNewState(
   wrapperId?: string,
   x?: number,
   y?: number,
-  stateId?: number | string
+  stateId?: number | string,
+  branch?: 'true' | 'false'
 ) {
   if (stateId || stateId === 0) {
-    await _testsOpenAppCatalogueFromState(stateId);
+    await _testsOpenAppCatalogueFromState(stateId, branch);
   } else {
     await _testsOpenAppCatalogue(wrapperId, x, y);
   }

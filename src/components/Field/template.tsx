@@ -208,7 +208,7 @@ export const TemplateField = ({
           ) => {
             onChange(
               name,
-              expressionValue || value?.args[0]?.value,
+              expressionValue?.value || value?.args[0]?.value,
               type,
               !remove
             );
@@ -219,7 +219,12 @@ export const TemplateField = ({
   }
 
   return (
-    <ReqoreControlGroup fluid={rest.fluid} fixed={rest.fixed} size={rest.size}>
+    <ReqoreControlGroup
+      fluid={rest.fluid}
+      fixed={rest.fixed}
+      size={rest.size}
+      stack={rest.stack}
+    >
       {!isTemplate && (
         <Component
           value={value}
@@ -315,15 +320,13 @@ export const TemplateField = ({
             onChange(
               name,
               {
-                value: {
-                  exp: func.name,
-                  args: [
-                    {
-                      type,
-                      value,
-                    },
-                  ],
-                },
+                exp: func.name,
+                args: [
+                  {
+                    type,
+                    value,
+                  },
+                ],
               },
               undefined,
               true

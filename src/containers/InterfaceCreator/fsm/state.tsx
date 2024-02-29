@@ -26,7 +26,12 @@ import React, {
   useState,
 } from 'react';
 import styled, { css } from 'styled-components';
-import { IFSMState, TAppAndAction, TVariableActionValue } from '.';
+import {
+  IFSMState,
+  IFSMTransition,
+  TAppAndAction,
+  TVariableActionValue,
+} from '.';
 import { IApp } from '../../../components/AppCatalogue';
 import {
   NegativeColorEffect,
@@ -47,7 +52,7 @@ export interface IFSMStateProps extends IFSMState {
   onDeleteClick: (id: string) => any;
   onUpdate: (id: string, data: any) => any;
   onTransitionOrderClick: (id: string) => any;
-  onNewStateClick: (id: string) => any;
+  onNewStateClick: (id: string, branch?: IFSMTransition['branch']) => any;
   onSelect: (id: string, fromMouseDown?: boolean) => void;
   startTransitionDrag: (id: string) => any;
   stopTransitionDrag: (id: string) => any;
@@ -124,17 +129,13 @@ export const StyledStateTextWrapper = styled.div`
   flex-flow: column;
 `;
 
-const StyledAddNewStatebutton: React.FC<IReqoreButtonProps> = styled(
-  ReqoreButton
+const StyledAddNewStateGroup: React.FC<IReqoreButtonProps> = styled(
+  ReqoreControlGroup
 )`
   position: absolute;
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-
-  &:active {
-    transform: translateX(-50%) scale(0.97) !important;
-  }
 `;
 
 export const STATE_WIDTH = 350;
@@ -772,25 +773,74 @@ const FSMState: React.FC<IFSMStateProps> = ({
             }}
           />
         </ReqoreControlGroup>
-        <StyledAddNewStatebutton
-          size='small'
-          customTheme={{
-            main: is_event_trigger
-              ? 'success:darken'
-              : getStateCategory(action?.type || type) !== 'action'
-              ? '#6f1977'
-              : 'info',
-          }}
-          className='add-new-state-after'
-          icon='AddLine'
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onNewStateClick?.(id);
-          }}
-        />
+        <StyledAddNewStateGroup>
+          {type !== 'if' && (
+            <ReqoreButton
+              compact
+              size='small'
+              customTheme={{
+                main: is_event_trigger
+                  ? 'success:darken'
+                  : getStateCategory(action?.type || type) !== 'action'
+                  ? '#6f1977'
+                  : 'info',
+              }}
+              className='add-new-state-after'
+              icon='AddLine'
+              onMouseDown={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNewStateClick?.(id);
+              }}
+            />
+          )}
+          {type === 'if' && (
+            <>
+              <ReqoreButton
+                effect={{
+                  uppercase: true,
+                  weight: 'thick',
+                  spaced: 2,
+                  glow: {
+                    color: 'success:lighten',
+                    size: 2,
+                    inset: true,
+                    blur: 5,
+                  },
+                }}
+                className='add-new-state-after-true'
+                customTheme={{
+                  main: '#6f1977',
+                }}
+                size='small'
+                icon='CheckLine'
+                onClick={() => onNewStateClick?.(id, 'true')}
+              />
+              <ReqoreButton
+                effect={{
+                  uppercase: true,
+                  weight: 'thick',
+                  spaced: 2,
+                  glow: {
+                    color: 'danger',
+                    size: 2,
+                    inset: true,
+                    blur: 5,
+                  },
+                }}
+                className='add-new-state-after-false'
+                customTheme={{
+                  main: '#6f1977',
+                }}
+                size='small'
+                icon='Spam3Fill'
+                onClick={() => onNewStateClick?.(id, 'false')}
+              />
+            </>
+          )}
+        </StyledAddNewStateGroup>
       </StyledFSMState>
     </>
   );

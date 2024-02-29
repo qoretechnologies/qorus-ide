@@ -414,12 +414,14 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
         {
           label: t('Reset'),
           icon: 'HistoryLine',
+          className: 'fsm-reset-transitions',
           tooltip: t('ResetTooltip'),
           onClick: () => setNewData(getTransitionFromStates()),
         },
         {
           label: t('Submit'),
           disabled: !isDataValid(),
+          className: 'fsm-save-transitions',
           icon: 'CheckLine',
           effect: SaveColorEffect,
           onClick: handleSubmitClick,
@@ -446,6 +448,7 @@ const FSMTransitionDialog: React.FC<IFSMTransitionDialogProps> = ({
                     {
                       intent: 'danger',
                       icon: 'DeleteBinLine',
+                      className: 'fsm-delete-transition',
                       onClick: () => {
                         removeTransition(id);
                       },
