@@ -594,26 +594,35 @@ function AutoField<T = any>({
       : DefaultNoSoftTypes);
 
   if (arg_schema) {
-    <div
-      style={{
-        flexFlow: column || arg_schema ? 'column' : 'row',
-        marginLeft: 10 * level,
-        overflow: 'hidden',
-        flex: '1 1 auto',
-        maxHeight: level === 0 ? '500px' : undefined,
-        overflowY: level === 0 ? 'auto' : undefined,
-      }}
-    >
-      {renderField(currentInternalType)}
-    </div>;
+    return (
+      <div
+        className='auto-field-schema-wrapper'
+        style={{
+          flexFlow: column || arg_schema ? 'column' : 'row',
+          marginLeft: 10 * level,
+          overflow: 'hidden',
+          flex: '1 1 auto',
+          maxHeight: level === 0 ? '500px' : undefined,
+          overflowY: level === 0 ? 'auto' : undefined,
+        }}
+      >
+        {renderField(currentInternalType)}
+      </div>
+    );
   }
 
   // Render type picker if the type is auto or any
   return (
-    <ReqoreControlGroup fill={rest.fill} fluid={rest.fluid} fixed={rest.fixed}>
-      <ReqoreControlGroup vertical>
+    <ReqoreControlGroup
+      fill={rest.fill}
+      fluid={rest.fluid}
+      fixed={rest.fixed}
+      className='auto-field-group'
+    >
+      <ReqoreControlGroup vertical fluid>
         {showPicker && (
           <SelectField
+            fixed
             flat
             minimal={rest.minimal}
             size={rest.size}

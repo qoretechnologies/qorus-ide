@@ -333,7 +333,13 @@ export const Expression = ({
               isFunction={firstArgument?.is_expression}
               onChange={(name, value, type, isFunction) => {
                 if (type !== 'any' && type !== 'auto') {
-                  updateArg(value, 0, type, isFunction);
+                  updateArg(
+                    value,
+                    0,
+                    type,
+                    isFunction,
+                    selectedExpression?.args?.[0]?.required
+                  );
                 }
               }}
               templates={localTemplates}
