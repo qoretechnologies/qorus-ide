@@ -31,6 +31,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDebounce, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -388,6 +389,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     ...init
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
+  const params = useParams();
 
   parentStateName = parentStateName?.replace(/ /g, '-');
 
@@ -754,14 +756,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
-
-      if (!size(states)) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
-      }
     } else {
       setInterfaceId(defaultInterfaceId);
     }
   });
+
+  useEffect(() => {
+    if (isReady) {
+      if (!params?.id) {
+        setIsAddingNewStateAt({ x: 0, y: 0 });
+      }
+    }
+  }, [isReady]);
 
   useDebounce(
     async () => {

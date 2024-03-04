@@ -22,7 +22,6 @@ import {
 import { connect } from 'react-redux';
 import { useEffectOnce, useMount, useUnmount } from 'react-use';
 import compose from 'recompose/compose';
-import { createGlobalStyle } from 'styled-components';
 import packageJson from '../package.json';
 import ContextMenu from './components/ContextMenu';
 import Loader from './components/Loader';
@@ -64,25 +63,9 @@ import { LoginContainer } from './login/Login';
 import ProjectConfig from './project_config/ProjectConfig';
 import SourceDirectories from './project_config/sourceDirs';
 import { DraftsProvider } from './providers/Drafts';
+import { URLHandler } from './providers/URLHandler';
 import { ReleasePackageContainer as ReleasePackage } from './release_package/ReleasePackage';
 import { Dashboard } from './views/dashboard';
-
-const GlobalStyle = createGlobalStyle`
-  html, body, #root {
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
-
-  .reqore-tree, .reqore-tree-textarea {
-    height: 100%;
-  }
-
-  .color-picker {
-    background-color: transparent !important;
-  }
-`;
 
 export interface IApp {
   addMessageListener: TMessageListener;
@@ -284,7 +267,6 @@ const App: FunctionComponent<IApp> = ({
   if (!t || isLoading) {
     return (
       <>
-        <GlobalStyle />
         <Loader text='Loading app...' centered />;
       </>
     );
@@ -292,7 +274,7 @@ const App: FunctionComponent<IApp> = ({
 
   return (
     <>
-      <GlobalStyle />
+      <URLHandler />
       <DraftsProvider>
         <ContextMenuContext.Provider
           value={{

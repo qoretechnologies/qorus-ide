@@ -6,7 +6,14 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import {
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from 'react-router-dom';
 import { createStore } from 'redux';
+import { createGlobalStyle } from 'styled-components';
 import AppContainer from './App';
 import reducer from './reducers';
 
@@ -15,6 +22,23 @@ require('./fonts/NeoLight.ttf');
 const store = createStore(reducer);
 
 const root = createRoot(document.getElementById('root'));
+
+const GlobalStyle = createGlobalStyle`
+  html, body, #root {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  .reqore-tree, .reqore-tree-textarea {
+    height: 100%;
+  }
+
+  .color-picker {
+    background-color: transparent !important;
+  }
+`;
 
 export const ReqoreWrapper = ({
   reqoreOptions,
@@ -49,10 +73,17 @@ export const ReqoreWrapper = ({
   );
 };
 
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/:tab?/:subtab?/:id?' element={<ReqoreWrapper />} />
+  )
+);
+
 root.render(
   <DndProvider backend={HTML5Backend}>
+    <GlobalStyle />
     <Provider store={store}>
-      <ReqoreWrapper />
+      <RouterProvider router={router} />
     </Provider>
   </DndProvider>
 );

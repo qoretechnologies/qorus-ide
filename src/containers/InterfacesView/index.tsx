@@ -10,14 +10,20 @@ import { useMount } from 'react-use';
 import { PositiveColorEffect } from '../../components/Field/multiPair';
 import { IField } from '../../components/FieldWrapper';
 import Loader from '../../components/Loader';
-import { interfaceIcons, interfaceKindToName } from '../../constants/interfaces';
+import {
+  interfaceIcons,
+  interfaceKindToName,
+} from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { callBackendBasic } from '../../helpers/functions';
 import { IClassConnections } from '../ClassConnectionsManager';
 import { IConnection } from '../InterfaceCreator/connection';
 import { IFSMMetadata, IFSMStates } from '../InterfaceCreator/fsm';
-import { IPipelineElement, IPipelineMetadata } from '../InterfaceCreator/pipeline';
+import {
+  IPipelineElement,
+  IPipelineMetadata,
+} from '../InterfaceCreator/pipeline';
 import { InterfacesViewCollection } from './collection';
 
 export interface IQorusInterface extends Partial<IDraftData> {
@@ -39,7 +45,10 @@ export interface IQorusInterface extends Partial<IDraftData> {
   date?: string;
 }
 
-export type TQorusInterfaceCount = Record<string, { items: number; drafts: number }>;
+export type TQorusInterfaceCount = Record<
+  string,
+  { items: number; drafts: number }
+>;
 
 export interface IDraftData {
   interfaceKind: string;
@@ -75,13 +84,14 @@ export interface IDraftData {
 export interface IQorusInterfacesViewProps {}
 
 export const InterfacesView = () => {
-  const { qorus_instance, subtab, changeTab, is_hosted_instance } = useContext(InitialContext);
+  const { qorus_instance, subtab, changeTab, is_hosted_instance } =
+    useContext(InitialContext);
   const [items, setItems] = useState<TQorusInterfaceCount>(null);
-  const [type, setType] = useState(subtab || 'class');
+  const [type, setType] = useState(subtab || 'fsm');
   const [zoom, setZoom] = useState(0.5);
 
   useEffect(() => {
-    setType(subtab || 'class');
+    setType(subtab || 'fsm');
   }, [subtab]);
 
   useMount(() => {
@@ -100,7 +110,7 @@ export const InterfacesView = () => {
   });
 
   if (!items) {
-    return <Loader text="Loading interfaces" />;
+    return <Loader text='Loading interfaces' />;
   }
 
   return (
@@ -118,7 +128,7 @@ export const InterfacesView = () => {
         paddingBottom: 0,
       }}
     >
-      <ReqoreMenu transparent width="250px">
+      <ReqoreMenu transparent width='250px'>
         {map(items, (data, iface) => (
           <ReqoreMenuItem
             key={iface}

@@ -21,10 +21,8 @@ import {
   interfaceKindTransform,
   interfaceToPlural,
 } from '../../constants/interfaces';
-import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
-import { postMessage } from '../../hocomponents/withMessageHandler';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 import { zoomToSize, zoomToWidth } from '../ConfigItemManager/table';
 import { InterfacesViewItem } from './item';
@@ -150,15 +148,7 @@ export const InterfacesViewCollection = ({
                 id: rest.id,
               });
             } else {
-              postMessage(
-                Messages.GET_INTERFACE_DATA,
-                {
-                  type,
-                  id: data?.id,
-                  include_tabs: true,
-                },
-                true
-              );
+              changeTab('CreateInterface', type, data?.id);
             }
           },
           actions: [
