@@ -110,6 +110,7 @@ export interface IExpressionBuilderProps {
   path?: string;
   index?: number;
   returnType?: IQorusType;
+  group?: 'AND' | 'OR';
   onChange?: (value: IExpression, remove?: boolean) => void;
   onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
 }
@@ -125,6 +126,7 @@ export const Expression = ({
   path,
   onValueChange,
   returnType = 'bool',
+  group,
 }: IExpressionProps) => {
   const types = useQorusTypes();
   const theme = useReqoreTheme();
@@ -512,28 +514,32 @@ export const Expression = ({
           selectedExpression &&
           returnType === 'bool' ? (
             <>
-              <ReqoreButton
-                flat
-                className='expression-and'
-                compact
-                label='AND'
-                textAlign='center'
-                icon='AddLine'
-                fixed
-                onClick={() => {
-                  updateExpToAndOr('AND');
-                }}
-              />
-              <ReqoreButton
-                flat
-                compact
-                className='expression-or'
-                label='OR'
-                textAlign='center'
-                icon='AddLine'
-                fixed
-                onClick={() => updateExpToAndOr('OR')}
-              />
+              {!group || group === 'OR' ? (
+                <ReqoreButton
+                  flat
+                  className='expression-and'
+                  compact
+                  label='AND'
+                  textAlign='center'
+                  icon='AddLine'
+                  fixed
+                  onClick={() => {
+                    updateExpToAndOr('AND');
+                  }}
+                />
+              ) : null}
+              {!group || group === 'AND' ? (
+                <ReqoreButton
+                  flat
+                  compact
+                  className='expression-or'
+                  label='OR'
+                  textAlign='center'
+                  icon='AddLine'
+                  fixed
+                  onClick={() => updateExpToAndOr('OR')}
+                />
+              ) : null}
             </>
           ) : null}
           <ReqoreButton
@@ -561,6 +567,7 @@ export const ExpressionBuilder = ({
   path,
   type,
   returnType,
+  group,
   onChange,
   onValueChange,
 }: IExpressionBuilderProps) => {
@@ -684,6 +691,7 @@ export const ExpressionBuilder = ({
               type={type}
               onValueChange={handleChange}
               returnType={returnType}
+              group={value.value.exp}
             />
           ))}
         </ReqoreControlGroup>
@@ -702,6 +710,7 @@ export const ExpressionBuilder = ({
       path={path}
       index={index}
       onValueChange={handleChange}
+      group={group}
     />
   );
 };
