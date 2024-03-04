@@ -38,6 +38,7 @@ import shortid from 'shortid';
 import styled, { css, keyframes } from 'styled-components';
 import Content from '../../../components/Content';
 import { DragSelectArea } from '../../../components/DragSelectArea';
+import { IExpression } from '../../../components/ExpressionBuilder';
 import { IProviderType } from '../../../components/Field/connectors';
 import {
   PositiveColorEffect,
@@ -143,9 +144,7 @@ export interface IDraggableItem {
 export interface IFSMTransition {
   state?: string;
   fsm?: number;
-  condition?: {
-    type: string;
-  };
+  condition?: string | IExpression;
   language?: string;
   fake?: boolean;
   errors?: string[];
@@ -464,6 +463,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     x: number;
     y: number;
     fromState?: string | number;
+    branch?: IFSMTransition['branch'];
   }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
@@ -508,7 +508,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     y,
     onSuccess?: (stateId: string) => any,
     isInjectedTriggerState?: boolean,
-    fromState?: string
+    fromState?: string,
+    branch?: IFSMTransition['branch']
   ) => {
     const parentStateId = parseInt(parentStateName) || 0;
     const generatedId = shortid.generate();
@@ -528,6 +529,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           ...(newStates[fromState].transitions || []),
           {
             state: id,
+            branch,
           },
         ];
 
@@ -563,7 +565,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               : undefined,
           id,
           states: item.name === 'block' ? {} : undefined,
-          condition: item.name === 'if' ? '' : undefined,
+          condition: undefined,
           action:
             item.name === 'state'
               ? {
@@ -1367,9 +1369,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const handleNewStateClick = useCallback(
-    (id) => {
+    (id: string, branch: IFSMTransition['branch']) => {
       const onConfirm = () => {
-        setIsAddingNewStateAt({ x: 0, y: 0, fromState: id });
+        setIsAddingNewStateAt({ x: 0, y: 0, fromState: id, branch });
       };
 
       if (hasUnsavedState) {
@@ -1769,6 +1771,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     const startStateData = getStateBoundingRect(startStateId);
     const endStateData = getStateBoundingRect(endStateId);
 
+    if (endStateData.width === 0) {
+      endStateData.width = STATE_WIDTH;
+      endStateData.height = 120;
+    }
+
     const endOfStartState = x1 + startStateData.width;
     const endOfEndState = x2 + endStateData.width;
 
@@ -1817,6 +1824,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   ): string => {
     const startStateData = getStateBoundingRect(startStateId);
     const endStateData = getStateBoundingRect(endStateId);
+
+    if (endStateData.width === 0) {
+      endStateData.width = STATE_WIDTH;
+      endStateData.height = 120;
+    }
+
     const linesGap = (startStateData.height * 0.9) / startStateCountPerSide;
     const endLinesGap = (endStateData.height * 0.9) / endStateCountPerSide;
 
@@ -2284,7 +2297,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 isFirstTriggerState ? 50 : y,
                 undefined,
                 undefined,
-                addingNewStateAt.fromState
+                addingNewStateAt.fromState,
+                addingNewStateAt.branch
               );
 
               setIsAddingNewStateAt(undefined);
@@ -2648,6 +2662,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             label: 'Test run',
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
+            className: 'fsm-test-run',
             icon: 'PlayLine',
             effect: PositiveColorEffect,
           },
@@ -3116,7 +3131,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                     return result;
                                   });
                                 }}
-                                key={index}
+                                key={Date.now()}
                                 name={`fsm-transition${
                                   isError
                                     ? '-error'

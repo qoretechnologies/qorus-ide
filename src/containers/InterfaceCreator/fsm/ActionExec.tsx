@@ -90,7 +90,7 @@ export const QodexActionExec = memo(
       if (areOptionsValid() && action.action_code_str === 'EVENT') {
         executeAction();
       }
-    }, [JSON.stringify(data)]);
+    }, [JSON.stringify(data), JSON.stringify(options)]);
 
     if (loading) {
       return (

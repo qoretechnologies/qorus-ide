@@ -1,5 +1,12 @@
-import { ReqoreButton, ReqoreControlGroup, ReqoreMultiSelect } from '@qoretechnologies/reqore';
-import { TReqoreMultiSelectItem } from '@qoretechnologies/reqore/dist/components/MultiSelect';
+import {
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreMultiSelect,
+} from '@qoretechnologies/reqore';
+import {
+  IReqoreMultiSelectProps,
+  TReqoreMultiSelectItem,
+} from '@qoretechnologies/reqore/dist/components/MultiSelect';
 import { FunctionComponent, useMemo, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -7,10 +14,8 @@ import { TTranslator } from '../../App';
 import { submitControl } from '../../containers/InterfaceCreator/controls';
 import withMapperConsumer from '../../hocomponents/withMapperConsumer';
 import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-    addMessageListener,
-    postMessage,
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import CustomDialog from '../CustomDialog';
@@ -19,25 +24,34 @@ import { IField, IFieldChange } from '../FieldWrapper';
 import { PositiveColorEffect } from './multiPair';
 import String from './string';
 
-export interface IMultiSelectField {
-  get_message: { action: string; object_type: string; useWebSocket?: boolean };
-  return_message: {
+export type TMultiSelectItem = TReqoreMultiSelectItem & {
+  short_desc?: string;
+  display_name?: string;
+  name: string;
+  value: string;
+};
+
+export interface IMultiSelectField
+  extends IField,
+    Partial<Omit<IReqoreMultiSelectProps, 'onChange' | 'value' | 'items'>> {
+  get_message?: { action: string; object_type: string; useWebSocket?: boolean };
+  return_message?: {
     action: string;
     object_type: string;
     return_value: string;
     useWebSocket?: boolean;
   };
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   name: string;
-  t: TTranslator;
-  simple: boolean;
-  activeId: number;
-  default_items?: [];
+  t?: TTranslator;
+  simple?: boolean;
+  default_items?: TMultiSelectItem[];
   canEdit?: boolean;
+  context?: any;
 }
 
-const MultiSelectField: FunctionComponent<IMultiSelectField & IField & IFieldChange> = ({
+const MultiSelectField: FunctionComponent<
+  IMultiSelectField & IField & IFieldChange
+> = ({
   get_message,
   return_message,
   onChange,
@@ -45,18 +59,17 @@ const MultiSelectField: FunctionComponent<IMultiSelectField & IField & IFieldCha
   value = [],
   t,
   simple,
-  activeId,
   default_items,
-  removeCodeFromRelations,
   canEdit,
   reference,
   context,
+  ...rest
 }) => {
-  const [items, setItems] = useState<any[]>(default_items || []);
+  const [items, setItems] = useState<TMultiSelectItem[]>(default_items || []);
   const [editorManager, setEditorManager] = useState<any>({});
 
   useMount(() => {
-    if (!simple) {
+    if (get_message?.action) {
       postMessage(
         get_message.action,
         { object_type: get_message.object_type },
@@ -139,11 +152,12 @@ const MultiSelectField: FunctionComponent<IMultiSelectField & IField & IFieldCha
   canEdit = !!reference || canEdit;
 
   const val = useMemo(
-    () => value.map((item: any) => (typeof item === 'object' ? item.name : item)),
+    () =>
+      value.map((item: any) => (typeof item === 'object' ? item.name : item)),
     [value]
   );
 
-  const _items = useMemo(
+  const _items: TMultiSelectItem[] = useMemo(
     () => [
       ...items,
       ...val
@@ -172,28 +186,35 @@ const MultiSelectField: FunctionComponent<IMultiSelectField & IField & IFieldCha
               onClose={() => setEditorManager({})}
               isOpen
               bottomActions={[
-                submitControl(() => handleSaveTagEdit(), { disabled: editorManager.value === '' }),
+                submitControl(() => handleSaveTagEdit(), {
+                  disabled: editorManager.value === '',
+                }),
               ]}
             >
               <String
                 fill
-                name="edit"
+                name='edit'
                 value={editorManager.value}
-                onChange={(_name, v) => setEditorManager({ ...editorManager, value: v })}
+                onChange={(_name, v) =>
+                  setEditorManager({ ...editorManager, value: v })
+                }
               />
             </CustomDialog>
           )}
           <ReqoreControlGroup fluid fill>
             <ReqoreMultiSelect
+              {...rest}
               items={_items.map(
                 (item): TReqoreMultiSelectItem => ({
+                  ...item,
                   value: item.name,
+                  description: item.short_desc,
                 })
               )}
               enterKeySelects
               canCreateItems={!reference}
               canRemoveItems
-              onItemClickIcon="EditLine"
+              onItemClickIcon='EditLine'
               onValueChange={(newValue) => {
                 setSelectedItems(newValue);
               }}
@@ -214,7 +235,7 @@ const MultiSelectField: FunctionComponent<IMultiSelectField & IField & IFieldCha
               <ReqoreButton
                 fixed
                 tooltip={t('CreateAndAddNewItem')}
-                icon="AddLine"
+                icon='AddLine'
                 effect={PositiveColorEffect}
                 onClick={() => onCreateClick(reference, handleSaveTagCreate)}
               />
@@ -230,4 +251,4 @@ export default compose(
   withTextContext(),
   withMessageHandler(),
   withMapperConsumer()
-)(MultiSelectField);
+)(MultiSelectField) as FunctionComponent<IMultiSelectField & IField>;

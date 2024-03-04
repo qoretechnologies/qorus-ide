@@ -35,6 +35,7 @@ import {
 } from '../../helpers/validations';
 import { useTemplates } from '../../hooks/useTemplates';
 import { Description } from '../Description';
+import { IExpression } from '../ExpressionBuilder';
 import AutoField from './auto';
 import { NegativeColorEffect, PositiveColorEffect } from './multiPair';
 import { OptionFieldMessages } from './optionFieldMessages';
@@ -94,6 +95,7 @@ export const fixOptions = (
       (option.required && !fixedValue[name])
     ) {
       fixedValue[name] = {
+        is_expression: fixedValue[name]?.is_expression,
         type: getType(option.type, operators, fixedValue[name]?.op),
         value:
           (typeof fixedValue[name] === 'object'
@@ -114,6 +116,7 @@ export const fixOptions = (
           [optionName]: {
             type: getType(options[optionName].type, operators, option?.op),
             value: option,
+            is_expression: option?.is_expression,
           },
         };
       }
@@ -142,6 +145,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
 export type IQorusType =
   | 'string'
   | 'int'
+  | 'integer'
   | 'list'
   | 'bool'
   | 'boolean'
@@ -159,13 +163,17 @@ export type IQorusType =
   | 'data-provider'
   | 'file-as-string'
   | 'connection'
-  | 'number';
+  | 'number'
+  | 'nothing'
+  | 'null'
+  | 'rgbcolor';
 
 export type TOperatorValue = string | string[] | undefined | null;
 
 export type TOption = {
   type: IQorusType;
   value: any;
+  is_expression?: boolean;
   op?: TOperatorValue;
 };
 export type IOptions =
@@ -184,7 +192,7 @@ export interface IOptionFieldMessage {
 
 export interface IOptionsSchemaArg {
   type: IQorusType | IQorusType[];
-  value?: any;
+  value?: unknown | IExpression;
   default_value?: any;
   required?: boolean;
   preselected?: boolean;
@@ -192,13 +200,17 @@ export interface IOptionsSchemaArg {
   sensitive?: boolean;
   desc?: string;
   arg_schema?: IOptionsSchema;
+
   supports_templates?: boolean;
+
+  supports_expressions?: boolean;
 
   app?: string;
   action?: string;
 
   depends_on?: string[];
   has_dependents?: boolean;
+  on_change?: string[];
 
   display_name?: string;
   short_desc?: string;
@@ -246,6 +258,10 @@ export interface IOperatorsSchema {
   [operatorName: string]: IOperator;
 }
 
+export interface IOptionsOnChangeMeta {
+  events?: string[];
+}
+
 export interface IOptionsProps
   extends Omit<IReqoreCollectionProps, 'onChange'> {
   name: string;
@@ -253,7 +269,11 @@ export interface IOptionsProps
   customUrl?: string;
   value?: IOptions | TFlatOptions;
   options?: IOptionsSchema;
-  onChange: (name: string, value?: IOptions) => void;
+  onChange: (
+    name: string,
+    value?: IOptions,
+    meta?: IOptionsOnChangeMeta
+  ) => void;
   onDependableOptionChange?: (
     name: string,
     value: TOption,
@@ -431,7 +451,8 @@ const Options = ({
     optionName: string,
     currentValue: any = {},
     val?: any,
-    type?: string
+    type?: string,
+    isFunction?: boolean
   ) => {
     // Check if this option is already added
     if (!currentValue[optionName]) {
@@ -471,6 +492,14 @@ const Options = ({
       },
     };
 
+    if (isFunction) {
+      updatedValue[optionName].is_expression = true;
+    } else {
+      delete updatedValue[optionName].is_expression;
+    }
+
+    const meta: IOptionsOnChangeMeta = {};
+
     // Check if this option has dependents and if the value has changed
     // If it has, call the onDependableOptionChange function
     if (
@@ -488,7 +517,12 @@ const Options = ({
       onDependableOptionChange?.(optionName, val, updatedValue, options);
     }
 
-    onChange(name, updatedValue);
+    // Check if this option has on_change events
+    if (size(options[optionName].on_change)) {
+      meta.events = options[optionName].on_change;
+    }
+
+    onChange(name, updatedValue, meta);
   };
 
   const handleOperatorChange = (
@@ -613,16 +647,21 @@ const Options = ({
     {}
   );
 
-  const isOptionValid = (optionName: string, type: IQorusType, value: any) => {
+  const isOptionValid = (
+    optionName: string,
+    type: IQorusType,
+    optionValue: any
+  ) => {
     // If the option is not required and undefined it's valid :)
     if (
       !options[optionName].required &&
-      (value === undefined || value === '')
+      (optionValue === undefined || optionValue === '')
     ) {
       return true;
     }
 
-    return validateField(getType(type), value, {
+    return validateField(getType(type), optionValue, {
+      isFunction: value[optionName]?.is_expression,
       has_to_have_value: true,
       ...options[optionName],
     });
@@ -818,8 +857,7 @@ const Options = ({
                           <SelectField
                             fixed
                             defaultItems={map(operators, (operator) => ({
-                              name: operator.name,
-                              desc: operator.desc,
+                              ...operator,
                             }))}
                             disabled={readOnly}
                             value={operator && `${operators?.[operator].name}`}
@@ -880,6 +918,8 @@ const Options = ({
                   allowTemplates={
                     !!(allowTemplates && options[optionName].supports_templates)
                   }
+                  allowFunctions={!!options[optionName].supports_expressions}
+                  fluid
                   templates={templates.value}
                   component={AutoField}
                   {...getTypeAndCanBeNull(
@@ -889,16 +929,18 @@ const Options = ({
                   )}
                   className='system-option'
                   name={optionName}
-                  onChange={(optionName, val) => {
+                  onChange={(optionName, val, givenType, isFunction) => {
                     if (val !== undefined && val !== other.value) {
                       handleValueChange(
                         optionName,
                         fixedValue,
                         val,
-                        getTypeAndCanBeNull(
-                          type,
-                          options[optionName].allowed_values
-                        ).type
+                        givenType ||
+                          getTypeAndCanBeNull(
+                            type,
+                            options[optionName].allowed_values
+                          ).type,
+                        isFunction
                       );
                     }
                   }}
@@ -906,6 +948,7 @@ const Options = ({
                   arg_schema={options[optionName].arg_schema}
                   noSoft={!!rest?.options}
                   value={other.value}
+                  isFunction={other.is_expression}
                   sensitive={options[optionName].sensitive}
                   default_value={options[optionName].default_value}
                   allowed_values={options[optionName].allowed_values}

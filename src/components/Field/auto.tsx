@@ -1,5 +1,9 @@
-import { ReqoreButton, ReqoreMessage } from '@qoretechnologies/reqore';
-import { get, map, set } from 'lodash';
+import {
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreTag,
+} from '@qoretechnologies/reqore';
+import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import {
@@ -14,6 +18,7 @@ import { IField } from '../FieldWrapper';
 import SubField from '../SubField';
 import BooleanField from './boolean';
 import ByteSizeField from './byteSize';
+import { ColorField } from './color';
 import ConnectorField from './connectors';
 import DateField from './date';
 import FileField from './fileString';
@@ -43,7 +48,21 @@ export interface IAutoFieldProps extends IField {
   isConfigItem?: boolean;
   isVariable?: boolean;
   disableSearchOptions?: boolean;
+
+  allowedTypes?: { name: IQorusType }[];
 }
+
+export const DefaultNoSoftTypes = [
+  { name: 'bool', display_name: 'True/False' },
+  { name: 'date', display_name: 'Date' },
+  { name: 'string', display_name: 'Text' },
+  { name: 'binary', display_name: 'Binary' },
+  { name: 'float', display_name: 'Decimal' },
+  { name: 'list', display_name: 'List' },
+  { name: 'hash', display_name: 'Key/Value {}' },
+  { name: 'int', display_name: 'Integer' },
+  { name: 'rgbcolor', display_name: 'RGB Color' },
+];
 
 function AutoField<T = any>({
   name,
@@ -63,6 +82,7 @@ function AutoField<T = any>({
   canBeNull,
   isConfigItem,
   isVariable,
+  allowedTypes,
   ...rest
 }: IAutoFieldProps & T) {
   const [currentType, setType] = useState<IQorusType>(
@@ -188,6 +208,15 @@ function AutoField<T = any>({
     }
   };
 
+  const handleTypeChange: (name: string, type?: IQorusType) => void = (
+    name,
+    type
+  ) => {
+    // Run the onchange
+    onChange?.(name, null, type);
+    setInternalType(type);
+  };
+
   const handleNullToggle = () => {
     setType(defaultType || 'any');
     setInternalType(defaultType || 'any');
@@ -225,6 +254,22 @@ function AutoField<T = any>({
     }
 
     if (rest.allowed_values && currentType !== 'enum') {
+      if (currentType === 'list') {
+        return (
+          <MultiSelect
+            default_items={rest.allowed_values.map(
+              ({ value, name, ...rest }) => ({
+                name: name || value,
+                value,
+                ...rest,
+              })
+            )}
+            name={name}
+            onChange={(name, value) => onChange(name, value)}
+          />
+        );
+      }
+
       return (
         <SelectField
           defaultItems={rest.allowed_values.map(({ value, name, ...rest }) => ({
@@ -238,7 +283,9 @@ function AutoField<T = any>({
           type={currentType}
           fluid
           fixed={false}
+          showDescription={rest.showDescription}
           style={{ width: '100%' }}
+          size={rest.size}
         />
       );
     }
@@ -295,6 +342,7 @@ function AutoField<T = any>({
             return (
               <SubField
                 title={option}
+                key={option}
                 {...schema}
                 desc={`${schema.desc}`}
                 descTitle={`${currentPath}${option}`}
@@ -366,6 +414,7 @@ function AutoField<T = any>({
           />
         );
       case 'int':
+      case 'integer':
       case 'softint':
       case 'float':
       case 'softfloat':
@@ -440,6 +489,7 @@ function AutoField<T = any>({
       case 'connection': {
         return (
           <InterfaceSelector
+            {...rest}
             type={currentType}
             name={name}
             value={value}
@@ -486,100 +536,129 @@ function AutoField<T = any>({
           />
         );
       }
+      case 'rgbcolor': {
+        return (
+          <ColorField
+            {...rest}
+            value={!value ? undefined : value}
+            name={name}
+            onChange={handleChange}
+          />
+        );
+      }
       case 'any':
         return null;
       case 'auto':
         return (
-          <ReqoreMessage intent='info'>Please select data type</ReqoreMessage>
+          <ReqoreTag
+            intent='warning'
+            minimal
+            icon='ErrorWarningLine'
+            label='Please select data type'
+          />
         );
       default:
         return (
-          <ReqoreMessage intent='danger'>{t('UnknownType')}</ReqoreMessage>
+          <ReqoreTag intent='danger' icon='SpamLine' label={t('UnknownType')} />
         );
     }
   };
 
   const showPicker =
-    !isSetToNull &&
-    (defaultType === 'auto' ||
-      defaultType === 'any' ||
-      currentType === 'auto' ||
-      currentType === 'any');
+    size(allowedTypes) > 1 ||
+    (!isSetToNull &&
+      (defaultType === 'auto' ||
+        defaultType === 'any' ||
+        currentType === 'auto' ||
+        currentType === 'any'));
 
-  const types = !noSoft
-    ? [
-        { name: 'bool' },
-        { name: 'softbool' },
-        { name: 'date' },
-        { name: 'string' },
-        { name: 'softstring' },
-        { name: 'binary' },
-        { name: 'float' },
-        { name: 'softfloat' },
-        { name: 'list' },
-        { name: 'softlist' },
-        { name: 'hash' },
-        { name: 'int' },
-        { name: 'softint' },
-      ]
-    : [
-        { name: 'bool' },
-        { name: 'date' },
-        { name: 'string' },
-        { name: 'binary' },
-        { name: 'float' },
-        { name: 'list' },
-        { name: 'hash' },
-        { name: 'int' },
-      ];
+  const types =
+    allowedTypes ||
+    (!noSoft
+      ? [
+          { name: 'bool' },
+          { name: 'softbool' },
+          { name: 'date' },
+          { name: 'string' },
+          { name: 'softstring' },
+          { name: 'binary' },
+          { name: 'float' },
+          { name: 'softfloat' },
+          { name: 'list' },
+          { name: 'softlist' },
+          { name: 'hash' },
+          { name: 'int' },
+          { name: 'softint' },
+          { name: 'rgbcolor' },
+        ]
+      : DefaultNoSoftTypes);
+
+  if (arg_schema) {
+    return (
+      <div
+        className='auto-field-schema-wrapper'
+        style={{
+          flexFlow: column || arg_schema ? 'column' : 'row',
+          marginLeft: 10 * level,
+          overflow: 'hidden',
+          flex: '1 1 auto',
+          maxHeight: level === 0 ? '500px' : undefined,
+          overflowY: level === 0 ? 'auto' : undefined,
+        }}
+      >
+        {renderField(currentInternalType)}
+      </div>
+    );
+  }
 
   // Render type picker if the type is auto or any
   return (
-    <div
-      style={{
-        flexFlow: column || arg_schema ? 'column' : 'row',
-        marginLeft: arg_schema ? 10 * level : 0,
-        overflow: 'hidden',
-        flex: '1 0 auto',
-        maxHeight: arg_schema && level === 0 ? '500px' : undefined,
-        overflowY: arg_schema && level === 0 ? 'auto' : undefined,
-      }}
+    <ReqoreControlGroup
+      fill={rest.fill}
+      fluid={rest.fluid}
+      fixed={rest.fixed}
+      className='auto-field-group'
     >
-      {showPicker && (
-        <SelectField
-          name='type'
-          defaultItems={types}
-          value={currentInternalType}
-          onChange={(_name, value) => {
-            handleChange(name, null);
-            setInternalType(value);
-          }}
-        />
-      )}
+      <ReqoreControlGroup vertical fluid>
+        {showPicker && (
+          <SelectField
+            fixed
+            flat
+            minimal={rest.minimal}
+            size={rest.size}
+            name='type'
+            defaultItems={types}
+            value={currentInternalType}
+            onChange={(_name, value) => {
+              handleTypeChange(name, value);
+            }}
+          />
+        )}
 
-      {renderField(currentInternalType)}
-      {_canBeNull() && (
-        <ReqoreButton
-          intent={isSetToNull ? 'warning' : undefined}
-          icon={isSetToNull ? 'CloseLine' : undefined}
-          onClick={handleNullToggle}
-          fixed
-        >
-          {isSetToNull ? 'Unset null' : 'Set as null'}
-        </ReqoreButton>
-      )}
-      {type === 'connection' ? (
-        <ConnectionManagement
-          selectedConnection={value}
-          onChange={(value) => handleChange(name, value)}
-          allowedValues={rest.allowed_values}
-          // TODO: Change this to dynamic URL
-          redirectUri='https://hq.qoretechnologies.com:8092/grant'
-          app={rest.app}
-          action={rest.action}
-        />
-      ) : null}
-    </div>
+        {renderField(currentInternalType)}
+        {canBeNull && (
+          <ReqoreButton
+            intent={isSetToNull ? 'warning' : undefined}
+            icon={isSetToNull ? 'CloseLine' : undefined}
+            onClick={handleNullToggle}
+            fixed
+          >
+            {isSetToNull ? 'Unset null' : 'Set as null'}
+          </ReqoreButton>
+        )}
+        {type === 'connection' ? (
+          <ConnectionManagement
+            selectedConnection={value}
+            onChange={(value) => handleChange(name, value)}
+            allowedValues={rest.allowed_values}
+            // TODO: Change this to dynamic URL
+            redirectUri='https://hq.qoretechnologies.com:8092/grant'
+            app={rest.app}
+            action={rest.action}
+          />
+        ) : null}
+      </ReqoreControlGroup>
+    </ReqoreControlGroup>
   );
 }
 

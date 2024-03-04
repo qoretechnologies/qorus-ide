@@ -2,9 +2,8 @@ import { ReqoreCheckbox } from '@qoretechnologies/reqore';
 import { FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { isUndefined } from 'util';
-import { IField } from '.';
 import { getValueOrDefaultValue } from '../../helpers/validations';
-import { IFieldChange } from '../FieldWrapper';
+import { IField, IFieldChange } from '../FieldWrapper';
 
 const BooleanField: FunctionComponent<IField & IFieldChange> = ({
   name,
@@ -12,10 +11,14 @@ const BooleanField: FunctionComponent<IField & IFieldChange> = ({
   value,
   default_value,
   disabled,
+  ...rest
 }) => {
   useMount(() => {
     // Set the default value
-    onChange(name, getValueOrDefaultValue(value, default_value || false, false));
+    onChange(
+      name,
+      getValueOrDefaultValue(value, default_value || false, false)
+    );
   });
 
   const handleEnabledChange: (event: any) => void = () => {
@@ -37,11 +40,12 @@ const BooleanField: FunctionComponent<IField & IFieldChange> = ({
       checked={val || false}
       onClick={handleEnabledChange}
       asSwitch
-      onText="Yes"
-      offText="No"
-      checkedIcon="CheckLine"
-      uncheckedIcon="CloseLine"
-      margin="none"
+      onText='Yes'
+      offText='No'
+      checkedIcon='CheckLine'
+      uncheckedIcon='CloseLine'
+      margin='none'
+      {...rest}
     />
   );
 };

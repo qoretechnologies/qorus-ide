@@ -146,12 +146,12 @@ export const NewState: StoryFSM = {
 
 export const SelectedState: StoryFSM = {
   args: {
-    fsm,
+    fsm: qodex,
   },
   play: async ({ canvasElement, ...rest }) => {
     await SwitchesToBuilder.play({ canvasElement, ...rest });
     await waitFor(() => document.querySelector('#state-3'));
-    await _testsClickState('Intent: Close Ticket?');
+    await _testsClickState('Get User Info');
   },
 };
 

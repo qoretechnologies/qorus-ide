@@ -1,5 +1,9 @@
 import { setupPreviews } from '@previewjs/plugin-react/setup';
-import { ReqoreMessage, ReqorePanel, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
+import {
+  ReqoreMessage,
+  ReqorePanel,
+  ReqoreVerticalSpacer,
+} from '@qoretechnologies/reqore';
 import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { noop } from 'lodash';
@@ -30,9 +34,9 @@ export interface ISubFieldProps extends IReqorePanelProps {
 export const DescriptionField = ({ desc }: { desc?: string }) =>
   desc ? (
     <StyledDescriptionField
-      size="small"
+      size='small'
       minimal
-      icon="InformationLine"
+      icon='InformationLine'
       customTheme={{ main: '#000000' }}
       effect={{
         color: '#aeaeae',
@@ -74,14 +78,17 @@ const SubField: React.FC<ISubFieldProps> = ({
   return (
     <>
       <ReqorePanel
+        {...rest}
         flat
         transparent={subtle}
         minimal
-        size="small"
+        size='small'
         style={{ width: '100%' }}
         contentStyle={{ display: 'flex', flexFlow: 'column' }}
         contentEffect={
-          subtle ? undefined : { gradient: { colors: 'main', direction: 'to right bottom' } }
+          subtle
+            ? undefined
+            : { gradient: { colors: 'main', direction: 'to right bottom' } }
         }
         intent={isValid === false ? 'danger' : undefined}
         label={title}
@@ -102,7 +109,6 @@ const SubField: React.FC<ISubFieldProps> = ({
             show: !!onRemove,
           },
         ]}
-        {...rest}
       >
         {desc ? <ReqoreVerticalSpacer height={10} /> : null}
         {children}
@@ -116,7 +122,11 @@ setupPreviews(SubField, () => ({
   Basic: { title: 'SubField', children: <p> Hello </p> },
   InValid: { title: 'SubField', children: <p> Hello </p>, isValid: false },
   Subtle: { title: 'SubField', children: <p> Hello </p>, subtle: true },
-  WithDetail: { title: 'SubField', children: <p> Hello </p>, detail: 'This is detail' },
+  WithDetail: {
+    title: 'SubField',
+    children: <p> Hello </p>,
+    detail: 'This is detail',
+  },
   WithRemoveButton: {
     title: 'SubField',
     children: <p> Hello </p>,

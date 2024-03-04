@@ -152,7 +152,9 @@ export function setBalancedDepth(nodes) {
   for (const [id, n] of nodes) {
     let depth;
 
-    const commonId = [...balanced.keys()].reverse().find(nodesAboveEql.bind(null, n, balanced));
+    const commonId = [...balanced.keys()]
+      .reverse()
+      .find(nodesAboveEql.bind(null, n, balanced));
     depth = balanced.has(commonId) && balanced.get(commonId).depth;
 
     if (!depth && !n.above.some(isKnown.bind(null, balanced))) {
@@ -261,7 +263,8 @@ export function setBalancedWeight(nodes) {
   for (const [id, n] of [...nodes.entries()].reverse()) {
     balanced.set(id, Object.assign({}, n));
     for (const bId of balanced.get(id).below) {
-      balanced.get(id).weight += balanced.get(bId).weight / balanced.get(bId).above.length;
+      balanced.get(id).weight +=
+        balanced.get(bId).weight / balanced.get(bId).above.length;
     }
   }
 
@@ -319,14 +322,20 @@ export function setBalancedWidthAndPosition(nodes) {
   for (const [id, n] of nodes) {
     balanced.set(id, Object.assign({}, n));
 
-    balanced.get(id).above = centerNodes(balanced.get(id).above.map(toExport.bind(null, balanced)));
+    balanced.get(id).above = centerNodes(
+      balanced.get(id).above.map(toExport.bind(null, balanced))
+    );
 
-    balanced.get(id).below = n.below.reduce(divideByDepth.bind(null, n, nodes), []);
+    balanced.get(id).below = n.below.reduce(
+      divideByDepth.bind(null, n, nodes),
+      []
+    );
 
     balanced.get(id).width = 1;
   }
 
-  const belowToExport = (tmp, bIds) => centerNodes(bIds.map(toExport.bind(null, tmp)));
+  const belowToExport = (tmp, bIds) =>
+    centerNodes(bIds.map(toExport.bind(null, tmp)));
 
   for (const n of balanced.values()) {
     n.below = n.below.map(belowToExport.bind(null, balanced));
@@ -356,7 +365,11 @@ export function setBalancedWidthAndPosition(nodes) {
  * @see setBalancedWidthAndPosition
  */
 export function balance(nodes) {
-  return _.flow([setBalancedDepth, setBalancedWeight, setBalancedWidthAndPosition])(nodes);
+  return _.flow([
+    setBalancedDepth,
+    setBalancedWeight,
+    setBalancedWidthAndPosition,
+  ])(nodes);
 }
 
 /**

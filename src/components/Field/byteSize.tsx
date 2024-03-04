@@ -9,7 +9,15 @@ import SelectField from './select';
 //import String from './string';
 
 const ByteSizeField = memo(
-  ({ value, default_value, onChange, name, canBeNull, disabled, read_only }: IField) => {
+  ({
+    value,
+    default_value,
+    onChange,
+    name,
+    canBeNull,
+    disabled,
+    read_only,
+  }: IField) => {
     const val = getValueOrDefaultValue(value, default_value, canBeNull);
     // Fetch data on mount
     useMount(() => {
@@ -22,18 +30,18 @@ const ByteSizeField = memo(
     return (
       <ReqoreControlGroup stack fluid>
         <Number
-          name="bytes"
+          name='bytes'
           fill
           value={bytes}
-          onChange={(_name, v) => onChange(name, `${v || ''}${size || ''}`)}
+          onChange={(_name, v) => onChange?.(name, `${v || ''}${size || ''}`)}
           disabled={disabled}
           read_only={read_only}
         />
         <SelectField
-          name="size"
+          name='size'
           value={size}
-          defaultItems={[{ name: 'KB' }, { name: 'MB' }]}
-          onChange={(_name, v) => onChange(name, `${bytes || ''}${v}`)}
+          defaultItems={[{ name: 'KiB' }, { name: 'MiB' }]}
+          onChange={(_name, v) => onChange?.(name, `${bytes || ''}${v}`)}
           disabled={disabled}
           read_only={read_only}
         />

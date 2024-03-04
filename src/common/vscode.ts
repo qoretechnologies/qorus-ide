@@ -27,7 +27,6 @@ export const vscode =
   process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'storybook'
     ? {
         postMessage: async (data) => {
-          console.log(data);
           let messageData: any;
 
           switch (data.action) {

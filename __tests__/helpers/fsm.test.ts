@@ -1,6 +1,10 @@
 import { cloneDeep, pick, size } from 'lodash';
 import { IApp } from '../../src/components/AppCatalogue';
-import { DIAGRAM_SIZE, IFSMStates, TAppAndAction } from '../../src/containers/InterfaceCreator/fsm';
+import {
+  DIAGRAM_SIZE,
+  IFSMStates,
+  TAppAndAction,
+} from '../../src/containers/InterfaceCreator/fsm';
 import {
   IGrid,
   areStatesAConnectedGroup,
@@ -120,8 +124,12 @@ describe('Align states with the grid', () => {
     const { alignedStates } = autoAlign(statesOverlappedApart as IFSMStates, {
       rowHeight: stateMargin,
     });
-    expect(JSON.stringify(alignedStates)).not.toEqual(JSON.stringify(statesOverlappedApart));
-    expect(JSON.stringify(statesOverlappedApart)).toEqual(JSON.stringify(originalStatesObj));
+    expect(JSON.stringify(alignedStates)).not.toEqual(
+      JSON.stringify(statesOverlappedApart)
+    );
+    expect(JSON.stringify(statesOverlappedApart)).toEqual(
+      JSON.stringify(originalStatesObj)
+    );
   });
 
   it('should never have two states with same position after auto align', () => {
@@ -144,7 +152,10 @@ describe('Align states with the grid', () => {
       const selectedState = newAlignedStates[key];
 
       Object.keys(newAlignedStates).forEach((newKey) => {
-        if (newAlignedStates[newKey].position === selectedState.position && !(newKey === key)) {
+        if (
+          newAlignedStates[newKey].position === selectedState.position &&
+          !(newKey === key)
+        ) {
           isOverlapped = true;
         }
       });
@@ -200,7 +211,8 @@ test.skip('it should return true if 2 states are overlapping', () => {
 
   expect(overlapping).toBe(true);
 
-  const nonOverlappingStates: IFSMStates = multipleVariableStates.states as IFSMStates;
+  const nonOverlappingStates: IFSMStates =
+    multipleVariableStates.states as IFSMStates;
 
   overlapping = checkOverlap(nonOverlappingStates);
 
@@ -283,7 +295,8 @@ describe('getAppAndAction', () => {
 });
 
 describe('Are states a connected group', () => {
-  const states: IFSMStates = QodexWithMultipleAppsAndActions.states as unknown as IFSMStates;
+  const states: IFSMStates =
+    QodexWithMultipleAppsAndActions.states as unknown as IFSMStates;
 
   it('should return true if a group of lineary connected states are passed', () => {
     const connected = areStatesAConnectedGroup(pick(states, ['1', '2', '3']));
@@ -298,7 +311,9 @@ describe('Are states a connected group', () => {
   });
 
   it('should return true if a group of parallel and linear connected states are passed', () => {
-    const connected = areStatesAConnectedGroup(pick(states, ['1', '4', '2', '3']));
+    const connected = areStatesAConnectedGroup(
+      pick(states, ['1', '4', '2', '3'])
+    );
 
     expect(connected).toBe(true);
   });
@@ -492,7 +507,8 @@ describe('Regenerating state IDs', () => {
             },
             content: {
               type: 'string',
-              value: 'I use $data:{state1.connection} to connect to $data:{1.app}',
+              value:
+                'I use $data:{state1.connection} to connect to $data:{1.app}',
             },
           },
         },
@@ -550,13 +566,20 @@ describe('Regenerating state IDs', () => {
     expect(newStates[newState1Id].transitions[0].state).toBe(newState2Id);
     expect(newStates[newState2Id].transitions[0].state).toBe(newState3Id);
 
-    expect((newStates[newState2Id].action.value as TAppAndAction).options.content.value).toBe(
+    expect(
+      (newStates[newState2Id].action.value as TAppAndAction).options.content
+        .value
+    ).toBe(
       `I use $data:{${newState1Id}.connection} to connect to $data:{1.app}`
     );
-    expect((newStates[newState3Id].action.value as TAppAndAction).options.server.value).toBe(
-      `server $data:{${newState2Id}.server}`
-    );
-    expect((newStates[newState3Id].action.value as TAppAndAction).options.content.value).toBe(
+    expect(
+      (newStates[newState3Id].action.value as TAppAndAction).options.server
+        .value
+    ).toBe(`server $data:{${newState2Id}.server}`);
+    expect(
+      (newStates[newState3Id].action.value as TAppAndAction).options.content
+        .value
+    ).toBe(
       `I use $data:{${newState1Id}.connection} to connect to $data:{${newState2Id}.app} and $data:{${newState1Id}.app}`
     );
   });

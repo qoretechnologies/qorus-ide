@@ -1,12 +1,12 @@
 import {
-    ReqoreButton,
-    ReqoreCollection,
-    ReqoreControlGroup,
-    ReqoreDropdown,
-    ReqoreMenu,
-    ReqoreMenuItem,
-    ReqoreMessage,
-    ReqoreTag,
+  ReqoreButton,
+  ReqoreCollection,
+  ReqoreControlGroup,
+  ReqoreDropdown,
+  ReqoreMenu,
+  ReqoreMenuItem,
+  ReqoreMessage,
+  ReqoreTag,
 } from '@qoretechnologies/reqore';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
 import { IReqoreControlGroupProps } from '@qoretechnologies/reqore/dist/components/ControlGroup';
@@ -21,8 +21,8 @@ import useMount from 'react-use/lib/useMount';
 import { compose } from 'recompose';
 import styled from 'styled-components';
 import withMessageHandler, {
-    addMessageListener,
-    postMessage,
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import CustomDialog from '../CustomDialog';
@@ -66,6 +66,8 @@ export interface ISelectField extends IField {
   forceDropdown?: boolean;
   context?: any;
   className?: string;
+  showDescription?: boolean;
+  minimal?: boolean;
 }
 
 export const StyledDialogSelectItem = styled.div`
@@ -124,7 +126,9 @@ export const StyledDialogSelectItem = styled.div`
   }
 `;
 
-const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = ({
+const SelectField: React.FC<
+  ISelectField & IField & IReqoreControlGroupProps
+> = ({
   get_message,
   return_message,
   name,
@@ -149,6 +153,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   icon,
   filters,
   className,
+  showDescription = true,
   ...rest
 }) => {
   const [items, setItems] = useState<ISelectFieldItem[]>(defaultItems || []);
@@ -200,7 +205,10 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
             (data: any) => {
               // Check if this is the correct
               // object type
-              if (!return_message.object_type || data.object_type === return_message.object_type) {
+              if (
+                !return_message.object_type ||
+                data.object_type === return_message.object_type
+              ) {
                 setItems(get(data, return_message.return_value));
               }
             },
@@ -212,7 +220,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   }, [hasProcessor, return_message?.object_type]);
 
   useEffect(() => {
-    setIsProcessorSelected(requestFieldData ? requestFieldData('processor', 'selected') : false);
+    setIsProcessorSelected(
+      requestFieldData ? requestFieldData('processor', 'selected') : false
+    );
   });
 
   // Check if the processor field exists on every change
@@ -238,7 +248,10 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
     handleClick();
   }, [listener]);
 
-  const handleEditSubmit: (_defaultName: string, val: string) => void = (_defaultName, val) => {
+  const handleEditSubmit: (_defaultName: string, val: string) => void = (
+    _defaultName,
+    val
+  ) => {
     handleSelectClick({ name: val });
     handleClick();
   };
@@ -297,14 +310,26 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
     filteredItems = filteredItems.filter((item) => predicate(item.name));
   }
 
-  const getItemShortDescription = (itemName: string, defaultDesc: string = '') => {
+  const getItemShortDescription = (
+    itemName: string,
+    defaultDesc: string = ''
+  ) => {
+    if (!showDescription) {
+      return null;
+    }
+
     if (!itemName) {
       return defaultDesc;
     }
 
-    const item = items.find((item) => item.name === itemName || item.value === itemName);
+    const item = items.find(
+      (item) => item.name === itemName || item.value === itemName
+    );
 
-    return item?.short_desc || (item?.desc ? 'Hover to see description' : defaultDesc);
+    return (
+      item?.short_desc ||
+      (item?.desc ? 'Hover to see description' : defaultDesc)
+    );
   };
 
   const getItemDescription = (itemName) => {
@@ -340,7 +365,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
     const item = data.find((item) => item.name === value);
 
     return (
-      item?.intent === 'danger' || !!item?.messages?.find((message) => message.intent === 'danger')
+      item?.intent === 'danger' ||
+      !!item?.messages?.find((message) => message.intent === 'danger')
     );
   };
 
@@ -361,7 +387,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   const hasItemsWithError = (data: ISelectFieldItem[]) => {
     return data.some(
       (item) =>
-        item.intent === 'danger' || item.messages?.find((message) => message.intent === 'danger')
+        item.intent === 'danger' ||
+        item.messages?.find((message) => message.intent === 'danger')
     );
   };
 
@@ -376,7 +403,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
 
   const getLabel = (items: ISelectFieldItem[], value: string) => {
     return (
-      items?.find((item) => item.name === value || item.value === value)?.display_name || value
+      items?.find((item) => item.name === value || item.value === value)
+        ?.display_name || value
     );
   };
 
@@ -396,7 +424,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
           !!getItemDescription(value)
             ? {
                 delay: 300,
-                content: <ReactMarkdown>{getItemDescription(value)}</ReactMarkdown>,
+                content: (
+                  <ReactMarkdown>{getItemDescription(value)}</ReactMarkdown>
+                ),
                 maxWidth: '50vh',
               }
             : undefined
@@ -406,31 +436,42 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
         icon={
           filteredItems[0].desc
             ? icon ||
-              (hasError(items, value || filteredItems[0].name) ? 'ErrorWarningLine' : undefined)
+              (hasError(items, value || filteredItems[0].name)
+                ? 'ErrorWarningLine'
+                : undefined)
             : 'ArrowDownSFill'
         }
         rightIcon={filteredItems[0].desc ? 'ListUnordered' : undefined}
-        effect={{
-          gradient: {
-            colors: {
-              0: value ? 'info' : 'main',
-              100: hasError(items, value || filteredItems[0].name)
-                ? 'danger:darken'
-                : hasWarning(items, value || filteredItems[0].name)
-                ? 'warning'
-                : value
-                ? 'info'
-                : 'main',
+        effect={
+          !rest.minimal && {
+            gradient: {
+              colors: {
+                0: value ? 'info' : 'main',
+                100: hasError(items, value || filteredItems[0].name)
+                  ? 'danger:darken'
+                  : hasWarning(items, value || filteredItems[0].name)
+                  ? 'warning'
+                  : value
+                  ? 'info'
+                  : 'main',
+              },
             },
-          },
-        }}
+          }
+        }
         {...rest}
       />
     );
   }
 
   if (!reference && (!filteredItems || filteredItems.length === 0)) {
-    return <ReqoreMessage intent="muted">{t('NoDataAvailable')}</ReqoreMessage>;
+    return (
+      <ReqoreTag
+        intent='muted'
+        label={t('NoDataAvailable')}
+        {...rest}
+        icon='ForbidLine'
+      />
+    );
   }
 
   const filterItems = (items: ISelectFieldItem[]): ISelectFieldItem[] => {
@@ -453,7 +494,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
     <>
       <CustomDialog
         isOpen={isSelectDialogOpen}
-        icon="ListOrdered"
+        icon='ListOrdered'
         onClose={() => {
           setSelectDialogOpen(false);
           setQuery('');
@@ -464,13 +505,13 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
         <ReqoreCollection
           maxItemHeight={200}
           filterable
-          size="big"
+          size='big'
           sortable
           padded={false}
           showSelectedFirst
-          selectedIcon="CheckLine"
+          selectedIcon='CheckLine'
           fill
-          className="q-select-dialog"
+          className='q-select-dialog'
           inputProps={{
             rightIcon: 'KeyboardFill',
             focusRules: {
@@ -484,18 +525,20 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               label: item.display_name || item.name,
               content: (
                 <>
-                  {(item.messages || []).map(({ intent, title, content }, index) => (
-                    <ReqoreMessage
-                      intent={intent}
-                      title={title}
-                      key={title || index}
-                      size="small"
-                      margin="bottom"
-                      opaque={false}
-                    >
-                      {content}
-                    </ReqoreMessage>
-                  ))}
+                  {(item.messages || []).map(
+                    ({ intent, title, content }, index) => (
+                      <ReqoreMessage
+                        intent={intent}
+                        title={title}
+                        key={title || index}
+                        size='small'
+                        margin='bottom'
+                        opaque={false}
+                      >
+                        {content}
+                      </ReqoreMessage>
+                    )
+                  )}
                   <ReactMarkdown>{getItemDescription(item.name)}</ReactMarkdown>
                 </>
               ),
@@ -508,12 +551,19 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               tooltip: !!item.desc
                 ? {
                     delay: 800,
-                    content: <ReactMarkdown>{getItemDescription(item.name)}</ReactMarkdown>,
+                    content: (
+                      <ReactMarkdown>
+                        {getItemDescription(item.name)}
+                      </ReactMarkdown>
+                    ),
                     maxWidth: '70vw',
                   }
                 : undefined,
               headerEffect: { color: '#ffffff' },
-              contentEffect: item.name === value ? { gradient: { colors: 'main' } } : undefined,
+              contentEffect:
+                item.name === value
+                  ? { gradient: { colors: 'main' } }
+                  : undefined,
               onClick: !item.disabled
                 ? () => {
                     handleSelectClick(item);
@@ -526,7 +576,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
             label: capitalize(filter.replace('_', ' ')),
             badge: items.filter((item) => item[filter]).length,
             active: appliedFilters.includes(filter),
-            effect: appliedFilters.includes(filter) ? PositiveColorEffect : undefined,
+            effect: appliedFilters.includes(filter)
+              ? PositiveColorEffect
+              : undefined,
             onClick: () => {
               // Add this filter to the applied filters if it's not already there
               if (!appliedFilters.includes(filter)) {
@@ -534,7 +586,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               } else {
                 // Remove this filter from the applied filters
                 setAppliedFilters(
-                  appliedFilters.filter((appliedFilter) => appliedFilter !== filter)
+                  appliedFilters.filter(
+                    (appliedFilter) => appliedFilter !== filter
+                  )
                 );
               }
             },
@@ -542,7 +596,11 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
         />
       </CustomDialog>
       {!filteredItems || filteredItems.length === 0 ? (
-        <ReqoreTag color="transparent" icon="ForbidLine" label={t('NothingToSelect')} />
+        <ReqoreTag
+          color='transparent'
+          icon='ForbidLine'
+          label={t('NothingToSelect')}
+        />
       ) : null}
       <FieldEnhancer
         // What should happen when the user deletes an interface
@@ -550,7 +608,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
         onDelete={reference?.onDelete}
         context={{
           iface_kind,
-          target_dir: (requestFieldData && requestFieldData('target_dir', 'value')) || target_dir,
+          target_dir:
+            (requestFieldData && requestFieldData('target_dir', 'value')) ||
+            target_dir,
           ...context,
         }}
       >
@@ -560,29 +620,39 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               <ReqoreButton
                 fluid
                 key={value}
-                icon={icon || (hasError(items, value) ? 'ErrorWarningLine' : undefined)}
-                rightIcon="ListUnordered"
+                icon={
+                  icon ||
+                  (hasError(items, value) ? 'ErrorWarningLine' : undefined)
+                }
+                rightIcon='ListUnordered'
                 onClick={() => setSelectDialogOpen(true)}
-                description={getItemShortDescription(value, 'Select from available values')}
+                description={getItemShortDescription(
+                  value,
+                  'Select from available values'
+                )}
                 disabled={disabled}
-                effect={{
-                  gradient: {
-                    direction: 'to right',
-                    colors: {
-                      0: value ? 'info' : 'main',
-                      100: hasError(items, value)
-                        ? 'danger:darken'
-                        : hasWarning(items, value)
-                        ? 'warning'
-                        : value
-                        ? 'info'
-                        : 'main',
+                effect={
+                  !rest.minimal && {
+                    gradient: {
+                      direction: 'to right',
+                      colors: {
+                        0: value ? 'info' : 'main',
+                        100: hasError(items, value)
+                          ? 'danger:darken'
+                          : hasWarning(items, value)
+                          ? 'warning'
+                          : value
+                          ? 'info'
+                          : 'main',
+                      },
                     },
-                  },
-                }}
+                  }
+                }
                 className={className}
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : placeholder || t('PleaseSelect')}
               </ReqoreButton>
             ) : asMenu ? (
               <ReqoreMenu>
@@ -607,6 +677,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                 filterable
                 key={value}
                 disabled={disabled}
+                readOnly={reqoreItems.length === 0}
                 wrap
                 className={className}
                 paging={{
@@ -621,14 +692,18 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                   className: 'q-select-input',
                 }}
                 description={getItemShortDescription(value) || description}
-                effect={{
-                  gradient: {
-                    direction: 'to left',
-                    colors: value ? 'info' : 'main',
-                  },
-                }}
+                effect={
+                  !rest.minimal && {
+                    gradient: {
+                      direction: 'to left',
+                      colors: value ? 'info' : 'main',
+                    },
+                  }
+                }
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : placeholder || t('PleaseSelect')}
               </ReqoreDropdown>
             )}
 
@@ -636,19 +711,21 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               <ReqoreControlGroup fluid={false} stack>
                 {!editOnly && (
                   <ReqoreButton
-                    icon="AddLine"
+                    icon='AddLine'
                     fixed
-                    className="select-reference-add-new"
+                    className='select-reference-add-new'
                     effect={PositiveColorEffect}
                     onClick={() => onCreateClick(reference, handleEditSubmit)}
                   />
                 )}
                 {value && (
                   <ReqoreButton
-                    icon="EditLine"
+                    icon='EditLine'
                     fixed
-                    className="select-reference-edit"
-                    onClick={() => onEditClick(value, reference, handleEditSubmit)}
+                    className='select-reference-edit'
+                    onClick={() =>
+                      onEditClick(value, reference, handleEditSubmit)
+                    }
                   />
                 )}
               </ReqoreControlGroup>
@@ -660,6 +737,11 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   );
 };
 
-export default compose(withTextContext(), withMessageHandler())(SelectField) as React.FC<
-  ISelectField & IField & Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
+export default compose(
+  withTextContext(),
+  withMessageHandler()
+)(SelectField) as React.FC<
+  ISelectField &
+    IField &
+    Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
 >;

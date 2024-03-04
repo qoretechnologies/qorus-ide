@@ -1,0 +1,158 @@
+{
+  "display_name": "Untitled Qodex",
+  "name": "Untitled Qodex",
+  "desc": "No description",
+  "states": {
+    "1": {
+      "position": {
+        "x": 50,
+        "y": 50
+      },
+      "initial": true,
+      "is_event_trigger": true,
+      "name": "Schedule",
+      "desc": "Trigger actions on a specific schedule",
+      "type": "state",
+      "id": "2P3rREB1l",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "QorusTriggers",
+          "action": "schedule",
+          "options": {
+            "minute": {
+              "type": "string",
+              "value": "*/20"
+            },
+            "hour": {
+              "type": "string",
+              "value": "*"
+            },
+            "day": {
+              "type": "string",
+              "value": "*"
+            },
+            "month": {
+              "type": "string",
+              "value": "*"
+            },
+            "wday": {
+              "type": "string",
+              "value": "*"
+            }
+          }
+        }
+      },
+      "transitions": [
+        {
+          "state": "Gj4QBAh7u3Am"
+        }
+      ]
+    },
+    "3": {
+      "position": {
+        "x": 49,
+        "y": 663
+      },
+      "initial": false,
+      "is_event_trigger": false,
+      "name": "Get User Info",
+      "desc": "Get info about the current user",
+      "type": "state",
+      "id": "ZO2l-u06b",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "Discord",
+          "action": "user-info",
+          "options": {
+            "qorus_app_connection": {
+              "type": "connection",
+              "value": "discord"
+            }
+          }
+        }
+      },
+      "transitions": []
+    },
+    "Gj4QBAh7u3Am": {
+      "position": {
+        "x": 50,
+        "y": 250
+      },
+      "key": "Gj4QBAh7u3Am",
+      "keyId": "Gj4QBAh7u3Am",
+      "isValid": true,
+      "is_event_trigger": false,
+      "name": "If",
+      "desc": "Execute an if statement",
+      "type": "if",
+      "id": "Gj4QBAh7u3Am",
+      "condition": {
+        "value": {
+          "args": [
+            {
+              "value": "$data:{1.trigger_time}",
+              "type": "date"
+            },
+            {
+              "value": "2023-08-27T14:11:23",
+              "type": "date",
+              "is_expression": false
+            },
+            {
+              "value": "2099-05-07T14:11:29",
+              "type": "date",
+              "is_expression": false
+            }
+          ],
+          "exp": "BETWEEN"
+        },
+        "is_expression": true
+      },
+      "transitions": [
+        {
+          "state": "3",
+          "branch": "true",
+          "language": "qore"
+        },
+        {
+          "state": "1p1g7a39x",
+          "branch": "false"
+        }
+      ]
+    },
+    "1p1g7a39x": {
+      "position": {
+        "x": 438,
+        "y": 663
+      },
+      "key": "1p1g7a39x",
+      "keyId": "1p1g7a39x",
+      "isValid": true,
+      "is_event_trigger": false,
+      "name": "Get Server Info",
+      "desc": "Get info about a Discord server accessible to the user",
+      "type": "state",
+      "id": "1p1g7a39x",
+      "action": {
+        "type": "appaction",
+        "value": {
+          "app": "Discord",
+          "action": "guild-info",
+          "options": {
+            "qorus_app_connection": {
+              "type": "connection",
+              "value": "discord"
+            },
+            "guild": {
+              "type": "string",
+              "value": "Qore Technologies"
+            }
+          }
+        }
+      },
+      "transitions": []
+    }
+  }
+}

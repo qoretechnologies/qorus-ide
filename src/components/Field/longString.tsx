@@ -4,14 +4,15 @@ import { ChangeEvent, FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { TTranslator } from '../../App';
 import {
-    TMessageListener,
-    TPostMessage,
-    addMessageListener,
-    postMessage,
+  TMessageListener,
+  TPostMessage,
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import { IField, IFieldChange } from '../FieldWrapper';
 
-export interface ILongStringField extends Omit<IReqoreTextareaProps, 'onChange'> {
+export interface ILongStringField
+  extends Omit<IReqoreTextareaProps, 'onChange'> {
   t?: TTranslator;
   postMessage?: TPostMessage;
   addMessageListener?: TMessageListener;
@@ -25,7 +26,6 @@ const LongStringField: FunctionComponent<ILongStringField & IField> = ({
   onChange,
   value,
   default_value,
-  fill,
   get_message,
   return_message,
   placeholder,
@@ -39,14 +39,14 @@ const LongStringField: FunctionComponent<ILongStringField & IField> = ({
   useMount(() => {
     // Populate default value
     if (value || default_value) {
-      onChange(name, value || default_value);
+      onChange?.(name, value || default_value);
     }
     // Get backend data
     if (get_message && return_message) {
       postMessage(get_message.action);
       addMessageListener(return_message.action, (data: any) => {
         if (data) {
-          onChange(name, data[return_message.return_value]);
+          onChange?.(name, data[return_message.return_value]);
         }
       });
     }
@@ -54,21 +54,21 @@ const LongStringField: FunctionComponent<ILongStringField & IField> = ({
 
   // When input value changes
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
-    onChange(name, event.target.value.toString());
+    onChange?.(name, event.target.value.toString());
   };
 
   return (
     <ReqoreTextarea
-      {...rest}
       placeholder={placeholder}
       scaleWithContent
       fluid
       value={!value ? default_value || '' : value}
       onChange={handleInputChange}
-      onClearClick={() => onChange(name, '')}
+      onClearClick={() => onChange?.(name, '')}
       intent={intent}
       id={id}
       disabled={disabled}
+      {...rest}
     />
   );
 };

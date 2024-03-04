@@ -1,27 +1,42 @@
 import {
-    ReqoreButton,
-    ReqoreControlGroup,
-    ReqorePanel,
-    ReqoreTag,
-    ReqoreVerticalSpacer,
-    useReqoreProperty,
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqorePanel,
+  ReqoreTag,
+  ReqoreVerticalSpacer,
+  useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import {
-    IReqoreEffect,
-    ReqoreTextEffect,
-    TReqoreEffectColor,
-    TReqoreHexColor,
+  IReqoreEffect,
+  ReqoreTextEffect,
+  TReqoreEffectColor,
+  TReqoreHexColor,
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreIconName } from '@qoretechnologies/reqore/dist/types/icons';
 import { last } from 'lodash';
 import size from 'lodash/size';
-import React, { memo, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styled, { css } from 'styled-components';
-import { IFSMState, TAppAndAction, TVariableActionValue } from '.';
+import {
+  IFSMState,
+  IFSMTransition,
+  TAppAndAction,
+  TVariableActionValue,
+} from '.';
 import { IApp } from '../../../components/AppCatalogue';
-import { NegativeColorEffect, SaveColorEffect } from '../../../components/Field/multiPair';
+import {
+  NegativeColorEffect,
+  SaveColorEffect,
+} from '../../../components/Field/multiPair';
 import { ContextMenuContext } from '../../../context/contextMenu';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
@@ -37,7 +52,7 @@ export interface IFSMStateProps extends IFSMState {
   onDeleteClick: (id: string) => any;
   onUpdate: (id: string, data: any) => any;
   onTransitionOrderClick: (id: string) => any;
-  onNewStateClick: (id: string) => any;
+  onNewStateClick: (id: string, branch?: IFSMTransition['branch']) => any;
   onSelect: (id: string, fromMouseDown?: boolean) => void;
   startTransitionDrag: (id: string) => any;
   stopTransitionDrag: (id: string) => any;
@@ -65,7 +80,13 @@ export interface IFSMStateStyleProps {
   type?: 'mapper' | 'connector' | 'pipeline' | 'fsm' | 'block' | 'if';
 }
 
-export type TStateTypes = 'interfaces' | 'logic' | 'api' | 'other' | 'variables' | 'action';
+export type TStateTypes =
+  | 'interfaces'
+  | 'logic'
+  | 'api'
+  | 'other'
+  | 'variables'
+  | 'action';
 
 export const getCategoryColor = (category: TStateTypes): TReqoreHexColor => {
   switch (category) {
@@ -108,15 +129,13 @@ export const StyledStateTextWrapper = styled.div`
   flex-flow: column;
 `;
 
-const StyledAddNewStatebutton: React.FC<IReqoreButtonProps> = styled(ReqoreButton)`
+const StyledAddNewStateGroup: React.FC<IReqoreButtonProps> = styled(
+  ReqoreControlGroup
+)`
   position: absolute;
   bottom: -20px;
   left: 50%;
   transform: translateX(-50%);
-
-  &:active {
-    transform: translateX(-50%) scale(0.97) !important;
-  }
 `;
 
 export const STATE_WIDTH = 350;
@@ -198,7 +217,10 @@ export const getStateCategory = (type: string): TStateTypes => {
   return 'other';
 };
 
-export const getStateType = ({ type, action, ...rest }: IFSMState, app?: IApp) => {
+export const getStateType = (
+  { type, action, ...rest }: IFSMState,
+  app?: IApp
+) => {
   if (type === 'block') {
     return `${rest['block-type'] || 'for'} block (${size(rest.states)})`;
   }
@@ -208,9 +230,7 @@ export const getStateType = ({ type, action, ...rest }: IFSMState, app?: IApp) =
   }
 
   if (type === 'if') {
-    return typeof rest.condition === 'string'
-      ? rest.condition
-      : `${rest.condition?.class}:${rest.condition?.connector}`;
+    return typeof rest.condition === 'string' ? rest.condition : 'Expression';
   }
 
   if (!action || !action.type || !action.value) {
@@ -294,7 +314,9 @@ const FSMState: React.FC<IFSMStateProps> = ({
   const clicksTimeout = useRef(null);
   const mouseDownPosition = useRef({ x: 0, y: 0 });
   const timeSinceMouseDown = useRef(0);
-  const app = useGetAppActionData((action?.value as TAppAndAction)?.app || null);
+  const app = useGetAppActionData(
+    (action?.value as TAppAndAction)?.app || null
+  );
 
   useEffect(() => {
     staticPosition.current.x = position?.x || 0;
@@ -419,7 +441,9 @@ const FSMState: React.FC<IFSMStateProps> = ({
       // Check if the user has moved at least 10 pixels in any direction
       if (
         (diffX === 0 && diffY === 0) ||
-        (diffX < 10 && diffY < 10 && event.timeStamp - timeSinceMouseDown.current < 200)
+        (diffX < 10 &&
+          diffY < 10 &&
+          event.timeStamp - timeSinceMouseDown.current < 200)
       ) {
         handleClick(event);
       }
@@ -459,7 +483,8 @@ const FSMState: React.FC<IFSMStateProps> = ({
     )?.slice(0, 100) || '' + '...';
 
   const stateColor = useMemo(
-    () => getStateColor(getStateCategory(action?.type || type), is_event_trigger),
+    () =>
+      getStateColor(getStateCategory(action?.type || type), is_event_trigger),
     [action, type, is_event_trigger]
   );
 
@@ -468,7 +493,7 @@ const FSMState: React.FC<IFSMStateProps> = ({
       {isInSelectedList && (
         <>
           <ReqoreTag
-            size="tiny"
+            size='tiny'
             label={Math.round(position.x)}
             style={{
               transition: 'none',
@@ -480,7 +505,7 @@ const FSMState: React.FC<IFSMStateProps> = ({
             }}
           />
           <ReqoreTag
-            size="tiny"
+            size='tiny'
             label={Math.round(position.y)}
             style={{
               transition: 'none',
@@ -531,7 +556,8 @@ const FSMState: React.FC<IFSMStateProps> = ({
           {
             gradient: {
               ...stateColor,
-              borderColor: !isValid || isIsolated ? 'danger' : `${stateColor.borderColor}`,
+              borderColor:
+                !isValid || isIsolated ? 'danger' : `${stateColor.borderColor}`,
               animate: isActive ? 'always' : 'never',
             },
             glow: isBeingDragged
@@ -564,16 +590,24 @@ const FSMState: React.FC<IFSMStateProps> = ({
                 : undefined,
           } as IReqoreEffect
         }
-        icon={isLoadingCheck ? 'Loader5Fill' : FSMItemIconByType[action?.type || type]}
+        icon={
+          isLoadingCheck
+            ? 'Loader5Fill'
+            : FSMItemIconByType[action?.type || type]
+        }
         iconImage={app?.logo}
-        className="fsm-state"
+        className='fsm-state'
         responsiveActions={false}
         responsiveTitle={false}
         x={position?.x}
         y={position?.y}
         selected={selected}
-        size="small"
-        iconProps={{ size: '25px', animation: isLoadingCheck ? 'spin' : undefined, rounded: true }}
+        size='small'
+        iconProps={{
+          size: '25px',
+          animation: isLoadingCheck ? 'spin' : undefined,
+          rounded: true,
+        }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         minimal
@@ -586,8 +620,14 @@ const FSMState: React.FC<IFSMStateProps> = ({
                   : isIsolated
                   ? NegativeColorEffect
                   : undefined,
-                icon: is_event_trigger ? 'PlayLine' : isIsolated ? 'ErrorWarningFill' : undefined,
-                tooltip: !isValid ? 'This state is invalid and needs to be fixed' : undefined,
+                icon: is_event_trigger
+                  ? 'PlayLine'
+                  : isIsolated
+                  ? 'ErrorWarningFill'
+                  : undefined,
+                tooltip: !isValid
+                  ? 'This state is invalid and needs to be fixed'
+                  : undefined,
               }
             : undefined
         }
@@ -683,38 +723,48 @@ const FSMState: React.FC<IFSMStateProps> = ({
       >
         {desc ? (
           <>
-            <ReqoreTextEffect effect={{ textSize: 'small', opacity: 0.8 }}>{desc}</ReqoreTextEffect>
+            <ReqoreTextEffect effect={{ textSize: 'small', opacity: 0.8 }}>
+              {desc}
+            </ReqoreTextEffect>
             <ReqoreVerticalSpacer height={10} />
           </>
         ) : null}
-        <ReqoreControlGroup size="small" wrap fluid fill vertical stack>
+        <ReqoreControlGroup size='small' wrap fluid fill vertical stack>
           <ReqoreControlGroup stack fill fluid>
             <ReqoreTag
               wrap
               fixed
-              width="100px"
+              width='100px'
               minimal
               effect={{ weight: 'thick', uppercase: true, textSize: 'tiny' }}
               label={getStateTypeLabel()}
             />
-            <ReqoreTag wrap minimal label={getStateType({ type, action, id, ...rest }, app)} />
+            <ReqoreTag
+              wrap
+              minimal
+              label={getStateType({ type, action, id, ...rest }, app)}
+            />
           </ReqoreControlGroup>
           {action?.type === 'var-action' ? (
             <ReqoreControlGroup stack fill fluid>
               <ReqoreTag
                 wrap
                 fixed
-                width="100px"
+                width='100px'
                 minimal
                 effect={{ weight: 'thick', uppercase: true, textSize: 'tiny' }}
-                label="Action type"
+                label='Action type'
               />
-              <ReqoreTag wrap label={(action.value as TVariableActionValue)?.action_type} minimal />
+              <ReqoreTag
+                wrap
+                label={(action.value as TVariableActionValue)?.action_type}
+                minimal
+              />
             </ReqoreControlGroup>
           ) : null}
           <ReqoreTag
-            icon="InformationLine"
-            size="small"
+            icon='InformationLine'
+            size='small'
             wrap
             minimal
             label={stateActionDescription}
@@ -723,25 +773,74 @@ const FSMState: React.FC<IFSMStateProps> = ({
             }}
           />
         </ReqoreControlGroup>
-        <StyledAddNewStatebutton
-          size="small"
-          customTheme={{
-            main: is_event_trigger
-              ? 'success:darken'
-              : getStateCategory(action?.type || type) !== 'action'
-              ? '#6f1977'
-              : 'info',
-          }}
-          className="add-new-state-after"
-          icon="AddLine"
-          onMouseDown={(e) => {
-            e.stopPropagation();
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            onNewStateClick?.(id);
-          }}
-        />
+        <StyledAddNewStateGroup>
+          {type !== 'if' && (
+            <ReqoreButton
+              compact
+              size='small'
+              customTheme={{
+                main: is_event_trigger
+                  ? 'success:darken'
+                  : getStateCategory(action?.type || type) !== 'action'
+                  ? '#6f1977'
+                  : 'info',
+              }}
+              className='add-new-state-after'
+              icon='AddLine'
+              onMouseDown={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onNewStateClick?.(id);
+              }}
+            />
+          )}
+          {type === 'if' && (
+            <>
+              <ReqoreButton
+                effect={{
+                  uppercase: true,
+                  weight: 'thick',
+                  spaced: 2,
+                  glow: {
+                    color: 'success:lighten',
+                    size: 2,
+                    inset: true,
+                    blur: 5,
+                  },
+                }}
+                className='add-new-state-after-true'
+                customTheme={{
+                  main: '#6f1977',
+                }}
+                size='small'
+                icon='CheckLine'
+                onClick={() => onNewStateClick?.(id, 'true')}
+              />
+              <ReqoreButton
+                effect={{
+                  uppercase: true,
+                  weight: 'thick',
+                  spaced: 2,
+                  glow: {
+                    color: 'danger',
+                    size: 2,
+                    inset: true,
+                    blur: 5,
+                  },
+                }}
+                className='add-new-state-after-false'
+                customTheme={{
+                  main: '#6f1977',
+                }}
+                size='small'
+                icon='Spam3Fill'
+                onClick={() => onNewStateClick?.(id, 'false')}
+              />
+            </>
+          )}
+        </StyledAddNewStateGroup>
       </StyledFSMState>
     </>
   );

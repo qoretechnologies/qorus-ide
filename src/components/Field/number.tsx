@@ -1,11 +1,13 @@
-import { ReqoreInput } from '@qoretechnologies/reqore';
+import { ReqoreDropdown, ReqoreInput } from '@qoretechnologies/reqore';
+import { IReqoreInputProps } from '@qoretechnologies/reqore/dist/components/Input';
+import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ChangeEvent, FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
 import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+  TMessageListener,
+  TPostMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -16,6 +18,7 @@ export interface INumberField {
   postMessage?: TPostMessage;
   addMessageListener?: TMessageListener;
   autoFocus?: boolean;
+  templates?: IReqoreFormTemplates;
 }
 
 const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
@@ -30,6 +33,7 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   get_message,
   return_message,
   autoFocus,
+  templates,
   ...rest
 }) => {
   // Fetch data on mount
@@ -68,13 +72,48 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
     onChange(name, null);
   };
 
+  if (templates?.items) {
+    return (
+      <ReqoreDropdown<IReqoreInputProps>
+        {...rest}
+        wrapperStyle={{
+          width: '100px',
+        }}
+        component={ReqoreInput}
+        fluid={fill}
+        icon='MoneyDollarCircleLine'
+        items={templates?.items}
+        filterable
+        value={value ?? default_value ?? ''}
+        onItemSelect={(item) => onChange(name, item.value)}
+        onChange={handleInputChange}
+        type='number'
+        // @ts-ignore
+        step={type === 'int' || type === 'number' ? 1 : 0.1}
+        onClearClick={handleResetClick}
+        focusRules={
+          autoFocus
+            ? {
+                type: 'auto',
+                viewportOnly: true,
+              }
+            : undefined
+        }
+      />
+    );
+  }
+
   return (
     <ReqoreInput
       {...rest}
       fluid={fill}
+      wrapperStyle={{
+        width: '100px',
+      }}
+      icon='MoneyDollarCircleLine'
       value={value ?? default_value ?? ''}
       onChange={handleInputChange}
-      type="number"
+      type='number'
       // @ts-ignore
       step={type === 'int' || type === 'number' ? 1 : 0.1}
       onClearClick={handleResetClick}
@@ -90,6 +129,7 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   );
 };
 
-export default compose(withMessageHandler(), withTextContext())(NumberField) as FunctionComponent<
-  INumberField & IField
->;
+export default compose(
+  withMessageHandler(),
+  withTextContext()
+)(NumberField) as FunctionComponent<INumberField & IField>;

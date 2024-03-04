@@ -13,6 +13,7 @@ import { Messages } from '../constants/messages';
 import { IDraftData } from '../context/drafts';
 import { InitialContext } from '../context/init';
 import { callBackendBasic } from '../helpers/functions';
+import EN from '../lang/en.json';
 import withFieldsConsumer from './withFieldsConsumer';
 import { addMessageListener, postMessage } from './withMessageHandler';
 
@@ -43,7 +44,7 @@ export default () =>
       const [isSavingDraft, setIsSavingDraft] = useState(false);
       const [lastDraft, setLastDraft] = useState(null);
       const confirmActionReqore = useReqoreProperty('confirmAction');
-      const [texts, setTexts] = useState<{ [key: string]: string }[]>([]);
+      const [texts, setTexts] = useState(EN);
       const [t, setT] = useState<(text_id) => string>(undefined);
       const [tabHistory, setTabHistory] = useState<
         {

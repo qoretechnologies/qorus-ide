@@ -2,7 +2,9 @@ import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { useEffect, useState } from 'react';
-import Options, { IOptionsSchema } from '../../../components/Field/systemOptions';
+import Options, {
+  IOptionsSchema,
+} from '../../../components/Field/systemOptions';
 
 const meta = {
   component: Options,
@@ -74,7 +76,9 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
   optionWithAutoSelect: {
     type: 'string',
     display_name: 'Option with auto select',
-    allowed_values: [{ name: 'Allowed value 1', short_desc: 'Allowed value 1' }],
+    allowed_values: [
+      { name: 'Allowed value 1', short_desc: 'Allowed value 1' },
+    ],
     required: !allOptional,
     supports_templates: true,
   },
@@ -117,9 +121,21 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
       optionWithAutoSelect: {
         type: 'string',
         display_name: 'Option with auto select',
-        allowed_values: [{ name: 'Allowed value 1', short_desc: 'Allowed value 1' }],
+        allowed_values: [
+          { name: 'Allowed value 1', short_desc: 'Allowed value 1' },
+        ],
         required: true,
       },
+    },
+  },
+  colorOption: {
+    type: 'rgbcolor',
+    required: true,
+    value: {
+      r: 255,
+      g: 0,
+      b: 0,
+      a: 1,
     },
   },
 });
@@ -147,12 +163,21 @@ export const Basic: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => expect(canvas.getAllByDisplayValue('$local:test')[0]).toBeInTheDocument(), {
-      timeout: 10000,
-    });
     await waitFor(
       () =>
-        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(13),
+        expect(
+          canvas.getAllByDisplayValue('$local:test')[0]
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll('.reqore-collection-item.system-option')
+            .length
+        ).toBe(14),
       {
         timeout: 10000,
       }
@@ -189,11 +214,15 @@ export const OptionalOpened: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => expect(canvas.getAllByText('AddNewOption (14)')[0]).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(canvas.queryAllByText(/AddNewOption/)[0]).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
 
-    await fireEvent.click(canvas.getAllByText('AddNewOption (14)')[0]);
+    await fireEvent.click(canvas.queryAllByText(/AddNewOption/)[0]);
   },
 };
 
@@ -225,17 +254,132 @@ export const NonExistentOptionsFiltered: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(), {
-      timeout: 10000,
-    });
-    await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[0], {
-      target: { value: 'option1a' },
-    });
+    await waitFor(
+      () =>
+        expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await fireEvent.change(
+      document.querySelectorAll('.system-option .reqore-textarea')[0],
+      {
+        target: { value: 'option1a' },
+      }
+    );
 
-    await expect(rest.args.onChange).toHaveBeenCalledWith(undefined, {
-      option1: { type: 'string', value: 'option1a' },
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      undefined,
+      {
+        option1: { type: 'string', value: 'option1a' },
+        option2: { type: 'string', value: 'option2' },
+        option3: { type: 'string', value: 'option3' },
+      },
+      {}
+    );
+  },
+};
+
+export const OptionsWithOnChangeTriggerEvents: StoryObj<typeof meta> = {
+  args: {
+    value: {
+      optionWithRefetchAndReset: { type: 'string', value: 'option1' },
       option2: { type: 'string', value: 'option2' },
-      option3: { type: 'string', value: 'option3' },
-    });
+    },
+    options: {
+      optionWithRefetchAndReset: {
+        type: 'string',
+        on_change: ['refetch', 'reset'],
+      },
+      option2: { type: 'string' },
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () =>
+        expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await fireEvent.change(
+      document.querySelectorAll('.system-option .reqore-textarea')[1],
+      {
+        target: { value: 'option1a' },
+      }
+    );
+
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      undefined,
+      {
+        optionWithRefetchAndReset: { type: 'string', value: 'option1a' },
+        option2: { type: 'string', value: 'option2' },
+      },
+      {
+        events: ['refetch', 'reset'],
+      }
+    );
+  },
+};
+
+export const OptionWithExpression: StoryObj<typeof meta> = {
+  args: {
+    options: {
+      optionWithExpression: {
+        type: 'string',
+        display_name: 'Expression option',
+        short_desc: 'Option with expression support',
+        supports_expressions: true,
+        supports_templates: true,
+        required: true,
+        preselected: true,
+      },
+    },
+    value: {
+      optionWithExpression: {
+        type: 'string',
+        value: {
+          exp: 'SUBSTR',
+          args: [
+            {
+              type: 'string',
+              value: {
+                exp: 'SUBSTR',
+                args: [
+                  {
+                    type: 'string',
+                    value: '$local:name',
+                  },
+                  {
+                    value: 1,
+                    type: 'int',
+                    is_expression: false,
+                  },
+                  {
+                    value: 1,
+                    type: 'int',
+                    is_expression: false,
+                  },
+                ],
+              },
+              is_expression: true,
+            },
+            {
+              value: 1,
+              type: 'int',
+              is_expression: false,
+            },
+            {
+              value: 2,
+              type: 'int',
+              is_expression: false,
+            },
+          ],
+        },
+        is_expression: true,
+      },
+    },
   },
 };

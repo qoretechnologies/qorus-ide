@@ -1,5 +1,10 @@
 import { expect } from '@storybook/jest';
-import { fireEvent, screen, userEvent, waitFor } from '@storybook/testing-library';
+import {
+  fireEvent,
+  screen,
+  userEvent,
+  waitFor,
+} from '@storybook/testing-library';
 
 const stateCategory = {
   mapper: 'Interfaces',
@@ -55,56 +60,93 @@ export function _testsSubmitFSMState(buttonId?: string) {
 }
 
 export async function _testsQodexCanBePublished() {
-  await waitFor(() => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(), {
-    timeout: 10000,
-  });
+  await waitFor(
+    () => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
 }
 
 export async function _testsCloseStateDetail() {
-  await fireEvent.click(document.querySelector('.fsm-state-detail .reqore-button'));
+  await fireEvent.click(
+    document.querySelector('.fsm-state-detail .reqore-button')
+  );
 }
 
-export async function _testsOpenAppCatalogue(wrapperId?: string, x: number = 100, y: number = 100) {
+export async function _testsOpenAppCatalogue(
+  wrapperId?: string,
+  x: number = 100,
+  y: number = 100
+) {
   const fullWrapperId = `${wrapperId ? `${wrapperId}-` : ''}fsm-diagram`;
 
-  await waitFor(() => expect(document.getElementById(fullWrapperId)).toBeInTheDocument(), {
-    timeout: 10000,
-  });
+  await waitFor(
+    () => expect(document.getElementById(fullWrapperId)).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
 
-  const wrapper = document.getElementById(fullWrapperId).querySelector('.element-pan');
+  const wrapper = document
+    .getElementById(fullWrapperId)
+    .querySelector('.element-pan');
 
   await fireEvent.dblClick(wrapper, {
     clientX: wrapper.getBoundingClientRect().left + x,
     clientY: wrapper.getBoundingClientRect().top + y,
   });
 
-  await waitFor(() => expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(), {
-    timeout: 10000,
-  });
+  await waitFor(
+    () =>
+      expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
 }
 
 export async function _testsCloseAppCatalogue() {
-  await fireEvent.click(document.querySelector('.fsm-app-selector .reqore-drawer-close-button'));
+  await fireEvent.click(
+    document.querySelector('.fsm-app-selector .reqore-drawer-close-button')
+  );
 }
 
 export async function _testsManageVariableFromCatalogue(variableName: string) {
   await userEvent.click(
-    screen.getByText(variableName).closest('.reqore-panel-title').querySelector('.manage-variable')
+    screen
+      .getByText(variableName)
+      .closest('.reqore-panel-title')
+      .querySelector('.manage-variable')
   );
 }
 
 export async function _testsSelectAppOrAction(canvas, appOrAction: string) {
-  await waitFor(() => canvas.getByText(appOrAction, { selector: 'h4' }), { timeout: 10000 });
-  await fireEvent.click(canvas.getByText(appOrAction, { selector: 'h4' }));
+  await waitFor(
+    () => canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' }),
+    {
+      timeout: 10000,
+    }
+  );
+  await fireEvent.click(
+    canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' })
+  );
 }
 
-export async function _testsOpenAppCatalogueFromState(stateId?: number | string) {
+export async function _testsOpenAppCatalogueFromState(
+  stateId?: number | string,
+  branch?: 'true' | 'false'
+) {
+  const className = `.add-new-state-after${branch ? `-${branch}` : ''}`;
+
   if (!stateId) {
-    await fireEvent.click(document.querySelector('.add-new-state-after'));
+    await fireEvent.click(document.querySelector(className));
     return;
   }
 
-  await fireEvent.click(document.querySelector(`#state-${stateId} .add-new-state-after`));
+  await fireEvent.click(
+    document.querySelector(`#state-${stateId} ${className}`)
+  );
 }
 
 export async function _testsSelectFromAppCatalogue(
@@ -113,9 +155,13 @@ export async function _testsSelectFromAppCatalogue(
   app?: string,
   action?: string
 ) {
-  await waitFor(() => expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(), {
-    timeout: 10000,
-  });
+  await waitFor(
+    () =>
+      expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
 
   if (app) {
     if (action) {
@@ -141,10 +187,11 @@ export async function _testsAddNewState(
   wrapperId?: string,
   x?: number,
   y?: number,
-  stateId?: number | string
+  stateId?: number | string,
+  branch?: 'true' | 'false'
 ) {
   if (stateId || stateId === 0) {
-    await _testsOpenAppCatalogueFromState(stateId);
+    await _testsOpenAppCatalogueFromState(stateId, branch);
   } else {
     await _testsOpenAppCatalogue(wrapperId, x, y);
   }
@@ -152,7 +199,11 @@ export async function _testsAddNewState(
   await _testsSelectFromAppCatalogue(canvas, stateType);
 }
 
-export async function _testsAddNewVariableState(variableName: string, canvas, wrapperId?: string) {
+export async function _testsAddNewVariableState(
+  variableName: string,
+  canvas,
+  wrapperId?: string
+) {
   await _testsOpenAppCatalogue(wrapperId);
   await _testsSelectAppOrAction(canvas, 'Variables');
   await _testsSelectAppOrAction(canvas, variableName);
@@ -166,9 +217,13 @@ export function _testsSelectItemFromDropdown(
 ) {
   return async () => {
     if (className) {
-      await waitFor(() => expect(document.querySelectorAll(className)[0]).toBeInTheDocument(), {
-        timeout: 10000,
-      });
+      await waitFor(
+        () =>
+          expect(document.querySelectorAll(className)[0]).toBeInTheDocument(),
+        {
+          timeout: 10000,
+        }
+      );
       await fireEvent.click(document.querySelectorAll(className)[0]);
     } else {
       await waitFor(async () => await canvas.getAllByText(dropdownLabel)[0], {
@@ -180,11 +235,17 @@ export function _testsSelectItemFromDropdown(
       await fireEvent.click(canvas.getAllByText(dropdownLabel)[0]);
     }
 
-    await waitFor(() => expect(document.querySelector('.q-select-input')).toBeInTheDocument(), {
+    await waitFor(
+      () =>
+        expect(document.querySelector('.q-select-input')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+
+    await waitFor(async () => await canvas.getAllByText(itemLabel)[1], {
       timeout: 10000,
     });
-
-    await waitFor(async () => await canvas.getAllByText(itemLabel)[1], { timeout: 10000 });
     await fireEvent.click(canvas.getAllByText(itemLabel)[1]);
   };
 }
@@ -195,14 +256,22 @@ export function _testsSelectItemFromCollection(
   collectionLabel: string = 'PleaseSelect'
 ) {
   return async () => {
-    await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], { timeout: 30000 });
+    await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], {
+      timeout: 30000,
+    });
 
     await fireEvent.click(canvas.getAllByText(collectionLabel)[1]);
 
-    await waitFor(() => expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(), {
+    await waitFor(
+      () =>
+        expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+    await waitFor(async () => await canvas.getByText(itemLabel), {
       timeout: 10000,
     });
-    await waitFor(async () => await canvas.getByText(itemLabel), { timeout: 10000 });
 
     await fireEvent.click(canvas.getByText(itemLabel));
   };
@@ -260,7 +329,9 @@ export async function _testsMoveState(
 
   await sleep(100);
 
-  const { left, top } = document.querySelector(`#state-${id}`).getBoundingClientRect();
+  const { left, top } = document
+    .querySelector(`#state-${id}`)
+    .getBoundingClientRect();
 
   await fireEvent.mouseMove(document.querySelector(`#state-${id}`), {
     clientX: left,
@@ -268,7 +339,9 @@ export async function _testsMoveState(
   });
 
   for await (const _ of Array(Math.round(times)).keys()) {
-    const { left, top } = document.querySelector(`#state-${id}`).getBoundingClientRect();
+    const { left, top } = document
+      .querySelector(`#state-${id}`)
+      .getBoundingClientRect();
 
     if (left > window.innerWidth - 100 || top > window.innerHeight - 100) {
       break;
@@ -293,16 +366,24 @@ export async function _testsMoveState(
 }
 
 export async function _testsConfirmDialog() {
-  await waitFor(async () => screen.getAllByText('Confirm')[0], { timeout: 5000 });
+  await waitFor(async () => screen.getAllByText('Confirm')[0], {
+    timeout: 5000,
+  });
   await fireEvent.click(screen.getAllByText('Confirm')[0]);
   await sleep(200);
 }
 
 export async function _testsDeleteState(name: string) {
   await _testsClickState(name);
-  await waitFor(() => expect(document.querySelector('.state-delete-button')).toBeInTheDocument(), {
-    timeout: 5000,
-  });
+  await waitFor(
+    () =>
+      expect(
+        document.querySelector('.state-delete-button')
+      ).toBeInTheDocument(),
+    {
+      timeout: 5000,
+    }
+  );
   await fireEvent.click(document.querySelector('.state-delete-button'));
   await sleep(200);
   await _testsConfirmDialog();
@@ -321,21 +402,31 @@ export async function _testsDoubleClickState(name, options = {}) {
   await _testsClickState(name, options);
 }
 
-export async function _testsClickState(name: string, options = {}, nth: number = 0) {
+export async function _testsClickState(
+  name: string,
+  options = {},
+  nth: number = 0
+) {
   await fireEvent.mouseOver(
-    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
+    screen
+      .getAllByText(name, { selector: `.fsm-state h4` })
+      [nth].closest('.fsm-state'),
     options
   );
   await sleep(100);
   await fireEvent.mouseDown(
-    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
+    screen
+      .getAllByText(name, { selector: `.fsm-state h4` })
+      [nth].closest('.fsm-state'),
     {
       ...options,
       timeStamp: 0,
     }
   );
   await fireEvent.mouseUp(
-    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
+    screen
+      .getAllByText(name, { selector: `.fsm-state h4` })
+      [nth].closest('.fsm-state'),
     {
       ...options,
       timeStamp: 100,
@@ -344,7 +435,9 @@ export async function _testsClickState(name: string, options = {}, nth: number =
 }
 
 export function _testsGetStateByLabel(label: string, nth: number = 0) {
-  return screen.getAllByText(label, { selector: `.fsm-state h4` })[nth].closest('.fsm-state');
+  return screen
+    .getAllByText(label, { selector: `.fsm-state h4` })
+    [nth].closest('.fsm-state');
 }
 
 export async function _testsClickStateByLabel(canvas, label, options = {}) {
@@ -358,4 +451,27 @@ export async function _testsClickStateByLabel(canvas, label, options = {}) {
     ...options,
     timeStamp: 100,
   });
+}
+
+export async function _testsOpenTemplates() {
+  await waitFor(
+    async () => {
+      await expect(
+        document.querySelector('.template-selector')
+      ).toBeInTheDocument();
+    },
+    { timeout: 10000 }
+  );
+
+  await sleep(300);
+
+  await fireEvent.click(document.querySelector('.template-selector'));
+
+  await waitFor(
+    () =>
+      expect(
+        document.querySelector('.reqore-popover-content')
+      ).toBeInTheDocument(),
+    { timeout: 10000 }
+  );
 }

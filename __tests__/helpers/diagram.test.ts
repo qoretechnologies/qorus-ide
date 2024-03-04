@@ -82,7 +82,6 @@ describe('setBalancedDepth', () => {
     expect(balanced.get(2).depth).toBe(1);
     expect(balanced.get(3).depth).toBe(2);
   });
-
 });
 
 describe('findRef', () => {
@@ -92,7 +91,11 @@ describe('findRef', () => {
   });
 
   test('should return the center node when given an odd number of nodes above', () => {
-    const node = { above: [{ below: [] }, { below: [] }, { below: [] }], below: [], width: 0 };
+    const node = {
+      above: [{ below: [] }, { below: [] }, { below: [] }],
+      below: [],
+      width: 0,
+    };
     expect(findRef(node)).toEqual(node.above[1]);
   });
 
@@ -104,7 +107,6 @@ describe('findRef', () => {
     };
     expect(findRef(node)).toEqual(node.above[1]);
   });
-
 });
 
 describe('isRef', () => {
@@ -120,7 +122,6 @@ describe('isRef', () => {
     expect(isRef(refNode, node1.below[1])).toBe(false);
     expect(isRef(refNode, node2.below[0])).toBe(false);
   });
-
 });
 
 describe('getWidth', () => {

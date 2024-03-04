@@ -3,6 +3,7 @@ import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { size, upperFirst } from 'lodash';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { NewExpression } from '../../Components/ExpressionBuilder.stories';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
@@ -459,6 +460,12 @@ export const NewIfState: StoryFSM = {
 
     await NewState.play({ canvasElement, ...rest, stateType: 'if' });
 
+    await waitFor(() => canvas.getAllByText('field-label-custom')[0], {
+      timeout: 5000,
+    });
+
+    await fireEvent.click(document.querySelectorAll('.reqore-checkbox')[1]);
+
     await fireEvent.change(document.querySelector('#condition-field'), {
       target: { value: 'asfg condition' },
     });
@@ -470,6 +477,31 @@ export const NewIfState: StoryFSM = {
 
     await waitFor(() =>
       expect(canvas.getByText('asfg condition')).toBeInTheDocument()
+    );
+    await _testsQodexCanBePublished();
+  },
+};
+
+export const NewIfStateWithExpression: StoryFSM = {
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await NewState.play({ canvasElement, ...rest, stateType: 'if' });
+
+    await waitFor(() => canvas.getAllByText('field-label-expression')[0], {
+      timeout: 5000,
+    });
+
+    await NewExpression.play({ canvasElement, ...rest });
+
+    await sleep(1000);
+
+    // Submit the state
+    await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
+    await sleep(200);
+
+    await waitFor(() =>
+      expect(canvas.getByText('Expression')).toBeInTheDocument()
     );
     await _testsQodexCanBePublished();
   },

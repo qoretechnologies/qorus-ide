@@ -12,3 +12,20 @@ export const Connection: StoryObj<typeof Auto> = {
     defaultType: 'connection',
   },
 };
+export const ListWithAllowedValues: StoryObj<typeof Auto> = {
+  args: {
+    defaultType: 'list',
+    allowed_values: [
+      {
+        name: 'test',
+        value: 'test',
+        short_desc: 'This is a test',
+      },
+      {
+        name: 'test 2',
+        value: 'test 2',
+        intent: 'info',
+      },
+    ],
+  },
+};

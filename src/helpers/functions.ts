@@ -19,6 +19,7 @@ import set from 'lodash/set';
 import size from 'lodash/size';
 import shortid from 'shortid';
 import { apiHost, apiToken } from '../common/vscode';
+import { TExpressionSchemaArg } from '../components/ExpressionBuilder';
 import { IProviderType } from '../components/Field/connectors';
 import { IOptions, IQorusType } from '../components/Field/systemOptions';
 import { interfaceKindTransform } from '../constants/interfaces';
@@ -37,6 +38,7 @@ import {
   addMessageListener,
   postMessage,
 } from '../hocomponents/withMessageHandler';
+import { IQorusTypeObject } from '../hooks/useQorusTypes';
 import { isStateValid } from './fsm';
 const md5 = require('md5');
 
@@ -637,12 +639,12 @@ export const getDraftId = (
 };
 
 export const filterTemplatesByType = (
-  templates: IReqoreFormTemplates,
+  templates: IReqoreFormTemplates = {},
   fieldType: IQorusType = 'string'
 ): IReqoreFormTemplates => {
   const newTemplates = cloneDeep(templates);
 
-  newTemplates.items = newTemplates.items.reduce((newItems, item) => {
+  newTemplates.items = newTemplates.items?.reduce((newItems, item) => {
     if (item.divider) {
       return [...newItems, item];
     }
@@ -664,6 +666,24 @@ export const filterTemplatesByType = (
   }, []);
 
   return newTemplates;
+};
+
+export const findTemplate = (
+  templates: IReqoreFormTemplates,
+  value: string
+): IReqoreDropdownItem | undefined => {
+  let result: IReqoreDropdownItem | undefined = undefined;
+
+  templates.items?.forEach((item) => {
+    const val = item.items?.find((subItem) => subItem.value === value);
+
+    if (val) {
+      result = val;
+      return;
+    }
+  });
+
+  return result;
 };
 
 export const buildTemplates = (
@@ -716,6 +736,60 @@ export const buildTemplates = (
       ),
     ],
   } as IReqoreDropdownProps;
+};
+
+export const getTypesAccepted = (
+  types: IQorusType[] = [],
+  qorusTypes?: IQorusTypeObject[]
+): IQorusTypeObject[] | undefined => {
+  if (!size(types)) {
+    return undefined;
+  }
+
+  const _types = cloneDeep(types).filter(
+    (type) => type !== 'nothing' && type !== 'null'
+  );
+
+  if (size(_types) === 1) {
+    if (_types[0] === 'auto' || _types[0] === 'any') {
+      return undefined;
+    }
+
+    return [
+      qorusTypes?.find((t) => t.name === _types[0]) || { name: _types[0] },
+    ];
+  }
+
+  return _types.map(
+    (type) => qorusTypes?.find((t) => t.name === type) || { name: type }
+  );
+};
+
+export const getExpressionArgumentType = (
+  arg: TExpressionSchemaArg,
+  qorusTypes?: IQorusTypeObject[],
+  currentType?: IQorusType,
+  firstArgType?: IQorusType
+): IQorusType => {
+  const acceptedTypes = getTypesAccepted(arg.type.types_accepted, qorusTypes);
+
+  // If there is only one accepted type, return it
+  if (size(acceptedTypes) === 1) {
+    return acceptedTypes[0]?.name;
+  }
+
+  if (currentType) {
+    return currentType;
+  }
+
+  // Check if this type exists in the accepted types
+  const type = acceptedTypes?.find((t) => t.name === firstArgType);
+
+  if (type) {
+    return type.name;
+  }
+
+  return arg.type.base_type;
 };
 
 export const isTypeStringCompatible = (type: string) => {

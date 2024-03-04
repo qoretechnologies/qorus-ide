@@ -22,7 +22,7 @@ export const useFetchActionOptions = ({
   const [data, setData] = useState<IOptionsSchema>(undefined);
 
   const load = useCallback(
-    async (customValue?: IOptions) => {
+    async (customValue?: IOptions, cache: boolean = true) => {
       if (!action) {
         return Promise.resolve(undefined);
       }
@@ -32,9 +32,14 @@ export const useFetchActionOptions = ({
 
       // Get everything after "latest/" in action.options_url
       const optionsUrl = action.options_url.split('latest/')[1];
-      const response = await fetchData(`${optionsUrl}?context=ui`, 'PUT', {
-        options: customValue || options,
-      });
+      const response = await fetchData(
+        `${optionsUrl}?context=ui`,
+        'PUT',
+        {
+          options: customValue || options,
+        },
+        cache
+      );
 
       if (response.ok) {
         const { data } = response;
@@ -54,7 +59,7 @@ export const useFetchActionOptions = ({
 
   useEffect(() => {
     if (loadOnMount) {
-      load();
+      load(undefined, false);
     }
   }, []);
 
