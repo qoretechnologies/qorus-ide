@@ -8,9 +8,15 @@ import { Preview } from '@storybook/react';
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import {
+  Route,
+  RouterProvider,
+  createMemoryRouter,
+  createRoutesFromElements,
+} from 'react-router-dom';
 import { InitialContext } from '../src/context/init';
 
-const StorybookWrapper = ({ context, Story }) => {
+const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
 
   // @ts-ignore
@@ -73,11 +79,22 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story, context) => (
-      <ReqoreUIProvider options={{ ...context.args.reqoreOptions }}>
-        <StorybookWrapper context={context} Story={Story} />
-      </ReqoreUIProvider>
-    ),
+    (Story, context) => {
+      const router = createMemoryRouter(
+        createRoutesFromElements(
+          <Route
+            path='/:tab?/:subtab?/:id?'
+            element={<StorybookWrapper context={context} Story={Story} />}
+          />
+        )
+      );
+
+      return (
+        <ReqoreUIProvider options={{ ...context.args.reqoreOptions }}>
+          <RouterProvider router={router} />
+        </ReqoreUIProvider>
+      );
+    },
   ],
 };
 

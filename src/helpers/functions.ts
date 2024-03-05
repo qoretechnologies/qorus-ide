@@ -573,7 +573,7 @@ export const fetchData: (
     };
   } else {
     // We need to wait for the call to finish and the data to be available
-    while (!fetchCache[cacheKey].data) {
+    while (!fetchCache[cacheKey]?.data) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 

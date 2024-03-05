@@ -1,6 +1,7 @@
 import { FunctionComponent } from 'react';
 import { useMount } from 'react-use';
 import compose from 'recompose/compose';
+import { withIdChecker } from '../../hocomponents/withIdChecker';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 import ClassConnectionsStateProvider from '../ClassConnectionsStateProvider';
@@ -230,5 +231,6 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
 
 export default compose(
   withTextContext(),
-  withInitialDataConsumer()
+  withInitialDataConsumer(),
+  withIdChecker()
 )(CreateInterface);

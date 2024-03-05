@@ -27,8 +27,6 @@ export default () =>
       const routerData = useParams();
       const navigate = useNavigate();
 
-      console.log(routerData);
-
       const [isReady, setIsReady] = useState(true);
       const [initialData, setInitialData] = useState<any>({
         tab: routerData.tab || 'Dashboard',
@@ -162,7 +160,6 @@ export default () =>
                 ...current,
                 ...data,
               }));
-              console.log(data);
               changeTab(data.tab, data.subtab, data[data.subtab]?.id);
             }
           },
@@ -177,7 +174,7 @@ export default () =>
       });
 
       if (!texts || !t || !isReady) {
-        return <Loader text='Loading...' centered />;
+        return <Loader text='Loading app...' centered />;
       }
 
       // this action is called when the user clicks the confirm button

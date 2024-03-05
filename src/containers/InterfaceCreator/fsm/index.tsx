@@ -725,7 +725,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       ({ fsmData: { metadata, states }, id }: IDraftData) => {
         setInterfaceId(id);
         setMetadata(metadata);
-        setStates((cur) => ({ ...cur, ...states }));
+        setStates(states);
       },
       undefined,
       () => {
@@ -763,7 +763,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   useEffect(() => {
     if (isReady) {
-      if (!params?.id) {
+      if (!params?.id && size(states) === 0) {
         setIsAddingNewStateAt({ x: 0, y: 0 });
       }
     }
@@ -814,7 +814,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   useUpdateEffect(() => {
     if (isReady && !apps.loading) {
       if (embedded || fsm) {
-        let newStates = embedded ? states : cloneDeep(fsm?.states || {});
+        let newStates = embedded ? states : cloneDeep(states || {});
 
         if (size(newStates) === 0) {
           setCompatibilityChecked(true);
@@ -897,7 +897,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       setWrapperDimensions({ width, height });
     }
-  }, [isReady, apps.loading]);
+  }, [isReady, apps.loading, JSON.stringify(states)]);
 
   useEffect(() => {
     if (states && onStatesChange) {

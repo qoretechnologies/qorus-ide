@@ -274,8 +274,8 @@ const App: FunctionComponent<IApp> = ({
 
   return (
     <>
-      <URLHandler />
       <DraftsProvider>
+        <URLHandler />
         <ContextMenuContext.Provider
           value={{
             addMenu: setContextMenu,
