@@ -4,7 +4,10 @@ import { useAsyncRetry } from 'react-use';
 import { IProviderType } from '../components/Field/connectors';
 import { fetchData } from '../helpers/functions';
 
-export const useFetchAutoVarContext = (provider?: IProviderType, type: string = 'event') => {
+export const useFetchAutoVarContext = (
+  provider?: IProviderType,
+  type: string = 'event'
+) => {
   const result = useAsyncRetry(async () => {
     if (!provider) {
       return undefined;
@@ -15,8 +18,8 @@ export const useFetchAutoVarContext = (provider?: IProviderType, type: string = 
       provider,
     });
 
-    if (data.error) {
-      console.error(data.error);
+    if (!data.ok) {
+      return undefined;
     }
 
     return reduce(
@@ -30,7 +33,7 @@ export const useFetchAutoVarContext = (provider?: IProviderType, type: string = 
       }),
       {}
     );
-  }, []);
+  }, [JSON.stringify(provider)]);
 
   useEffect(() => {
     result.retry();
