@@ -23,7 +23,7 @@ export const Default: Story = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(() => canvas.getAllByText('Issue3485 Conditional'), { timeout: 10000 });
+    await waitFor(() => canvas.getAllByText('Example Fsm'), { timeout: 10000 });
   },
 };
 
@@ -35,6 +35,8 @@ export const ChangeTab: Story = {
 
     await fireEvent.click(canvas.getAllByText('Flow Builder')[0]);
 
-    await waitFor(() => canvas.getAllByText('Authorize Payment'), { timeout: 10000 });
+    await waitFor(() => canvas.getAllByText('Authorize Payment'), {
+      timeout: 10000,
+    });
   },
 };
