@@ -31,7 +31,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebounce, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -425,7 +425,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const [isMovingStates, setIsMovingStates] = useState<boolean>(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedStates, setSelectedStates] = useState<TFSMSelectedStates>({});
-  const [activeState, setActiveState] = useState<string | number>(undefined);
+
+  //const [activeState, setActiveState] = useState<string | number>(undefined);
+  // Get the query params from the location
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeState = searchParams.get('state');
+
+  const setActiveState = (id) => {
+    setSearchParams({ state: id });
+  };
+
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [showStateIds, setShowStateIds] = useState<boolean>(false);
   const [showVariables, setShowVariables] = useState<{
