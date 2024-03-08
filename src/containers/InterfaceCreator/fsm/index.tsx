@@ -403,6 +403,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const [mt, setMt] = useState<IFSMMetadata>(
     buildMetadata(fsm, interfaceContext)
   );
+  const [actState, setActState] = useState<string | number>(undefined);
 
   const wrapperRef = useRef(null);
   const showTransitionsToaster = useRef(0);
@@ -414,26 +415,30 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const stateRefs = useRef<Record<string | number, HTMLDivElement>>({}); // Refs for each state
   const timeSinceDiagramMouseDown = useRef<number>(0);
 
+  let activeState;
+  let setActiveState;
+
   if (!embedded) {
     states = st;
     setStates = setSt;
 
     metadata = mt;
     setMetadata = setMt;
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    activeState = searchParams.get('state');
+
+    setActiveState = (id) => {
+      setSearchParams({ state: id });
+    };
+  } else {
+    activeState = actState;
+    setActiveState = setActState;
   }
 
   const [isMovingStates, setIsMovingStates] = useState<boolean>(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedStates, setSelectedStates] = useState<TFSMSelectedStates>({});
-
-  //const [activeState, setActiveState] = useState<string | number>(undefined);
-  // Get the query params from the location
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeState = searchParams.get('state');
-
-  const setActiveState = (id) => {
-    setSearchParams({ state: id });
-  };
 
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [showStateIds, setShowStateIds] = useState<boolean>(false);
