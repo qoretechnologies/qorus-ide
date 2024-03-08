@@ -7,6 +7,7 @@ import {
   ReqoreTagGroup,
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
+import { size } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { TextContext } from '../../context/text';
@@ -192,7 +193,7 @@ export const TemplateField = ({
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
 
-  if (isFunction) {
+  if (isFunction && !size(rest.allowed_value)) {
     return (
       <>
         <ExpressionBuilder
@@ -303,7 +304,7 @@ export const TemplateField = ({
         </ReqoreControlGroup>
       ) : null}
 
-      {allowFunctions && (
+      {allowFunctions && !size(rest.allowed_values) ? (
         <ReqoreDropdown
           items={functions.value?.map((func) => ({
             label: func.display_name,
@@ -333,7 +334,7 @@ export const TemplateField = ({
             );
           }}
         />
-      )}
+      ) : null}
 
       {showTemplateToggle && !isTemplate ? (
         <ReqoreButton

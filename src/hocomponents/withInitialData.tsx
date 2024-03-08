@@ -3,7 +3,7 @@ import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
 import { find } from 'lodash';
 import set from 'lodash/set';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { useEffectOnce } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import shortid from 'shortid';
@@ -62,13 +62,19 @@ export default () =>
       >([]);
       const { addNotification } = useReqore();
 
-      const changeTab: (tab: string, subtab?: string, id?: string) => void = (
-        tab,
-        subtab,
-        id
-      ) => {
+      const changeTab: (
+        tab: string,
+        subtab?: string,
+        id?: string,
+        query?: Record<string, any>
+      ) => void = (tab, subtab, id, query) => {
         const setTabs = () => {
-          navigate(`/${tab}${subtab ? `/${subtab}${id ? `/${id}` : ''}` : ''}`);
+          navigate({
+            pathname: `/${tab}${
+              subtab ? `/${subtab}${id ? `/${id}` : ''}` : ''
+            }`,
+            search: createSearchParams({ ...query }).toString(),
+          });
         };
 
         setTabs();
@@ -153,14 +159,19 @@ export default () =>
 
         const interfaceDataListener = addMessageListener(
           Messages.RETURN_INTERFACE_DATA,
-          ({ data }) => {
+          ({ data, metadata }) => {
             // only set initial data if we are switching tabs
             if (data?.tab) {
               setInitialData((current) => ({
                 ...current,
                 ...data,
               }));
-              changeTab(data.tab, data.subtab, data[data.subtab]?.id);
+              changeTab(
+                data.tab,
+                data.subtab,
+                data[data.subtab]?.id,
+                metadata?.searchParams
+              );
             }
           },
           true

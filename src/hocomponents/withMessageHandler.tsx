@@ -122,7 +122,7 @@ export type TPostMessage = (
 ) => void;
 export type TMessageListener = (
   action: string,
-  callback: (data: any) => any,
+  callback: (data: any, metadata?: Record<any, any>) => any,
   useWebSockets?: boolean,
   connection?: string,
   eventKey?: string
