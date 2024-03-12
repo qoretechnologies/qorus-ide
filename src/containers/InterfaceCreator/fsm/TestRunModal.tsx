@@ -8,37 +8,49 @@ import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/compon
 import { map, size } from 'lodash';
 import { useAsyncRetry } from 'react-use';
 import { IFSMMetadata, IFSMStates } from '.';
-import { IApp } from '../../../components/AppCatalogue';
 import { getAppAndAction, getBuiltInAppAndAction } from '../../../helpers/fsm';
 import { fetchData } from '../../../helpers/functions';
+import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
 
 export interface IQodexTestRunModalProps {
   data: Partial<IFSMMetadata> & { states: IFSMStates; type: 'fsm' };
-  apps: IApp[];
   id?: string | number;
+  liveRun?: boolean;
 }
 
 export const QodexTestRunModal = ({
   data,
-  apps,
   id,
+  liveRun,
 }: IQodexTestRunModalProps) => {
+  const apps = useGetAppActionData();
   const { loading, value, error } = useAsyncRetry(async () => {
-    const testResponse = await fetchData(
-      '/fsms/exec?state_data=true',
-      'POST',
-      {
-        fsm: {
-          type: 'fsm',
-          id,
-          ...data,
-        },
-      },
-      false
-    );
+    let response;
 
-    if (testResponse.ok) {
-      return testResponse.data.state_data;
+    if (liveRun) {
+      response = await fetchData(
+        `/fsms/${id}?action=exec&state_data=true`,
+        'POST',
+        undefined,
+        false
+      );
+    } else {
+      response = await fetchData(
+        '/fsms/exec?state_data=true',
+        'POST',
+        {
+          fsm: {
+            type: 'fsm',
+            id,
+            ...data,
+          },
+        },
+        false
+      );
+    }
+
+    if (response.ok) {
+      return response.data.state_data;
     }
   }, [data]);
 
@@ -60,7 +72,7 @@ export const QodexTestRunModal = ({
     );
   }
 
-  if (!size(data)) {
+  if (!size(data) && !liveRun) {
     return (
       <ReqoreMessage opaque={false} intent='warning'>
         {' '}
@@ -89,23 +101,26 @@ export const QodexTestRunModal = ({
       defaultZoom={0.5}
       items={map(
         responseList,
-        ({ success, key, response }, index): IReqoreCollectionItemProps => {
-          let { app } = getAppAndAction(
-            apps,
-            data.states[key].action?.value?.app,
-            data.states[key].action?.value?.action
-          );
+        (
+          { success, key, response, name, type, ...rest },
+          index
+        ): IReqoreCollectionItemProps => {
+          let { app } = getAppAndAction(apps, rest.app, rest.action);
 
           if (!app) {
-            ({ app } = getBuiltInAppAndAction(apps, data.states[key].type));
+            ({ app } = getBuiltInAppAndAction(apps, type));
           }
 
           return {
-            label: `[${size(responseList) - index}] ${data.states[key].name}`,
+            label: `[${size(responseList) - index}] ${
+              name || data.states[key].name
+            }`,
             intent: success ? 'success' : 'danger',
             content:
-              typeof response === 'string' || typeof response === 'number' ? (
-                response
+              typeof response === 'string' ||
+              typeof response === 'number' ||
+              !response ? (
+                JSON.stringify(response)
               ) : (
                 <ReqoreTree data={response} />
               ),

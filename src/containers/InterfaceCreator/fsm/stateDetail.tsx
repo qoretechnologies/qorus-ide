@@ -51,6 +51,7 @@ export interface IFSMStateDetailProps {
   onClose: () => void;
   onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean) => void;
   onDelete: (unfilled?: boolean) => void;
+  onFavorite: (data: Partial<IFSMState>) => void;
   onSavedStatusChanged?: (hasSaved: boolean) => void;
 }
 
@@ -60,6 +61,7 @@ export const FSMStateDetail = memo(
     onClose,
     onSubmit,
     onDelete,
+    onFavorite,
     onSavedStatusChanged,
     activeTab,
     inputProvider,
@@ -350,6 +352,12 @@ export const FSMStateDetail = memo(
             className: 'state-delete-button',
             icon: 'DeleteBinLine',
             onClick: onDelete,
+          },
+          {
+            tooltip: t('Favorite'),
+            className: 'state-favorite-button',
+            icon: 'StarLine',
+            onClick: () => onFavorite(dataToSubmit),
           },
           {
             show: isCustomBlockFirstPage(),

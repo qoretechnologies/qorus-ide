@@ -33,9 +33,9 @@ export const ChangeTab: Story = {
 
     await Default.play({ canvasElement, ...rest });
 
-    await fireEvent.click(canvas.getAllByText('Flow Builder')[0]);
+    await fireEvent.click(canvas.getAllByText('Classes')[0]);
 
-    await waitFor(() => canvas.getAllByText('Authorize Payment'), {
+    await waitFor(() => canvas.getAllByText('Java Test'), {
       timeout: 10000,
     });
   },

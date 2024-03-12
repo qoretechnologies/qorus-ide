@@ -1,34 +1,88 @@
 {
-  "request_id": "9xXqmKTt2ENFkwk",
+  "request_id": "9IWeMB7NGKnJVr9",
   "tab_token": "none",
   "data": {
+    "fsm": {
+      "display_name": "Qogs",
+      "short_desc": "Qogs are no-code logic elements based on finite state machines; they can be used anywhere in Qorus as an alternative to coding",
+      "drafts": 1,
+      "items": 28
+    },
     "connection": {
       "drafts": 0,
-      "items": 20
+      "items": 35
     },
     "class": {
+      "display_name": "Classes",
+      "short_desc": "Classes that can be used in Qorus interface code",
       "drafts": 0,
-      "items": 193
+      "items": 97
     },
     "errors": {
+      "display_name": "Workflow Sync Events",
+      "short_desc": "Workflow synchronization events",
       "drafts": 0,
-      "items": 0
+      "items": 9
     },
-    "fsm": {
-      "drafts": 1,
-      "items": 47
+    "group": {
+      "display_name": "Interface Groups",
+      "short_desc": "Interface groups allow interfaces to be enabled and disabled together as well as enabling views on interfaces to be restricted for certain users",
+      "drafts": 0,
+      "items": 89
+    },
+    "job": {
+      "display_name": "Scheduled Jobs",
+      "short_desc": "Jobs execute logic on a user-defined schedule",
+      "drafts": 0,
+      "items": 98
     },
     "mapper": {
+      "display_name": "Mappers",
+      "short_desc": "Mappers are visual data transformation elements",
       "drafts": 0,
-      "items": 37
+      "items": 53
+    },
+    "mapper-code": {
+      "display_name": "Mapper Code",
+      "short_desc": "Mapper code elements are classes with methods that can be directly used in mappers for complex data transformation logic",
+      "drafts": 0,
+      "items": 2
     },
     "pipeline": {
+      "display_name": "Data Pipelines",
+      "short_desc": "Data pipelines enable large volumes of data to be processed efficiently",
       "drafts": 0,
       "items": 15
     },
-    "job": {
+    "queue": {
+      "display_name": "Asynchronous Step Queues",
+      "short_desc": "Asynchronous step queues connect the front end to the back end of asynchronous workflow steps",
       "drafts": 0,
-      "items": 92
+      "items": 14
+    },
+    "service": {
+      "display_name": "Services",
+      "short_desc": "Services are a top-level interfacing object in Qorus",
+      "drafts": 0,
+      "items": 121
+    },
+    "step": {
+      "display_name": "Steps",
+      "short_desc": "Steps are an atomic execution element in a workflow",
+      "drafts": 0,
+      "items": 258
+    },
+    "value-map": {
+      "display_name": "Value Map",
+      "short_desc": "Value maps provide simple mappings from one value to another",
+      "drafts": 0,
+      "items": 8
+    },
+    "workflow": {
+      "display_name": "Workflows",
+      "short_desc": "Workflows are the primary stateful orchestration interface type in Qorus",
+      "drafts": 0,
+      "items": 125
     }
   },
   "action": "get-all-interface-counts-complete",

@@ -10,10 +10,7 @@ import { useMount } from 'react-use';
 import { PositiveColorEffect } from '../../components/Field/multiPair';
 import { IField } from '../../components/FieldWrapper';
 import Loader from '../../components/Loader';
-import {
-  interfaceIcons,
-  interfaceKindToName,
-} from '../../constants/interfaces';
+import { interfaceIcons } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { callBackendBasic } from '../../helpers/functions';
@@ -47,7 +44,7 @@ export interface IQorusInterface extends Partial<IDraftData> {
 
 export type TQorusInterfaceCount = Record<
   string,
-  { items: number; drafts: number }
+  { items: number; drafts: number; display_name: string; short_desc: string }
 >;
 
 export interface IDraftData {
@@ -128,7 +125,7 @@ export const InterfacesView = () => {
         paddingBottom: 0,
       }}
     >
-      <ReqoreMenu transparent width='250px'>
+      <ReqoreMenu transparent width='350px'>
         {map(items, (data, iface) => (
           <ReqoreMenuItem
             key={iface}
@@ -139,9 +136,10 @@ export const InterfacesView = () => {
               changeTab?.('Interfaces', iface);
               setType(iface);
             }}
-            badge={[data.items, data.drafts]}
+            badge={[data.items, { label: data.drafts, intent: 'pending' }]}
+            description={data.short_desc}
           >
-            {interfaceKindToName[iface]}
+            {data.display_name}
           </ReqoreMenuItem>
         ))}
       </ReqoreMenu>

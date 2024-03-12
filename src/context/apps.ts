@@ -6,6 +6,7 @@ export type TAppsContext = {
   apps?: IApp[];
   actionSets?: IActionSet[];
   addNewActionSet?: (actionSet: IActionSet) => void;
+  removeActionSet?: (actionSetId: string) => void;
   loading?: boolean;
   error?: any;
   retry?: () => void;

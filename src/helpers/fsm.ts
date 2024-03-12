@@ -838,6 +838,18 @@ export const areStatesAConnectedGroup = (states: IFSMStates): boolean => {
   });
 };
 
+export const getStateAppAndAction = (apps: IApp[], state: IFSMState) => {
+  if (state.action.type === 'appaction') {
+    return getAppAndAction(
+      apps,
+      state.action.value.app,
+      state.action.value.action
+    );
+  }
+
+  return getBuiltInAppAndAction(apps, state.action.type);
+};
+
 export const getBuiltInAppAndAction = (
   apps: IApp[],
   type: Omit<TAction, 'appaction'>

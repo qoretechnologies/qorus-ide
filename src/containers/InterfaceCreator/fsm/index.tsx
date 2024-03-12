@@ -450,6 +450,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     };
   }>(undefined);
 
+  const [isEventTriggerChecked, setIsEventTriggerChecked] =
+    useState<boolean>(false);
   const [compatibilityChecked, setCompatibilityChecked] =
     useState<boolean>(true);
   const [outputCompatibility, setOutputCompatibility] = useState<
@@ -845,7 +847,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           !embedded &&
           !find(newStates, (state) => {
             return state.is_event_trigger;
-          })
+          }) &&
+          !isEventTriggerChecked
         ) {
           let transitions: IFSMTransition[];
           const initialStateId = findKey(newStates, (state: IFSMState) => {
@@ -899,10 +902,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
         updateHistory(newStates);
         setStates((cur) => ({ ...cur, ...newStates }));
-        setCompatibilityChecked(true);
-      } else {
-        setCompatibilityChecked(true);
       }
+
+      setCompatibilityChecked(true);
+      setIsEventTriggerChecked(true);
 
       const { width, height } = wrapperRef.current.getBoundingClientRect();
 
@@ -1769,6 +1772,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
             return newStates;
           });
+          setHoveredState(null);
         },
       });
     },
@@ -2145,7 +2149,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const renderAppCatalogue = () => {
     if (addingNewStateAt) {
       const isFirstTriggerState =
-        (size(states) === 0 || !hasEventTriggerState()) && !embedded;
+        (size(states) === 0 || !hasEventTriggerState()) &&
+        !embedded &&
+        !addingNewStateAt.fromState;
+
       const variables = reduce(
         {
           ...(metadata.globalvar || {}),
@@ -2365,6 +2372,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         onDelete={(unfilled?: boolean) =>
           handleStateDeleteClick(state, unfilled)
         }
+        onFavorite={(state: IFSMState) => {
+          apps.addNewActionSet({
+            id: state.id,
+            states: { [state.id]: state },
+          });
+        }}
         states={states}
         activeTab={editingTransitionOrder ? 'transitions' : 'configuration'}
         inputProvider={getStateDataForComparison(states[state], 'input')}

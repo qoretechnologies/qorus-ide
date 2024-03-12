@@ -1,11 +1,7 @@
-import {
-  ReqoreCollection,
-  ReqoreTag,
-  useReqoreProperty,
-} from '@qoretechnologies/reqore';
+import { ReqoreCollection, useReqoreProperty } from '@qoretechnologies/reqore';
 import { TReqoreBadge } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
-import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
+import timeago from 'epoch-timeago';
 import { capitalize, size } from 'lodash';
 import { useContext, useMemo } from 'react';
 import {
@@ -13,6 +9,7 @@ import {
   PositiveColorEffect,
   SaveColorEffect,
   SelectorColorEffect,
+  SynthColorEffect,
   WarningColorEffect,
 } from '../../components/Field/multiPair';
 import Loader from '../../components/Loader';
@@ -25,6 +22,7 @@ import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 import { zoomToSize, zoomToWidth } from '../ConfigItemManager/table';
+import { QodexTestRunModal } from '../InterfaceCreator/fsm/TestRunModal';
 import { InterfacesViewItem } from './item';
 
 export interface IInterfaceViewCollectionProps {
@@ -40,6 +38,7 @@ export const InterfacesViewCollection = ({
 }: IInterfaceViewCollectionProps) => {
   const addNotification = useReqoreProperty('addNotification');
   const confirmAction = useReqoreProperty('confirmAction');
+  const addModal = useReqoreProperty('addModal');
   const { changeDraft, changeTab, qorus_instance, is_hosted_instance } =
     useContext(InitialContext);
 
@@ -60,6 +59,44 @@ export const InterfacesViewCollection = ({
     return size(value.filter((item) => item.draft || item.hasDraft));
   };
 
+  const getTags = (item): IReqoreCollectionItemProps['tags'] => {
+    let tags: IReqoreCollectionItemProps['tags'] = [];
+
+    if (type === 'fsm') {
+      if (!item.data?.on_demand) {
+        tags.push({
+          icon: item.data?.type === 'event' ? 'LightbulbLine' : 'Calendar2Line',
+          tooltip: item.data?.type ? 'Event' : 'Scheduled',
+        });
+      }
+
+      tags = [
+        ...tags,
+        {
+          icon: item.data?.running ? 'PlayCircleLine' : 'PauseCircleLine',
+          intent: item.data?.running ? 'success' : undefined,
+          tooltip: item.data?.running ? 'Running' : 'Not currently running',
+        },
+        {
+          icon: 'HistoryLine',
+          label: item.data?.last_executed
+            ? timeago(item.data?.last_executed)
+            : 'Never',
+        },
+      ];
+    }
+
+    if (item.draft) {
+      tags.push({
+        icon: 'EditLine',
+        label: 'Draft',
+        intent: item.data ? 'pending' : 'success',
+      });
+    }
+
+    return tags;
+  };
+
   const badges = useMemo(() => {
     const badgeList: TReqoreBadge[] = [getRemotesCount()];
 
@@ -76,7 +113,9 @@ export const InterfacesViewCollection = ({
     <ReqoreCollection
       label={capitalize(interfaceToPlural[type]).replace('-', ' ')}
       filterable
-      sortable={false}
+      sortable
+      defaultSortBy='date'
+      defaultSort='desc'
       minimal
       minColumnWidth={zoomToWidth[zoom]}
       badge={badges}
@@ -105,6 +144,14 @@ export const InterfacesViewCollection = ({
         },
       ]}
       icon={interfaceIcons[type]}
+      sortKeys={{
+        running: 'Is Running',
+        last_executed: 'Last Executed',
+        on_demand: 'Runs On Demand',
+        date: 'Modified',
+        type: 'Type',
+        id: 'ID',
+      }}
       inputProps={{
         focusRules: {
           type: 'keypress',
@@ -115,12 +162,23 @@ export const InterfacesViewCollection = ({
         ({
           label,
           data,
+          date,
           draft,
           hasDraft,
           ...rest
         }): IReqoreCollectionItemProps => ({
           label: label || data?.display_name,
           icon: interfaceIcons[type],
+          metadata: {
+            date: date || data?.date,
+            running: data?.running,
+            last_executed: data?.last_executed
+              ? Date.parse(data?.last_executed)
+              : 0,
+            on_demand: data?.on_demand,
+            type: data?.type,
+            id: data?.id,
+          },
           content: <InterfacesViewItem data={data} />,
           contentEffect: {
             gradient: {
@@ -136,6 +194,7 @@ export const InterfacesViewCollection = ({
               },
             },
           },
+          tags: getTags({ label, data, draft, hasDraft, rest }),
           flat: true,
           showHeaderTooltip: true,
           responsiveTitle: false,
@@ -153,21 +212,12 @@ export const InterfacesViewCollection = ({
           },
           actions: [
             {
-              as: ReqoreTag,
-              show: draft ? true : false,
-              props: {
-                icon: 'EditLine',
-                label: draft && !data ? 'New' : 'Draft',
-                intent: draft && !data ? 'success' : 'pending',
-                size: 'tiny',
-              } as IReqoreTagProps,
-            },
-            {
               icon: 'CloseLine',
               effect: WarningColorEffect,
               tooltip: 'Delete draft',
               size: 'tiny',
               show: draft ? 'hover' : false,
+              compact: true,
               onClick: () => {
                 confirmAction({
                   title: 'Delete draft',
@@ -179,11 +229,34 @@ export const InterfacesViewCollection = ({
               },
             },
             {
+              icon: 'PlayLine',
+              leftIconProps: {
+                size: '17px',
+              },
+              compact: true,
+              effect: SynthColorEffect,
+              tooltip: 'Execute',
+              size: 'tiny',
+              show:
+                type === 'fsm' && (data?.on_demand || data?.type !== 'event')
+                  ? 'hover'
+                  : false,
+              onClick: () => {
+                addModal({
+                  label: `Execution of "${data?.display_name}"`,
+                  children: (
+                    <QodexTestRunModal id={rest.id} data={data} liveRun />
+                  ),
+                });
+              },
+            },
+            {
               icon: 'ToggleLine',
               effect: data?.enabled ? SaveColorEffect : SelectorColorEffect,
               tooltip: data?.enabled ? 'Disable' : 'Enable',
               size: 'tiny',
-              show: data?.supports_enable ? 'hover' : false,
+              compact: true,
+              show: data?.supports_enable ? true : false,
               onClick: () => {
                 onToggleEnabledClick(data.id, !data.enabled);
               },
@@ -192,6 +265,7 @@ export const InterfacesViewCollection = ({
               icon: 'DeleteBinLine',
               effect: NegativeColorEffect,
               tooltip: 'Delete',
+              compact: true,
               size: 'tiny',
               show: !draft || data ? 'hover' : false,
               onClick: () => {
