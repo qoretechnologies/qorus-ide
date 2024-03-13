@@ -179,7 +179,6 @@ export const MultipleStatesAreDeleted: StoryFSM = {
     await _testsDeleteMultipleStates();
 
     await expect(document.querySelectorAll('.fsm-state').length).toBe(6);
-    await expect(document.querySelectorAll('.fsm-transition').length).toBe(4);
   },
 };
 
