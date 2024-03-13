@@ -119,7 +119,7 @@ export const AddNewSet: StoryFSM = {
       canvas,
       undefined,
       'Saved Favorites',
-      'Test Action Set'
+      'Test action set'
     );
 
     await sleep(200);
