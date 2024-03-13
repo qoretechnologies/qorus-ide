@@ -11,13 +11,13 @@ export const useApps = (): TAppsContext => {
     return apps.data;
   }, []);
 
-  const { app, loading, error, addNewActionSet, retry } = useActionSets();
+  const { app, loading, error, retry, ...rest } = useActionSets();
 
   return {
     apps: apps.value ? [app, ...apps.value] : [],
     loading: apps.loading || loading,
     error: apps.error || error,
-    addNewActionSet,
+    ...rest,
     retry: () => {
       apps.retry();
       retry();

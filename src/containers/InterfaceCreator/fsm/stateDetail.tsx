@@ -31,6 +31,7 @@ import {
   isStateValid,
 } from '../../../helpers/fsm';
 import { postMessage } from '../../../hocomponents/withMessageHandler';
+import { IActionSetsHook } from '../../../hooks/useActionSets';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
@@ -53,6 +54,7 @@ export interface IFSMStateDetailProps {
   onDelete: (unfilled?: boolean) => void;
   onFavorite: (data: Partial<IFSMState>) => void;
   onSavedStatusChanged?: (hasSaved: boolean) => void;
+  getIsAlreadySaved?: IActionSetsHook['isSingleActionWithNameSaved'];
 }
 
 export const FSMStateDetail = memo(
@@ -63,6 +65,7 @@ export const FSMStateDetail = memo(
     onDelete,
     onFavorite,
     onSavedStatusChanged,
+    getIsAlreadySaved,
     activeTab,
     inputProvider,
     outputProvider,
@@ -354,9 +357,15 @@ export const FSMStateDetail = memo(
             onClick: onDelete,
           },
           {
-            tooltip: t('Favorite'),
+            disabled: isLoading,
+            tooltip: getIsAlreadySaved(dataToSubmit.name)
+              ? t('Remove from favorites')
+              : t('Save as favorite'),
             className: 'state-favorite-button',
-            icon: 'StarLine',
+            icon: getIsAlreadySaved(dataToSubmit.name)
+              ? 'StarFill'
+              : 'StarLine',
+            intent: getIsAlreadySaved(dataToSubmit.name) ? 'info' : undefined,
             onClick: () => onFavorite(dataToSubmit),
           },
           {

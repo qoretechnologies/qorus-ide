@@ -1,4 +1,4 @@
-import { find, size } from 'lodash';
+import { find, size, some } from 'lodash';
 import { IApp, IAppAction } from '../components/AppCatalogue';
 import { IActionSet } from '../containers/InterfaceCreator/fsm/ActionSetDialog';
 import {
@@ -7,11 +7,16 @@ import {
 } from '../helpers/fsm';
 import { useQorusStorage } from './useQorusStorage';
 
-export interface IActionSetsHook {
+export interface IActionsSetsHookFunctions {
+  addNewActionSet?: (actionSet: IActionSet) => void;
+  removeActionSet?: (actionSetId: string) => void;
+  isSingleActionWithNameSaved?: (name: string) => boolean;
+  getSingleActionWithNameSaved?: (name: string) => IActionSet;
+}
+
+export interface IActionSetsHook extends IActionsSetsHookFunctions {
   app: IApp;
   value: IActionSet[];
-  addNewActionSet: (actionSet: IActionSet) => void;
-  removeActionSet: (actionSetId: string) => void;
   loading: boolean;
   error: any;
   retry: () => void;
@@ -108,11 +113,31 @@ export const useActionSets = (): IActionSetsHook => {
     );
   };
 
+  const isSingleActionWithNameSaved = (name: string) => {
+    return storage.value.some((actionSet) => {
+      return (
+        size(actionSet.states) === 1 &&
+        some(actionSet.states, (state) => state.name === name)
+      );
+    });
+  };
+
+  const getSingleActionWithNameSaved = (name: string): IActionSet => {
+    return storage.value.find((actionSet) => {
+      return (
+        size(actionSet.states) === 1 &&
+        some(actionSet.states, (state) => state.name === name)
+      );
+    });
+  };
+
   return {
     app: buildAppFromActionSets(storage.value, removeActionSet),
     value: storage.value,
     addNewActionSet,
     removeActionSet,
+    isSingleActionWithNameSaved,
+    getSingleActionWithNameSaved,
     loading: storage.loading,
     error: storage.error,
     retry: () => {

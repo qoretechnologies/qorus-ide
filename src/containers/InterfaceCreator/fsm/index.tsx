@@ -42,6 +42,7 @@ import { DragSelectArea } from '../../../components/DragSelectArea';
 import { IExpression } from '../../../components/ExpressionBuilder';
 import { IProviderType } from '../../../components/Field/connectors';
 import {
+  NegativeColorEffect,
   PositiveColorEffect,
   SaveColorEffect,
   WarningColorEffect,
@@ -70,6 +71,7 @@ import {
   prepareFSMDataForPublishing,
   removeAllStatesWithVariable,
   removeFSMState,
+  removeMultipleFSMStates,
   repositionStateGroup,
 } from '../../../helpers/fsm';
 import {
@@ -898,6 +900,14 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           const { alignedStates } = autoAlign(newStates);
 
           newStates = alignedStates;
+
+          addNotification({
+            type: 'info',
+            content:
+              'An on-demand trigger action has been added to this interface because it was missing',
+            duration: 5000,
+            size: 'small',
+          });
         }
 
         updateHistory(newStates);
@@ -1749,6 +1759,35 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     setEditingTransitionOrder(id);
   }, []);
 
+  const handleMultipleStateDeleteClick = useCallback(
+    (selectedStates: TFSMSelectedStates): void => {
+      confirmAction({
+        title: 'Delete states',
+        description: `Are you sure you want to delete the selected states`,
+        intent: 'danger',
+        onConfirm: () => {
+          setStates((current) => {
+            const newStates = removeMultipleFSMStates(
+              current,
+              Object.keys(selectedStates),
+              interfaceId,
+              (newStates) => {
+                // If this state was deleted because of unfilled data, do not
+                // save history
+                updateHistory(newStates);
+              }
+            );
+
+            return newStates;
+          });
+          setHoveredState(null);
+          setSelectedStates({});
+        },
+      });
+    },
+    []
+  );
+
   const handleStateDeleteClick = useCallback(
     (id: string | number, unfilled?: boolean): void => {
       confirmAction({
@@ -2373,11 +2412,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           handleStateDeleteClick(state, unfilled)
         }
         onFavorite={(state: IFSMState) => {
-          apps.addNewActionSet({
-            id: state.id,
-            states: { [state.id]: state },
-          });
+          if (apps.isSingleActionWithNameSaved(state.name)) {
+            const { id } = apps.getSingleActionWithNameSaved(state.name);
+
+            apps.removeActionSet(id);
+          } else {
+            apps.addNewActionSet({
+              id: state.id,
+              states: { [state.id]: state },
+            });
+          }
         }}
+        getIsAlreadySaved={apps.isSingleActionWithNameSaved}
         states={states}
         activeTab={editingTransitionOrder ? 'transitions' : 'configuration'}
         inputProvider={getStateDataForComparison(states[state], 'input')}
@@ -2642,6 +2688,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
             onClick: () => {
               setIsAddingActionSet(true);
+            },
+          },
+          {
+            tooltip: 'Delete selected',
+            id: 'delete-multiple-states',
+            icon: 'DeleteBin4Line',
+            show: !!size(selectedStates),
+            effect: NegativeColorEffect,
+            onClick: () => {
+              handleMultipleStateDeleteClick(selectedStates);
             },
           },
           {

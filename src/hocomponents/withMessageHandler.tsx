@@ -57,6 +57,9 @@ export const createOrGetWebSocket = (
 
       removeWebSocketData(url);
 
+      // Check if the token is still valid
+      //const fetchData =
+
       if (reconnectTries < WS_RECONNECT_MAX_TRIES) {
         reconnectTries++;
         reconnectInterval = setTimeout(() => {

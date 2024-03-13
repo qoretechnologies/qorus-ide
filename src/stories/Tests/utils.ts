@@ -389,6 +389,21 @@ export async function _testsDeleteState(name: string) {
   await _testsConfirmDialog();
 }
 
+export async function _testsDeleteMultipleStates() {
+  await waitFor(
+    () =>
+      expect(
+        document.querySelector('#delete-multiple-states')
+      ).toBeInTheDocument(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('#delete-multiple-states'));
+  await sleep(200);
+  await _testsConfirmDialog();
+}
+
 export async function _testsSelectState(name: string) {
   await _testsClickState(name, { shiftKey: true });
 }

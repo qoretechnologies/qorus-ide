@@ -442,6 +442,10 @@ export const getTransitionByState = (
   stateId: string | number,
   targetId: string | number
 ): IFSMTransition | null => {
+  if (!states[stateId]) {
+    return null;
+  }
+
   const { transitions } = states[stateId];
 
   return transitions?.find(
@@ -710,6 +714,23 @@ export const isStateValid = (
     (!state['output-type'] ||
       validateField('type-selector', state['output-type']))
   );
+};
+
+export const removeMultipleFSMStates = (
+  states: IFSMStates,
+  ids: (string | number)[],
+  interfaceId: string,
+  onFinish?: (newStates: IFSMStates) => any
+): IFSMStates => {
+  let newStates = cloneDeep(states);
+
+  ids.forEach((id) => {
+    newStates = removeFSMState(newStates, id, interfaceId);
+  });
+
+  onFinish?.(newStates);
+
+  return newStates;
 };
 
 export const removeFSMState = (

@@ -5,6 +5,8 @@ import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
+  _testsClickStateByLabel,
+  _testsCloseAppCatalogue,
   _testsDeleteState,
   _testsOpenAppCatalogue,
   _testsSelectAppOrAction,
@@ -32,7 +34,7 @@ type StoryFSM = StoryObj<typeof meta>;
 
 export const CreateNewSet: StoryFSM = {
   ...Existing,
-  play: async ({ canvasElement, ...rest }) => {
+  play: async ({ canvasElement, openAfter = true, ...rest }) => {
     const canvas = within(canvasElement);
     await SwitchesToBuilder.play({ canvasElement, ...rest });
 
@@ -65,12 +67,17 @@ export const CreateNewSet: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    if (openAfter) {
+      await _testsOpenAppCatalogue(undefined, 500, 200);
+      await _testsSelectAppOrAction(canvas, 'Saved Favorites');
+    }
   },
 };
 
 export const CreateNewSetWithEventTrigger: StoryFSM = {
   ...Existing,
-  play: async ({ canvasElement, ...rest }) => {
+  play: async ({ canvasElement, openAfter = true, ...rest }) => {
     const canvas = within(canvasElement);
     await SwitchesToBuilder.play({ canvasElement, ...rest });
 
@@ -104,6 +111,12 @@ export const CreateNewSetWithEventTrigger: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    if (openAfter) {
+      await _testsDeleteState('Schedule');
+      await _testsOpenAppCatalogue(undefined, 500, 200);
+      await _testsSelectAppOrAction(canvas, 'Saved Favorites');
+    }
   },
 };
 
@@ -111,7 +124,7 @@ export const AddNewSet: StoryFSM = {
   ...Existing,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await CreateNewSet.play({ canvasElement, ...rest });
+    await CreateNewSet.play({ canvasElement, openAfter: false, ...rest });
 
     await _testsOpenAppCatalogue(undefined, 500, 400);
 
@@ -132,7 +145,11 @@ export const AddNewSetWithEventTrigger: StoryFSM = {
   ...Existing,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await CreateNewSetWithEventTrigger.play({ canvasElement, ...rest });
+    await CreateNewSetWithEventTrigger.play({
+      canvasElement,
+      openAfter: false,
+      ...rest,
+    });
 
     await _testsDeleteState('Schedule');
 
@@ -155,7 +172,7 @@ export const AddNewSetFromState: StoryFSM = {
   ...Existing,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await CreateNewSet.play({ canvasElement, ...rest });
+    await CreateNewSet.play({ canvasElement, openAfter: false, ...rest });
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[0]);
 
@@ -176,7 +193,7 @@ export const AddNewSetFromStateFromSet: StoryFSM = {
   ...Existing,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await AddNewSetFromState.play({ canvasElement, ...rest });
+    await AddNewSetFromState.play({ canvasElement, openAfter: false, ...rest });
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[3]);
 
@@ -197,7 +214,7 @@ export const AddNewSetFromStateAndFreely: StoryFSM = {
   ...Existing,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await CreateNewSet.play({ canvasElement, ...rest });
+    await CreateNewSet.play({ canvasElement, openAfter: false, ...rest });
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[0]);
 
@@ -231,7 +248,7 @@ export const RemoveActionSet: StoryFSM = {
   ...CreateNewSet,
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
-    await CreateNewSet.play({ canvasElement, ...rest });
+    await CreateNewSet.play({ canvasElement, openAfter: false, ...rest });
 
     await _testsOpenAppCatalogue(undefined, 500, 200);
 
@@ -248,5 +265,44 @@ export const RemoveActionSet: StoryFSM = {
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
     ).toBe(28);
+  },
+};
+
+export const SaveStateAsFavorite: StoryFSM = {
+  ...Existing,
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await SwitchesToBuilder.play({ canvasElement, ...rest });
+    await sleep(500);
+    await _testsClickStateByLabel(canvas, 'Get User Info');
+    await waitFor(
+      () =>
+        expect(
+          document.querySelector('.state-favorite-button')
+        ).toBeInTheDocument(),
+      { timeout: 10000 }
+    );
+    await sleep(500);
+    await fireEvent.click(document.querySelector('.state-favorite-button'));
+    await sleep(200);
+    await _testsOpenAppCatalogue(undefined, 500, 200);
+    await _testsSelectAppOrAction(canvas, 'Saved Favorites');
+    await expect(
+      canvas.queryAllByText('Get User Info', {
+        selector: '.fsm-app-selector h4',
+      })
+    ).toHaveLength(1);
+  },
+};
+
+export const RemoveFavoriteState: StoryFSM = {
+  ...SaveStateAsFavorite,
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await SaveStateAsFavorite.play({ canvasElement, ...rest });
+    await sleep(200);
+    await fireEvent.click(document.querySelector('.action-set-remove'));
+    await expect(canvas.queryAllByText('Saved Favorites')).toHaveLength(0);
+    await _testsCloseAppCatalogue();
   },
 };
