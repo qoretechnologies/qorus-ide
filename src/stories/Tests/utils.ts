@@ -434,7 +434,7 @@ export async function _testsHoverState(
   nth: number = 0,
   options: any = {}
 ) {
-  await userEvent.hover(
+  await fireEvent.mouseOver(
     screen
       .getAllByText(name, { selector: `.fsm-state h4` })
       [nth].closest('.fsm-state'),
