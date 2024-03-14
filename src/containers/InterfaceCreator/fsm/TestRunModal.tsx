@@ -10,7 +10,7 @@ import { useAsyncRetry } from 'react-use';
 import { IFSMMetadata, IFSMStates } from '.';
 import { getAppAndAction, getBuiltInAppAndAction } from '../../../helpers/fsm';
 import { fetchData } from '../../../helpers/functions';
-import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
+import { useApps } from '../../../hooks/useApps';
 
 export interface IQodexTestRunModalProps {
   data: Partial<IFSMMetadata> & { states: IFSMStates; type: 'fsm' };
@@ -23,7 +23,7 @@ export const QodexTestRunModal = ({
   id,
   liveRun,
 }: IQodexTestRunModalProps) => {
-  const apps = useGetAppActionData();
+  const { apps } = useApps();
   const { loading, value, error } = useAsyncRetry(async () => {
     let response;
 
@@ -90,6 +90,8 @@ export const QodexTestRunModal = ({
     })
     .map((key) => ({ ...value[key], key }));
 
+  console.log(responseList);
+
   return (
     <ReqoreCollection
       sortable={false}
@@ -105,11 +107,15 @@ export const QodexTestRunModal = ({
           { success, key, response, name, type, ...rest },
           index
         ): IReqoreCollectionItemProps => {
+          console.log(apps);
+
           let { app } = getAppAndAction(apps, rest.app, rest.action);
 
           if (!app) {
             ({ app } = getBuiltInAppAndAction(apps, type));
           }
+
+          console.log(app);
 
           return {
             label: `[${size(responseList) - index}] ${

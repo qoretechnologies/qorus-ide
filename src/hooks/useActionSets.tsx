@@ -24,7 +24,7 @@ export interface IActionSetsHook extends IActionsSetsHookFunctions {
 
 export const buildAppFromActionSets = (
   actionSets: IActionSet[],
-  onRemoveClick: IActionSetsHook['removeActionSet']
+  onRemoveClick?: IActionSetsHook['removeActionSet']
 ): IApp => {
   return {
     display_name: 'Saved Favorites',
@@ -56,7 +56,7 @@ export const buildAppFromActionSets = (
               intent: 'danger',
               size: 'small',
               className: 'action-set-remove',
-              onClick: () => onRemoveClick(id),
+              onClick: () => onRemoveClick?.(id),
             },
           ],
           metadata: {
@@ -80,7 +80,7 @@ export const buildAppFromActionSets = (
             size: 'small',
             className: 'action-set-remove',
 
-            onClick: () => onRemoveClick(id),
+            onClick: () => onRemoveClick?.(id),
           },
         ],
         metadata: {

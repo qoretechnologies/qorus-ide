@@ -1649,7 +1649,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           label: `Test run of ${metadata.name}`,
           children: (
             <QodexTestRunModal
-              apps={apps.apps}
               id={interfaceId}
               data={{
                 type: 'fsm',
