@@ -76,7 +76,10 @@ export const ReqoreWrapper = ({
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/:tab?/:subtab?/:id?' element={<ReqoreWrapper />} />
-  )
+  ),
+  {
+    basename: process.env.NODE_ENV === 'production' ? '/ide' : undefined,
+  }
 );
 
 root.render(
