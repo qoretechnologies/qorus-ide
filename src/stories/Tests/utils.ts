@@ -429,10 +429,10 @@ export async function _testsDoubleClickState(name, options = {}) {
   await _testsClickState(name, options);
 }
 
-export async function _testsHoverState(
+export async function _testsClickState(
   name: string,
-  nth: number = 0,
-  options: any = {}
+  options = {},
+  nth: number = 0
 ) {
   await fireEvent.mouseOver(
     screen
@@ -440,15 +440,6 @@ export async function _testsHoverState(
       [nth].closest('.fsm-state'),
     options
   );
-  await sleep(100);
-}
-
-export async function _testsClickState(
-  name: string,
-  options = {},
-  nth: number = 0
-) {
-  await _testsHoverState(name, nth, options);
   await sleep(100);
   await fireEvent.mouseDown(
     screen
