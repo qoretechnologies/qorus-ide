@@ -202,7 +202,9 @@ export type TFSMStateAction = {
     | TAppAndAction;
 };
 
-export interface IFSMState extends IFSMMetadata {
+export interface IFSMState {
+  name?: string;
+  desc?: string;
   key?: string;
   corners?: IStateCorners;
   isNew?: boolean;
@@ -892,7 +894,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               value: {
                 app: 'QorusTriggers',
                 action: 'on-demand',
-              },
+              } as TAppAndAction,
             },
             transitions,
           };
@@ -1817,6 +1819,35 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     []
   );
 
+  const handleStateCloneClick = useCallback(
+    (id: string | number): void => {
+      console.log(id);
+
+      const state = cloneDeep(states[id]);
+      const newId = shortid.generate();
+
+      state.id = newId;
+      state.key = newId;
+      state.keyId = newId;
+
+      const { x, y } = positionStateInFreeSpot(
+        states,
+        state.position.x + STATE_WIDTH + 50,
+        state.position.y
+      );
+
+      state.position.x = x;
+      state.position.y = y;
+
+      state.transitions = [];
+
+      setStates((cur) => ({ ...cur, [newId]: state }));
+      setHoveredState(null);
+      setActiveState(newId);
+    },
+    [states]
+  );
+
   const getTargetStateLocation = ({
     x1,
     y1,
@@ -2422,6 +2453,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             });
           }
         }}
+        onCloneClick={() => handleStateCloneClick(state)}
         getIsAlreadySaved={apps.isSingleActionWithNameSaved}
         states={states}
         activeTab={editingTransitionOrder ? 'transitions' : 'configuration'}
@@ -3051,6 +3083,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                         onSelect={handleSelectState}
                         onUpdate={updateStateData}
                         onDeleteClick={handleStateDeleteClick}
+                        onCloneClick={handleStateCloneClick}
                         onMouseEnter={setHoveredState}
                         onMouseLeave={setHoveredState}
                         onNewStateClick={handleNewStateClick}

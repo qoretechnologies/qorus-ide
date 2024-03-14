@@ -373,6 +373,18 @@ export async function _testsConfirmDialog() {
   await sleep(200);
 }
 
+export async function _testsCloneState(name: string) {
+  await _testsClickState(name);
+  await waitFor(
+    () => expect(document.querySelector('.state-clone-button')).toBeEnabled(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('.state-clone-button'));
+  await sleep(200);
+}
+
 export async function _testsDeleteState(name: string) {
   await _testsClickState(name);
   await waitFor(
@@ -417,17 +429,26 @@ export async function _testsDoubleClickState(name, options = {}) {
   await _testsClickState(name, options);
 }
 
-export async function _testsClickState(
+export async function _testsHoverState(
   name: string,
-  options = {},
-  nth: number = 0
+  nth: number = 0,
+  options: any = {}
 ) {
-  await fireEvent.mouseOver(
+  await userEvent.hover(
     screen
       .getAllByText(name, { selector: `.fsm-state h4` })
       [nth].closest('.fsm-state'),
     options
   );
+  await sleep(100);
+}
+
+export async function _testsClickState(
+  name: string,
+  options = {},
+  nth: number = 0
+) {
+  await _testsHoverState(name, nth, options);
   await sleep(100);
   await fireEvent.mouseDown(
     screen

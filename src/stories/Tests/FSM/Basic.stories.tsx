@@ -3,10 +3,11 @@ import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import fsm from '../../Data/fsm.json';
-import { NewState } from '../../Views/FSM.stories';
+import { Existing, NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
   _testsClickState,
+  _testsCloneState,
   _testsCloseStateDetail,
   _testsConfirmDialog,
   _testsCreateSelectionBox,
@@ -179,6 +180,17 @@ export const MultipleStatesAreDeleted: StoryFSM = {
     await _testsDeleteMultipleStates();
 
     await expect(document.querySelectorAll('.fsm-state').length).toBe(6);
+  },
+};
+
+export const StatesCanBeCloned: StoryFSM = {
+  ...Existing,
+  play: async ({ canvasElement, ...rest }) => {
+    await SwitchesToBuilder.play({ canvasElement, ...rest });
+
+    await sleep(200);
+
+    await _testsCloneState('Get User Info');
   },
 };
 

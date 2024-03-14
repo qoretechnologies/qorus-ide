@@ -53,6 +53,7 @@ export interface IFSMStateDetailProps {
   onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean) => void;
   onDelete: (unfilled?: boolean) => void;
   onFavorite: (data: Partial<IFSMState>) => void;
+  onCloneClick: () => void;
   onSavedStatusChanged?: (hasSaved: boolean) => void;
   getIsAlreadySaved?: IActionSetsHook['isSingleActionWithNameSaved'];
 }
@@ -63,6 +64,7 @@ export const FSMStateDetail = memo(
     onClose,
     onSubmit,
     onDelete,
+    onCloneClick,
     onFavorite,
     onSavedStatusChanged,
     getIsAlreadySaved,
@@ -355,6 +357,14 @@ export const FSMStateDetail = memo(
             className: 'state-delete-button',
             icon: 'DeleteBinLine',
             onClick: onDelete,
+          },
+          {
+            disabled: isLoading,
+            tooltip: t('Clone state'),
+            className: 'state-clone-button',
+            icon: 'FileCopyLine',
+            onClick: onCloneClick,
+            show: !data.is_event_trigger,
           },
           {
             disabled: isLoading,

@@ -50,6 +50,7 @@ export interface IFSMStateProps extends IFSMState {
   onDblClick: (id: string) => any;
   onClick: (id: string) => any;
   onDeleteClick: (id: string) => any;
+  onCloneClick?: (id: string) => any;
   onUpdate: (id: string, data: any) => any;
   onTransitionOrderClick: (id: string) => any;
   onNewStateClick: (id: string, branch?: IFSMTransition['branch']) => any;
@@ -263,6 +264,7 @@ const FSMState: React.FC<IFSMStateProps> = ({
   onClick,
   onDblClick,
   onDeleteClick,
+  onCloneClick,
   onTransitionOrderClick,
   onNewStateClick,
   name,
@@ -643,6 +645,18 @@ const FSMState: React.FC<IFSMStateProps> = ({
           {
             show: isInSelectedList ? false : 'hover',
             group: [
+              {
+                icon: 'FileCopyLine' as IReqoreIconName,
+                onMouseDown: (e) => {
+                  e?.stopPropagation();
+                  onCloneClick?.(id);
+                },
+                minimal: true,
+                flat: true,
+                size: 'small',
+                tooltip: 'Clone state',
+                show: !!onCloneClick && !is_event_trigger ? 'hover' : false,
+              },
               {
                 icon: 'DeleteBin4Fill' as IReqoreIconName,
                 onMouseDown: (e) => {
