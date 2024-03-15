@@ -1,9 +1,11 @@
 import {
+  ReqoreColors,
   ReqoreContent,
   ReqoreLayoutContent,
   ReqoreUIProvider,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
+import { IReqoreOptions } from '@qoretechnologies/reqore/dist/containers/UIProvider';
 import { Preview } from '@storybook/react';
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -76,7 +78,7 @@ const preview: Preview = {
       animations: {
         dialogs: false,
       },
-    },
+    } as IReqoreOptions,
   },
   decorators: [
     (Story, context) => {
@@ -90,7 +92,17 @@ const preview: Preview = {
       );
 
       return (
-        <ReqoreUIProvider options={{ ...context.args.reqoreOptions }}>
+        <ReqoreUIProvider
+          options={{ ...context.args.reqoreOptions }}
+          theme={{
+            sidebar: {
+              item: {
+                activeBackground: ReqoreColors.BLUE,
+                activeColor: '#ffffff',
+              },
+            },
+          }}
+        >
           <RouterProvider router={router} />
         </ReqoreUIProvider>
       );

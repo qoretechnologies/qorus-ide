@@ -2,7 +2,7 @@ import { ReqoreCollection, useReqoreProperty } from '@qoretechnologies/reqore';
 import { TReqoreBadge } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
 import timeago from 'epoch-timeago';
-import { capitalize, size } from 'lodash';
+import { size } from 'lodash';
 import { useContext, useMemo } from 'react';
 import {
   NegativeColorEffect,
@@ -16,7 +16,6 @@ import Loader from '../../components/Loader';
 import {
   interfaceIcons,
   interfaceKindTransform,
-  interfaceToPlural,
 } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
@@ -28,6 +27,7 @@ import { InterfacesViewItem } from './item';
 export interface IInterfaceViewCollectionProps {
   type: string;
   zoom: number;
+  displayName: string;
 }
 
 let showAsTable = false;
@@ -35,6 +35,7 @@ let showAsTable = false;
 export const InterfacesViewCollection = ({
   type,
   zoom,
+  displayName,
 }: IInterfaceViewCollectionProps) => {
   const addNotification = useReqoreProperty('addNotification');
   const confirmAction = useReqoreProperty('confirmAction');
@@ -100,7 +101,12 @@ export const InterfacesViewCollection = ({
   const badges = useMemo(() => {
     const badgeList: TReqoreBadge[] = [getRemotesCount()];
 
-    badgeList.push({ label: getDraftsCount(), intent: 'pending' });
+    badgeList.push({
+      label: getDraftsCount(),
+      intent: 'pending',
+      tooltip: 'Number of drafts, click to remove all drafts',
+      onRemoveClick: () => onDeleteClick(type),
+    });
 
     return badgeList;
   }, [getDraftsCount, getRemotesCount, qorus_instance]);
@@ -111,7 +117,7 @@ export const InterfacesViewCollection = ({
 
   return (
     <ReqoreCollection
-      label={capitalize(interfaceToPlural[type]).replace('-', ' ')}
+      label={displayName}
       filterable
       sortable
       defaultSortBy='date'
@@ -131,16 +137,6 @@ export const InterfacesViewCollection = ({
           flat: false,
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
-        },
-        {
-          icon: 'CloseLine',
-          tooltip: `Delete ${type} drafts`,
-          effect: WarningColorEffect,
-          minimal: true,
-          flat: false,
-          onClick: () => {
-            onDeleteClick(type);
-          },
         },
       ]}
       icon={interfaceIcons[type]}

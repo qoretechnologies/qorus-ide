@@ -1821,8 +1821,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   const handleStateCloneClick = useCallback(
     (id: string | number): void => {
-      console.log(id);
-
       const state = cloneDeep(states[id]);
       const newId = shortid.generate();
 

@@ -1,12 +1,9 @@
 import {
   ReqoreBreadcrumbs,
   ReqoreH1,
+  ReqoreHeader,
   ReqoreIcon,
-  ReqoreMenu,
-  ReqoreMenuDivider,
-  ReqoreMenuItem,
   ReqoreModal,
-  ReqorePanel,
   useReqore,
 } from '@qoretechnologies/reqore';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
@@ -22,18 +19,10 @@ import {
 import { connect } from 'react-redux';
 import { useEffectOnce, useMount, useUnmount } from 'react-use';
 import compose from 'recompose/compose';
-import packageJson from '../package.json';
 import ContextMenu from './components/ContextMenu';
 import Loader from './components/Loader';
-import QorusBase64Image from './components/QorusBase64Image';
-import {
-  interfaceIcons,
-  interfaceKindToName,
-  interfaceNameToKind,
-  viewsIcons,
-  viewsNames,
-} from './constants/interfaces';
-import { MenuSubItems } from './constants/menu';
+import { Sidebar } from './components/Sidebar';
+import { viewsIcons, viewsNames } from './constants/interfaces';
 import { Messages } from './constants/messages';
 import InterfaceCreator from './containers/InterfaceCreator';
 import { InterfacesView } from './containers/InterfacesView';
@@ -59,10 +48,12 @@ import {
 } from './hocomponents/withMessageHandler';
 import withMethods from './hocomponents/withMethods';
 import withSteps from './hocomponents/withSteps';
+import Logo from './images/logo.png';
 import { LoginContainer } from './login/Login';
 import ProjectConfig from './project_config/ProjectConfig';
 import SourceDirectories from './project_config/sourceDirs';
 import { DraftsProvider } from './providers/Drafts';
+import { InterfacesProvider } from './providers/Interfaces';
 import { URLHandler } from './providers/URLHandler';
 import { ReleasePackageContainer as ReleasePackage } from './release_package/ReleasePackage';
 import { Dashboard } from './views/dashboard';
@@ -274,296 +265,146 @@ const App: FunctionComponent<IApp> = ({
 
   return (
     <>
-      <DraftsProvider>
-        <URLHandler />
-        <ContextMenuContext.Provider
-          value={{
-            addMenu: setContextMenu,
-            removeMenu: (onClose?: () => any) => {
-              setContextMenu(null);
-              if (onClose) {
-                onClose();
-              }
-            },
-          }}
-        >
-          <DialogsContext.Provider value={{ addDialog, removeDialog }}>
-            {contextMenu && (
-              <ContextMenu
-                {...contextMenu}
-                onClick={() => setContextMenu(null)}
-              />
-            )}
-            <TextContext.Provider value={t}>
-              {/*tab !== 'Login' && <Menu />*/}
-              <ReqorePanel
-                fluid
-                fill
-                flat
-                padded={false}
-                rounded={false}
-                iconImage={QorusBase64Image}
-                iconProps={{ size: '27px', style: { height: 'auto' } }}
-                contentStyle={{
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexFlow: 'column',
-                  flex: 1,
-                }}
-                label='Qorus IDE'
-                badge={badges}
-                headerEffect={{
-                  glow: {
-                    color: '#7e2d90',
-                    blur: 0.5,
-                    size: 0.5,
-                  },
-                }}
-                actions={[
-                  {
-                    fixed: true,
-                    group: [
-                      {
-                        onClick: () => onHistoryBackClick(),
-                        disabled: size(tabHistory) <= 1,
-                        icon: 'ArrowLeftSLine',
-
-                        tooltip: {
-                          noWrapper: true,
-                          noArrow: true,
-                          handler: 'hoverStay',
-                          content: (
-                            <ReqoreMenu rounded maxHeight='300px'>
-                              <ReqoreMenuDivider label={'History'} />
-                              {[...tabHistory]
-                                .reverse()
-                                .map(({ subtab, tab, name }, index: number) =>
-                                  index !== 0 ? (
-                                    <ReqoreMenuItem
-                                      icon={
-                                        subtab
-                                          ? interfaceIcons[subtab]
-                                          : viewsIcons[tab]
-                                      }
-                                      onClick={() =>
-                                        onHistoryBackClick(
-                                          tabHistory.length - (index + 1)
-                                        )
-                                      }
-                                      description={
-                                        name ||
-                                        (tab === 'CreateInterface'
-                                          ? 'New'
-                                          : undefined)
-                                      }
-                                    >
-                                      {t(tab)}
-                                      {subtab
-                                        ? ` : ${interfaceKindToName[subtab]}`
-                                        : ''}
-                                    </ReqoreMenuItem>
-                                  ) : null
-                                )}
-                            </ReqoreMenu>
-                          ),
-                        },
-                      },
-                      {
-                        icon: 'RefreshLine',
-                        onClick: () => {
-                          addNotification({
-                            content: t('ReloadingWebview'),
-                            intent: 'pending',
-                            icon: 'RefreshLine',
-                          });
-                          postMessage('reload-webview');
-                        },
-                        tooltip: 'Reload webview',
-                      },
-                    ],
-                  },
-                  {
-                    fixed: true,
-                    group: [
-                      {
-                        icon: viewsIcons['Interfaces'],
-                        onClick: () => changeTab('Interfaces'),
-                        tooltip: {
-                          handler: 'hoverStay',
-                          noWrapper: true,
-                          content: (
-                            <ReqoreMenu rounded width='250px'>
-                              <ReqoreMenuDivider label={t('Objects')} />
-                              {MenuSubItems.map((item) => (
-                                <ReqoreMenuItem
-                                  label={item.name}
-                                  icon={item.icon}
-                                  onClick={() =>
-                                    changeTab(
-                                      'Interfaces',
-                                      interfaceNameToKind[item.name]
-                                    )
-                                  }
-                                  rightIcon='AddCircleLine'
-                                  rightIconColor='info'
-                                  rightIconProps={{
-                                    intent: 'info',
-                                  }}
-                                  onRightIconClick={() =>
-                                    changeTab(
-                                      'CreateInterface',
-                                      interfaceNameToKind[item.name]
-                                    )
-                                  }
-                                />
-                              ))}
-                            </ReqoreMenu>
-                          ),
-                        },
-                      },
-                      {
-                        icon: viewsIcons['ReleasePackage'],
-                        onClick: () => changeTab('ReleasePackage'),
-                      },
-                    ],
-                  },
-                  {
-                    icon: 'FolderAddLine',
-                    onClick: () => setIsDirsDialogOpen(true),
-                    tooltip: 'Manage source directories',
-                    show: !is_hosted_instance,
-                  },
-                  {
-                    icon: 'MoreLine',
-                    actions: [
-                      {
-                        divider: true,
-                        label: 'Theme',
-                      },
-                      {
-                        icon: 'SunFill',
-                        onClick: () => changeTheme('light'),
-                        selected: theme === 'light',
-                        rightIcon: theme === 'light' ? 'CheckLine' : undefined,
-                        label: 'Light Theme',
-                      },
-                      {
-                        icon: 'MoonFill',
-                        onClick: () => changeTheme('dark'),
-                        selected: theme === 'dark',
-                        rightIcon: theme === 'dark' ? 'CheckLine' : undefined,
-                        label: 'Dark Theme',
-                      },
-                      {
-                        icon: 'CodeBoxLine',
-                        onClick: () => changeTheme('vscode'),
-                        selected: theme === 'vscode',
-                        rightIcon: theme === 'vscode' ? 'CheckLine' : undefined,
-                        label: 'Follow VSCode Theme',
-                      },
-                      {
-                        divider: true,
-                        label: 'Info',
-                      },
-                      {
-                        label: `Version: v${packageJson.version} ${
-                          process.env.NODE_ENV === 'development' ? '_dev' : ''
-                        }`,
-                        readOnly: true,
-                      },
-                      {
-                        label: `Project: ${project_folder}`,
-                        readOnly: true,
-                      },
-                    ],
-                  },
-                ]}
-              >
+      <InterfacesProvider>
+        <DraftsProvider>
+          <URLHandler />
+          <ContextMenuContext.Provider
+            value={{
+              addMenu: setContextMenu,
+              removeMenu: (onClose?: () => any) => {
+                setContextMenu(null);
+                if (onClose) {
+                  onClose();
+                }
+              },
+            }}
+          >
+            <DialogsContext.Provider value={{ addDialog, removeDialog }}>
+              {contextMenu && (
+                <ContextMenu
+                  {...contextMenu}
+                  onClick={() => setContextMenu(null)}
+                />
+              )}
+              <TextContext.Provider value={t}>
                 <div
                   style={{
                     margin: '0',
-                    overflow: 'auto',
+                    overflow: 'hidden',
                     display: 'flex',
                     flex: 1,
                     flexFlow: 'column',
                     height: '100%',
                   }}
                 >
-                  <SourceDirectories
-                    isOpen={isDirsDialogOpen}
-                    onClose={() => setIsDirsDialogOpen(false)}
-                  />
-                  {tab !== 'CreateInterface' &&
-                  tab !== 'Dashboard' &&
-                  tab !== 'Login' &&
-                  tab !== 'ProjectConfig' &&
-                  tab !== 'Loading' ? (
-                    <ReqoreBreadcrumbs
-                      size='normal'
-                      flat
+                  <ReqoreHeader>
+                    <img
+                      src={Logo}
                       style={{
-                        border: 'none',
-                        paddingTop: '10px',
-                        paddingBottom: '10px',
-                        margin: 0,
+                        padding: '14px 0px 10px 5px',
+                        verticalAlign: 'middle',
+                        height: '48px',
+                        display: 'inline-block !important',
                       }}
-                      items={[
-                        {
-                          icon: 'Home4Fill',
-                          onClick: () => {
-                            changeTab(
-                              is_hosted_instance ? 'Dashboard' : 'ProjectConfig'
-                            );
-                          },
-                        },
-                        {
-                          icon: viewsIcons[tab],
-                          label: viewsNames[tab],
-                          onClick: () => {
-                            changeTab('Interfaces', tab);
-                          },
-                        },
-                      ]}
                     />
-                  ) : null}
-                  <>
-                    {websocketReconnectTry > 0 ? (
-                      <ReqoreModal isOpen intent='warning' blur={5}>
-                        <ReqoreH1 effect={{ textAlign: 'center' }}>
-                          Lost connection to server. Trying to reconnect...{' '}
-                          <ReqoreIcon
-                            icon='Loader3Line'
-                            animation='spin'
-                            size='big'
-                            margin='both'
-                          />
-                          {websocketReconnectTry} / {WS_RECONNECT_MAX_TRIES}
-                        </ReqoreH1>
-                      </ReqoreModal>
-                    ) : null}
-                    {hasWebsocketFailedToReconnect && (
-                      <ReqoreModal isOpen intent='danger' blur={5}>
-                        <ReqoreH1 effect={{ textAlign: 'center' }}>
-                          Unable to establish a connection to the server, please
-                          try to reload the page.
-                        </ReqoreH1>
-                      </ReqoreModal>
-                    )}
-                    {tab == 'Dashboard' && <Dashboard />}
-                    {tab == 'Login' && <LoginContainer />}
-                    {tab == 'Loading' && <Loader text={t('Loading')} />}
-                    {tab == 'ProjectConfig' && <ProjectConfig />}
-                    {tab == 'SourceDirs' && <SourceDirectories flat />}
-                    {tab == 'ReleasePackage' && <ReleasePackage />}
-                    {tab === 'Interfaces' && <InterfacesView />}
-                    {!tab || (tab == 'CreateInterface' && <InterfaceCreator />)}
-                  </>
+                  </ReqoreHeader>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flex: '1 1 auto',
+                      overflow: 'auto',
+                    }}
+                  >
+                    <Sidebar />
+                    <div
+                      style={{
+                        margin: '0',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flex: 1,
+                        flexFlow: 'column',
+                        height: '100%',
+                      }}
+                    >
+                      {tab !== 'CreateInterface' &&
+                      tab !== 'Dashboard' &&
+                      tab !== 'Login' &&
+                      tab !== 'ProjectConfig' &&
+                      tab !== 'Loading' ? (
+                        <ReqoreBreadcrumbs
+                          size='normal'
+                          flat
+                          style={{
+                            border: 'none',
+                            paddingTop: '10px',
+                            paddingBottom: '10px',
+                            margin: 0,
+                          }}
+                          items={[
+                            {
+                              icon: 'Home4Fill',
+                              onClick: () => {
+                                changeTab(
+                                  is_hosted_instance
+                                    ? 'Dashboard'
+                                    : 'ProjectConfig'
+                                );
+                              },
+                            },
+                            {
+                              icon: viewsIcons[tab],
+                              label: viewsNames[tab],
+                              onClick: () => {
+                                changeTab(
+                                  'Interfaces',
+                                  tab !== 'Interfaces' ? tab : undefined
+                                );
+                              },
+                            },
+                          ]}
+                        />
+                      ) : null}
+                      <>
+                        {websocketReconnectTry > 0 ? (
+                          <ReqoreModal isOpen intent='warning' blur={5}>
+                            <ReqoreH1 effect={{ textAlign: 'center' }}>
+                              Lost connection to server. Trying to reconnect...{' '}
+                              <ReqoreIcon
+                                icon='Loader3Line'
+                                animation='spin'
+                                size='big'
+                                margin='both'
+                              />
+                              {websocketReconnectTry} / {WS_RECONNECT_MAX_TRIES}
+                            </ReqoreH1>
+                          </ReqoreModal>
+                        ) : null}
+                        {hasWebsocketFailedToReconnect && (
+                          <ReqoreModal isOpen intent='danger' blur={5}>
+                            <ReqoreH1 effect={{ textAlign: 'center' }}>
+                              Unable to establish a connection to the server,
+                              please try to reload the page.
+                            </ReqoreH1>
+                          </ReqoreModal>
+                        )}
+                        {tab == 'Dashboard' && <Dashboard />}
+                        {tab == 'Login' && <LoginContainer />}
+                        {tab == 'Loading' && <Loader text={t('Loading')} />}
+                        {tab == 'ProjectConfig' && <ProjectConfig />}
+                        {tab == 'SourceDirs' && <SourceDirectories flat />}
+                        {tab == 'ReleasePackage' && <ReleasePackage />}
+                        {tab === 'Interfaces' && <InterfacesView />}
+                        {!tab ||
+                          (tab == 'CreateInterface' && <InterfaceCreator />)}
+                      </>
+                    </div>
+                  </div>
                 </div>
-              </ReqorePanel>
-            </TextContext.Provider>
-          </DialogsContext.Provider>
-        </ContextMenuContext.Provider>
-      </DraftsProvider>
+              </TextContext.Provider>
+            </DialogsContext.Provider>
+          </ContextMenuContext.Provider>
+        </DraftsProvider>
+      </InterfacesProvider>
     </>
   );
 };

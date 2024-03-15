@@ -144,7 +144,11 @@ export const InterfacesView = () => {
         ))}
       </ReqoreMenu>
       <ReqoreHorizontalSpacer width={10} />
-      <InterfacesViewCollection type={type} zoom={zoom} />
+      <InterfacesViewCollection
+        type={type}
+        zoom={zoom}
+        displayName={items[type].display_name}
+      />
     </ReqorePanel>
   );
 };

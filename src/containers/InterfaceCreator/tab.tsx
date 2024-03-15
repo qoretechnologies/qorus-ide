@@ -23,12 +23,11 @@ import Tutorial from '../../components/Tutorial';
 import {
   interfaceIcons,
   interfaceKindTransform,
-  interfaceToPlural,
 } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { DraftsContext, IDraftsContext } from '../../context/drafts';
-import { GlobalContext } from '../../context/global';
 import { InitialContext } from '../../context/init';
+import { InterfacesContext } from '../../context/interfaces';
 import { MethodsContext } from '../../context/methods';
 import { TextContext } from '../../context/text';
 import { callBackendBasic } from '../../helpers/functions';
@@ -292,7 +291,7 @@ const Tab: React.FC<ITabProps> = ({
   const [draftsCount, setDraftsCount] = useState<number>(0);
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
   const [localLastDraft, setLastDraft] = useState<string>(null);
-  const context = useContext(GlobalContext);
+  const { categories } = useContext(InterfacesContext);
 
   useEffect(() => {
     if (lastDraft && lastDraft.type === type) {
@@ -519,7 +518,8 @@ const Tab: React.FC<ITabProps> = ({
           },
           {
             icon: interfaceIcons[type],
-            label: capitalize(interfaceToPlural[type]),
+            label: categories[type].display_name,
+            badge: [categories[type].items],
             onClick: () => {
               changeTab('Interfaces', type);
             },
