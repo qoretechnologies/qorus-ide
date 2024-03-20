@@ -819,7 +819,14 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             {
               fsmData: {
                 metadata,
-                states,
+                states: reduce(
+                  states,
+                  (acc, state, key) => ({
+                    ...acc,
+                    [key]: omit(state, 'isValid'),
+                  }),
+                  {}
+                ),
               },
             },
             metadata.display_name

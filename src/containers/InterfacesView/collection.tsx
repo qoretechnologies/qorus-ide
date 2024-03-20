@@ -4,6 +4,7 @@ import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/compon
 import timeago from 'epoch-timeago';
 import { size } from 'lodash';
 import { useContext, useMemo } from 'react';
+import { IQorusInterfaceCountItem } from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
@@ -20,28 +21,23 @@ import {
 import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
-import { zoomToSize, zoomToWidth } from '../ConfigItemManager/table';
 import { QodexTestRunModal } from '../InterfaceCreator/fsm/TestRunModal';
 import { InterfacesViewItem } from './item';
 
-export interface IInterfaceViewCollectionProps {
+export interface IInterfaceViewCollectionProps
+  extends IQorusInterfaceCountItem {
   type: string;
-  zoom: number;
-  displayName: string;
 }
-
-let showAsTable = false;
 
 export const InterfacesViewCollection = ({
   type,
-  zoom,
-  displayName,
+  display_name,
+  singular_display_name,
 }: IInterfaceViewCollectionProps) => {
   const addNotification = useReqoreProperty('addNotification');
   const confirmAction = useReqoreProperty('confirmAction');
   const addModal = useReqoreProperty('addModal');
-  const { changeDraft, changeTab, qorus_instance, is_hosted_instance } =
-    useContext(InitialContext);
+  const { changeDraft, changeTab, qorus_instance } = useContext(InitialContext);
 
   const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
     useFetchInterfaces(type);
@@ -117,13 +113,13 @@ export const InterfacesViewCollection = ({
 
   return (
     <ReqoreCollection
-      label={displayName}
+      label={display_name}
       filterable
       sortable
       defaultSortBy='date'
       defaultSort='desc'
       minimal
-      minColumnWidth={zoomToWidth[zoom]}
+      minColumnWidth='300px'
       badge={badges}
       maxItemHeight={120}
       responsiveActions={false}
@@ -131,12 +127,11 @@ export const InterfacesViewCollection = ({
       actions={[
         {
           icon: 'AddCircleLine',
-          tooltip: `Create new ${type}`,
-          label: 'Create new',
-          minimal: true,
+          label: `Create New ${singular_display_name}`,
           flat: false,
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
+          pill: true,
         },
       ]}
       icon={interfaceIcons[type]}
@@ -152,6 +147,12 @@ export const InterfacesViewCollection = ({
         focusRules: {
           type: 'keypress',
           shortcut: 'letters',
+        },
+        pill: true,
+        intent: 'muted',
+        leftIconProps: {
+          size: 'small',
+          intent: 'muted',
         },
       }}
       items={value.map(
@@ -195,7 +196,7 @@ export const InterfacesViewCollection = ({
           showHeaderTooltip: true,
           responsiveTitle: false,
           responsiveActions: false,
-          size: zoomToSize[zoom],
+          size: 'small',
           onClick: () => {
             if (draft) {
               changeDraft({
@@ -240,9 +241,7 @@ export const InterfacesViewCollection = ({
               onClick: () => {
                 addModal({
                   label: `Execution of "${data?.display_name}"`,
-                  children: (
-                    <QodexTestRunModal id={rest.id} data={data} liveRun />
-                  ),
+                  children: <QodexTestRunModal id={rest.id} liveRun />,
                 });
               },
             },

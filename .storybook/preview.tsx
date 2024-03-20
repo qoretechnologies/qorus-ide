@@ -45,6 +45,7 @@ const StorybookWrapper = ({ context, Story }: any) => {
               confirmAction,
               saveDraft: () => {},
               maybeApplyDraft: () => {},
+              changeTab: () => {},
             }}
           >
             <Story />

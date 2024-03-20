@@ -1,13 +1,156 @@
-import { ReqoreSidebar } from '@qoretechnologies/reqore';
-import { IQorusSidebarProps } from '@qoretechnologies/reqore/dist/components/Sidebar';
-import { useContext } from 'react';
+import {
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreInput,
+  ReqoreMenuDivider,
+  ReqoreMenuItem,
+  ReqoreMenuSection,
+} from '@qoretechnologies/reqore';
+import ReqoreMenu, {
+  IReqoreMenuProps,
+} from '@qoretechnologies/reqore/dist/components/Menu';
+import { map, reduce, size } from 'lodash';
+import { useContext, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { InterfacesContext } from '../../context/interfaces';
-import { buildMenu } from './menu';
+import { TMenu, TMenuItem, buildMenu } from './menu';
 
-export interface ISidebar extends Partial<IQorusSidebarProps> {}
+export interface ISidebar extends Partial<IReqoreMenuProps> {
+  isOpen?: boolean;
+  onHideClick?: () => void;
+}
 
 export const Sidebar = (props: ISidebar) => {
   const { categories } = useContext(InterfacesContext);
+  const menu: TMenu = buildMenu(categories);
+  const [query, setQuery] = useState<string>(undefined);
+  const location = useLocation();
 
-  return <ReqoreSidebar {...props} path='/ide' items={buildMenu(categories)} />;
+  const renderMenuItem = (menuData: TMenuItem, menuId: number) => {
+    if ('divider' in menuData) {
+      return <ReqoreMenuDivider key={menuId} />;
+    }
+
+    const matchesPath = menuData.activePaths?.some((path) =>
+      location.pathname.startsWith(path)
+    );
+
+    if (menuData.submenu) {
+      return (
+        <ReqoreMenuSection
+          label={menuData.label}
+          key={menuId}
+          icon={menuData.icon}
+          isCollapsed={!query && !matchesPath}
+          verticalPadding='big'
+        >
+          {map(menuData.submenu, (submenuData, submenuId) =>
+            renderMenuItem(submenuData, submenuId)
+          )}
+        </ReqoreMenuSection>
+      );
+    }
+
+    return (
+      <ReqoreMenuItem
+        key={menuId}
+        label={menuData.label}
+        icon={menuData.icon}
+        as={menuData.as}
+        tooltip={menuData.label.toString()}
+        verticalPadding='big'
+        selected={matchesPath}
+        {...menuData}
+      />
+    );
+  };
+
+  const filteredMenu: TMenu = useMemo<TMenu>(() => {
+    if (!query) {
+      return menu;
+    }
+
+    const filterItems = (items: TMenu): TMenu => {
+      return reduce(
+        items,
+        (acc, item) => {
+          if ('divider' in item) {
+            acc.push(item);
+            return acc;
+          }
+
+          if (item.submenu) {
+            const submenu = filterItems(item.submenu);
+            const hasChildMatch = size(submenu);
+
+            if (hasChildMatch) {
+              acc.push({
+                ...item,
+                submenu,
+              });
+
+              return acc;
+            }
+          }
+
+          if (
+            item.label.toString().toLowerCase().includes(query.toLowerCase())
+          ) {
+            acc.push(item);
+          }
+
+          return acc;
+        },
+        []
+      );
+    };
+
+    return filterItems(menu);
+  }, [menu, query]);
+
+  if (!props.isOpen) {
+    return null;
+  }
+
+  return (
+    <ReqoreMenu
+      {...props}
+      width='250px'
+      minimal
+      position='left'
+      rounded={false}
+      customTheme={{ main: '#181818' }}
+    >
+      <ReqoreControlGroup>
+        <ReqoreInput
+          icon='Search2Line'
+          minimal={false}
+          flat={false}
+          placeholder='Filter menu "/"'
+          intent={query ? 'info' : 'muted'}
+          leftIconProps={{ size: 'small' }}
+          iconColor={query ? 'info' : 'muted'}
+          pill
+          value={query}
+          onClearClick={() => setQuery('')}
+          onChange={(e: any) => setQuery(e.target.value)}
+          focusRules={{
+            shortcut: '/',
+            type: 'keypress',
+            clearOnFocus: true,
+            doNotInsertShortcut: true,
+          }}
+        />
+        <ReqoreButton
+          icon='SideBarLine'
+          fixed
+          minimal={false}
+          onClick={props.onHideClick}
+        />
+      </ReqoreControlGroup>
+      {map(filteredMenu, (menuData, menuId) =>
+        renderMenuItem(menuData, menuId)
+      )}
+    </ReqoreMenu>
+  );
 };

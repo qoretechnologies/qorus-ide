@@ -1,9 +1,12 @@
 import {
   ReqoreBreadcrumbs,
+  ReqoreButton,
   ReqoreH1,
   ReqoreHeader,
   ReqoreIcon,
   ReqoreModal,
+  ReqoreNavbarGroup,
+  ReqoreNavbarItem,
   useReqore,
 } from '@qoretechnologies/reqore';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
@@ -20,6 +23,7 @@ import { connect } from 'react-redux';
 import { useEffectOnce, useMount, useUnmount } from 'react-use';
 import compose from 'recompose/compose';
 import ContextMenu from './components/ContextMenu';
+import { GlobalSearch } from './components/GlobalSearch';
 import Loader from './components/Loader';
 import { Sidebar } from './components/Sidebar';
 import { viewsIcons, viewsNames } from './constants/interfaces';
@@ -48,6 +52,7 @@ import {
 } from './hocomponents/withMessageHandler';
 import withMethods from './hocomponents/withMethods';
 import withSteps from './hocomponents/withSteps';
+import { useQorusStorage } from './hooks/useQorusStorage';
 import Logo from './images/logo.png';
 import { LoginContainer } from './login/Login';
 import ProjectConfig from './project_config/ProjectConfig';
@@ -81,6 +86,7 @@ const App: FunctionComponent<IApp> = ({
   setActiveInstance,
   setCurrentProjectFolder,
   tab,
+  subtab,
   project_folder,
   qorus_instance,
   changeTab,
@@ -114,6 +120,8 @@ const App: FunctionComponent<IApp> = ({
   const [websocketReconnectTry, setWebsocketReconnectTry] = useState<number>(0);
   const [hasWebsocketFailedToReconnect, setHasWebsocketFailedToReconnect] =
     useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
+  const isSidebarOpen = useQorusStorage('ide.settings.isSidebarOpen', true);
 
   const addDialog: (id: string, onClose: any) => void = (id, onClose) => {
     // Only add dialogs that can be closed
@@ -255,7 +263,7 @@ const App: FunctionComponent<IApp> = ({
     disconnectWebSocket('creator');
   });
 
-  if (!t || isLoading) {
+  if (!t || isLoading || isSidebarOpen.loading) {
     return (
       <>
         <Loader text='Loading app...' centered />;
@@ -298,15 +306,34 @@ const App: FunctionComponent<IApp> = ({
                   }}
                 >
                   <ReqoreHeader>
-                    <img
-                      src={Logo}
-                      style={{
-                        padding: '14px 0px 10px 5px',
-                        verticalAlign: 'middle',
-                        height: '48px',
-                        display: 'inline-block !important',
-                      }}
-                    />
+                    <ReqoreNavbarGroup position='left'>
+                      <ReqoreNavbarItem>
+                        {isSidebarOpen.value === false && (
+                          <ReqoreButton
+                            compact
+                            minimal
+                            flat
+                            icon='SideBarFill'
+                            onClick={() => isSidebarOpen.update(true)}
+                            tooltip='Show sidebar'
+                          />
+                        )}
+                        <img
+                          src={Logo}
+                          style={{
+                            padding: '14px 0px 10px 5px',
+                            verticalAlign: 'middle',
+                            height: '48px',
+                            display: 'inline-block !important',
+                          }}
+                        />
+                      </ReqoreNavbarItem>
+                    </ReqoreNavbarGroup>
+                    <ReqoreNavbarGroup position='right'>
+                      <ReqoreNavbarItem>
+                        <GlobalSearch />
+                      </ReqoreNavbarItem>
+                    </ReqoreNavbarGroup>
                   </ReqoreHeader>
                   <div
                     style={{
@@ -315,7 +342,10 @@ const App: FunctionComponent<IApp> = ({
                       overflow: 'auto',
                     }}
                   >
-                    <Sidebar />
+                    <Sidebar
+                      isOpen={isSidebarOpen.value}
+                      onHideClick={() => isSidebarOpen.update(false)}
+                    />
                     <div
                       style={{
                         margin: '0',
@@ -393,7 +423,9 @@ const App: FunctionComponent<IApp> = ({
                         {tab == 'ProjectConfig' && <ProjectConfig />}
                         {tab == 'SourceDirs' && <SourceDirectories flat />}
                         {tab == 'ReleasePackage' && <ReleasePackage />}
-                        {tab === 'Interfaces' && <InterfacesView />}
+                        {tab === 'Interfaces' && (
+                          <InterfacesView type={subtab} />
+                        )}
                         {!tab ||
                           (tab == 'CreateInterface' && <InterfaceCreator />)}
                       </>

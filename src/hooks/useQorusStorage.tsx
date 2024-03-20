@@ -43,7 +43,7 @@ export function useQorusStorage<T>(
   };
 
   return {
-    value: get(storage, path) || defaultValue,
+    value: get(storage, path) ?? defaultValue,
     update,
     loading,
     error,

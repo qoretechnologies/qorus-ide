@@ -13,7 +13,7 @@ import { fetchData } from '../../../helpers/functions';
 import { useApps } from '../../../hooks/useApps';
 
 export interface IQodexTestRunModalProps {
-  data: Partial<IFSMMetadata> & { states: IFSMStates; type: 'fsm' };
+  data?: Partial<IFSMMetadata> & { states: IFSMStates; type: 'fsm' };
   id?: string | number;
   liveRun?: boolean;
 }
@@ -90,8 +90,6 @@ export const QodexTestRunModal = ({
     })
     .map((key) => ({ ...value[key], key }));
 
-  console.log(responseList);
-
   return (
     <ReqoreCollection
       sortable={false}
@@ -107,15 +105,11 @@ export const QodexTestRunModal = ({
           { success, key, response, name, type, ...rest },
           index
         ): IReqoreCollectionItemProps => {
-          console.log(apps);
-
           let { app } = getAppAndAction(apps, rest.app, rest.action);
 
           if (!app) {
             ({ app } = getBuiltInAppAndAction(apps, type));
           }
-
-          console.log(app);
 
           return {
             label: `[${size(responseList) - index}] ${

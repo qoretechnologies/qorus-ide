@@ -60,6 +60,9 @@ export const ReqoreWrapper = ({
         animations: { buttons: false },
         withSidebar: true,
         closePopoversOnEscPress: true,
+        tooltips: {
+          delay: 300,
+        },
         ...reqoreOptions,
       }}
     >
