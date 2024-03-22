@@ -64,7 +64,7 @@ export const Dashboard = () => {
   }
 
   return (
-    <ReqorePanel flat>
+    <ReqorePanel flat fill>
       <ReqoreColumns minColumnWidth='100%' columnsGap='10px'>
         <ReqoreColumns columnsGap='10px'>
           <ReqorePanel

@@ -71,6 +71,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
       version={getVersion()}
       data={initialData}
       onDelete={onDelete}
+      hasCode={!!initialData[initialData.subtab]?.source}
     >
       {initialData.subtab === 'fsm' && (
         <FSMView

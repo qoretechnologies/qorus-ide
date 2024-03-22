@@ -1,7 +1,9 @@
+import Editor from '@monaco-editor/react';
+
 import {
   ReqoreDropdown,
   ReqoreInput,
-  ReqoreVerticalSpacer,
+  ReqorePanel,
 } from '@qoretechnologies/reqore';
 import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/Dropdown';
 import { IReqoreDropdownItemProps } from '@qoretechnologies/reqore/dist/components/Dropdown/item';
@@ -45,6 +47,7 @@ import Field from '../../components/Field';
 import { allowedTypes } from '../../components/Field/arrayAuto';
 import {
   PositiveColorEffect,
+  QorusColorEffect,
   SaveColorEffect,
   SelectorColorEffect,
 } from '../../components/Field/multiPair';
@@ -152,6 +155,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
 }) => {
   const isInitialMount = useRef(true);
   const [show, setShow] = useState<boolean>(false);
+  const [codeEditorVisible, setCodeEditorVisible] = useState<boolean>(false);
+  const [code, setCode] = useState<string>(data?.source);
   const [messageListener, setMessageListener] = useState(null);
   const [showConfigItemsManager, setShowConfigItemsManager] =
     useState<boolean>(false);
@@ -163,6 +168,12 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   useEffect(() => {
     originalData.current = data;
   }, [data]);
+
+  useEffect(() => {
+    if (data?.source) {
+      setCode(data.source);
+    }
+  }, [data?.source]);
 
   useUpdateEffect(() => {
     if (draft && show) {
@@ -1357,7 +1368,36 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     <>
       <Content
         title={'Fill in the details'}
+        responsiveTitle
+        responsiveActions
         actions={[
+          {
+            as: ReqoreInput,
+            props: {
+              fixed: true,
+              pill: true,
+              fluid: false,
+              placeholder: t('FilterSelectedFields'),
+              value: selectedQuery,
+              onChange: (event: FormEvent<HTMLInputElement>) => {
+                setSelectedQuery(type, event.currentTarget.value);
+              },
+              icon: 'Search2Line',
+              intent: selectedQuery !== '' ? 'info' : 'muted',
+              onClearClick: () => setSelectedQuery(type, ''),
+            },
+          },
+          {
+            label: 'Edit code',
+            icon: 'CodeView',
+            show: !codeEditorVisible,
+            tooltip: 'Edit the code for this interface',
+            active: codeEditorVisible,
+            effect: QorusColorEffect,
+            onClick: () => {
+              setCodeEditorVisible(!codeEditorVisible);
+            },
+          },
           {
             as: ReqoreDropdown,
             props: {
@@ -1371,6 +1411,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
                   type: 'auto',
                   viewportOnly: true,
                 },
+                pill: true,
+                intent: 'muted',
               },
               items: [
                 {
@@ -1460,20 +1502,49 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
             position: 'right',
           },
         ]}
+        contentStyle={{ display: 'flex' }}
       >
-        <ReqoreInput
-          placeholder={t('FilterSelectedFields')}
-          value={selectedQuery}
-          onChange={(event: FormEvent<HTMLInputElement>) =>
-            setSelectedQuery(type, event.currentTarget.value)
-          }
-          icon={'Search2Line'}
-          intent={selectedQuery !== '' ? 'info' : undefined}
-          onClearClick={() => setSelectedQuery(type, '')}
-        />
-
-        <ReqoreVerticalSpacer height={10} />
         <ContentWrapper>{renderGroups(fieldsToRender)}</ContentWrapper>
+        {codeEditorVisible && (
+          <ReqorePanel
+            style={{ marginLeft: '10px', borderLeft: '1px dashed #444444' }}
+            flat
+            showHeaderTooltip={false}
+            size='small'
+            resizable={{
+              enable: { left: true },
+              defaultSize: { width: '30%', height: '100%' },
+            }}
+            label='Code Editor'
+            padded={false}
+            onClose={() => setCodeEditorVisible(false)}
+          >
+            <Editor
+              theme='vs-dark'
+              defaultLanguage={requestFieldData('language')}
+              language={requestFieldData('language')}
+              defaultValue={data?.source}
+              height='100%'
+              options={{
+                fontSize: 13,
+                minimap: {
+                  enabled: false,
+                },
+                suggest: {
+                  showWords: false,
+                },
+                padding: {
+                  top: 15,
+                },
+                scrollBeyondLastLine: false,
+                wordBasedSuggestions: false,
+                theme: 'vs-dark',
+              }}
+              value={code}
+              onChange={(val) => setCode(val || '')}
+            />
+          </ReqorePanel>
+        )}
       </Content>
       {showClassConnectionsManager &&
         hasClassConnections &&

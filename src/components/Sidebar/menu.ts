@@ -31,7 +31,7 @@ export const buildMenu = (interfaces: TQorusInterfaceCount): TMenu => [
         label: item.display_name,
         icon: interfaceIcons[id],
         to: `/Interfaces/${id}`,
-        badge: [item.items + item.drafts],
+        badge: [{ label: item.items + item.drafts, align: 'right' }],
         tooltip: {
           content: item.short_desc,
           maxWidth: '400px',

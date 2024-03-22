@@ -42,7 +42,7 @@ export const Sidebar = (props: ISidebar) => {
           key={menuId}
           icon={menuData.icon}
           isCollapsed={!query && !matchesPath}
-          verticalPadding='big'
+          verticalPadding='tiny'
         >
           {map(menuData.submenu, (submenuData, submenuId) =>
             renderMenuItem(submenuData, submenuId)
@@ -58,7 +58,7 @@ export const Sidebar = (props: ISidebar) => {
         icon={menuData.icon}
         as={menuData.as}
         tooltip={menuData.label.toString()}
-        verticalPadding='big'
+        verticalPadding='tiny'
         selected={matchesPath}
         {...menuData}
       />

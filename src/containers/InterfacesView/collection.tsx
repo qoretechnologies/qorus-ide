@@ -19,6 +19,7 @@ import {
   interfaceKindTransform,
 } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
+import { InterfacesContext } from '../../context/interfaces';
 import { deleteDraft } from '../../helpers/functions';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 import { QodexTestRunModal } from '../InterfaceCreator/fsm/TestRunModal';
@@ -38,6 +39,7 @@ export const InterfacesViewCollection = ({
   const confirmAction = useReqoreProperty('confirmAction');
   const addModal = useReqoreProperty('addModal');
   const { changeDraft, changeTab, qorus_instance } = useContext(InitialContext);
+  const { clone } = useContext(InterfacesContext);
 
   const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
     useFetchInterfaces(type);
@@ -243,6 +245,17 @@ export const InterfacesViewCollection = ({
                   label: `Execution of "${data?.display_name}"`,
                   children: <QodexTestRunModal id={rest.id} liveRun />,
                 });
+              },
+            },
+            {
+              icon: 'FileCopyLine',
+              compact: true,
+              effect: SynthColorEffect,
+              tooltip: 'Clone This Interface',
+              size: 'tiny',
+              show: data ? 'hover' : false,
+              onClick: () => {
+                clone(type, rest.id);
               },
             },
             {

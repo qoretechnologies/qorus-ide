@@ -1864,7 +1864,8 @@
         "display_name": "Bb Test Ftp Job",
         "short_desc": "test FTP job mapper code",
         "version": "1.0",
-        "author": ["Qore Technologies, s.r.o."]
+        "author": ["Qore Technologies, s.r.o."],
+        "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass TestEventSource inherits DelayedObservable {\n    constructor() {\n    }\n\n    observersReady() {\n        # raise a single event\n        raiseEvent({\"data\": \"constructor\"});\n    }\n\n    raiseEvent(hash<auto> event_data) {\n        notifyObservers(\"TestEventSource::raiseEvent\", event_data);\n    }\n}\n"
       }
     },
     {

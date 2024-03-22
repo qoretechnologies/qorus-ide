@@ -15,10 +15,7 @@ import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import CustomDialog from '../../components/CustomDialog';
 import { DraftsTable } from '../../components/DraftsTable';
-import {
-  NegativeColorEffect,
-  PositiveColorEffect,
-} from '../../components/Field/multiPair';
+import { NegativeColorEffect } from '../../components/Field/multiPair';
 import Tutorial from '../../components/Tutorial';
 import {
   interfaceIcons,
@@ -50,6 +47,7 @@ export interface ITabProps {
   version?: string;
   resetAllInterfaceData: (type: string) => any;
   onDelete?: () => any;
+  hasCode?: boolean;
 }
 
 const StyledTab = styled.div`
@@ -258,6 +256,7 @@ const Tab: React.FC<ITabProps> = ({
   updateField,
   removeSubItemFromFields,
   name,
+  hasCode,
   onDelete,
   ...rest
 }) => {
@@ -291,7 +290,7 @@ const Tab: React.FC<ITabProps> = ({
   const [draftsCount, setDraftsCount] = useState<number>(0);
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
   const [localLastDraft, setLastDraft] = useState<string>(null);
-  const { categories } = useContext(InterfacesContext);
+  const { categories, clone } = useContext(InterfacesContext);
 
   useEffect(() => {
     if (lastDraft && lastDraft.type === type) {
@@ -440,29 +439,31 @@ const Tab: React.FC<ITabProps> = ({
   const getActions = () => {
     const actions: IReqorePanelAction[] = [];
 
-    actions.push({
-      label: 'Create new',
-      icon: 'AddLine',
-      effect: PositiveColorEffect,
-      onClick: () => {
-        setIsDraftSaved(false);
-        resetAllInterfaceData(type);
-      },
-    });
+    if (isEditing()) {
+      actions.push({
+        label: 'Clone',
+        tooltip: 'Clone and edit this interface',
+        icon: 'FileCopyLine',
+        onClick: () => {
+          clone(type, id);
+        },
+      });
+    }
+
+    if (!isEditing()) {
+      actions.push({
+        id: 'button-show-drafts',
+        icon: 'ListUnordered',
+        label: 'Drafts',
+        badge: draftsCount,
+        disabled: !draftsCount,
+        onClick: () => {
+          setDraftsOpen(true);
+        },
+      });
+    }
 
     if (isEditing()) {
-      if (getFilePath()) {
-        actions.push({
-          icon: 'File2Line',
-          label: 'View File',
-          onClick: () => {
-            postMessage('open-file', {
-              file_path: getFilePath(),
-            });
-          },
-        });
-      }
-
       actions.push({
         icon: 'DeleteBinLine',
         label: 'Delete',
@@ -477,19 +478,6 @@ const Tab: React.FC<ITabProps> = ({
             setIsDraftSaved(false);
             resetAllInterfaceData(type);
           });
-        },
-      });
-    }
-
-    if (!isEditing()) {
-      actions.push({
-        id: 'button-show-drafts',
-        icon: 'ListUnordered',
-        label: 'Drafts',
-        badge: draftsCount,
-        disabled: !draftsCount,
-        onClick: () => {
-          setDraftsOpen(true);
         },
       });
     }
