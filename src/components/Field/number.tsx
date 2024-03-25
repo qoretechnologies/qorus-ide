@@ -5,9 +5,9 @@ import { ChangeEvent, FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
-import withMessageHandler, {
-  TMessageListener,
-  TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -15,8 +15,6 @@ import { IField, IFieldChange } from '../FieldWrapper';
 export interface INumberField {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
   autoFocus?: boolean;
   templates?: IReqoreFormTemplates;
 }
@@ -28,8 +26,6 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   default_value,
   type,
   fill,
-  postMessage,
-  addMessageListener,
   get_message,
   return_message,
   autoFocus,
@@ -129,7 +125,6 @@ const NumberField: FunctionComponent<INumberField & IField & IFieldChange> = ({
   );
 };
 
-export default compose(
-  withMessageHandler(),
-  withTextContext()
-)(NumberField) as FunctionComponent<INumberField & IField>;
+export default compose(withTextContext())(NumberField) as FunctionComponent<
+  INumberField & IField
+>;

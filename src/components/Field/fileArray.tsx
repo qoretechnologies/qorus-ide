@@ -4,10 +4,6 @@ import styled from 'styled-components';
 
 import { IField } from '.';
 import { TTranslator } from '../../App';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-} from '../../hocomponents/withMessageHandler';
 import { IFieldChange } from '../FieldWrapper';
 import MultiSelect from './multiSelect';
 import TreeField from './tree';
@@ -15,8 +11,6 @@ import TreeField from './tree';
 export interface IMultiFileField {
   get_message: { action: string; object_type: string };
   return_message: { action: string; object_type: string; return_value: string };
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   name: string;
   t: TTranslator;
 }
@@ -25,12 +19,9 @@ const Spacer = styled.div`
   margin: 5px;
 `;
 
-const MultiFileField: FunctionComponent<IMultiFileField & IField & IFieldChange> = ({
-  onChange,
-  name,
-  value = [],
-  ...rest
-}) => {
+const MultiFileField: FunctionComponent<
+  IMultiFileField & IField & IFieldChange
+> = ({ onChange, name, value = [], ...rest }) => {
   return (
     <>
       <MultiSelect
@@ -47,4 +38,4 @@ const MultiFileField: FunctionComponent<IMultiFileField & IField & IFieldChange>
   );
 };
 
-export default withMessageHandler()(MultiFileField);
+export default MultiFileField;

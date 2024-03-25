@@ -4,16 +4,14 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { compose } from 'recompose';
 import { TTranslator } from '../../App';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
 
 export interface ISuggestField {
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   t: TTranslator;
   defaultItems?: any[];
   predicate: (name: string) => boolean;
@@ -28,11 +26,11 @@ export interface ISuggestField {
   autoFocus?: boolean;
 }
 
-const SuggestField: FunctionComponent<ISuggestField & IField & IFieldChange> = ({
+const SuggestField: FunctionComponent<
+  ISuggestField & IField & IFieldChange
+> = ({
   get_message,
   return_message,
-  addMessageListener,
-  postMessage,
   name,
   onChange,
   value,
@@ -54,7 +52,10 @@ const SuggestField: FunctionComponent<ISuggestField & IField & IFieldChange> = (
       addMessageListener(return_message.action, (data: any) => {
         // Check if this is the correct
         // object type
-        if (!return_message.object_type || data.object_type === return_message.object_type) {
+        if (
+          !return_message.object_type ||
+          data.object_type === return_message.object_type
+        ) {
           setItems(get(data, return_message.return_value));
         }
       });
@@ -129,4 +130,4 @@ const SuggestField: FunctionComponent<ISuggestField & IField & IFieldChange> = (
   );
 };
 
-export default compose(withTextContext(), withMessageHandler())(SuggestField);
+export default compose(withTextContext())(SuggestField);

@@ -2,9 +2,9 @@ import { ReqoreControlGroup } from '@qoretechnologies/reqore';
 import { useEffect, useState } from 'react';
 import SelectField from '../../../components/Field/select';
 import Loader from '../../../components/Loader';
-import withMessageHandler, {
-  TMessageListener,
-  TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../../hocomponents/withMessageHandler';
 
 export interface IConnectorSelectorProps {
@@ -13,8 +13,6 @@ export interface IConnectorSelectorProps {
     connector: string;
   };
   onChange: (value: { class: string; connector: string }) => void;
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   types: string[];
   target_dir: string;
 }
@@ -33,8 +31,6 @@ export interface IConnector {
 const ConnectorSelector = ({
   value,
   onChange,
-  addMessageListener,
-  postMessage,
   types,
   target_dir,
 }: IConnectorSelectorProps) => {
@@ -68,7 +64,9 @@ const ConnectorSelector = ({
   }, []);
 
   const getConnectors = (): IConnector[] => {
-    const selectedClass: IClass = classes.find((clss) => clss.name === value?.['class']);
+    const selectedClass: IClass = classes.find(
+      (clss) => clss.name === value?.['class']
+    );
 
     return selectedClass?.['class-connectors'].filter((connector) =>
       types.includes(connector.type)
@@ -103,7 +101,7 @@ const ConnectorSelector = ({
       <SelectField
         onChange={handleChange}
         value={value?.['class']}
-        name="class"
+        name='class'
         target_dir={target_dir}
         defaultItems={classes}
         autoSelect
@@ -116,7 +114,7 @@ const ConnectorSelector = ({
           defaultItems={getConnectors()}
           onChange={handleChange}
           value={value?.connector}
-          name="connector"
+          name='connector'
           autoSelect
           description={'Class connector'}
         />
@@ -125,4 +123,4 @@ const ConnectorSelector = ({
   );
 };
 
-export default withMessageHandler()(ConnectorSelector);
+export default ConnectorSelector;

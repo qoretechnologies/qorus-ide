@@ -1,19 +1,15 @@
 import {
-    ReqoreButton,
-    ReqoreControlGroup,
-    ReqoreInput,
-    ReqoreMessage,
-    ReqoreVerticalSpacer,
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreInput,
+  ReqoreMessage,
+  ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { FunctionComponent, useContext, useState } from 'react';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
 import { MethodsContext } from '../../context/methods';
 import { validateField } from '../../helpers/validations';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-} from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import CustomDialog from '../CustomDialog';
 import { FieldWrapper, IField, IFieldChange } from '../FieldWrapper';
@@ -23,14 +19,14 @@ import String from './string';
 export interface IStringField {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
   read_only?: boolean;
   placeholder?: string;
   canBeNull?: boolean;
 }
 
-const MethodNameField: FunctionComponent<IStringField & IField & IFieldChange> = ({
+const MethodNameField: FunctionComponent<
+  IStringField & IField & IFieldChange
+> = ({
   name,
   onChange,
   value,
@@ -73,7 +69,7 @@ const MethodNameField: FunctionComponent<IStringField & IField & IFieldChange> =
           }}
           disabled={disabled}
           fixed
-          icon="EditLine"
+          icon='EditLine'
         />
       </ReqoreControlGroup>
       {editManager.isOpen && (
@@ -93,16 +89,23 @@ const MethodNameField: FunctionComponent<IStringField & IField & IFieldChange> =
               position: 'right',
               disabled: !isNameValid(editManager.value),
               onClick: () => {
-                onChange(name, editManager.value, undefined, undefined, undefined, {
-                  originalName: editManager.startValue,
-                });
+                onChange(
+                  name,
+                  editManager.value,
+                  undefined,
+                  undefined,
+                  undefined,
+                  {
+                    originalName: editManager.startValue,
+                  }
+                );
                 setEditManager({});
               },
               icon: 'CheckLine',
             },
           ]}
         >
-          <ReqoreMessage intent="warning" size="small">
+          <ReqoreMessage intent='warning' size='small'>
             {t('EditMethodNameTriggerWarning')}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
@@ -110,12 +113,14 @@ const MethodNameField: FunctionComponent<IStringField & IField & IFieldChange> =
             isValid={isNameValid(editManager.value)}
             collapsible={false}
             compact
-            label="Method name"
+            label='Method name'
           >
             <String
-              onChange={(_name, v) => setEditManager({ ...editManager, value: v })}
+              onChange={(_name, v) =>
+                setEditManager({ ...editManager, value: v })
+              }
               value={editManager.value}
-              name="methodName"
+              name='methodName'
               fill
               autoFocus
             />
@@ -126,7 +131,6 @@ const MethodNameField: FunctionComponent<IStringField & IField & IFieldChange> =
   );
 };
 
-export default compose(
-  withMessageHandler(),
-  withTextContext()
-)(MethodNameField) as FunctionComponent<IStringField & IField & IFieldChange>;
+export default compose(withTextContext())(MethodNameField) as FunctionComponent<
+  IStringField & IField & IFieldChange
+>;

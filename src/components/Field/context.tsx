@@ -3,7 +3,10 @@ import size from 'lodash/size';
 import { FunctionComponent, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { Messages } from '../../constants/messages';
-import withMessageHandler from '../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../hocomponents/withMessageHandler';
 import { IField, IFieldChange } from '../FieldWrapper';
 import SelectField from './select';
 import String from './string';
@@ -15,16 +18,9 @@ export interface IContextField {
   };
 }
 
-const ContextField: FunctionComponent<IContextField & IFieldChange & IField> = ({
-  onChange,
-  value = {},
-  default_value,
-  name,
-  read_only,
-  disabled,
-  addMessageListener,
-  postMessage,
-}) => {
+const ContextField: FunctionComponent<
+  IContextField & IFieldChange & IField
+> = ({ onChange, value = {}, default_value, name, read_only, disabled }) => {
   const [ifaces, setIfaces] = useState(null);
 
   useMount(() => {
@@ -66,7 +62,11 @@ const ContextField: FunctionComponent<IContextField & IFieldChange & IField> = (
 
   if (read_only || disabled) {
     return (
-      <String name={name} read_only value={`${default_value.iface_kind}:${default_value.name}`} />
+      <String
+        name={name}
+        read_only
+        value={`${default_value.iface_kind}:${default_value.name}`}
+      />
     );
   }
 
@@ -74,7 +74,7 @@ const ContextField: FunctionComponent<IContextField & IFieldChange & IField> = (
     <div>
       <ReqoreControlGroup fluid>
         <SelectField
-          name="iface_kind"
+          name='iface_kind'
           value={value.iface_kind}
           defaultItems={[
             {
@@ -89,7 +89,7 @@ const ContextField: FunctionComponent<IContextField & IFieldChange & IField> = (
         />
         {ifaces && (
           <SelectField
-            name="name"
+            name='name'
             value={value.name}
             defaultItems={ifaces}
             onChange={(_fieldName: string, val: string) => {
@@ -112,4 +112,4 @@ const ContextField: FunctionComponent<IContextField & IFieldChange & IField> = (
   );
 };
 
-export default withMessageHandler()(ContextField);
+export default ContextField;

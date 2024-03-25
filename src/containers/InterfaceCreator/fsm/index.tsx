@@ -88,7 +88,6 @@ import {
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
-import withMessageHandler from '../../../hocomponents/withMessageHandler';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
 import TinyGrid from '../../../images/graphy-dark.png';
@@ -3358,6 +3357,5 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
 export default compose(
   withGlobalOptionsConsumer(),
-  withMessageHandler(),
   withMapperConsumer()
 )(FSMView) as React.FC<IFSMViewProps>;

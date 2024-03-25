@@ -13,7 +13,7 @@ import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
 import { submitControl } from '../../containers/InterfaceCreator/controls';
 import withMapperConsumer from '../../hocomponents/withMapperConsumer';
-import withMessageHandler, {
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
@@ -249,6 +249,5 @@ const MultiSelectField: FunctionComponent<
 
 export default compose(
   withTextContext(),
-  withMessageHandler(),
   withMapperConsumer()
 )(MultiSelectField) as FunctionComponent<IMultiSelectField & IField>;

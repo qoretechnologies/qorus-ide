@@ -34,7 +34,6 @@ import { flattenFields, getLastChildIndex } from '../../helpers/mapper';
 import { validateField } from '../../helpers/validations';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
-import withMessageHandler from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import TinyGrid from '../../images/graphy-dark.png';
 import { StyledFieldsWrapper, StyledMapperWrapper } from '../Mapper';
@@ -615,6 +614,5 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
 export default compose(
   withInitialDataConsumer(),
   withTextContext(),
-  withMessageHandler(),
   withGlobalOptionsConsumer()
 )(TypeView);

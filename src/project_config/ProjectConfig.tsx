@@ -17,21 +17,22 @@ import useEffectOnce from 'react-use/lib/useEffectOnce';
 import compose from 'recompose/compose';
 import styled from 'styled-components';
 import { TTranslator } from '../App';
-import { NegativeColorEffect, SaveColorEffect } from '../components/Field/multiPair';
+import {
+  NegativeColorEffect,
+  SaveColorEffect,
+} from '../components/Field/multiPair';
 import Loader from '../components/Loader';
 import { Messages } from '../constants/messages';
 import withInitialDataConsumer from '../hocomponents/withInitialDataConsumer';
-import withMessageHandler, {
-  TMessageListener,
-  TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../hocomponents/withMessageHandler';
 import withTextContext from '../hocomponents/withTextContext';
 import Add from './add';
 import Environment from './environment';
 
 export interface IProject {
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   t: TTranslator;
   initialData: {
     path: string;
@@ -65,22 +66,20 @@ const StyledWrapper = styled.div`
   overflow: auto;
 `;
 
-const StyledProjectWrapper: React.FC<IReqoreCollectionProps> = styled(ReqoreCollection)`
+const StyledProjectWrapper: React.FC<IReqoreCollectionProps> = styled(
+  ReqoreCollection
+)`
   opacity: ${({ changedOnDisk }) => (changedOnDisk ? 0.4 : 1)};
-  pointer-events: ${({ changedOnDisk }) => (changedOnDisk ? 'none' : 'initial')};
+  pointer-events: ${({ changedOnDisk }) =>
+    changedOnDisk ? 'none' : 'initial'};
 `;
 
-const Project: FunctionComponent<IProject> = ({
-  addMessageListener,
-  postMessage,
-  initialData,
-  t,
-}) => {
+const Project: FunctionComponent<IProject> = ({ initialData, t }) => {
   const [projectData, setProjectData] = useState<IProjectData>(null);
   const [changedOnDisk, setChangedOnDisk] = useState<boolean>(false);
-  const [selectedEnvironmentForEditing, selectEnvironmentForEditing] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedEnvironmentForEditing, selectEnvironmentForEditing] = useState<
+    string | undefined
+  >(undefined);
   const [envName, setEnvName] = useState('');
   const confirmAction = useReqoreProperty('confirmAction');
 
@@ -96,17 +95,24 @@ const Project: FunctionComponent<IProject> = ({
     postMessage(Messages.CONFIG_GET_DATA);
   });
 
-  const isEnvironmentActive: (qoruses: IQorusInstance[]) => boolean = (qoruses) => {
+  const isEnvironmentActive: (qoruses: IQorusInstance[]) => boolean = (
+    qoruses
+  ) => {
     const { qorus_instance } = initialData;
     // Check if there is any active instance
     if (!qorus_instance) {
       return false;
     }
     // Return true if there is an instance with the same name
-    return !!qoruses.find((qorus: IQorusInstance) => qorus.name === qorus_instance.name);
+    return !!qoruses.find(
+      (qorus: IQorusInstance) => qorus.name === qorus_instance.name
+    );
   };
 
-  const handleEnvironmentNameChange: (id: number, newName: string) => void = (id, newName) => {
+  const handleEnvironmentNameChange: (id: number, newName: string) => void = (
+    id,
+    newName
+  ) => {
     // Change the name of the environment
     setProjectData((current: IProjectData): IProjectData => {
       // Create new instance
@@ -167,11 +173,11 @@ const Project: FunctionComponent<IProject> = ({
     });
   };
 
-  const handleInstanceSubmit: (envId: number, name: string, url: string) => void = (
-    envId,
-    name,
-    url
-  ) => {
+  const handleInstanceSubmit: (
+    envId: number,
+    name: string,
+    url: string
+  ) => void = (envId, name, url) => {
     setProjectData((current: IProjectData): IProjectData => {
       // Create new instance
       const newData: IProjectData = { ...current };
@@ -203,7 +209,10 @@ const Project: FunctionComponent<IProject> = ({
     });
   };
 
-  const handleInstanceDelete: (envId: number, instanceId: number) => void = (envId, instanceId) => {
+  const handleInstanceDelete: (envId: number, instanceId: number) => void = (
+    envId,
+    instanceId
+  ) => {
     setProjectData((current: IProjectData): IProjectData => {
       // Create new instance
       const newData: IProjectData = { ...current };
@@ -250,7 +259,10 @@ const Project: FunctionComponent<IProject> = ({
           if (envId === qorusEnv.id) {
             // Filter out the deleted instance
             newEnv.qoruses = newEnv.qoruses.reduce(
-              (newInstances: IQorusInstance[], instance: IQorusInstance): IQorusInstance[] => {
+              (
+                newInstances: IQorusInstance[],
+                instance: IQorusInstance
+              ): IQorusInstance[] => {
                 // Copy the instance
                 const newInstance: IQorusInstance = { ...instance };
                 // Check if the ID matches
@@ -306,13 +318,18 @@ const Project: FunctionComponent<IProject> = ({
           if (envId === qorusEnv.id) {
             // Filter out the deleted instance
             newEnv.qoruses = newEnv.qoruses.reduce(
-              (newInstances: IQorusInstance[], instance: IQorusInstance): IQorusInstance[] => {
+              (
+                newInstances: IQorusInstance[],
+                instance: IQorusInstance
+              ): IQorusInstance[] => {
                 // Copy the instance
                 const newInstance: IQorusInstance = { ...instance };
                 // Check if the ID matches
                 if (newInstance.id === instanceId) {
                   // Remove the URL
-                  newInstance.urls = newInstance.urls.filter((url) => url.name !== name);
+                  newInstance.urls = newInstance.urls.filter(
+                    (url) => url.name !== name
+                  );
                 }
                 // Return new instances
                 return [...newInstances, newInstance];
@@ -332,11 +349,17 @@ const Project: FunctionComponent<IProject> = ({
     });
   };
 
-  const handleSetInstanceActive: (url: string, set: boolean) => void = (url, set = true) => {
+  const handleSetInstanceActive: (url: string, set: boolean) => void = (
+    url,
+    set = true
+  ) => {
     // Set / unset the active instance
-    postMessage(set ? Messages.SET_ACTIVE_INSTANCE : Messages.UNSET_ACTIVE_INSTANCE, {
-      url,
-    });
+    postMessage(
+      set ? Messages.SET_ACTIVE_INSTANCE : Messages.UNSET_ACTIVE_INSTANCE,
+      {
+        url,
+      }
+    );
   };
 
   const updateBackendData: (data: IProjectData) => void = (data) => {
@@ -352,15 +375,19 @@ const Project: FunctionComponent<IProject> = ({
     <ReqorePanel flat fill>
       <StyledWrapper>
         {changedOnDisk && (
-          <ReqoreMessage intent="warning" title={t('ConfigChangedOnDisk')} inverted>
+          <ReqoreMessage
+            intent='warning'
+            title={t('ConfigChangedOnDisk')}
+            inverted
+          >
             <div>
               {t('ConfigChangedOnDiskDialogQuestion')}
               <ReqoreSpacer height={10} />
               <ReqoreControlGroup stack>
                 <ReqoreButton
-                  icon="Edit2Line"
-                  intent="warning"
-                  tooltip="Edit the config file manually"
+                  icon='Edit2Line'
+                  intent='warning'
+                  tooltip='Edit the config file manually'
                   onClick={() => {
                     updateBackendData(projectData);
                     setChangedOnDisk(false);
@@ -369,9 +396,9 @@ const Project: FunctionComponent<IProject> = ({
                   {t('Overwrite')}
                 </ReqoreButton>
                 <ReqoreButton
-                  icon="RefreshLine"
-                  intent="warning"
-                  tooltip="Refresh the config file from disk"
+                  icon='RefreshLine'
+                  intent='warning'
+                  tooltip='Refresh the config file from disk'
                   onClick={() => {
                     postMessage(Messages.CONFIG_GET_DATA);
                     setChangedOnDisk(false);
@@ -384,7 +411,7 @@ const Project: FunctionComponent<IProject> = ({
           </ReqoreMessage>
         )}
         {!projectData ? (
-          <Loader text="Loading..." />
+          <Loader text='Loading...' />
         ) : (
           <StyledProjectWrapper
             //@ts-expect-error
@@ -393,14 +420,16 @@ const Project: FunctionComponent<IProject> = ({
             opacity={0}
             label={`Environments`}
             badge={size(projectData.qorus_instances)}
-            minColumnWidth="500px"
+            minColumnWidth='500px'
             filterable
             padded={false}
             fill
-            icon="Home3Fill"
-            size="big"
+            icon='Home3Fill'
+            size='big'
             sortable
-            inputPlaceholder={(items) => `Start typing to search ${items.length} environments`}
+            inputPlaceholder={(items) =>
+              `Start typing to search ${items.length} environments`
+            }
             inputProps={{
               rightIcon: 'KeyboardFill',
               focusRules: {
@@ -431,16 +460,17 @@ const Project: FunctionComponent<IProject> = ({
                 badge: size(data.qoruses),
                 size: 'normal',
                 label:
-                  selectedEnvironmentForEditing && selectedEnvironmentForEditing === data.name ? (
+                  selectedEnvironmentForEditing &&
+                  selectedEnvironmentForEditing === data.name ? (
                     <ReqoreControlGroup stack>
                       <ReqoreInput
                         value={envName}
                         // @ts-ignore
-                        name="environment-edit-input"
+                        name='environment-edit-input'
                         onClearClick={() => setEnvName('')}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                          setEnvName(event.target.value)
-                        }
+                        onChange={(
+                          event: React.ChangeEvent<HTMLInputElement>
+                        ) => setEnvName(event.target.value)}
                         onKeyUp={(event: React.KeyboardEvent) => {
                           if (event.key === 'Enter') {
                             handleEnvironmentNameChange(data.id, envName);
@@ -449,8 +479,8 @@ const Project: FunctionComponent<IProject> = ({
                         }}
                       />
                       <ReqoreButton
-                        icon="CheckLine"
-                        tooltip="Save"
+                        icon='CheckLine'
+                        tooltip='Save'
                         onClick={() => {
                           handleEnvironmentNameChange(data.id, envName);
                           selectEnvironmentForEditing(undefined);
@@ -458,8 +488,8 @@ const Project: FunctionComponent<IProject> = ({
                         effect={SaveColorEffect}
                       />
                       <ReqoreButton
-                        icon="CloseLine"
-                        tooltip="Cancel"
+                        icon='CloseLine'
+                        tooltip='Cancel'
                         onClick={() => selectEnvironmentForEditing(undefined)}
                       />
                     </ReqoreControlGroup>
@@ -517,4 +547,4 @@ const Project: FunctionComponent<IProject> = ({
   );
 };
 
-export default compose(withTextContext(), withMessageHandler(), withInitialDataConsumer())(Project);
+export default compose(withTextContext(), withInitialDataConsumer())(Project);
