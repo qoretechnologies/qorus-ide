@@ -554,6 +554,10 @@ export const fetchData: (
 
     const requestData = await fetchCall;
 
+    if (requestData.status === 401) {
+      window.location.href = '/?next=' + window.location.pathname;
+    }
+
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
