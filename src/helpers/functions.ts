@@ -519,6 +519,11 @@ const doFetchData = async (
       Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify(body),
+  }).catch((error) => {
+    return new Response(JSON.stringify({}), {
+      status: 500,
+      statusText: `Request failed ${error.message}`,
+    });
   });
 };
 
@@ -550,10 +555,6 @@ export const fetchData: (
     const requestData = await fetchCall;
     const json = await requestData.json();
 
-    if (cache) {
-      fetchCache[cacheKey].data = json;
-    }
-
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
@@ -563,6 +564,10 @@ export const fetchData: (
         ok: false,
         error: json,
       };
+    }
+
+    if (cache) {
+      fetchCache[cacheKey].data = json;
     }
 
     return {

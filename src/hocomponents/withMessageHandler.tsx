@@ -56,21 +56,14 @@ export const createOrGetWebSocket = (
 
       removeWebSocketData(url);
 
-      try {
-        // Check if Qorus is up
-        const check = await fetchData('/system/pid');
+      // Check if Qorus is up
+      const check = await fetchData('/system/pid');
 
-        if (!check.ok) {
-          // Qorus is most likely down, so we should not try to reconnect
-          // Redirect to the login page
-          window.location.href = '/?next=/ide';
-        }
-      } catch (e) {
+      if (!check.ok) {
+        // Qorus is most likely down, so we should not try to reconnect
+        // Redirect to the login page
         window.location.href = '/?next=/ide';
       }
-
-      // Check if the token is still valid
-      //const fetchData =
 
       if (reconnectTries < WS_RECONNECT_MAX_TRIES) {
         reconnectTries++;
