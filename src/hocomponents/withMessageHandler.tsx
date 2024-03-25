@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
 import { buildWsAuth, vscode } from '../common/vscode';
+import { fetchData } from '../helpers/functions';
 
 export const WS_RECONNECT_MAX_TRIES = 10;
 export const isWebSocketSupported = 'WebSocket' in window;
@@ -50,10 +51,17 @@ export const createOrGetWebSocket = (
       startWebsocketHeartbeat(url);
     };
 
-    wsConnections[url].onclose = function (this, ev) {
+    wsConnections[url].onclose = async function (this, ev) {
       options?.onClose?.(ev);
 
-      console.log('Websocket disconnected with', ev);
+      // Check if Qorus is up
+      const check = await fetchData('/system/pid');
+
+      if (!check.ok) {
+        // Qorus is most likely down, so we should not try to reconnect
+        // Redirect to the login page
+        window.location.href = '/';
+      }
 
       removeWebSocketData(url);
 

@@ -76,7 +76,7 @@ export const GlobalSearch = () => {
                   icon={interfaceIcons[item.type]}
                   badge={[item.type]}
                   tooltip={item.data?.short_desc}
-                  as={Link}
+                  as={process.env.NODE_ENV === 'storybook' ? 'a' : Link}
                   // @ts-ignore
                   to={`/CreateInterface/${item.type}/${item.id}`}
                 >

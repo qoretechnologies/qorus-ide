@@ -109,14 +109,14 @@ export const getStateColor = (
     : 'info';
   return {
     colors: {
-      0: `${color}:darken:2`,
+      0: `${color}:darken:6`,
       50: `${color}:darken`,
-      100: `${color}:lighten`,
+      100: `${color}:lighten:3`,
     },
     borderColor: isInitial
-      ? 'success:lighten:2'
+      ? 'success:lighten:6'
       : stateType !== 'action'
-      ? '#6f1977:lighten:2'
+      ? '#6f1977:lighten:6'
       : 'info',
     animationSpeed: 1,
     direction: 'to right bottom',
