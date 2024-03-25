@@ -553,18 +553,20 @@ export const fetchData: (
     }
 
     const requestData = await fetchCall;
-    const json = await requestData.json();
 
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
       return {
         action: 'fetch-data-complete',
-        data: json,
+        data: null,
         ok: false,
-        error: json,
+        code: requestData.status,
+        error: requestData.statusText,
       };
     }
+
+    const json = await requestData.json();
 
     if (cache) {
       fetchCache[cacheKey].data = json;

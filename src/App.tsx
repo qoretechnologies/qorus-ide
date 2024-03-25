@@ -1,9 +1,10 @@
 import {
   ReqoreBreadcrumbs,
   ReqoreButton,
-  ReqoreH1,
+  ReqoreControlGroup,
   ReqoreHeader,
   ReqoreIcon,
+  ReqoreMessage,
   ReqoreModal,
   ReqoreNavbarGroup,
   ReqoreNavbarItem,
@@ -396,25 +397,59 @@ const App: FunctionComponent<IApp> = ({
                       ) : null}
                       <>
                         {websocketReconnectTry > 0 ? (
-                          <ReqoreModal isOpen intent='warning' blur={5}>
-                            <ReqoreH1 effect={{ textAlign: 'center' }}>
-                              Lost connection to server. Trying to reconnect...{' '}
-                              <ReqoreIcon
-                                icon='Loader3Line'
-                                animation='spin'
-                                size='big'
-                                margin='both'
-                              />
-                              {websocketReconnectTry} / {WS_RECONNECT_MAX_TRIES}
-                            </ReqoreH1>
+                          <ReqoreModal
+                            transparent
+                            blur={10}
+                            position='top'
+                            isOpen
+                            flat
+                            width='500px'
+                            padded={false}
+                            style={{ top: '15%' }}
+                          >
+                            <ReqoreMessage
+                              opaque={false}
+                              intent='warning'
+                              duration={5000}
+                              key={websocketReconnectTry}
+                            >
+                              <ReqoreControlGroup>
+                                Lost connection to server. Trying to
+                                reconnect...{' '}
+                                <ReqoreIcon
+                                  icon='Loader3Line'
+                                  animation='spin'
+                                  size='small'
+                                  margin='both'
+                                />
+                                {websocketReconnectTry} /{' '}
+                                {WS_RECONNECT_MAX_TRIES}
+                              </ReqoreControlGroup>
+                            </ReqoreMessage>
                           </ReqoreModal>
                         ) : null}
                         {hasWebsocketFailedToReconnect && (
-                          <ReqoreModal isOpen intent='danger' blur={5}>
-                            <ReqoreH1 effect={{ textAlign: 'center' }}>
-                              Unable to establish a connection to the server,
-                              please try to reload the page.
-                            </ReqoreH1>
+                          <ReqoreModal
+                            transparent
+                            blur={10}
+                            position='top'
+                            isOpen
+                            flat
+                            width='500px'
+                            padded={false}
+                            style={{ top: '15%' }}
+                          >
+                            <ReqoreMessage
+                              opaque={false}
+                              intent='danger'
+                              duration={5000}
+                              key={websocketReconnectTry}
+                            >
+                              <ReqoreControlGroup>
+                                Unable to establish a connection to the server,
+                                please try to reload the page.
+                              </ReqoreControlGroup>
+                            </ReqoreMessage>
                           </ReqoreModal>
                         )}
                         {tab == 'Dashboard' && <Dashboard />}

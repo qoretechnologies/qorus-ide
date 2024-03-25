@@ -51,24 +51,27 @@ export const createOrGetWebSocket = (
       startWebsocketHeartbeat(url);
     };
 
-    wsConnections[url].onclose = async function (this, ev) {
+    wsConnections[url].onclose = function (this, ev) {
       options?.onClose?.(ev);
 
       removeWebSocketData(url);
 
-      // Check if Qorus is up
-      const check = await fetchData('/system/pid');
-
-      if (!check.ok) {
-        // Qorus is most likely down, so we should not try to reconnect
-        // Redirect to the login page
-        window.location.href = '/?next=/ide';
-      }
-
       if (reconnectTries < WS_RECONNECT_MAX_TRIES) {
         reconnectTries++;
-        reconnectInterval = setTimeout(() => {
+        reconnectInterval = setTimeout(async () => {
           options.onReconnecting?.(reconnectTries);
+
+          // Check if Qorus is up
+          const check = await fetchData('/system/pid');
+
+          if (check.status === 401) {
+            // Qorus is back up again but we need to re-authenticate
+            // Get the current pathname and redirect to the login page
+            const pathname = window.location.pathname;
+
+            window.location.href = `/?next=${pathname}`;
+          }
+
           connect();
         }, 5000);
       } else {
