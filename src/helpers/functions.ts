@@ -554,6 +554,8 @@ export const fetchData: (
 
     const requestData = await fetchCall;
 
+    console.log(requestData);
+
     if (requestData.status === 401) {
       window.location.href = '/?next=' + window.location.pathname;
     }
