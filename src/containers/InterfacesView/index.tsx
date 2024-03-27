@@ -30,8 +30,8 @@ export interface IQorusListInterface {
     supports_enable?: boolean;
     active?: boolean;
     supports_active?: boolean;
-    last_executed?: string;
-    last_jobstates?: string;
+    last_executed?: string | number;
+    last_error?: string;
     next?: string;
     on_demand?: boolean;
     running?: boolean;

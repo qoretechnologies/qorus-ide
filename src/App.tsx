@@ -238,6 +238,12 @@ const App: FunctionComponent<IApp> = ({
           setWebsocketReconnectTry(0);
           setHasWebsocketFailedToReconnect(false);
 
+          postMessage(
+            'subscribe',
+            { args: { matchEvents: ['FSM_EXEC_START', 'FSM_EXEC_RESULT'] } },
+            true
+          );
+
           setIsLoading(false);
         },
         onClose: () => {
