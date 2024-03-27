@@ -5,9 +5,9 @@ import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { Messages } from '../../constants/messages';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import { IField, IFieldChange } from '../FieldWrapper';
 import SelectField from './select';
@@ -16,8 +16,6 @@ export interface IMapperCodeFieldProps {
   defaultCode?: string;
   defaultMethod?: string;
   onChange: IFieldChange;
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   selectedFields: any;
   interfaceIndex: number;
 }
@@ -26,8 +24,6 @@ const MapperCodeField: FunctionComponent<IMapperCodeFieldProps> = ({
   defaultCode,
   defaultMethod,
   onChange,
-  addMessageListener,
-  postMessage,
   selectedFields,
   interfaceIndex,
 }) => {
@@ -63,18 +59,19 @@ const MapperCodeField: FunctionComponent<IMapperCodeFieldProps> = ({
   return (
     <ReqoreControlGroup fill>
       <SelectField
-        name="code"
+        name='code'
         fill
         value={defaultCode}
         onChange={(_name, value) => onCodeChange(value)}
         defaultItems={
-          selectedFields.mapper[interfaceIndex].find((field: IField) => field.name === 'codes')
-            ?.value
+          selectedFields.mapper[interfaceIndex].find(
+            (field: IField) => field.name === 'codes'
+          )?.value
         }
       />
       {size(methods) !== 0 && (
         <SelectField
-          name="method"
+          name='method'
           value={method}
           onChange={(_name, value) => {
             setMethod(value);
@@ -87,4 +84,4 @@ const MapperCodeField: FunctionComponent<IMapperCodeFieldProps> = ({
   );
 };
 
-export default compose(withFieldsConsumer(), withMessageHandler())(MapperCodeField);
+export default compose(withFieldsConsumer())(MapperCodeField);

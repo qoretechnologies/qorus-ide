@@ -115,6 +115,7 @@ export const FieldWrapper = ({
         flat
         padded={false}
         ref={ref}
+        transparent
         contentStyle={{
           display: 'flex',
           flexFlow: 'column',
@@ -163,6 +164,10 @@ export const FieldWrapper = ({
       label={label}
       minimal
       size='small'
+      flat
+      customTheme={{
+        main: 'main:darken:1:0.5',
+      }}
       responsiveTitle={false}
       collapsible={collapsible}
       icon='PriceTagLine'
@@ -209,7 +214,7 @@ export const ContentWrapper = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-flow: column;
-  gap: 25px;
+  gap: 10px;
 
   > * {
     flex-shrink: 0 !important;

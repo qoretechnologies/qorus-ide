@@ -25,7 +25,6 @@ import Options from '../../../components/Field/systemOptions';
 import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { Messages } from '../../../constants/messages';
-import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
 import {
   getRecursiveStatesConnectedtoState,
@@ -35,9 +34,7 @@ import {
 } from '../../../helpers/fsm';
 import { getMaxExecutionOrderFromStates } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import withMessageHandler, {
-  TPostMessage,
-} from '../../../hocomponents/withMessageHandler';
+import { postMessage } from '../../../hocomponents/withMessageHandler';
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import ConfigItemManager from '../../ConfigItemManager';
 import ManageConfigButton from '../../ConfigItemManager/manageButton';
@@ -55,7 +52,6 @@ export interface IFSMStateDialogProps {
   deleteState?: (id: string, unfilled?: boolean) => any;
   fsmName?: string;
   interfaceId: string;
-  postMessage: TPostMessage;
   disableInitial?: boolean;
   metadata?: IFSMMetadata;
   blockLogicType?: 'fsm' | 'custom';
@@ -102,7 +98,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   fsmName,
   target_dir,
   interfaceId,
-  postMessage,
   disableInitial,
   metadata,
   blockLogicType,
@@ -117,7 +112,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
 }) => {
   const [newData, setNewData] = useState<IFSMState>(data);
   const t = useContext(TextContext);
-  const { qorus_instance } = useContext(InitialContext);
   const [showConfigItemsManager, setShowConfigItemsManager] =
     useState<boolean>(false);
 
@@ -851,6 +845,4 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   );
 };
 
-export default withMessageHandler()(
-  FSMStateDialog
-) as React.FC<IFSMStateDialogProps>;
+export default FSMStateDialog;

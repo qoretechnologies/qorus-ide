@@ -14,9 +14,7 @@ import {
 } from '../../components/Field/multiPair';
 import { Messages } from '../../constants/messages';
 import { getFilteredItems } from '../../helpers/common';
-import withMessageHandler, {
-  TMessageListener,
-  TPostMessage,
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
@@ -29,8 +27,6 @@ import ConfigItemsTable, { zoomToLabel } from './table';
 export interface IConfigItemManager {
   t: TTranslator;
   type: string;
-  postMessage: TPostMessage;
-  addMessageListener: TMessageListener;
   baseClassName: string;
   interfaceId: string;
   definitionsOnly?: boolean;
@@ -404,7 +400,4 @@ const ConfigItemManager: FunctionComponent<IConfigItemManager> = ({
   );
 };
 
-export default compose(
-  withTextContext(),
-  withMessageHandler()
-)(ConfigItemManager);
+export default compose(withTextContext())(ConfigItemManager);

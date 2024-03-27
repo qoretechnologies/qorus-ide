@@ -1,11 +1,9 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import compose from 'recompose/compose';
 import { GlobalContext } from '../context/global';
-import { InitialContext } from '../context/init';
 import withFieldsConsumer from './withFieldsConsumer';
 import withFunctionsConsumer from './withFunctionsConsumer';
 import withMapperConsumer from './withMapperConsumer';
-import withMessageHandler from './withMessageHandler';
 import withMethodsConsumer from './withMethodsConsumer';
 import withStepsConsumer from './withStepsConsumer';
 
@@ -17,9 +15,11 @@ export default () =>
       const [fsmReset, setFsmReset] = useState(null);
       const [pipelineReset, setPipelineReset] = useState(null);
       const [connectionReset, setConnectionReset] = useState(null);
-      const initialData = useContext(InitialContext);
 
-      const handleInterfaceReset: (type: string, soft?: boolean) => void = (type, soft) => {
+      const handleInterfaceReset: (type: string, soft?: boolean) => void = (
+        type,
+        soft
+      ) => {
         // Reset the initial data
         if (!soft) {
           props.resetInterfaceData(type);
@@ -106,7 +106,6 @@ export default () =>
       withStepsConsumer(),
       withMethodsConsumer(),
       withFunctionsConsumer(),
-      withMapperConsumer(),
-      withMessageHandler()
+      withMapperConsumer()
     )(EnhancedComponent);
   };

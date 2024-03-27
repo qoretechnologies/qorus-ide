@@ -519,6 +519,11 @@ const doFetchData = async (
       Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify(body),
+  }).catch((error) => {
+    return new Response(JSON.stringify({}), {
+      status: 500,
+      statusText: `Request failed ${error.message}`,
+    });
   });
 };
 
@@ -548,10 +553,11 @@ export const fetchData: (
     }
 
     const requestData = await fetchCall;
-    const json = await requestData.json();
 
-    if (cache) {
-      fetchCache[cacheKey].data = json;
+    console.log(requestData);
+
+    if (requestData.status === 401) {
+      window.location.href = '/?next=' + window.location.pathname;
     }
 
     if (!requestData.ok) {
@@ -559,10 +565,17 @@ export const fetchData: (
 
       return {
         action: 'fetch-data-complete',
-        data: json,
+        data: null,
         ok: false,
-        error: json,
+        code: requestData.status,
+        error: requestData.statusText,
       };
+    }
+
+    const json = await requestData.json();
+
+    if (cache) {
+      fetchCache[cacheKey].data = json;
     }
 
     return {
@@ -573,7 +586,7 @@ export const fetchData: (
     };
   } else {
     // We need to wait for the call to finish and the data to be available
-    while (!fetchCache[cacheKey].data) {
+    while (!fetchCache[cacheKey]?.data) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 

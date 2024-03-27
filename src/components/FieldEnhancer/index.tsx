@@ -7,7 +7,7 @@ import { FieldContext } from '../../context/fields';
 import { InitialContext } from '../../context/init';
 import { MapperContext } from '../../context/mapper';
 import { TextContext } from '../../context/text';
-import withMessageHandler, {
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
@@ -19,7 +19,12 @@ export interface IFieldEnhancerProps {
   onDelete?: () => any;
 }
 
-const FieldEnhancer: React.FC<IFieldEnhancerProps> = ({ children, context, onDelete, ...rest }) => {
+const FieldEnhancer: React.FC<IFieldEnhancerProps> = ({
+  children,
+  context,
+  onDelete,
+  ...rest
+}) => {
   const [editManager, setEditManager] = useState<{
     interfaceKind?: string;
     isOpen?: boolean;
@@ -51,40 +56,50 @@ const FieldEnhancer: React.FC<IFieldEnhancerProps> = ({ children, context, onDel
       context:
         reference.context ||
         context ||
-        (reference.type && reference.type !== '' ? { type: capitalize(reference.type) } : null),
+        (reference.type && reference.type !== ''
+          ? { type: capitalize(reference.type) }
+          : null),
       onSubmit,
     });
   };
 
-  const handleEditClick = (iface_name: string, reference: any, onSubmit?: () => any) => {
-    const iface_kind = reference.iface_kind === 'other' ? reference.type : reference.iface_kind;
+  const handleEditClick = (
+    iface_name: string,
+    reference: any,
+    onSubmit?: () => any
+  ) => {
+    const iface_kind =
+      reference.iface_kind === 'other' ? reference.type : reference.iface_kind;
     // Add message listener for the interface data
-    const listener = addMessageListener(Messages.RETURN_INTERFACE_DATA, ({ data }) => {
-      // Set the context for the mapper if this is
-      // mapper interface
-      if (reference.iface_kind === 'mapper') {
-        initialData.changeInitialData('mapper', data[reference.iface_kind]);
-        if (context?.static_data) {
-          mapperContext.setMapper({
-            interfaceContext: context,
-          });
+    const listener = addMessageListener(
+      Messages.RETURN_INTERFACE_DATA,
+      ({ data }) => {
+        // Set the context for the mapper if this is
+        // mapper interface
+        if (reference.iface_kind === 'mapper') {
+          initialData.changeInitialData('mapper', data[reference.iface_kind]);
+          if (context?.static_data) {
+            mapperContext.setMapper({
+              interfaceContext: context,
+            });
+          }
         }
+        // Open the dialog
+        setEditManager({
+          isOpen: true,
+          interfaceKind: reference.iface_kind,
+          originalName: iface_name,
+          changeType: 'EditInterface',
+          initialData: {
+            [reference.iface_kind]: data[reference.iface_kind],
+          },
+          context: reference.context || context,
+          onSubmit,
+        });
+        // Remove this listener
+        listener();
       }
-      // Open the dialog
-      setEditManager({
-        isOpen: true,
-        interfaceKind: reference.iface_kind,
-        originalName: iface_name,
-        changeType: 'EditInterface',
-        initialData: {
-          [reference.iface_kind]: data[reference.iface_kind],
-        },
-        context: reference.context || context,
-        onSubmit,
-      });
-      // Remove this listener
-      listener();
-    });
+    );
     // Get the interface data
     postMessage(Messages.GET_INTERFACE_DATA, {
       ...omit(reference, ['onDelete']),
@@ -111,11 +126,15 @@ const FieldEnhancer: React.FC<IFieldEnhancerProps> = ({ children, context, onDel
             onSubmit={(data) => {
               const name: string = data.name || data['class-class-name'];
               const version: string =
-                editManager.interfaceKind === 'mapper' || editManager.interfaceKind === 'step'
+                editManager.interfaceKind === 'mapper' ||
+                editManager.interfaceKind === 'step'
                   ? `:${data.version}`
                   : '';
 
-              editManager.onSubmit(editManager.originalName, `${name}${version}`);
+              editManager.onSubmit(
+                editManager.originalName,
+                `${name}${version}`
+              );
               setEditManager({});
             }}
             onDelete={() => {
@@ -130,4 +149,4 @@ const FieldEnhancer: React.FC<IFieldEnhancerProps> = ({ children, context, onDel
   );
 };
 
-export default withMessageHandler()(FieldEnhancer) as React.FC<IFieldEnhancerProps>;
+export default FieldEnhancer as React.FC<IFieldEnhancerProps>;

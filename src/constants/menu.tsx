@@ -22,7 +22,7 @@ export const MenuSubItems: Omit<IQorusSidebarItem, 'id'>[] = [
     icon: 'CalendarLine',
   },
   {
-    name: 'Flow Builder',
+    name: 'Qog',
     icon: 'DashboardLine',
   },
   {
@@ -103,7 +103,9 @@ export const buildMenu = (initialData?: any): IQorusSidebarItems => {
           onClick: () =>
             initialData?.changeTab(
               'CreateInterface',
-              interfaceNameToKind[item.name === 'Sync Event' ? 'Event' : item.name]
+              interfaceNameToKind[
+                item.name === 'Sync Event' ? 'Event' : item.name
+              ]
             ),
         },
         id: item.name!.toLowerCase(),

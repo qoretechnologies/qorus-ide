@@ -1,4 +1,6 @@
+import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
+import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withFields from '../../../hocomponents/withFields';
@@ -8,6 +10,7 @@ import withMapper from '../../../hocomponents/withMapper';
 import withMethods from '../../../hocomponents/withMethods';
 import withSteps from '../../../hocomponents/withSteps';
 import { DraftsProvider } from '../../../providers/Drafts';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import interfaces from '../../Data/interfaces.json';
 import { StoryMeta } from '../../types';
 
@@ -25,9 +28,11 @@ const meta = {
   title: 'Interfaces/Class/Fields',
   render: (args) => {
     return (
-      <Creator>
-        <CreateInterface {...args} />
-      </Creator>
+      <InterfacesProvider>
+        <Creator>
+          <CreateInterface {...args} />
+        </Creator>
+      </InterfacesProvider>
     );
   },
   args: {
@@ -52,5 +57,23 @@ export const New: Story = {
 export const Existing: Story = {
   args: {
     initialData: { subtab: 'class', class: interfaces.class[3].data },
+  },
+};
+
+export const ViewCode: Story = {
+  args: {
+    initialData: { subtab: 'class', class: interfaces.class[3].data },
+  },
+  play: async ({ canvasElement, rest }) => {
+    const canvas = within(canvasElement);
+    await waitFor(
+      () => expect(canvas.queryAllByText('Edit code')[0]).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
+    await fireEvent.click(canvas.queryAllByText('Edit code')[0]);
+    await waitFor(
+      () => expect(canvas.queryAllByText('Code Editor')[0]).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
   },
 };

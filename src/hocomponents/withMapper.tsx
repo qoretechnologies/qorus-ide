@@ -15,7 +15,7 @@ import {
 import { fixRelations, flattenFields } from '../helpers/mapper';
 import withFieldsConsumer from './withFieldsConsumer';
 import withInitialDataConsumer from './withInitialDataConsumer';
-import withMessageHandler from './withMessageHandler';
+import { addMessageListener, postMessage } from './withMessageHandler';
 import withTextContext from './withTextContext';
 
 export const addTrailingSlash = (path: string) => {
@@ -390,7 +390,7 @@ export default () =>
         const url = getUrlFromProvider(null, staticData);
 
         // Send the URL to backend
-        const listener = props.addMessageListener(
+        const listener = addMessageListener(
           Messages.RETURN_FIELDS_FROM_TYPE,
           ({ data }) => {
             if (data) {
@@ -403,7 +403,7 @@ export default () =>
           }
         );
         // Ask backend for the fields for this particular type
-        props.postMessage(Messages.GET_FIELDS_FROM_TYPE, {
+        postMessage(Messages.GET_FIELDS_FROM_TYPE, {
           ...staticData,
           url,
         });
@@ -770,7 +770,6 @@ export default () =>
         currentMapperContext: getSelectedFieldValue('mapper', 'context'),
         ...rest,
       })),
-      withTextContext(),
-      withMessageHandler()
+      withTextContext()
     )(EnhancedComponent);
   };

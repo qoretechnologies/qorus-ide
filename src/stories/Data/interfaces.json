@@ -1864,7 +1864,8 @@
         "display_name": "Bb Test Ftp Job",
         "short_desc": "test FTP job mapper code",
         "version": "1.0",
-        "author": ["Qore Technologies, s.r.o."]
+        "author": ["Qore Technologies, s.r.o."],
+        "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass TestEventSource inherits DelayedObservable {\n    constructor() {\n    }\n\n    observersReady() {\n        # raise a single event\n        raiseEvent({\"data\": \"constructor\"});\n    }\n\n    raiseEvent(hash<auto> event_data) {\n        notifyObservers(\"TestEventSource::raiseEvent\", event_data);\n    }\n}\n"
       }
     },
     {
@@ -4750,7 +4751,12 @@
             "config_group": "FsEvent Main",
             "type": "string",
             "default_value": "NONE",
-            "allowed_values": ["NONE", "IGNORE-CASE", "MULTILINE", "IGNORE-CASE and MULTILINE"],
+            "allowed_values": [
+              "NONE",
+              "IGNORE-CASE",
+              "MULTILINE",
+              "IGNORE-CASE and MULTILINE"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -4836,7 +4842,12 @@
             "config_group": "FTP Polling",
             "type": "string",
             "default_value": "NONE",
-            "allowed_values": ["NONE", "IGNORE-CASE", "MULTILINE", "IGNORE-CASE and MULTILINE"],
+            "allowed_values": [
+              "NONE",
+              "IGNORE-CASE",
+              "MULTILINE",
+              "IGNORE-CASE and MULTILINE"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -5816,7 +5827,12 @@
             "config_group": "HTTP Handler",
             "type": "string",
             "default_value": "default",
-            "allowed_values": ["permissive", "default", "default-basic", "cookie"],
+            "allowed_values": [
+              "permissive",
+              "default",
+              "default-basic",
+              "cookie"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -5861,7 +5877,14 @@
             "description": "HTTP methods allowed with CORS; ignored if `http-cors-enable` is `false`",
             "config_group": "HTTP Handler CORS",
             "type": "list",
-            "default_value": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "default_value": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "OPTIONS"
+            ],
             "strictly_local": true,
             "default_value_true_type": "list"
           },
@@ -6041,7 +6064,12 @@
             "config_group": "HTTP Handler",
             "type": "string",
             "default_value": "default",
-            "allowed_values": ["permissive", "default", "default-basic", "cookie"],
+            "allowed_values": [
+              "permissive",
+              "default",
+              "default-basic",
+              "cookie"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -6086,7 +6114,14 @@
             "description": "HTTP methods allowed with CORS; ignored if `http-cors-enable` is `false`",
             "config_group": "HTTP Handler CORS",
             "type": "list",
-            "default_value": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "default_value": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "OPTIONS"
+            ],
             "strictly_local": true,
             "default_value_true_type": "list"
           },
@@ -6295,7 +6330,12 @@
             "config_group": "HTTP Handler",
             "type": "string",
             "default_value": "default",
-            "allowed_values": ["permissive", "default", "default-basic", "cookie"],
+            "allowed_values": [
+              "permissive",
+              "default",
+              "default-basic",
+              "cookie"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -6340,7 +6380,14 @@
             "description": "HTTP methods allowed with CORS; ignored if `http-cors-enable` is `false`",
             "config_group": "HTTP Handler CORS",
             "type": "list",
-            "default_value": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "default_value": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "OPTIONS"
+            ],
             "strictly_local": true,
             "default_value_true_type": "list"
           },
@@ -6993,7 +7040,12 @@
             "config_group": "Kafka Consumer Medium-Priority Options",
             "type": "string",
             "default_value": "PLAINTEXT",
-            "allowed_values": ["PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL"],
+            "allowed_values": [
+              "PLAINTEXT",
+              "SSL",
+              "SASL_PLAINTEXT",
+              "SASL_SSL"
+            ],
             "default_value_true_type": "string"
           },
           {
@@ -7500,7 +7552,12 @@
             "config_group": "Kafka Producer Medium-Priority Options",
             "type": "string",
             "default_value": "PLAINTEXT",
-            "allowed_values": ["PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL"],
+            "allowed_values": [
+              "PLAINTEXT",
+              "SSL",
+              "SASL_PLAINTEXT",
+              "SASL_SSL"
+            ],
             "default_value_true_type": "string"
           },
           {
@@ -7699,7 +7756,16 @@
             "config_group": "Log Message Config",
             "type": "string",
             "default_value": "INFO",
-            "allowed_values": ["ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF"],
+            "allowed_values": [
+              "ALL",
+              "TRACE",
+              "DEBUG",
+              "INFO",
+              "WARN",
+              "ERROR",
+              "FATAL",
+              "OFF"
+            ],
             "default_value_true_type": "string"
           },
           {
@@ -8940,7 +9006,12 @@
             "config_group": "Rest Handler",
             "type": "string",
             "default_value": "default",
-            "allowed_values": ["permissive", "default", "default-basic", "cookie"],
+            "allowed_values": [
+              "permissive",
+              "default",
+              "default-basic",
+              "cookie"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -8987,7 +9058,14 @@
             "description": "HTTP methods allowed with CORS; ignored if `rest-cors-enable` is `false`",
             "config_group": "Rest Handler CORS",
             "type": "list",
-            "default_value": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "default_value": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "OPTIONS"
+            ],
             "strictly_local": true,
             "default_value_true_type": "list"
           },
@@ -9246,7 +9324,12 @@
             "config_group": "SFTP Polling",
             "type": "string",
             "default_value": "NONE",
-            "allowed_values": ["NONE", "IGNORE-CASE", "MULTILINE", "IGNORE-CASE and MULTILINE"],
+            "allowed_values": [
+              "NONE",
+              "IGNORE-CASE",
+              "MULTILINE",
+              "IGNORE-CASE and MULTILINE"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -10711,7 +10794,12 @@
             "config_group": "WebSocket Handler",
             "type": "string",
             "default_value": "default",
-            "allowed_values": ["permissive", "default", "default-basic", "cookie"],
+            "allowed_values": [
+              "permissive",
+              "default",
+              "default-basic",
+              "cookie"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -10744,7 +10832,14 @@
             "description": "HTTP methods allowed with CORS; ignored if `websockets-cors-enable` is `false`",
             "config_group": "WebSocket Handler CORS",
             "type": "list",
-            "default_value": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            "default_value": [
+              "GET",
+              "POST",
+              "PUT",
+              "PATCH",
+              "DELETE",
+              "OPTIONS"
+            ],
             "strictly_local": true,
             "default_value_true_type": "list"
           },
@@ -12691,7 +12786,15 @@
             "config_group": "Log Message Config",
             "type": "string",
             "default_value": "INFO",
-            "allowed_values": ["ALL", "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"],
+            "allowed_values": [
+              "ALL",
+              "TRACE",
+              "DEBUG",
+              "INFO",
+              "WARN",
+              "ERROR",
+              "FATAL"
+            ],
             "strictly_local": true,
             "default_value_true_type": "string"
           },
@@ -17704,7 +17807,10 @@
                 "supports_create": false,
                 "supports_delete": false,
                 "supports_messages": "ASYNC",
-                "descriptions": [null, "WebSocket client to URL \"wss://localhost:8011/creator\""],
+                "descriptions": [
+                  null,
+                  "WebSocket client to URL \"wss://localhost:8011/creator\""
+                ],
                 "path": "",
                 "message_id": "data",
                 "message": {
@@ -19142,7 +19248,12 @@
                             "options": null,
                             "base_type": "int",
                             "mandatory": false,
-                            "types_accepted": ["int", "integer", "nothing", "null"],
+                            "types_accepted": [
+                              "int",
+                              "integer",
+                              "nothing",
+                              "null"
+                            ],
                             "types_returned": ["int", "integer", "nothing"],
                             "fields": {},
                             "can_manage_fields": false,
@@ -20978,7 +21089,12 @@
                             "options": null,
                             "base_type": "int",
                             "mandatory": false,
-                            "types_accepted": ["int", "integer", "nothing", "null"],
+                            "types_accepted": [
+                              "int",
+                              "integer",
+                              "nothing",
+                              "null"
+                            ],
                             "types_returned": ["int", "integer", "nothing"],
                             "fields": {},
                             "can_manage_fields": false,
@@ -20994,7 +21110,12 @@
                             "options": null,
                             "base_type": "int",
                             "mandatory": false,
-                            "types_accepted": ["int", "integer", "nothing", "null"],
+                            "types_accepted": [
+                              "int",
+                              "integer",
+                              "nothing",
+                              "null"
+                            ],
                             "types_returned": ["int", "integer", "nothing"],
                             "fields": {},
                             "can_manage_fields": false,
@@ -24485,7 +24606,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -24516,7 +24645,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -24878,7 +25015,10 @@
             "type": "type",
             "name": "qore",
             "can_manage_fields": true,
-            "descriptions": ["type entry group", "Qore data type \"hash<auto>\""],
+            "descriptions": [
+              "type entry group",
+              "Qore data type \"hash<auto>\""
+            ],
             "path": "/hash",
             "custom-fields": {
               "StoreCode": {
@@ -25318,7 +25458,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25358,7 +25506,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25398,7 +25554,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25430,7 +25594,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25462,7 +25634,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25494,7 +25674,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -25526,7 +25714,15 @@
                   },
                   "base_type": "int",
                   "mandatory": true,
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -26231,7 +26427,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false,
@@ -27057,7 +27261,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false
@@ -27095,7 +27307,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false
@@ -27133,7 +27353,15 @@
                   },
                   "base_type": "string",
                   "mandatory": true,
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"],
                   "fields": {},
                   "can_manage_fields": false
@@ -27394,7 +27622,15 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               },
@@ -27432,7 +27668,15 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               },
@@ -27470,7 +27714,15 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               }
@@ -27617,7 +27869,15 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               },
@@ -27647,7 +27907,15 @@
                     }
                   },
                   "typename": "int",
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"]
                 }
               }
@@ -27855,7 +28123,15 @@
                     }
                   },
                   "typename": "int",
-                  "types_accepted": ["int", "integer", "float", "string", "date", "bool", "number"],
+                  "types_accepted": [
+                    "int",
+                    "integer",
+                    "float",
+                    "string",
+                    "date",
+                    "bool",
+                    "number"
+                  ],
                   "types_returned": ["int", "integer"]
                 }
               },
@@ -27893,7 +28169,15 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "integer", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "integer",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               }
@@ -27968,7 +28252,14 @@
                     }
                   },
                   "typename": "string",
-                  "types_accepted": ["string", "bool", "float", "int", "date", "number"],
+                  "types_accepted": [
+                    "string",
+                    "bool",
+                    "float",
+                    "int",
+                    "date",
+                    "number"
+                  ],
                   "types_returned": ["string"]
                 }
               }
@@ -30052,7 +30343,10 @@
         "active": false,
         "remote": false,
         "author": ["Qore Technologies, s.r.o."],
-        "classes": ["BBM_DataProviderRecordCreateBase", "BBM_DataProviderRecordCreate"],
+        "classes": [
+          "BBM_DataProviderRecordCreateBase",
+          "BBM_DataProviderRecordCreate"
+        ],
         "config-items": [
           {
             "name": "dataprovider-create-provider-path",
@@ -30137,7 +30431,10 @@
         "active": false,
         "remote": true,
         "author": ["Qore Technologies, s.r.o."],
-        "classes": ["BBM_DataProviderRecordUpdateBase", "BBM_DataProviderRecordUpdate"],
+        "classes": [
+          "BBM_DataProviderRecordUpdateBase",
+          "BBM_DataProviderRecordUpdate"
+        ],
         "config-items": [
           {
             "name": "dataprovider-update-provider-path",
@@ -34222,7 +34519,11 @@
             "name": "clear"
           }
         ],
-        "classes": ["BBM_RegularExpressions", "BBM_FsEventBase", "TestHashStore"],
+        "classes": [
+          "BBM_RegularExpressions",
+          "BBM_FsEventBase",
+          "TestHashStore"
+        ],
         "config-items": [
           {
             "name": "fsevent-root-path",
@@ -34312,7 +34613,12 @@
           }
         ],
         "groups": ["test", "bb-test"],
-        "classes": ["BBM_JavaConfig", "BBM_KafkaConsumer", "BBM_LogMessage", "BBM_ListCache"],
+        "classes": [
+          "BBM_JavaConfig",
+          "BBM_KafkaConsumer",
+          "BBM_LogMessage",
+          "BBM_ListCache"
+        ],
         "config-items": [
           {
             "name": "kafka-conf-bootstrap.servers",
@@ -39739,7 +40045,12 @@
             "author": "Qore Technologies, s.r.o."
           }
         ],
-        "mappers": ["mapper-test-3", "mapper-test-4", "mapper-test-parent", "mapper-test-child"]
+        "mappers": [
+          "mapper-test-3",
+          "mapper-test-4",
+          "mapper-test-parent",
+          "mapper-test-child"
+        ]
       }
     },
     {
@@ -39770,7 +40081,11 @@
             "author": "Qore Technologies, s.r.o."
           }
         ],
-        "classes": ["BBM_MqttPahoClient", "BBM_MqttPahoSubscriber", "BBM_LogMessage"],
+        "classes": [
+          "BBM_MqttPahoClient",
+          "BBM_MqttPahoSubscriber",
+          "BBM_LogMessage"
+        ],
         "config-items": [
           {
             "name": "mqtt-paho-message-topics",

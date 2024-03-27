@@ -1,9 +1,9 @@
 import {
-    ReqoreButton,
-    ReqoreControlGroup,
-    ReqoreInput,
-    ReqoreMessage,
-    ReqoreVerticalSpacer,
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreInput,
+  ReqoreMessage,
+  ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import cronstrue from 'cronstrue';
 import { ChangeEvent, FunctionComponent } from 'react';
@@ -11,9 +11,9 @@ import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
 import { getValueOrDefaultValue } from '../../helpers/validations';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -21,8 +21,6 @@ import { IField, IFieldChange } from '../FieldWrapper';
 export interface ICronField {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
 }
 
 const CronField: FunctionComponent<ICronField & IField & IFieldChange> = ({
@@ -31,8 +29,6 @@ const CronField: FunctionComponent<ICronField & IField & IFieldChange> = ({
   value = '',
   default_value,
   fill,
-  postMessage,
-  addMessageListener,
   get_message,
   return_message,
 }) => {
@@ -78,7 +74,8 @@ const CronField: FunctionComponent<ICronField & IField & IFieldChange> = ({
     onChange(name, '');
   };
 
-  const [minute = '', hour = '', day = '', month = '', weekday = ''] = value.split(' ');
+  const [minute = '', hour = '', day = '', month = '', weekday = ''] =
+    value.split(' ');
 
   // Create the readable CRON message
   let message: string = '';
@@ -139,6 +136,6 @@ const CronField: FunctionComponent<ICronField & IField & IFieldChange> = ({
   );
 };
 
-export default compose(withMessageHandler(), withTextContext())(CronField) as FunctionComponent<
+export default compose(withTextContext())(CronField) as FunctionComponent<
   ICronField & IField & IFieldChange
 >;

@@ -3,9 +3,9 @@ import { FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -13,18 +13,16 @@ import { IField, IFieldChange } from '../FieldWrapper';
 export interface ITextareaField {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
 }
 
-const TextareaField: FunctionComponent<ITextareaField & IField & IFieldChange> = ({
+const TextareaField: FunctionComponent<
+  ITextareaField & IField & IFieldChange
+> = ({
   name,
   onChange,
   value,
   default_value,
   fill,
-  postMessage,
-  addMessageListener,
   get_message,
   return_message,
   placeholder,
@@ -67,6 +65,6 @@ const TextareaField: FunctionComponent<ITextareaField & IField & IFieldChange> =
   );
 };
 
-export default compose(withMessageHandler(), withTextContext())(TextareaField) as FunctionComponent<
+export default compose(withTextContext())(TextareaField) as FunctionComponent<
   ITextareaField & IField & IFieldChange
 >;

@@ -54,7 +54,9 @@ export const FSMVariables = ({
   const [selectedTab, setSelectedTab] = useState<string | number>(
     selectedVariable?.variableType || 'globalvar'
   );
-  const [_selectedVariable, setSelectedVariable] = useState<string>(selectedVariable?.name);
+  const [_selectedVariable, setSelectedVariable] = useState<string>(
+    selectedVariable?.name
+  );
   const [changes, setChanges] = useState<
     {
       name: string;
@@ -73,13 +75,21 @@ export const FSMVariables = ({
     if (selectedTab === 'globalvar') {
       setTransient((prev) => ({
         ...prev,
-        [`variable_${size(prev)}`]: { type: 'string', value: undefined, variableType: 'globalvar' },
+        [`variable_${size(prev)}`]: {
+          type: 'string',
+          value: undefined,
+          variableType: 'globalvar',
+        },
       }));
       setSelectedVariable(`variable_${size(_transient)}`);
     } else {
       setPersistent((prev) => ({
         ...prev,
-        [`variable_${size(prev)}`]: { type: 'string', value: undefined, variableType: 'localvar' },
+        [`variable_${size(prev)}`]: {
+          type: 'string',
+          value: undefined,
+          variableType: 'localvar',
+        },
       }));
       setSelectedVariable(`variable_${size(_persistent)}`);
     }
@@ -94,38 +104,50 @@ export const FSMVariables = ({
 
   const areVariablesValid = () => {
     return (
-      (!_transient || Object.keys(_transient).every((name) => isVariableValid(_transient[name]))) &&
-      (!_persistent || Object.keys(_persistent).every((name) => isVariableValid(_persistent[name])))
+      (!_transient ||
+        Object.keys(_transient).every((name) =>
+          isVariableValid(_transient[name])
+        )) &&
+      (!_persistent ||
+        Object.keys(_persistent).every((name) =>
+          isVariableValid(_persistent[name])
+        ))
     );
   };
 
   const renderVariableList = useCallback(
     (type: 'globalvar' | 'localvar' | 'autovar') => {
       const variables =
-        type === 'autovar' ? autovar : type === 'globalvar' ? _transient : _persistent;
+        type === 'autovar'
+          ? autovar
+          : type === 'globalvar'
+          ? _transient
+          : _persistent;
 
       return (
         <>
           <ReqoreMenu
             padded={false}
             flat={false}
-            position="left"
-            width="200px"
-            className="variable-list"
+            position='left'
+            width='200px'
+            className='variable-list'
           >
             {type !== 'autovar' && (
               <ReqoreMenuItem
-                icon="AddLine"
+                icon='AddLine'
                 effect={PositiveColorEffect}
                 onClick={handleCreateNewClick}
                 wrap
-                id="create-new-variable"
+                id='create-new-variable'
               >
                 Create new {type === 'globalvar' ? 'global' : 'local'} variable
               </ReqoreMenuItem>
             )}
             {size(variables) === 0 ? (
-              <ReqoreMessage intent="muted">No variables created</ReqoreMessage>
+              <ReqoreMessage opaque={false} icon='InformationLine' flat>
+                No variables created
+              </ReqoreMessage>
             ) : (
               Object.keys(variables).map((name) => (
                 <ReqoreMenuItem
@@ -133,11 +155,15 @@ export const FSMVariables = ({
                   selected={_selectedVariable === name}
                   onClick={() => setSelectedVariable(name)}
                   minimal
-                  className="variable-selector"
+                  className='variable-selector'
                   intent={
-                    isVariableValid(variables[name]) || type === 'autovar' ? undefined : 'danger'
+                    isVariableValid(variables[name]) || type === 'autovar'
+                      ? undefined
+                      : 'danger'
                   }
-                  rightIcon={variables[name].readOnly ? undefined : 'DeleteBin2Fill'}
+                  rightIcon={
+                    variables[name].readOnly ? undefined : 'DeleteBin2Fill'
+                  }
                   onRightIconClick={
                     variables[name].readOnly
                       ? undefined
@@ -235,10 +261,17 @@ export const FSMVariables = ({
 
       return (
         <ReqorePanel fluid fill contentStyle={{ display: 'flex' }}>
-          <ReqoreColumn alignItems="center" justifyContent="center" flexFlow="column">
-            <ReqoreIcon icon="InformationLine" size="50px" />
+          <ReqoreColumn
+            alignItems='center'
+            justifyContent='center'
+            flexFlow='column'
+          >
+            <ReqoreIcon icon='InformationLine' size='50px' />
             <ReqoreVerticalSpacer height={10} />
-            <ReqoreH3>Select a variable from the left menu to edit it or create a new one</ReqoreH3>
+            <ReqoreH3>
+              Select a variable from the left menu to edit it or create a new
+              one
+            </ReqoreH3>
           </ReqoreColumn>
         </ReqorePanel>
       );
@@ -248,11 +281,11 @@ export const FSMVariables = ({
 
   return (
     <ReqoreModal
-      label="FSM Variables"
+      label='FSM Variables'
       onClose={onClose}
       isOpen
-      width="90vw"
-      height="90vh"
+      width='90vw'
+      height='90vh'
       bottomActions={[
         submitControl(handleSubmitClick, {
           disabled: !areVariablesValid(),
@@ -291,25 +324,25 @@ export const FSMVariables = ({
         fill
       >
         <ReqoreTabsContent
-          tabId="globalvar"
+          tabId='globalvar'
           style={{ flexFlow: 'row', paddingBottom: 0 }}
-          padded="vertical"
+          padded='vertical'
         >
           {renderVariableList('globalvar')}
           {renderVariableForm('globalvar')}
         </ReqoreTabsContent>
         <ReqoreTabsContent
-          tabId="localvar"
+          tabId='localvar'
           style={{ flexFlow: 'row', paddingBottom: 0 }}
-          padded="vertical"
+          padded='vertical'
         >
           {renderVariableList('localvar')}
           {renderVariableForm('localvar')}
         </ReqoreTabsContent>
         <ReqoreTabsContent
-          tabId="autovar"
+          tabId='autovar'
           style={{ flexFlow: 'row', paddingBottom: 0 }}
-          padded="vertical"
+          padded='vertical'
         >
           {renderVariableList('autovar')}
           {renderVariableForm('autovar')}

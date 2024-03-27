@@ -1,4 +1,8 @@
-import { ReqoreControlGroup, ReqoreInput, ReqoreTag } from '@qoretechnologies/reqore';
+import {
+  ReqoreControlGroup,
+  ReqoreInput,
+  ReqoreTag,
+} from '@qoretechnologies/reqore';
 import { IReqoreInputProps } from '@qoretechnologies/reqore/dist/components/Input';
 import { ChangeEvent } from 'react';
 import useMount from 'react-use/lib/useMount';
@@ -6,11 +10,9 @@ import compose from 'recompose/compose';
 import { isNull } from 'util';
 import { TTranslator } from '../../App';
 import { getValueOrDefaultValue } from '../../helpers/validations';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-    addMessageListener,
-    postMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -20,8 +22,6 @@ export interface IStringField
     Omit<IReqoreInputProps, 'type' | 'value' | 'onChange'> {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
   read_only?: boolean;
   placeholder?: string;
   canBeNull?: boolean;
@@ -54,7 +54,8 @@ const StringField = ({
   // Fetch data on mount
   useMount(() => {
     // Populate default value
-    onChange && onChange(name, getValueOrDefaultValue(value, default_value, canBeNull));
+    onChange &&
+      onChange(name, getValueOrDefaultValue(value, default_value, canBeNull));
     // Get backend data
     if (get_message && return_message) {
       postMessage(get_message.action);
@@ -87,7 +88,11 @@ const StringField = ({
         readOnly={read_only || (canBeNull && isNull(value))}
         fluid={!!fill}
         value={
-          canBeNull && isNull(value) ? 'Value set to [null]' : !value ? default_value || '' : value
+          canBeNull && isNull(value)
+            ? 'Value set to [null]'
+            : !value
+            ? default_value || ''
+            : value
         }
         onFocus={(event) => event.stopPropagation()}
         onClick={(event) => event.stopPropagation()}
@@ -101,12 +106,14 @@ const StringField = ({
               }
             : undefined
         }
-        onClearClick={value && value !== '' && !read_only && !disabled && handleResetClick}
+        onClearClick={
+          value && value !== '' && !read_only && !disabled && handleResetClick
+        }
       />
     </ReqoreControlGroup>
   );
 };
 
-export default compose(withMessageHandler(), withTextContext())(StringField) as React.FC<
+export default compose(withTextContext())(StringField) as React.FC<
   IStringField & IField
 >;

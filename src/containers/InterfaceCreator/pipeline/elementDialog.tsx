@@ -7,24 +7,41 @@ import SelectField from '../../../components/Field/select';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { Messages } from '../../../constants/messages';
 import { TextContext } from '../../../context/text';
-import { areTypesCompatible, getPipelineClosestParentOutputData } from '../../../helpers/functions';
+import {
+  areTypesCompatible,
+  getPipelineClosestParentOutputData,
+} from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import withMessageHandler from '../../../hocomponents/withMessageHandler';
+import { postMessage } from '../../../hocomponents/withMessageHandler';
 import ConfigItemManager from '../../ConfigItemManager';
 import ManageButton from '../../ConfigItemManager/manageButton';
 import { resetControl, submitControl } from '../controls';
 
-export const CompatibilityCheckIndicator = ({ isCompatible, isCheckingCompatibility, title }) => {
+export const CompatibilityCheckIndicator = ({
+  isCompatible,
+  isCheckingCompatibility,
+  title,
+}) => {
   const t = useContext(TextContext);
 
   return (
     <>
       <ReqoreMessage
-        intent={isCheckingCompatibility ? 'warning' : isCompatible ? 'success' : 'danger'}
+        intent={
+          isCheckingCompatibility
+            ? 'warning'
+            : isCompatible
+            ? 'success'
+            : 'danger'
+        }
       >
         {isCheckingCompatibility
           ? t('CheckingCompatibility')
-          : t(`${title || 'PipelineElement'}${isCompatible ? 'Compatible' : 'Incompatible'}`)}
+          : t(
+              `${title || 'PipelineElement'}${
+                isCompatible ? 'Compatible' : 'Incompatible'
+              }`
+            )}
       </ReqoreMessage>
       <ReqoreVerticalSpacer height={8} />
     </>
@@ -37,15 +54,16 @@ const PipelineElementDialog = ({
   parentData,
   onSubmit,
   interfaceId,
-  postMessage,
   onlyQueue,
   inputProvider,
 }) => {
   const t = useContext(TextContext);
   const [newData, setNewData] = useState(data);
-  const [showConfigItemsManager, setShowConfigItemsManager] = useState<boolean>(false);
+  const [showConfigItemsManager, setShowConfigItemsManager] =
+    useState<boolean>(false);
   const [isCompatible, setIsCompatible] = useState<boolean>(true);
-  const [isCheckingCompatibility, setIsCheckingCompatibility] = useState<boolean>(false);
+  const [isCheckingCompatibility, setIsCheckingCompatibility] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (newData.type === 'processor' && newData.name) {
@@ -106,7 +124,9 @@ const PipelineElementDialog = ({
     }
 
     return (
-      validateField('string', newData.type) && validateField('string', newData.name) && isCompatible
+      validateField('string', newData.type) &&
+      validateField('string', newData.name) &&
+      isCompatible
     );
   };
 
@@ -151,16 +171,24 @@ const PipelineElementDialog = ({
         ]}
       >
         <ContentWrapper>
-          <FieldWrapper label={t('Type')} isValid={validateField('string', newData.type)} compact>
+          <FieldWrapper
+            label={t('Type')}
+            isValid={validateField('string', newData.type)}
+            compact
+          >
             <SelectField
               defaultItems={
                 onlyQueue
                   ? [{ name: 'queue' }]
-                  : [{ name: 'queue' }, { name: 'mapper' }, { name: 'processor' }]
+                  : [
+                      { name: 'queue' },
+                      { name: 'mapper' },
+                      { name: 'processor' },
+                    ]
               }
               onChange={handleDataUpdate}
               value={newData.type}
-              name="type"
+              name='type'
             />
           </FieldWrapper>
           {newData?.type && newData.type !== 'queue' ? (
@@ -177,19 +205,26 @@ const PipelineElementDialog = ({
               ) : null}
               <SelectField
                 reference={{
-                  iface_kind: newData.type === 'processor' ? 'class' : newData.type,
+                  iface_kind:
+                    newData.type === 'processor' ? 'class' : newData.type,
                 }}
                 key={newData.type}
                 onChange={(_n, value) => handleDataUpdate('name', value)}
                 value={newData.name}
-                name="interface-name"
+                name='interface-name'
                 get_message={{
                   action: 'creator-get-objects',
-                  object_type: newData.type === 'processor' ? 'class-with-processor' : newData.type,
+                  object_type:
+                    newData.type === 'processor'
+                      ? 'class-with-processor'
+                      : newData.type,
                 }}
                 return_message={{
                   action: 'creator-return-objects',
-                  object_type: newData.type === 'processor' ? 'class-with-processor' : newData.type,
+                  object_type:
+                    newData.type === 'processor'
+                      ? 'class-with-processor'
+                      : newData.type,
                   return_value: 'objects',
                 }}
               />
@@ -204,7 +239,7 @@ const PipelineElementDialog = ({
           onClose={() => setShowConfigItemsManager(false)}
         >
           <ConfigItemManager
-            type="pipeline"
+            type='pipeline'
             processorData={{ pid: newData.pid, class_name: newData.name }}
             interfaceId={interfaceId}
             disableAdding
@@ -215,4 +250,4 @@ const PipelineElementDialog = ({
   );
 };
 
-export default withMessageHandler()(PipelineElementDialog);
+export default PipelineElementDialog;

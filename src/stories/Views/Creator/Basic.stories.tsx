@@ -7,6 +7,7 @@ import withInitialData from '../../../hocomponents/withInitialData';
 import withMapper from '../../../hocomponents/withMapper';
 import withMethods from '../../../hocomponents/withMethods';
 import withSteps from '../../../hocomponents/withSteps';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import { StoryMeta } from '../../types';
 
 const Creator = compose(
@@ -21,6 +22,13 @@ const Creator = compose(
 const meta = {
   component: Creator,
   title: 'Views/Creator/Basic',
+  render: (args) => {
+    return (
+      <InterfacesProvider>
+        <Creator {...args} />
+      </InterfacesProvider>
+    );
+  },
   args: {
     reqoreOptions: {
       animations: {

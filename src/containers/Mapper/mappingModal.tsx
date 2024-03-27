@@ -1,4 +1,8 @@
-import { ReqoreMenu, ReqoreMenuDivider, ReqoreMessage } from '@qoretechnologies/reqore';
+import {
+  ReqoreMenu,
+  ReqoreMenuDivider,
+  ReqoreMessage,
+} from '@qoretechnologies/reqore';
 import every from 'lodash/every';
 import map from 'lodash/map';
 import reduce from 'lodash/reduce';
@@ -14,7 +18,11 @@ import { SaveColorEffect } from '../../components/Field/multiPair';
 import OptionHashField from '../../components/Field/optionHash';
 import SelectField from '../../components/Field/select';
 import FieldSelector from '../../components/FieldSelector';
-import { ContentWrapper, FieldWrapper, IField } from '../../components/FieldWrapper';
+import {
+  ContentWrapper,
+  FieldWrapper,
+  IField,
+} from '../../components/FieldWrapper';
 import SidePanel from '../../components/SidePanel';
 import { unEscapeMapperName } from '../../helpers/mapper';
 import { validateField } from '../../helpers/validations';
@@ -36,8 +44,13 @@ export interface IMapperFieldModalProps {
 
 const types = {};
 
-export const getKeyType = (key: string, mapperKeys: any, output: any): string => {
-  return (mapperKeys[key].value_type === 'any' || mapperKeys[key].value_type === 'auto') &&
+export const getKeyType = (
+  key: string,
+  mapperKeys: any,
+  output: any
+): string => {
+  return (mapperKeys[key].value_type === 'any' ||
+    mapperKeys[key].value_type === 'auto') &&
     mapperKeys[key].requires_field_type
     ? output.type.base_type
     : mapperKeys[key].value_type;
@@ -56,7 +69,11 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
 }) => {
   const [relation, setRelation] = useState(relationData || {});
 
-  const handleChange: (key: string, value: any, type?: string) => void = (key, value, type) => {
+  const handleChange: (key: string, value: any, type?: string) => void = (
+    key,
+    value,
+    type
+  ) => {
     // Save the type if this is auto / any field
     if (type) {
       types[key] = type;
@@ -85,7 +102,10 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
     return every(relation, (value, key) => getIsFieldValid(key, value));
   };
 
-  const getIsFieldValid: (key: string, value: any) => boolean = (key, value) => {
+  const getIsFieldValid: (key: string, value: any) => boolean = (
+    key,
+    value
+  ) => {
     let valid = true;
     // Get the key type
     let fieldType = getKeyType(key, mapperKeys, output);
@@ -139,7 +159,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
       const updatedRoles: string[] = reduce(
         result,
         (roles, _value, key) =>
-          mapperKeys[key].unique_roles ? [...roles, ...mapperKeys[key].unique_roles] : roles,
+          mapperKeys[key].unique_roles
+            ? [...roles, ...mapperKeys[key].unique_roles]
+            : roles,
         []
       );
       // Filter any items that are dependent on the removed item
@@ -174,7 +196,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
   const uniqueRoles: string[] = reduce(
     relation,
     (roles, _value, key) =>
-      mapperKeys[key].unique_roles ? [...roles, ...mapperKeys[key].unique_roles] : roles,
+      mapperKeys[key].unique_roles
+        ? [...roles, ...mapperKeys[key].unique_roles]
+        : roles,
     []
   );
 
@@ -193,8 +217,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
     if (name === 'code') {
       if (
         !size(
-          selectedFields.mapper[interfaceIndex].find((field: IField) => field.name === 'codes')
-            ?.value
+          selectedFields.mapper[interfaceIndex].find(
+            (field: IField) => field.name === 'codes'
+          )?.value
         )
       ) {
         isDisabled = true;
@@ -226,7 +251,10 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
     } else {
       // Check if none of the keys roles & a * role isn't
       // yet included
-      if (!unique_roles.every((role) => !uniqueRoles.includes(role)) || uniqueRoles.includes('*')) {
+      if (
+        !unique_roles.every((role) => !uniqueRoles.includes(role)) ||
+        uniqueRoles.includes('*')
+      ) {
         isDisabled = true;
       }
     }
@@ -237,7 +265,10 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
   const getOptions: () => { name: string; desc: string }[] = () => {
     return reduce(
       output.type.supported_options,
-      (transformedOpts, data, opt) => [...transformedOpts, { name: opt, desc: data.desc }],
+      (transformedOpts, data, opt) => [
+        ...transformedOpts,
+        { name: opt, desc: data.desc },
+      ],
       []
     );
   };
@@ -275,7 +306,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
   return (
     <CustomDialog
       isOpen
-      label={`${t('ManageOutputMapping')} for field "${unEscapeMapperName(output.name)}"`}
+      label={`${t('ManageOutputMapping')} for field "${unEscapeMapperName(
+        output.name
+      )}"`}
       onClose={onClose}
       contentStyle={{
         display: 'flex',
@@ -298,7 +331,7 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
       ]}
     >
       <SidePanel>
-        <ReqoreMenu style={{ flex: 1 }} width="250px" rounded>
+        <ReqoreMenu style={{ flex: 1 }} width='250px' rounded>
           <ReqoreMenuDivider label={'Available keys'} />
           {map(mapperKeysList, (field: any, fieldName: string) => (
             <FieldSelector
@@ -324,7 +357,7 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
                 isValid={getIsFieldValid(key, value)}
                 compact
               >
-                <ReqoreMessage size="small" intent="info" opaque={false}>
+                <ReqoreMessage size='small' intent='info' opaque={false}>
                   {mapperKeys[key].desc}
                 </ReqoreMessage>
                 {getKeyType(key, mapperKeys, output) === 'mapper-code' ? (
@@ -353,7 +386,7 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
                   <Field
                     name={key}
                     value={value}
-                    type="auto"
+                    type='auto'
                     noSoft={true}
                     defaultType={getKeyType(key, mapperKeys, output)}
                     onChange={handleChange}
@@ -362,7 +395,9 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
               </FieldWrapper>
             ))
           ) : (
-            <ReqoreMessage intent="muted">No fields available</ReqoreMessage>
+            <ReqoreMessage opaque={false} flat icon='InformationLine'>
+              No fields available
+            </ReqoreMessage>
           )}
         </ContentWrapper>
       </Content>
@@ -370,4 +405,7 @@ const MapperFieldModal: FC<IMapperFieldModalProps> = ({
   );
 };
 
-export default compose(withInitialDataConsumer(), withFieldsConsumer())(MapperFieldModal);
+export default compose(
+  withInitialDataConsumer(),
+  withFieldsConsumer()
+)(MapperFieldModal);

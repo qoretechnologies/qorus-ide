@@ -5,9 +5,9 @@ import compose from 'recompose/compose';
 import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import { getValueOrDefaultValue } from '../../helpers/validations';
-import withMessageHandler, {
-  TMessageListener,
-  TPostMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import { IField, IFieldChange } from '../FieldWrapper';
@@ -15,8 +15,6 @@ import { IField, IFieldChange } from '../FieldWrapper';
 export interface IDateField {
   t?: TTranslator;
   fill?: boolean;
-  postMessage?: TPostMessage;
-  addMessageListener?: TMessageListener;
 }
 
 const StyledDateField = styled(ReqoreInput)`
@@ -31,8 +29,6 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
   onChange,
   value,
   default_value,
-  postMessage,
-  addMessageListener,
   get_message,
   return_message,
   t,
@@ -88,7 +84,6 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
   );
 };
 
-export default compose(
-  withMessageHandler(),
-  withTextContext()
-)(DateField) as FunctionComponent<IDateField & IField & IFieldChange>;
+export default compose(withTextContext())(DateField) as FunctionComponent<
+  IDateField & IField & IFieldChange
+>;

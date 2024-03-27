@@ -30,9 +30,17 @@ export const StateDataIsShown: StoryFSM = {
     await SwitchesToBuilder.play({ canvasElement, ...rest });
     await _testsClickState(`Send Discord Message`);
     await sleep(500);
-    await waitFor(() => canvas.getAllByText('Message Content')[0], { timeout: 20000 });
+    await waitFor(() => canvas.getAllByText('Message Content')[0], {
+      timeout: 20000,
+    });
     await sleep(5000);
-    await fireEvent.click(document.querySelector('.system-option.reqore-textarea'));
+    await document
+      .querySelector('.system-option.reqore-textarea')
+      .scrollIntoView();
+    await fireEvent.click(
+      document.querySelector('.system-option.reqore-textarea')
+    );
+    await sleep(500);
     await expect(
       document.querySelectorAll('.reqore-popover-content .reqore-menu-item')
     ).toHaveLength(3);

@@ -31,6 +31,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useDebounce, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -41,6 +42,7 @@ import { DragSelectArea } from '../../../components/DragSelectArea';
 import { IExpression } from '../../../components/ExpressionBuilder';
 import { IProviderType } from '../../../components/Field/connectors';
 import {
+  NegativeColorEffect,
   PositiveColorEffect,
   SaveColorEffect,
   WarningColorEffect,
@@ -69,6 +71,7 @@ import {
   prepareFSMDataForPublishing,
   removeAllStatesWithVariable,
   removeFSMState,
+  removeMultipleFSMStates,
   repositionStateGroup,
 } from '../../../helpers/fsm';
 import {
@@ -85,7 +88,6 @@ import {
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
-import withMessageHandler from '../../../hocomponents/withMessageHandler';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
 import TinyGrid from '../../../images/graphy-dark.png';
@@ -199,7 +201,9 @@ export type TFSMStateAction = {
     | TAppAndAction;
 };
 
-export interface IFSMState extends IFSMMetadata {
+export interface IFSMState {
+  name?: string;
+  desc?: string;
   key?: string;
   corners?: IStateCorners;
   isNew?: boolean;
@@ -388,6 +392,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     ...init
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
+  const params = useParams();
 
   parentStateName = parentStateName?.replace(/ /g, '-');
 
@@ -401,6 +406,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const [mt, setMt] = useState<IFSMMetadata>(
     buildMetadata(fsm, interfaceContext)
   );
+  const [actState, setActState] = useState<string | number>(undefined);
 
   const wrapperRef = useRef(null);
   const showTransitionsToaster = useRef(0);
@@ -412,18 +418,31 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const stateRefs = useRef<Record<string | number, HTMLDivElement>>({}); // Refs for each state
   const timeSinceDiagramMouseDown = useRef<number>(0);
 
+  let activeState;
+  let setActiveState;
+
   if (!embedded) {
     states = st;
     setStates = setSt;
 
     metadata = mt;
     setMetadata = setMt;
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    activeState = searchParams.get('state');
+
+    setActiveState = (id) => {
+      setSearchParams({ state: id });
+    };
+  } else {
+    activeState = actState;
+    setActiveState = setActState;
   }
 
   const [isMovingStates, setIsMovingStates] = useState<boolean>(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [selectedStates, setSelectedStates] = useState<TFSMSelectedStates>({});
-  const [activeState, setActiveState] = useState<string | number>(undefined);
+
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [showStateIds, setShowStateIds] = useState<boolean>(false);
   const [showVariables, setShowVariables] = useState<{
@@ -434,6 +453,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     };
   }>(undefined);
 
+  const [isEventTriggerChecked, setIsEventTriggerChecked] =
+    useState<boolean>(false);
   const [compatibilityChecked, setCompatibilityChecked] =
     useState<boolean>(true);
   const [outputCompatibility, setOutputCompatibility] = useState<
@@ -723,7 +744,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       ({ fsmData: { metadata, states }, id }: IDraftData) => {
         setInterfaceId(id);
         setMetadata(metadata);
-        setStates((cur) => ({ ...cur, ...states }));
+        setStates(states);
       },
       undefined,
       () => {
@@ -754,14 +775,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
-
-      if (!size(states)) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
-      }
     } else {
       setInterfaceId(defaultInterfaceId);
     }
   });
+
+  useEffect(() => {
+    if (isReady) {
+      if (!params?.id && size(states) === 0) {
+        setIsAddingNewStateAt({ x: 0, y: 0 });
+      }
+    }
+  }, [isReady]);
 
   useDebounce(
     async () => {
@@ -793,7 +818,14 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             {
               fsmData: {
                 metadata,
-                states,
+                states: reduce(
+                  states,
+                  (acc, state, key) => ({
+                    ...acc,
+                    [key]: omit(state, 'isValid'),
+                  }),
+                  {}
+                ),
               },
             },
             metadata.display_name
@@ -808,7 +840,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   useUpdateEffect(() => {
     if (isReady && !apps.loading) {
       if (embedded || fsm) {
-        let newStates = embedded ? states : cloneDeep(fsm?.states || {});
+        let newStates = embedded ? states : cloneDeep(states || {});
 
         if (size(newStates) === 0) {
           setCompatibilityChecked(true);
@@ -825,7 +857,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           !embedded &&
           !find(newStates, (state) => {
             return state.is_event_trigger;
-          })
+          }) &&
+          !isEventTriggerChecked
         ) {
           let transitions: IFSMTransition[];
           const initialStateId = findKey(newStates, (state: IFSMState) => {
@@ -867,7 +900,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               value: {
                 app: 'QorusTriggers',
                 action: 'on-demand',
-              },
+              } as TAppAndAction,
             },
             transitions,
           };
@@ -875,14 +908,22 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           const { alignedStates } = autoAlign(newStates);
 
           newStates = alignedStates;
+
+          addNotification({
+            type: 'info',
+            content:
+              'An on-demand trigger action has been added to this interface because it was missing',
+            duration: 5000,
+            size: 'small',
+          });
         }
 
         updateHistory(newStates);
         setStates((cur) => ({ ...cur, ...newStates }));
-        setCompatibilityChecked(true);
-      } else {
-        setCompatibilityChecked(true);
       }
+
+      setCompatibilityChecked(true);
+      setIsEventTriggerChecked(true);
 
       const { width, height } = wrapperRef.current.getBoundingClientRect();
 
@@ -891,7 +932,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       setWrapperDimensions({ width, height });
     }
-  }, [isReady, apps.loading]);
+  }, [isReady, apps.loading, JSON.stringify(states)]);
 
   useEffect(() => {
     if (states && onStatesChange) {
@@ -1616,7 +1657,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           label: `Test run of ${metadata.name}`,
           children: (
             <QodexTestRunModal
-              apps={apps.apps}
               id={interfaceId}
               data={{
                 type: 'fsm',
@@ -1726,6 +1766,35 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     setEditingTransitionOrder(id);
   }, []);
 
+  const handleMultipleStateDeleteClick = useCallback(
+    (selectedStates: TFSMSelectedStates): void => {
+      confirmAction({
+        title: 'Delete states',
+        description: `Are you sure you want to delete the selected states`,
+        intent: 'danger',
+        onConfirm: () => {
+          setStates((current) => {
+            const newStates = removeMultipleFSMStates(
+              current,
+              Object.keys(selectedStates),
+              interfaceId,
+              (newStates) => {
+                // If this state was deleted because of unfilled data, do not
+                // save history
+                updateHistory(newStates);
+              }
+            );
+
+            return newStates;
+          });
+          setHoveredState(null);
+          setSelectedStates({});
+        },
+      });
+    },
+    []
+  );
+
   const handleStateDeleteClick = useCallback(
     (id: string | number, unfilled?: boolean): void => {
       confirmAction({
@@ -1749,10 +1818,38 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
             return newStates;
           });
+          setHoveredState(null);
         },
       });
     },
     []
+  );
+
+  const handleStateCloneClick = useCallback(
+    (id: string | number): void => {
+      const state = cloneDeep(states[id]);
+      const newId = shortid.generate();
+
+      state.id = newId;
+      state.key = newId;
+      state.keyId = newId;
+
+      const { x, y } = positionStateInFreeSpot(
+        states,
+        state.position.x + STATE_WIDTH + 50,
+        state.position.y
+      );
+
+      state.position.x = x;
+      state.position.y = y;
+
+      state.transitions = [];
+
+      setStates((cur) => ({ ...cur, [newId]: state }));
+      setHoveredState(null);
+      setActiveState(newId);
+    },
+    [states]
   );
 
   const getTargetStateLocation = ({
@@ -2125,7 +2222,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const renderAppCatalogue = () => {
     if (addingNewStateAt) {
       const isFirstTriggerState =
-        (size(states) === 0 || !hasEventTriggerState()) && !embedded;
+        (size(states) === 0 || !hasEventTriggerState()) &&
+        !embedded &&
+        !addingNewStateAt.fromState;
+
       const variables = reduce(
         {
           ...(metadata.globalvar || {}),
@@ -2345,6 +2445,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         onDelete={(unfilled?: boolean) =>
           handleStateDeleteClick(state, unfilled)
         }
+        onFavorite={(state: IFSMState) => {
+          if (apps.isSingleActionWithNameSaved(state.name)) {
+            const { id } = apps.getSingleActionWithNameSaved(state.name);
+
+            apps.removeActionSet(id);
+          } else {
+            apps.addNewActionSet({
+              id: state.id,
+              states: { [state.id]: state },
+            });
+          }
+        }}
+        onCloneClick={() => handleStateCloneClick(state)}
+        getIsAlreadySaved={apps.isSingleActionWithNameSaved}
         states={states}
         activeTab={editingTransitionOrder ? 'transitions' : 'configuration'}
         inputProvider={getStateDataForComparison(states[state], 'input')}
@@ -2609,6 +2723,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
             onClick: () => {
               setIsAddingActionSet(true);
+            },
+          },
+          {
+            tooltip: 'Delete selected',
+            id: 'delete-multiple-states',
+            icon: 'DeleteBin4Line',
+            show: !!size(selectedStates),
+            effect: NegativeColorEffect,
+            onClick: () => {
+              handleMultipleStateDeleteClick(selectedStates);
             },
           },
           {
@@ -2963,6 +3087,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                         onSelect={handleSelectState}
                         onUpdate={updateStateData}
                         onDeleteClick={handleStateDeleteClick}
+                        onCloneClick={handleStateCloneClick}
                         onMouseEnter={setHoveredState}
                         onMouseLeave={setHoveredState}
                         onNewStateClick={handleNewStateClick}
@@ -3232,6 +3357,5 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
 export default compose(
   withGlobalOptionsConsumer(),
-  withMessageHandler(),
   withMapperConsumer()
 )(FSMView) as React.FC<IFSMViewProps>;

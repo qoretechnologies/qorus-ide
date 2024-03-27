@@ -19,9 +19,16 @@ import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import Content from '../../components/Content';
 import CustomDialog from '../../components/CustomDialog';
-import { NegativeColorEffect, SaveColorEffect } from '../../components/Field/multiPair';
+import {
+  NegativeColorEffect,
+  SaveColorEffect,
+} from '../../components/Field/multiPair';
 import String from '../../components/Field/string';
-import { ContentWrapper, FieldWrapper, IField } from '../../components/FieldWrapper';
+import {
+  ContentWrapper,
+  FieldWrapper,
+  IField,
+} from '../../components/FieldWrapper';
 import Loader from '../../components/Loader';
 import SidePanel from '../../components/SidePanel';
 import { Messages } from '../../constants/messages';
@@ -30,7 +37,10 @@ import { areConnectorsCompatible } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
-import withMessageHandler, { TMessageListener } from '../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../hocomponents/withMessageHandler';
 import withMethodsConsumer from '../../hocomponents/withMethodsConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 import TinyGrid from '../../images/graphy-dark.png';
@@ -75,8 +85,6 @@ export interface IClassConnectionsManagerProps {
   initialData: any;
   initialConnections?: IClassConnections;
   onSubmit: (classConnections: IClassConnections) => void;
-  addMessageListener: TMessageListener;
-  postMessage;
   ifaceType: string;
   baseClassName?: string;
   interfaceContext?: string;
@@ -107,8 +115,6 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
   initialData,
   initialConnections,
   onSubmit,
-  addMessageListener,
-  postMessage,
   ifaceType,
   baseClassName,
   selectedFields,
@@ -121,14 +127,16 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
   );
   const [selectedConnection, setSelectedConnection] = useState(null);
   const [classesData, setClassesData] = useState(null);
-  const [manageDialog, setManageDialog] = useState<IClassConnectionsManageDialog>({});
+  const [manageDialog, setManageDialog] =
+    useState<IClassConnectionsManageDialog>({});
   const [lastConnectorId, setLastConnectorId] = useState<number>(
     getConnectorsCount(initialConnections)
   );
   const [lastConnectionId, setLastConnectionId] = useState<number>(
     initialConnections ? size(initialConnections) : 0
   );
-  const [isCheckingCompatibility, setIsCheckingCompatibility] = useState<boolean>(false);
+  const [isCheckingCompatibility, setIsCheckingCompatibility] =
+    useState<boolean>(false);
   const classes = selectedFields[ifaceType][interfaceIndex].find(
     (field: IField) => field.name === 'classes'
   ).value;
@@ -159,14 +167,18 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
     });
   });
 
-  const setClassConnectionsFromDraft = (connectionsData: IClassConnectionsDraftData) => {
+  const setClassConnectionsFromDraft = (
+    connectionsData: IClassConnectionsDraftData
+  ) => {
     setConnections(connectionsData.connections);
     setLastConnectorId(connectionsData.lastConnectorId);
     setLastConnectionId(connectionsData.lastConnectionId);
     setClassesData(connectionsData.classesData);
   };
 
-  const checkConnectionCompatibility = async (connection: IClassConnection[]) => {
+  const checkConnectionCompatibility = async (
+    connection: IClassConnection[]
+  ) => {
     setIsCheckingCompatibility(true);
 
     const data = [...connection];
@@ -202,7 +214,9 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
   useEffect(() => {
     if (selectedConnection) {
       (async () => {
-        const newData = await checkConnectionCompatibility(connections[selectedConnection]);
+        const newData = await checkConnectionCompatibility(
+          connections[selectedConnection]
+        );
         setConnections((cur) => ({
           ...cur,
           [selectedConnection]: newData,
@@ -225,7 +239,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
               if (data.isEditing) {
                 if (changedConnector) {
                   // Replace the current data and remove the mapper
-                  return [...newConnectors, omit({ ...connector, ...data }, ['mapper'])];
+                  return [
+                    ...newConnectors,
+                    omit({ ...connector, ...data }, ['mapper']),
+                  ];
                 }
                 // Replace data without removing the mapper
                 return [...newConnectors, { ...connector, ...data }];
@@ -257,7 +274,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
     }
   };
 
-  const handleDeleteConnector: (name: string, id: number) => void = async (name, id) => {
+  const handleDeleteConnector: (name: string, id: number) => void = async (
+    name,
+    id
+  ) => {
     let modifiedConnection: IClassConnection[] = connections[name].reduce(
       (newConnectors, connector, index) => {
         // Check if the index matches the passed index
@@ -287,7 +307,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
     // Check if any of the item is incompatible
     for (const [name, conn] of Object.entries(connections)) {
       conn.forEach((connData) => {
-        if (connData.isInputCompatible === false || connData.isOutputCompatible === false) {
+        if (
+          connData.isInputCompatible === false ||
+          connData.isOutputCompatible === false
+        ) {
           isValid = false;
           return;
         }
@@ -312,7 +335,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
   };
 
   const areAllConnectionsValid = () => {
-    return size(connections) === 0 || every(connections, (_conn, name) => isConnectionValid(name));
+    return (
+      size(connections) === 0 ||
+      every(connections, (_conn, name) => isConnectionValid(name))
+    );
   };
 
   const getUniqueClasses = () => {
@@ -344,7 +370,7 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
       ]}
     >
       {size(classesData) !== getUniqueClasses() ? (
-        <Loader text="Loading..." />
+        <Loader text='Loading...' />
       ) : (
         <>
           {manageDialog.isOpen && (
@@ -389,29 +415,31 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
                       has_to_be_valid_identifier: true,
                     }) || !!connections[manageDialog.newName],
                   onClick: () => {
-                    setConnections((current: IClassConnections): IClassConnections => {
-                      const result = reduce(
-                        current,
-                        (newConnections, connection, connName) => {
-                          // If the connection matches the old name
-                          if (connName === manageDialog.name) {
-                            // Replace the connection
+                    setConnections(
+                      (current: IClassConnections): IClassConnections => {
+                        const result = reduce(
+                          current,
+                          (newConnections, connection, connName) => {
+                            // If the connection matches the old name
+                            if (connName === manageDialog.name) {
+                              // Replace the connection
+                              return {
+                                ...newConnections,
+                                [manageDialog.newName]: connection,
+                              };
+                            }
+                            // Return unchanged
                             return {
                               ...newConnections,
-                              [manageDialog.newName]: connection,
+                              [connName]: connection,
                             };
-                          }
-                          // Return unchanged
-                          return {
-                            ...newConnections,
-                            [connName]: connection,
-                          };
-                        },
-                        {}
-                      );
+                          },
+                          {}
+                        );
 
-                      return result;
-                    });
+                        return result;
+                      }
+                    );
 
                     setManageDialog({});
                     setSelectedConnection(manageDialog.newName);
@@ -420,14 +448,14 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
               ]}
             >
               <FieldWrapper
-                label="Name"
+                label='Name'
                 compact
                 isValid={validateField('string', manageDialog.newName, {
                   has_to_be_valid_identifier: true,
                 })}
               >
                 <String
-                  name="connection"
+                  name='connection'
                   placeholder={t('Name')}
                   value={manageDialog.newName}
                   onChange={(_fieldName, value) =>
@@ -442,10 +470,12 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
             </CustomDialog>
           )}
           <SidePanel>
-            <ReqoreMenu width="250px">
-              <ReqoreMenuDivider label={`${t('Connections')} (${size(connections)})`} />
+            <ReqoreMenu width='250px'>
+              <ReqoreMenuDivider
+                label={`${t('Connections')} (${size(connections)})`}
+              />
               <ReqoreMenuItem
-                icon="AddLine"
+                icon='AddLine'
                 onClick={() => {
                   setConnections(
                     (current: IClassConnections): IClassConnections => ({
@@ -453,14 +483,18 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
                       [`${t('Connection')}_${lastConnectionId + 1}`]: [],
                     })
                   );
-                  setSelectedConnection(`${t('Connection')}_${lastConnectionId + 1}`);
+                  setSelectedConnection(
+                    `${t('Connection')}_${lastConnectionId + 1}`
+                  );
                   setLastConnectionId((cur) => cur + 1);
                 }}
               >
                 {t('AddConnection')}
               </ReqoreMenuItem>
               {size(connections) === 0 && (
-                <ReqoreMessage intent="muted">No connections added</ReqoreMessage>
+                <ReqoreMessage intent='muted'>
+                  No connections added
+                </ReqoreMessage>
               )}
               {map(connections, (connection, name: string) => (
                 <MethodSelector
@@ -468,8 +502,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
                   selected={name === selectedConnection}
                   isValid={isConnectionValid(name)}
                   onClick={() => setSelectedConnection(name)}
-                  onRemoveClick={() => setManageDialog({ isOpen: true, name, newName: name })}
-                  rightIcon="EditLine"
+                  onRemoveClick={() =>
+                    setManageDialog({ isOpen: true, name, newName: name })
+                  }
+                  rightIcon='EditLine'
                 >
                   {name}
                 </MethodSelector>
@@ -510,7 +546,10 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
                       interfaceContext={interfaceContext}
                     />
                   ) : (
-                    <ReqoreMessage title={t('NoConnectionSelected')} icon="NodeTree">
+                    <ReqoreMessage
+                      title={t('NoConnectionSelected')}
+                      icon='NodeTree'
+                    >
                       {t('NoConnectionSelectedDescription')}
                     </ReqoreMessage>
                   )}
@@ -525,7 +564,6 @@ const ClassConnectionsManager: React.FC<IClassConnectionsManagerProps> = ({
 };
 
 export default compose(
-  withMessageHandler(),
   withInitialDataConsumer(),
   withTextContext(),
   withMethodsConsumer(),

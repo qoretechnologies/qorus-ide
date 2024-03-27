@@ -30,7 +30,7 @@ export function useQorusStorage<T>(
     if (value) {
       setStorage(value);
     }
-  }, [value]);
+  }, [JSON.stringify(value)]);
 
   const update = (newStorage: T) => {
     const updatedStorage = set(cloneDeep(storage), path, newStorage);
@@ -43,7 +43,7 @@ export function useQorusStorage<T>(
   };
 
   return {
-    value: get(storage, path) || defaultValue,
+    value: get(storage, path) ?? defaultValue,
     update,
     loading,
     error,

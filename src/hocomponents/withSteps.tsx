@@ -1,6 +1,6 @@
 import { cloneDeep, isArray, reduce } from 'lodash';
 import size from 'lodash/size';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import compose from 'recompose/compose';
 import mapProps from 'recompose/mapProps';
 import { Messages } from '../constants/messages';
@@ -9,21 +9,27 @@ import { StepsContext } from '../context/steps';
 import WorkflowStepDependencyParser from '../helpers/StepDependencyParser';
 import { transformSteps } from '../helpers/steps';
 import withFieldsConsumer from './withFieldsConsumer';
-import withMessageHandler from './withMessageHandler';
+import { postMessage } from './withMessageHandler';
 
 const stepsParser = new WorkflowStepDependencyParser();
 
 // A HoC helper that holds all the state for interface creations
 export default () =>
   (Component: FunctionComponent<any>): FunctionComponent<any> => {
-    const EnhancedComponent: FunctionComponent = ({ initialSteps, ...props }: any) => {
+    const EnhancedComponent: FunctionComponent = ({
+      initialSteps,
+      ...props
+    }: any) => {
       const [showSteps, setShowSteps] = useState<boolean>(false);
       const [steps, setSteps] = useState<any[]>(initialSteps);
       const [stepsData, setStepsData] = useState(props.initialStepsData);
       const [parsedSteps, setParsedSteps] = useState<any>({});
-      const [highlightedSteps, setHighlightedSteps] =
-        useState<{ level: number; groupId: string }>(null);
-      const [highlightedStepGroupIds, setHighlightedStepGroupIds] = useState<number[]>(null);
+      const [highlightedSteps, setHighlightedSteps] = useState<{
+        level: number;
+        groupId: string;
+      }>(null);
+      const [highlightedStepGroupIds, setHighlightedStepGroupIds] =
+        useState<number[]>(null);
       const [lastStepId, setLastStepId] = useState<number>(1);
 
       const resetSteps = () => {
@@ -48,7 +54,7 @@ export default () =>
 
       useEffect(() => {
         if (size(steps) && size(stepsData)) {
-          props.postMessage(Messages.GET_CONFIG_ITEMS, {
+          postMessage(Messages.GET_CONFIG_ITEMS, {
             iface_kind: 'workflow',
             iface_id: props.workflow?.iface_id || props.interfaceId.workflow,
             steps: processSteps(steps, stepsData),
@@ -59,14 +65,16 @@ export default () =>
       // Parse the steps when the steps change
       useEffect(() => {
         if (size(initialSteps)) {
-          props.postMessage(Messages.GET_CONFIG_ITEMS, {
+          postMessage(Messages.GET_CONFIG_ITEMS, {
             iface_kind: 'workflow',
             iface_id: props.workflow?.iface_id || props.interfaceId.workflow,
             steps: processSteps(initialSteps, props.initialStepsData),
           });
           setSteps(initialSteps);
           setStepsData(props.initialStepsData);
-          setParsedSteps(stepsParser.processSteps(cloneDeep([...initialSteps])));
+          setParsedSteps(
+            stepsParser.processSteps(cloneDeep([...initialSteps]))
+          );
         }
       }, [JSON.stringify(initialSteps)]);
 
@@ -77,7 +85,14 @@ export default () =>
         before?: boolean,
         parallel?: boolean,
         currentListType?: 'serial' | 'parallel'
-      ) => any[] = (stepId, targetStep, steps, before, parallel, currentListType) => {
+      ) => any[] = (
+        stepId,
+        targetStep,
+        steps,
+        before,
+        parallel,
+        currentListType
+      ) => {
         const newSteps: (number | number[])[] = [];
         // Build the new steps
         steps.forEach((step: number | number[]): void => {
@@ -144,7 +159,10 @@ export default () =>
         return newSteps;
       };
 
-      const removeStep: (stepId: number, steps: any[]) => any[] = (stepId, steps) => {
+      const removeStep: (stepId: number, steps: any[]) => any[] = (
+        stepId,
+        steps
+      ) => {
         const newSteps: (number | number[])[] = [];
         if (isArray(steps)) {
           // Build the new steps
@@ -171,7 +189,9 @@ export default () =>
           steps.forEach((step) => {
             if (isArray(step)) {
               if (size(step)) {
-                newSteps.push(filterEmptySteps(size(step) === 1 ? step[0] : step));
+                newSteps.push(
+                  filterEmptySteps(size(step) === 1 ? step[0] : step)
+                );
               }
             } else if (step) {
               newSteps.push(step);
@@ -183,7 +203,10 @@ export default () =>
         return newSteps;
       };
 
-      const handleStepUpdate: (stepId: number, data: any) => void = (stepId, data) => {
+      const handleStepUpdate: (stepId: number, data: any) => void = (
+        stepId,
+        data
+      ) => {
         setStepsData((current) => {
           current[stepId] = data;
 
@@ -212,7 +235,14 @@ export default () =>
                 steps = [...current, stepId];
               }
             } else {
-              steps = insertNewStep(stepId, targetStep, current, before, parallel, 'serial');
+              steps = insertNewStep(
+                stepId,
+                targetStep,
+                current,
+                before,
+                parallel,
+                'serial'
+              );
             }
             setParsedSteps(stepsParser.processSteps(steps));
 
@@ -284,13 +314,16 @@ export default () =>
     return compose(
       mapProps(({ workflow, ...rest }) => ({
         initialSteps:
-          (workflow && transformSteps(workflow.steps, workflow['steps-info']).steps) || [],
+          (workflow &&
+            transformSteps(workflow.steps, workflow['steps-info']).steps) ||
+          [],
         initialStepsData:
-          (workflow && transformSteps(workflow.steps, workflow['steps-info']).stepsData) || {},
+          (workflow &&
+            transformSteps(workflow.steps, workflow['steps-info']).stepsData) ||
+          {},
         workflow,
         ...rest,
       })),
-      withFieldsConsumer(),
-      withMessageHandler()
+      withFieldsConsumer()
     )(EnhancedComponent);
   };

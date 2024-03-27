@@ -2,6 +2,7 @@ import { useReqoreProperty } from '@qoretechnologies/reqore';
 import { useAsyncRetry } from 'react-use';
 import { interfaceToPlural } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
+import { IQorusListInterface } from '../containers/InterfacesView';
 import { callBackendBasic, fetchData } from '../helpers/functions';
 
 const transformTypeForFetch = (type: string) => {
@@ -28,7 +29,7 @@ export const useFetchInterfaces = (type?: string) => {
     loading,
     retry,
     error,
-  } = useAsyncRetry(async () => {
+  } = useAsyncRetry<IQorusListInterface[]>(async () => {
     const data = await callBackendBasic(
       Messages.GET_ALL_INTERFACES,
       undefined,

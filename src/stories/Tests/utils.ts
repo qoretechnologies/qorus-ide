@@ -373,6 +373,18 @@ export async function _testsConfirmDialog() {
   await sleep(200);
 }
 
+export async function _testsCloneState(name: string) {
+  await _testsClickState(name);
+  await waitFor(
+    () => expect(document.querySelector('.state-clone-button')).toBeEnabled(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('.state-clone-button'));
+  await sleep(200);
+}
+
 export async function _testsDeleteState(name: string) {
   await _testsClickState(name);
   await waitFor(
@@ -385,6 +397,21 @@ export async function _testsDeleteState(name: string) {
     }
   );
   await fireEvent.click(document.querySelector('.state-delete-button'));
+  await sleep(200);
+  await _testsConfirmDialog();
+}
+
+export async function _testsDeleteMultipleStates() {
+  await waitFor(
+    () =>
+      expect(
+        document.querySelector('#delete-multiple-states')
+      ).toBeInTheDocument(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('#delete-multiple-states'));
   await sleep(200);
   await _testsConfirmDialog();
 }
