@@ -7,11 +7,13 @@ import {
   ReqorePanel,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
-import epochTimeago from 'epoch-timeago';
+import RelativeTime from '@yaireo/relative-time';
 import { useContext, useState } from 'react';
 import { QodexTestRunModal } from '../../containers/InterfaceCreator/fsm/TestRunModal';
 import { InitialContext } from '../../context/init';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
+
+const relativeTime = new RelativeTime();
 
 export const DashboardQogPanel = () => {
   const { changeTab } = useContext(InitialContext);
@@ -113,7 +115,10 @@ export const DashboardQogPanel = () => {
             {latest.map((item) => (
               <ReqoreMenuItem
                 compact
-                badge={{ label: epochTimeago(item.date), align: 'right' }}
+                badge={{
+                  label: relativeTime.from(new Date(item.date)),
+                  align: 'right',
+                }}
                 key={item.id}
                 onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
               >
@@ -139,7 +144,10 @@ export const DashboardQogPanel = () => {
             {next.map((item) => (
               <ReqoreMenuItem
                 compact
-                badge={{ label: epochTimeago(item.data.next), align: 'right' }}
+                badge={{
+                  label: relativeTime.from(new Date(item.data.next)),
+                  align: 'right',
+                }}
                 key={item.id}
                 onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
               >
@@ -165,7 +173,10 @@ export const DashboardQogPanel = () => {
             {runnable.map((item) => (
               <ReqoreMenuItem
                 compact
-                badge={{ label: epochTimeago(item.date), align: 'right' }}
+                badge={{
+                  label: relativeTime.from(new Date(item.date)),
+                  align: 'right',
+                }}
                 key={item.id}
                 onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
                 rightIcon='PlayLine'
