@@ -13,8 +13,12 @@ export interface IFSMDiagramWrapperProps {
   setShowStateIds: (show: boolean) => void;
   showStateIds: boolean;
   onDoubleClick: (e?: any) => void;
-  defaultX: number;
-  defaultY: number;
+  defaultX?: number;
+  defaultY?: number;
+  enableEdgeMovement?: boolean;
+  wrapperSize: { width: number; height: number };
+  id?: any;
+  items?: any[];
 }
 
 const FSMDiagramWrapper: React.FC<IFSMDiagramWrapperProps> = ({
@@ -31,8 +35,8 @@ const FSMDiagramWrapper: React.FC<IFSMDiagramWrapperProps> = ({
   return (
     <ElementPan
       key={JSON.stringify(wrapperDimensions)}
-      width="100%"
-      height="100%"
+      width='100%'
+      height='100%'
       startX={defaultX}
       startY={defaultY}
       onPan={({ x, y }) => setPan(x, y)}

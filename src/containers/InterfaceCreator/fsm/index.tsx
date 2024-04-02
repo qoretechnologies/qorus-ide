@@ -121,7 +121,7 @@ export interface IFSMViewProps {
   fsm?: any;
   metadata?: Partial<IFSMMetadata>;
   setMetadata?: Dispatch<React.SetStateAction<any>>;
-  onHideMetadataClick?: () => void;
+  onHideMetadataClick?: (cur?: any) => any;
   isExternalMetadataHidden?: boolean;
   interfaceContext?: {
     target_dir?: string;
@@ -464,6 +464,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     };
   }>(undefined);
 
+  const [testRun, setTestRun] = useState(undefined);
+
   const [isEventTriggerChecked, setIsEventTriggerChecked] =
     useState<boolean>(false);
   const [compatibilityChecked, setCompatibilityChecked] =
@@ -540,7 +542,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     y,
     onSuccess?: (stateId: string) => any,
     isInjectedTriggerState?: boolean,
-    fromState?: string,
+    fromState?: string | number,
     branch?: IFSMTransition['branch']
   ) => {
     const parentStateId = parseInt(parentStateName) || 0;
@@ -1065,7 +1067,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           }
         }
 
-        return obj;
+        return obj as ITypeComparatorData;
       }
 
       if (!state[`${providerType}-type`] && !state['input-output-type']) {
@@ -1664,21 +1666,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         delete data['input-type'];
         delete data['output-type'];
 
-        addModal({
-          minimal: true,
-          icon: 'PlayLine',
-          blur: 3,
-          label: `Test run of ${metadata.name}`,
-          children: (
-            <QodexTestRunModal
-              id={interfaceId}
-              data={{
-                type: 'fsm',
-                ...data,
-              }}
-            />
-          ),
-        });
+        setTestRun(data);
 
         return;
       }
@@ -2523,6 +2511,23 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             setSelectedStates({});
           }}
           states={getStatesFromSelectedStates()}
+        />
+      )}
+      {testRun && (
+        <QodexTestRunModal
+          isOpen
+          id={interfaceId}
+          onClose={() => setTestRun(undefined)}
+          data={{
+            type: 'fsm',
+            ...testRun,
+          }}
+          {...{
+            minimal: true,
+            icon: 'PlayLine',
+            blur: 3,
+            label: `Test run of ${metadata.name}`,
+          }}
         />
       )}
       {showVariables?.show && (

@@ -58,7 +58,7 @@ export interface IFSMStateProps extends IFSMState {
   startTransitionDrag: (id: string) => any;
   stopTransitionDrag: (id: string) => any;
   selectedState?: number | string;
-  isAvailableForTransition: (stateId: string, id: string) => boolean;
+  isAvailableForTransition: (stateId: string, id: string) => Promise<boolean>;
   onExecutionOrderClick: () => void;
   id: string;
   isIsolated: boolean;
@@ -72,6 +72,8 @@ export interface IFSMStateProps extends IFSMState {
   isActive?: boolean;
   hoveredState?: string | number;
   isConnectedToHoveredState?: boolean;
+  onMouseEnter?: any;
+  onMouseLeave?: any;
 }
 
 export interface IFSMStateStyleProps {
