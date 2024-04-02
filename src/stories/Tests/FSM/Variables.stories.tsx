@@ -1,6 +1,11 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, userEvent, waitFor, within } from '@storybook/testing-library';
+import {
+  fireEvent,
+  userEvent,
+  waitFor,
+  within,
+} from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import VariablesFSM from '../../Data/variablesFsm.json';
 import { StoryMeta } from '../../types';
@@ -14,10 +19,16 @@ import {
   sleep,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Variable management',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -46,19 +57,27 @@ export const NewVariableState: StoryFSM = {
 
     await _testsOpenAppCatalogueFromState();
 
-    await waitFor(() => canvas.getByText('Variables', { selector: 'h4' }), { timeout: 10000 });
-    await fireEvent.click(canvas.getAllByText('Manage', { selector: 'span' })[0]);
+    await waitFor(() => canvas.getByText('Variables', { selector: 'h4' }), {
+      timeout: 10000,
+    });
+    await fireEvent.click(
+      canvas.getAllByText('Manage', { selector: 'span' })[0]
+    );
 
     // @ts-ignore
     await NewVariable.play({ canvasElement, ...rest });
 
     await sleep(100);
 
-    await fireEvent.click(canvas.getAllByText('Variables', { selector: 'h4' })[0]);
+    await fireEvent.click(
+      canvas.getAllByText('Variables', { selector: 'h4' })[0]
+    );
 
     await waitFor(
       async () => {
-        await expect(canvas.getByText('testVariable', { selector: 'h4' })).toBeInTheDocument();
+        await expect(
+          canvas.getByText('testVariable', { selector: 'h4' })
+        ).toBeInTheDocument();
       },
       {
         timeout: 5000,
@@ -84,9 +103,12 @@ export const EditVariable: StoryFSM = {
 
     await userEvent.click(document.querySelectorAll('.manage-variable')[0]);
 
-    await fireEvent.change(document.querySelectorAll('.variables-form .reqore-input')[0], {
-      target: { value: 'FirstVariableChanged' },
-    });
+    await fireEvent.change(
+      document.querySelectorAll('.variables-form .reqore-input')[0],
+      {
+        target: { value: 'FirstVariableChanged' },
+      }
+    );
 
     await fireEvent.click(document.querySelector('#save-variable'));
     await fireEvent.click(document.querySelector('#submit-variables'));

@@ -5,10 +5,16 @@ import fsm from '../../Data/fsm.json';
 import { StoryMeta } from '../../types';
 import { _testsCreateSelectionBox, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Selecting states',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {

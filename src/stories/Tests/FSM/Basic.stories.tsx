@@ -3,7 +3,8 @@ import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import fsm from '../../Data/fsm.json';
-import { Existing, NewState } from '../../Views/FSM.stories';
+import qodex from '../../Data/qodex.json';
+import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
   _testsClickState,
@@ -18,10 +19,16 @@ import {
   sleep,
 } from '../utils';
 import { AutoAlign } from './Alignment.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Basic',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -184,7 +191,9 @@ export const MultipleStatesAreDeleted: StoryFSM = {
 };
 
 export const StatesCanBeCloned: StoryFSM = {
-  ...Existing,
+  args: {
+    fsm: qodex,
+  },
   play: async ({ canvasElement, ...rest }) => {
     await SwitchesToBuilder.play({ canvasElement, ...rest });
 

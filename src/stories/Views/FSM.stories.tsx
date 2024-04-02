@@ -2,6 +2,7 @@ import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import FSMView from '../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../providers/Interfaces';
 import fsm from '../Data/fsm.json';
 import fsmWithoutInitialState from '../Data/fsmWithoutInitialState.json';
 import multipleVariablesFsm from '../Data/multipleVariablesFsm.json';
@@ -26,6 +27,11 @@ import { StoryMeta } from '../types';
 const meta = {
   component: FSMView,
   title: 'Views/FSM',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {

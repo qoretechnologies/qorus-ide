@@ -6,10 +6,16 @@ import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import { _testsClickState, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/State Detail',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {

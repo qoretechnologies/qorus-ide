@@ -5,9 +5,9 @@ import {
   ReqoreMenuDivider,
   ReqoreMenuItem,
   ReqorePanel,
-  useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import RelativeTime from '@yaireo/relative-time';
+import { size } from 'lodash';
 import { useContext, useState } from 'react';
 import { QodexTestRunModal } from '../../containers/InterfaceCreator/fsm/TestRunModal';
 import { InitialContext } from '../../context/init';
@@ -17,7 +17,6 @@ const relativeTime = new RelativeTime();
 
 export const DashboardQogPanel = () => {
   const { changeTab } = useContext(InitialContext);
-  const addModal = useReqoreProperty('addModal');
   const [testRunId, setTestRunId] = useState<{
     id: string | number;
     label: string;
@@ -50,6 +49,8 @@ export const DashboardQogPanel = () => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     })
     .slice(0, 5);
+
+  console.log(latest, next, runnable);
 
   return (
     <ReqorePanel
@@ -116,7 +117,7 @@ export const DashboardQogPanel = () => {
               <ReqoreMenuItem
                 compact
                 badge={{
-                  label: relativeTime.from(new Date(item.date)),
+                  label: relativeTime.from(new Date(item.date || 0)),
                   align: 'right',
                 }}
                 key={item.id}
@@ -127,35 +128,37 @@ export const DashboardQogPanel = () => {
             ))}
           </ReqoreMenu>
         </ReqoreColumn>
-        <ReqoreColumn>
-          <ReqoreMenu
-            padded={false}
-            transparent
-            style={{ paddingLeft: '5px' }}
-            width='100%'
-            customTheme={{ main: '#4f0f68:darken:2:0.3' }}
-          >
-            <ReqoreMenuDivider
-              label='Upcoming'
-              align='left'
-              padded='top'
-              margin='left'
-            />
-            {next.map((item) => (
-              <ReqoreMenuItem
-                compact
-                badge={{
-                  label: relativeTime.from(new Date(item.data.next)),
-                  align: 'right',
-                }}
-                key={item.id}
-                onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
-              >
-                {item.label}
-              </ReqoreMenuItem>
-            ))}
-          </ReqoreMenu>
-        </ReqoreColumn>
+        {size(next) > 0 ? (
+          <ReqoreColumn>
+            <ReqoreMenu
+              padded={false}
+              transparent
+              style={{ paddingLeft: '5px' }}
+              width='100%'
+              customTheme={{ main: '#4f0f68:darken:2:0.3' }}
+            >
+              <ReqoreMenuDivider
+                label='Upcoming'
+                align='left'
+                padded='top'
+                margin='left'
+              />
+              {next.map((item) => (
+                <ReqoreMenuItem
+                  compact
+                  badge={{
+                    label: relativeTime.from(new Date(item.data.next || 0)),
+                    align: 'right',
+                  }}
+                  key={item.id}
+                  onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
+                >
+                  {item.label}
+                </ReqoreMenuItem>
+              ))}
+            </ReqoreMenu>
+          </ReqoreColumn>
+        ) : null}
         <ReqoreColumn>
           <ReqoreMenu
             padded={false}
@@ -174,7 +177,7 @@ export const DashboardQogPanel = () => {
               <ReqoreMenuItem
                 compact
                 badge={{
-                  label: relativeTime.from(new Date(item.date)),
+                  label: relativeTime.from(new Date(item.date || 0)),
                   align: 'right',
                 }}
                 key={item.id}

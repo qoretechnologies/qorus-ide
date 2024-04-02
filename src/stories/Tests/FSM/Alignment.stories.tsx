@@ -7,10 +7,16 @@ import { SelectedStates } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import { sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Aligning states',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -36,9 +42,13 @@ export const AutoAlign: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(document.querySelectorAll('#fsm-diagram .reqore-panel').length).toBe(9);
+        await expect(
+          document.querySelectorAll('#fsm-diagram .reqore-panel').length
+        ).toBe(9);
         await sleep(1000);
-        await fireEvent.click(document.querySelectorAll('#auto-align-states')[0]);
+        await fireEvent.click(
+          document.querySelectorAll('#auto-align-states')[0]
+        );
       },
       { timeout: 5000 }
     );
