@@ -13554,6 +13554,8 @@
       "label": "Authorize Payment",
       "id": 31,
       "data": {
+        "supports_enable": true,
+        "enabled": true,
         "id": 31,
         "type": "fsm",
         "desc": "authorize payment for public transport services",
@@ -13835,6 +13837,8 @@
       "label": "Bb Basics Exchange Rates Change Order Status",
       "id": 11,
       "data": {
+        "supports_enable": true,
+        "enabled": false,
         "id": 11,
         "type": "fsm",
         "desc": "Changes the status of all orders for the workflow",

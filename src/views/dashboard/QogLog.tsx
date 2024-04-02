@@ -16,10 +16,10 @@ export interface IQogLogItem {
   name: string;
   display_name: string;
   success: boolean;
-  exec_time: string;
+  exec_time: any;
   exec_timeus?: number;
   error?: string;
-  time: string;
+  time: any;
 }
 
 export const DashboardQogLog = () => {

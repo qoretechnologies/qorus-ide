@@ -38,7 +38,9 @@ export const filterApps = (
     if (app[filter] === filterValue) {
       // Check if this app has other actions than event actions
       return app.actions?.some((action) =>
-        type === 'event' ? action.action_code_str === 'EVENT' : action.action_code_str !== 'EVENT'
+        type === 'event'
+          ? action.action_code_str === 'EVENT'
+          : action.action_code_str !== 'EVENT'
       );
     }
 
@@ -54,7 +56,10 @@ export const AppSelector = ({
   showVariables,
 }: IAppSelectorProps) => {
   const value = useGetAppActionData();
-  const favorites = useQorusStorage<string[]>('vscode.appCatalogueFavorites', []);
+  const [favorites, updateFavorites] = useQorusStorage<string[]>(
+    'appCatalogueFavorites',
+    []
+  );
 
   const apps = useMemo(() => {
     if (!value) return [];
@@ -110,7 +115,10 @@ export const AppSelector = ({
                 onClick: () => {
                   showVariables({
                     show: true,
-                    selected: { name: action.varName, variableType: action.varType },
+                    selected: {
+                      name: action.varName,
+                      variableType: action.varType,
+                    },
                   });
                 },
               },
@@ -126,39 +134,41 @@ export const AppSelector = ({
 
   const handleFavoriteClick = useCallback(
     (app) => {
-      if (favorites.value.includes(app)) {
-        favorites.update(favorites.value.filter((fav) => fav !== app));
+      if (favorites.includes(app)) {
+        updateFavorites(favorites.filter((fav) => fav !== app));
       } else {
-        favorites.update([...favorites.value, app]);
+        updateFavorites([...favorites, app]);
       }
     },
     [favorites]
   );
 
   return (
-    <ReqoreColumns columnsGap="30px">
+    <ReqoreColumns columnsGap='30px'>
       <ReqoreColumn style={{ gridColumn: '1 / span 2' }}>
         <AppCatalogue
           apps={apps}
-          icon="Apps2Line"
+          icon='Apps2Line'
           onActionSelect={(action, app) => {
             if (app.name === 'action_sets') {
-              onActionSetSelect(changeStateIdsToGenerated(action.metadata?.states));
+              onActionSetSelect(
+                changeStateIdsToGenerated(action.metadata?.states)
+              );
             } else {
               onActionSelect({ ...action, type: 'appaction' }, app);
             }
           }}
-          label="Applications"
-          favorites={favorites.value}
+          label='Applications'
+          favorites={favorites}
           onFavoriteClick={handleFavoriteClick}
           type={type}
         />
       </ReqoreColumn>
       <ReqoreColumn>
         <AppCatalogue
-          icon="AppsLine"
+          icon='AppsLine'
           sortable={false}
-          image="https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg"
+          image='https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg'
           apps={builtInApps}
           onActionSelect={(action, app) =>
             onActionSelect(
@@ -172,9 +182,9 @@ export const AppSelector = ({
               app
             )
           }
-          label="Built in modules"
+          label='Built in modules'
           onFavoriteClick={handleFavoriteClick}
-          favorites={favorites.value}
+          favorites={favorites}
           type={type}
         />
       </ReqoreColumn>

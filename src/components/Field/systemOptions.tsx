@@ -135,7 +135,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
     (newOptions, option, optionName) => {
       return {
         ...newOptions,
-        [optionName]: option?.value,
+        [optionName]: typeof option === 'object' ? option?.value : option,
       };
     },
     {}
@@ -638,7 +638,7 @@ const Options = ({
   const filteredOptions: IOptionsSchema = reduce(
     options,
     (newOptions, option, name) => {
-      if (fixedValue && fixedValue[name]) {
+      if (fixedValue && name in fixedValue) {
         return newOptions;
       }
 
@@ -791,6 +791,30 @@ const Options = ({
               </>
             ) : null}
             {children}
+            {size(filteredOptions) >= 1 && !readOnly ? (
+              <>
+                <ReqoreVerticalSpacer height={10} />
+                <SelectField
+                  name='options'
+                  defaultItems={Object.keys(filteredOptions).map(
+                    (option): ISelectFieldItem => ({
+                      name: option,
+                      desc: options[option].desc,
+                      short_desc: options[option].short_desc,
+                      disabled: options[option].disabled,
+                      display_name: options[option].display_name,
+                      intent: options[option].intent,
+                      messages: options[option].messages,
+                    })
+                  )}
+                  fill
+                  onChange={(_name, value) => addSelectedOption(value)}
+                  placeholder={`${t(placeholder || 'AddNewOption')} (${size(
+                    filteredOptions
+                  )})`}
+                />
+              </>
+            ) : null}
           </>
         )}
         badge={size(fixedValue)}
@@ -802,7 +826,7 @@ const Options = ({
           ({ type, ...other }, optionName): IReqoreCollectionItemProps => ({
             label: options[optionName]?.display_name || optionName,
             customTheme: {
-              main: 'main:lighten',
+              main: 'main:darken:1',
             },
             icon: !isOptionValid(optionName, type, other.value)
               ? 'SpamFill'
@@ -999,31 +1023,6 @@ const Options = ({
         )}
         {...rest}
       />
-
-      {size(filteredOptions) >= 1 && !readOnly ? (
-        <>
-          {rest.flat ? null : <ReqoreVerticalSpacer height={10} />}
-          <SelectField
-            name='options'
-            defaultItems={Object.keys(filteredOptions).map(
-              (option): ISelectFieldItem => ({
-                name: option,
-                desc: options[option].desc,
-                short_desc: options[option].short_desc,
-                disabled: options[option].disabled,
-                display_name: options[option].display_name,
-                intent: options[option].intent,
-                messages: options[option].messages,
-              })
-            )}
-            fill
-            onChange={(_name, value) => addSelectedOption(value)}
-            placeholder={`${t(placeholder || 'AddNewOption')} (${size(
-              filteredOptions
-            )})`}
-          />
-        </>
-      ) : null}
     </>
   );
 };

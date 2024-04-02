@@ -16,7 +16,10 @@ export type TMenuItem =
   | ({ divider: true } & IReqoreMenuDividerProps);
 export type TMenu = TMenuItem[];
 
-export const buildMenu = (interfaces: TQorusInterfaceCount): TMenu => [
+export const buildMenu = (
+  interfaces: TQorusInterfaceCount,
+  navigate: any
+): TMenu => [
   {
     label: 'Developer Portal',
     icon: 'CodeBoxLine',
@@ -30,7 +33,9 @@ export const buildMenu = (interfaces: TQorusInterfaceCount): TMenu => [
       (item, id): TMenuItem => ({
         label: item.display_name,
         icon: interfaceIcons[id],
+        minimal: false,
         to: `/Interfaces/${id}`,
+        customTheme: { main: 'main:darken:1' },
         badge: [{ label: item.items + item.drafts, align: 'right' }],
         tooltip: {
           content: item.short_desc,
@@ -38,9 +43,11 @@ export const buildMenu = (interfaces: TQorusInterfaceCount): TMenu => [
           delay: 300,
         },
         wrap: false,
-        activePaths: [`/Interfaces/${id}`],
+        activePaths: [`/Interfaces/${id}`, `/CreateInterface/${id}`],
         as: Link,
         id: id,
+        rightIcon: 'AddLine',
+        onRightIconClick: () => navigate(`/CreateInterface/${id}`),
       })
     ),
   },

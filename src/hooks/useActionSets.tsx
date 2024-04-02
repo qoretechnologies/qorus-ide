@@ -17,9 +17,6 @@ export interface IActionsSetsHookFunctions {
 export interface IActionSetsHook extends IActionsSetsHookFunctions {
   app: IApp;
   value: IActionSet[];
-  loading: boolean;
-  error: any;
-  retry: () => void;
 }
 
 export const buildAppFromActionSets = (
@@ -93,7 +90,10 @@ export const buildAppFromActionSets = (
 };
 
 export const useActionSets = (): IActionSetsHook => {
-  const storage = useQorusStorage<IActionSet[]>('vscode.customActionSets', []);
+  const [actionSets, update] = useQorusStorage<IActionSet[]>(
+    'customActionSets',
+    []
+  );
 
   const addNewActionSet = (actionSet: IActionSet) => {
     // Fix the states
@@ -101,20 +101,18 @@ export const useActionSets = (): IActionSetsHook => {
     // Remove non existing transitions
     fixedStates = removeTransitionsFromStateGroup(fixedStates);
     // Update the storage
-    storage.update([
-      ...storage.value,
+    update([
+      ...actionSets,
       { ...actionSet, states: fixedStates, updated: Date.now() },
     ]);
   };
 
   const removeActionSet = (actionSetId: string) => {
-    storage.update(
-      storage.value.filter((actionSet) => actionSet.id !== actionSetId)
-    );
+    update(actionSets.filter((actionSet) => actionSet.id !== actionSetId));
   };
 
   const isSingleActionWithNameSaved = (name: string) => {
-    return storage.value.some((actionSet) => {
+    return actionSets.some((actionSet) => {
       return (
         size(actionSet.states) === 1 &&
         some(actionSet.states, (state) => state.name === name)
@@ -123,7 +121,7 @@ export const useActionSets = (): IActionSetsHook => {
   };
 
   const getSingleActionWithNameSaved = (name: string): IActionSet => {
-    return storage.value.find((actionSet) => {
+    return actionSets.find((actionSet) => {
       return (
         size(actionSet.states) === 1 &&
         some(actionSet.states, (state) => state.name === name)
@@ -132,16 +130,11 @@ export const useActionSets = (): IActionSetsHook => {
   };
 
   return {
-    app: buildAppFromActionSets(storage.value, removeActionSet),
-    value: storage.value,
+    app: buildAppFromActionSets(actionSets, removeActionSet),
+    value: actionSets,
     addNewActionSet,
     removeActionSet,
     isSingleActionWithNameSaved,
     getSingleActionWithNameSaved,
-    loading: storage.loading,
-    error: storage.error,
-    retry: () => {
-      storage.refetch();
-    },
   };
 };

@@ -160,7 +160,6 @@ export default () =>
         const interfaceDataListener = addMessageListener(
           Messages.RETURN_INTERFACE_DATA,
           ({ data, metadata, ...rest }) => {
-            console.log(data, metadata, rest);
             // only set initial data if we are switching tabs
             if (data?.tab) {
               setInitialData((current) => ({

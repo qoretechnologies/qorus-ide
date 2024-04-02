@@ -8,7 +8,7 @@ import {
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import epochTimeago from 'epoch-timeago';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { QodexTestRunModal } from '../../containers/InterfaceCreator/fsm/TestRunModal';
 import { InitialContext } from '../../context/init';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
@@ -16,6 +16,10 @@ import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 export const DashboardQogPanel = () => {
   const { changeTab } = useContext(InitialContext);
   const addModal = useReqoreProperty('addModal');
+  const [testRunId, setTestRunId] = useState<{
+    id: string | number;
+    label: string;
+  }>(undefined);
   const { loading, value } = useFetchInterfaces('fsm');
 
   if (loading) {
@@ -47,7 +51,6 @@ export const DashboardQogPanel = () => {
 
   return (
     <ReqorePanel
-      onClick={() => changeTab('CreateInterface', 'fsm')}
       customTheme={{ main: '#000000' }}
       minimal
       contentEffect={{
@@ -167,10 +170,7 @@ export const DashboardQogPanel = () => {
                 onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
                 rightIcon='PlayLine'
                 onRightIconClick={() => {
-                  addModal({
-                    label: `Execution of "${item.data?.display_name}"`,
-                    children: <QodexTestRunModal id={item.id} liveRun />,
-                  });
+                  setTestRunId({ id: item.id, label: item.data?.display_name });
                 }}
               >
                 {item.label}
@@ -179,6 +179,15 @@ export const DashboardQogPanel = () => {
           </ReqoreMenu>
         </ReqoreColumn>
       </ReqoreColumns>
+      {testRunId && (
+        <QodexTestRunModal
+          label={`Execution of "${testRunId.label}"`}
+          id={testRunId.id}
+          isOpen
+          onClose={() => setTestRunId(undefined)}
+          liveRun
+        />
+      )}
     </ReqorePanel>
   );
 };

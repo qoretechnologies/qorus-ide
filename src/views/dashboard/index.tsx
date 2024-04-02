@@ -10,6 +10,7 @@ import { IReqoreCustomTheme } from '@qoretechnologies/reqore/dist/constants/them
 import { map } from 'lodash';
 import { Suspense, useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
+import { useContextSelector } from 'use-context-selector';
 import Loader from '../../components/Loader';
 import { interfaceIcons } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
@@ -23,7 +24,10 @@ import { DashboardStatus } from './Status';
 
 export const Dashboard = () => {
   const { changeTab, changeDraft } = useContext(InitialContext);
-  const { categories } = useContext(InterfacesContext);
+  const { categories } = useContextSelector(
+    InterfacesContext,
+    ({ categories }) => ({ categories })
+  );
   const draft = useAsyncRetry(async () => {
     const data = await callBackendBasic(
       Messages.GET_LATEST_DRAFT,

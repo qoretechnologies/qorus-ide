@@ -1,11 +1,13 @@
 import { useReqoreProperty } from '@qoretechnologies/reqore';
 import { useAsyncRetry } from 'react-use';
+import { useContextSelector } from 'use-context-selector';
 import { interfaceToPlural } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
 import { IQorusListInterface } from '../containers/InterfacesView';
+import { InterfacesContext } from '../context/interfaces';
 import { callBackendBasic, fetchData } from '../helpers/functions';
 
-const transformTypeForFetch = (type: string) => {
+export const transformTypeForFetch = (type: string) => {
   switch (type) {
     case 'queues':
       return 'async-queues';
@@ -23,6 +25,10 @@ const transformTypeForFetch = (type: string) => {
 
 export const useFetchInterfaces = (type?: string) => {
   const addNotification = useReqoreProperty('addNotification');
+  const { toggleEnabled } = useContextSelector(
+    InterfacesContext,
+    ({ toggleEnabled }) => ({ toggleEnabled })
+  );
 
   const {
     value = [],
@@ -67,28 +73,7 @@ export const useFetchInterfaces = (type?: string) => {
     id: string | number,
     enable?: boolean
   ) => {
-    const fetchType = transformTypeForFetch(interfaceToPlural[type]);
-
-    addNotification({
-      intent: 'pending',
-      content: `Working...`,
-      duration: 10000,
-      id: 'toggle-interface',
-    });
-
-    await fetchData(
-      `${fetchType}/${id}/${enable ? 'enable' : 'disable'}`,
-      'PUT',
-      undefined,
-      false
-    );
-
-    addNotification({
-      intent: 'success',
-      content: `Successfully ${enable ? 'enabled' : 'disabled'}...`,
-      duration: 3000,
-      id: 'toggle-interface',
-    });
+    toggleEnabled(type, id, enable);
 
     retry();
   };

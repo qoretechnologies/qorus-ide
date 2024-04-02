@@ -32,7 +32,6 @@ export const DashboardStatus = () => {
       ({ data }) => {
         if (data?.event_id === 'FSM_EXEC_RESULT') {
           if (data.event_data.info.error) {
-            console.log(data.event_data);
             setLatestWithError({
               id: data.event_data.info.id,
               label: data.event_data.info.label,

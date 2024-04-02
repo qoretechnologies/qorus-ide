@@ -1,9 +1,4 @@
-import {
-  ReqoreBreadcrumbs,
-  ReqoreButton,
-  ReqoreControlGroup,
-  ReqorePanel,
-} from '@qoretechnologies/reqore';
+import { ReqoreButton, ReqorePanel } from '@qoretechnologies/reqore';
 import { IReqorePanelAction } from '@qoretechnologies/reqore/dist/components/Panel';
 import timeago from 'epoch-timeago';
 import { capitalize, forEach, size } from 'lodash';
@@ -12,11 +7,11 @@ import { useUnmount } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import styled from 'styled-components';
+import { useContextSelector } from 'use-context-selector';
 import { TTranslator } from '../../App';
 import CustomDialog from '../../components/CustomDialog';
 import { DraftsTable } from '../../components/DraftsTable';
 import { NegativeColorEffect } from '../../components/Field/multiPair';
-import Tutorial from '../../components/Tutorial';
 import {
   interfaceIcons,
   interfaceKindTransform,
@@ -27,6 +22,7 @@ import { InitialContext } from '../../context/init';
 import { InterfacesContext } from '../../context/interfaces';
 import { MethodsContext } from '../../context/methods';
 import { TextContext } from '../../context/text';
+import { EnableToggle } from '../../handlers/EnableToggle';
 import { callBackendBasic } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
@@ -261,36 +257,24 @@ const Tab: React.FC<ITabProps> = ({
   ...rest
 }) => {
   const isEditing: () => boolean = () => !!name;
-  const [tutorialData, setTutorialData] = useState<any>({ isOpen: false });
-  const getFilePath = () => {
-    if (isEditing()) {
-      if (!data[type]?.target_file) {
-        return null;
-      }
-
-      const ext = data[type].target_file.split('.').pop();
-
-      if (ext === 'yaml') {
-        return null;
-      }
-
-      return `${data[type].target_dir}/${data[type].target_file}`;
-    }
-
-    return null;
-  };
   const [recreateDialog, setRecreateDialog] = useState<any>(null);
   const [draftsOpen, setDraftsOpen] = useState<boolean>(false);
   const { changeTab, isSavingDraft, lastDraft, is_hosted_instance }: any =
     useContext(InitialContext);
   const { methods, setMethods, setMethodsCount }: any =
     useContext(MethodsContext);
-  const { maybeApplyDraft, addDraft } =
-    useContext<IDraftsContext>(DraftsContext);
+  const { addDraft } = useContext<IDraftsContext>(DraftsContext);
   const [draftsCount, setDraftsCount] = useState<number>(0);
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
   const [localLastDraft, setLastDraft] = useState<string>(null);
-  const { categories, clone } = useContext(InterfacesContext);
+  const { categories, clone } = useContextSelector(
+    InterfacesContext,
+    ({ categories, clone, toggleEnabled }) => ({
+      categories,
+      clone,
+      toggleEnabled,
+    })
+  );
 
   useEffect(() => {
     if (lastDraft && lastDraft.type === type) {
@@ -436,7 +420,7 @@ const Tab: React.FC<ITabProps> = ({
     }
   }, [recreateDialog]);
 
-  const getActions = () => {
+  const getActions = (): IReqorePanelAction[] => {
     const actions: IReqorePanelAction[] = [];
 
     if (isEditing()) {
@@ -447,6 +431,17 @@ const Tab: React.FC<ITabProps> = ({
         onClick: () => {
           clone(type, id);
         },
+      });
+
+      actions.push({
+        as: EnableToggle,
+        props: {
+          enabled: data?.enabled,
+          type,
+          id: data[type].id,
+          hasLabel: true,
+        },
+        show: data?.supports_enabled ? true : false,
       });
     }
 
@@ -482,50 +477,11 @@ const Tab: React.FC<ITabProps> = ({
       });
     }
 
-    return actions.map((action) => <ReqoreButton {...action} />);
+    return actions;
   };
 
   return (
     <>
-      <ReqoreBreadcrumbs
-        size='normal'
-        flat
-        style={{
-          border: 'none',
-          paddingTop: '10px',
-          paddingBottom: '10px',
-          margin: 0,
-        }}
-        rightElement={<ReqoreControlGroup>{getActions()}</ReqoreControlGroup>}
-        items={[
-          {
-            icon: 'Home4Fill',
-            onClick: () => {
-              changeTab(is_hosted_instance ? 'Dashboard' : 'ProjectConfig');
-            },
-          },
-          {
-            icon: interfaceIcons[type],
-            label: categories[type].display_name,
-            badge: [categories[type].items],
-            onClick: () => {
-              changeTab('Interfaces', type);
-            },
-          },
-          {
-            icon: isEditing() ? 'Edit2Line' : 'AddCircleFill',
-            label: isEditing() ? name : t('New'),
-            intent: 'info',
-            flat: false,
-            readOnly: true,
-            badge: isSavingDraft
-              ? t('SavingDraft')
-              : isDraftSaved
-              ? `${t('DraftSaved')} ${timeago(Date.now())}`
-              : undefined,
-          },
-        ]}
-      />
       {draftsOpen && (
         <CustomDialog
           isOpen
@@ -550,20 +506,52 @@ const Tab: React.FC<ITabProps> = ({
       <ReqorePanel
         fill
         flat
+        actions={getActions()}
+        breadcrumbs={{
+          size: 'normal',
+          flat: true,
+          style: {
+            border: 'none',
+            paddingTop: '10px',
+            paddingBottom: '10px',
+            margin: 0,
+          },
+          items: [
+            {
+              icon: 'Home4Fill',
+              onClick: () => {
+                changeTab(is_hosted_instance ? 'Dashboard' : 'ProjectConfig');
+              },
+            },
+            {
+              icon: interfaceIcons[type],
+              label: categories[type].display_name,
+              badge: [categories[type].items],
+              onClick: () => {
+                changeTab('Interfaces', type);
+              },
+            },
+            {
+              icon: isEditing() ? 'Edit2Line' : 'AddCircleFill',
+              label: isEditing() ? name : t('New'),
+              intent: 'info',
+              flat: false,
+              readOnly: true,
+              badge: isSavingDraft
+                ? t('SavingDraft')
+                : isDraftSaved
+                ? `${t('DraftSaved')} ${timeago(Date.now())}`
+                : undefined,
+            },
+          ],
+        }}
         padded={false}
-        opacity={0}
         contentStyle={{
           overflow: 'hidden',
           display: 'flex',
           flexFlow: 'column',
         }}
       >
-        {tutorialData.isOpen && (
-          <Tutorial
-            data={tutorialData.elements}
-            onClose={() => setTutorialData({ isOpen: false })}
-          />
-        )}
         {children}
       </ReqorePanel>
     </>

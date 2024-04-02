@@ -1,52 +1,19 @@
-import { cloneDeep, get, set } from 'lodash';
-import { useEffect, useState } from 'react';
-import { useAsyncRetry } from 'react-use';
-import { fetchData } from '../helpers/functions';
+import { useContextSelector } from 'use-context-selector';
+import { InterfacesContext } from '../context/interfaces';
+
+export type TQorusStorageHook<T> = [T, (newStorage: T) => void];
 
 export function useQorusStorage<T>(
   path: string,
   defaultValue?: T
-): {
-  value: T;
-  update: (newStorage: T) => void;
-  loading: boolean;
-  error: any;
-  refetch: () => void;
-} {
-  const [storage, setStorage] = useState<any>({});
+): TQorusStorageHook<T> {
+  const { getStorage, updateStorage } = useContextSelector(
+    InterfacesContext,
+    ({ getStorage, updateStorage }) => ({ getStorage, updateStorage })
+  );
 
-  const { value, loading, error, retry } = useAsyncRetry(async () => {
-    const data = await fetchData(
-      '/users/_current_/storage',
-      undefined,
-      undefined,
-      false
-    );
-
-    return data.data;
-  }, []);
-
-  useEffect(() => {
-    if (value) {
-      setStorage(value);
-    }
-  }, [JSON.stringify(value)]);
-
-  const update = (newStorage: T) => {
-    const updatedStorage = set(cloneDeep(storage), path, newStorage);
-
-    setStorage(updatedStorage);
-
-    if (process.env.NODE_ENV !== 'production') return;
-
-    fetchData('/users/_current_/', 'PUT', { storage: updatedStorage }, false);
-  };
-
-  return {
-    value: get(storage, path) ?? defaultValue,
-    update,
-    loading,
-    error,
-    refetch: retry,
-  };
+  return [
+    getStorage(path, defaultValue),
+    (newStorage: T) => updateStorage(path, newStorage),
+  ];
 }

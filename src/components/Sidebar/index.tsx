@@ -10,9 +10,11 @@ import ReqoreMenu, {
   IReqoreMenuProps,
 } from '@qoretechnologies/reqore/dist/components/Menu';
 import { map, reduce, size } from 'lodash';
-import { useContext, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useContextSelector } from 'use-context-selector';
 import { InterfacesContext } from '../../context/interfaces';
+import { useQorusStorage } from '../../hooks/useQorusStorage';
 import { TMenu, TMenuItem, buildMenu } from './menu';
 
 export interface ISidebar extends Partial<IReqoreMenuProps> {
@@ -21,10 +23,19 @@ export interface ISidebar extends Partial<IReqoreMenuProps> {
 }
 
 export const Sidebar = (props: ISidebar) => {
-  const { categories } = useContext(InterfacesContext);
-  const menu: TMenu = buildMenu(categories);
-  const [query, setQuery] = useState<string>(undefined);
   const location = useLocation();
+  const navigate = useNavigate();
+  const categories = useContextSelector(
+    InterfacesContext,
+    (value) => value.categories
+  );
+  const menu: TMenu = buildMenu(categories, navigate);
+  const [query, setQuery] = useState<string>(undefined);
+
+  const [isSidebarOpen, update] = useQorusStorage<boolean>(
+    'sidebar-open',
+    true
+  );
 
   const renderMenuItem = (menuData: TMenuItem, menuId: number) => {
     if ('divider' in menuData) {
@@ -108,7 +119,7 @@ export const Sidebar = (props: ISidebar) => {
     return filterItems(menu);
   }, [menu, query]);
 
-  if (!props.isOpen) {
+  if (!isSidebarOpen) {
     return null;
   }
 
@@ -145,7 +156,7 @@ export const Sidebar = (props: ISidebar) => {
           icon='SideBarLine'
           fixed
           minimal={false}
-          onClick={props.onHideClick}
+          onClick={() => update(false)}
         />
       </ReqoreControlGroup>
       {map(filteredMenu, (menuData, menuId) =>

@@ -4,12 +4,11 @@ import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/compon
 import timeago from 'epoch-timeago';
 import { size } from 'lodash';
 import { useContext, useMemo } from 'react';
+import { useContextSelector } from 'use-context-selector';
 import { IQorusInterfaceCountItem } from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
-  SaveColorEffect,
-  SelectorColorEffect,
   SynthColorEffect,
   WarningColorEffect,
 } from '../../components/Field/multiPair';
@@ -20,6 +19,7 @@ import {
 } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
 import { InterfacesContext } from '../../context/interfaces';
+import { EnableToggle } from '../../handlers/EnableToggle';
 import { deleteDraft } from '../../helpers/functions';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 import { QodexTestRunModal } from '../InterfaceCreator/fsm/TestRunModal';
@@ -39,7 +39,9 @@ export const InterfacesViewCollection = ({
   const confirmAction = useReqoreProperty('confirmAction');
   const addModal = useReqoreProperty('addModal');
   const { changeDraft, changeTab, qorus_instance } = useContext(InitialContext);
-  const { clone } = useContext(InterfacesContext);
+  const { clone } = useContextSelector(InterfacesContext, ({ clone }) => ({
+    clone,
+  }));
 
   const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
     useFetchInterfaces(type);
@@ -259,15 +261,16 @@ export const InterfacesViewCollection = ({
               },
             },
             {
-              icon: 'ToggleLine',
-              effect: data?.enabled ? SaveColorEffect : SelectorColorEffect,
-              tooltip: data?.enabled ? 'Disable' : 'Enable',
-              size: 'tiny',
-              compact: true,
-              show: data?.supports_enable ? true : false,
-              onClick: () => {
-                onToggleEnabledClick(data.id, !data.enabled);
+              as: EnableToggle,
+              props: {
+                enabled: data?.enabled,
+                type,
+                id: data?.id,
+                size: 'tiny',
+                label: '',
+                compact: true,
               },
+              show: data?.supports_enable ? true : false,
             },
             {
               icon: 'DeleteBinLine',

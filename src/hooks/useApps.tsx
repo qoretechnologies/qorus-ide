@@ -11,16 +11,15 @@ export const useApps = (): TAppsContext => {
     return apps.data;
   }, []);
 
-  const { app, loading, error, retry, ...rest } = useActionSets();
+  const { app, ...rest } = useActionSets();
 
   return {
     apps: apps.value ? [app, ...apps.value] : [],
-    loading: apps.loading || loading,
-    error: apps.error || error,
+    loading: apps.loading,
+    error: apps.error,
     ...rest,
     retry: () => {
       apps.retry();
-      retry();
     },
   };
 };

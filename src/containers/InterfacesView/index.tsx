@@ -1,5 +1,6 @@
 import { ReqorePanel } from '@qoretechnologies/reqore';
 import { useContext, useEffect } from 'react';
+import { useContextSelector } from 'use-context-selector';
 import { IField } from '../../components/FieldWrapper';
 import { InitialContext } from '../../context/init';
 import { InterfacesContext } from '../../context/interfaces';
@@ -30,7 +31,7 @@ export interface IQorusListInterface {
     supports_enable?: boolean;
     active?: boolean;
     supports_active?: boolean;
-    last_executed?: string | number;
+    last_executed?: number;
     last_error?: string;
     next?: string;
     on_demand?: boolean;
@@ -105,7 +106,10 @@ export interface IQorusInterfacesViewProps {
 
 export const InterfacesView = ({ type }: IQorusInterfacesViewProps) => {
   const { changeTab } = useContext(InitialContext);
-  const { categories } = useContext(InterfacesContext);
+  const { categories } = useContextSelector(
+    InterfacesContext,
+    ({ categories }) => ({ categories })
+  );
 
   useEffect(() => {
     if (!type) {

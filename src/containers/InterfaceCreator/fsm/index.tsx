@@ -47,7 +47,11 @@ import {
   SaveColorEffect,
   WarningColorEffect,
 } from '../../../components/Field/multiPair';
-import { IOptions, IQorusType } from '../../../components/Field/systemOptions';
+import {
+  IOptions,
+  IQorusType,
+  TFlatOptions,
+} from '../../../components/Field/systemOptions';
 import Loader from '../../../components/Loader';
 import { calculateValueWithZoom } from '../../../components/PanElement';
 import { Messages } from '../../../constants/messages';
@@ -90,10 +94,11 @@ import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsCo
 import withMapperConsumer from '../../../hocomponents/withMapperConsumer';
 import { useApps } from '../../../hooks/useApps';
 import { useMoveByDragging } from '../../../hooks/useMoveByDragging';
+import { useQorusStorage } from '../../../hooks/useQorusStorage';
 import TinyGrid from '../../../images/graphy-dark.png';
 import { ActionSetDialog } from './ActionSetDialog';
 import { AppSelector } from './AppSelector';
-import { QodexFields } from './Fields';
+import { QodexFields, TQogNotificationStorageItems } from './Fields';
 import { QodexTestRunModal } from './TestRunModal';
 import FSMDiagramWrapper from './diagramWrapper';
 import FSMInitialOrderDialog from './initialOrderDialog';
@@ -361,6 +366,11 @@ export interface IFSMSelectedState {
 }
 export type TFSMSelectedStates = Record<string, IFSMSelectedState>;
 
+export interface IFSMSettings {
+  notifyOnStart?: boolean;
+  notifyOnEnd?: boolean;
+}
+
 export const FSMContext = React.createContext<any>({});
 
 export const FSMView: React.FC<IFSMViewProps> = ({
@@ -393,7 +403,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
   const params = useParams();
-
   parentStateName = parentStateName?.replace(/ /g, '-');
 
   const fsm = rest?.fsm || init?.fsm;
@@ -407,7 +416,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     buildMetadata(fsm, interfaceContext)
   );
   const [actState, setActState] = useState<string | number>(undefined);
-
+  const [storageSettings, update] =
+    useQorusStorage<TQogNotificationStorageItems>('settings.qogs', {});
+  const [settings, setSettings] = useState<TFlatOptions>(undefined);
   const wrapperRef = useRef(null);
   const showTransitionsToaster = useRef(0);
   const currentXPan = useRef<number>();
@@ -771,12 +782,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     if (!embedded) {
       setFsmReset?.(() => reset);
       // Set interface id
-      setInterfaceId(fsm?.id || defaultInterfaceId || shortid.generate());
+      const id = fsm?.id || defaultInterfaceId || shortid.generate();
+      setInterfaceId(id);
+      setSettings(storageSettings[id] || {});
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
     } else {
       setInterfaceId(defaultInterfaceId);
+      setSettings(storageSettings[defaultInterfaceId] || {});
     }
   });
 
@@ -1685,6 +1699,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         t('Saving FSM...'),
         true
       );
+
+      update({
+        ...storageSettings,
+        [fsm ? interfaceId : result.id]: settings,
+      });
 
       if (result.ok) {
         setInterfaceId(result.id);
@@ -2783,7 +2802,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             ],
           },
           {
-            label: 'Test run',
+            tooltip: 'Test run',
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
             className: 'fsm-test-run',
@@ -2894,6 +2913,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             ]}
           >
             <QodexFields
+              id={interfaceId}
+              settings={settings}
+              onSettingsChange={setSettings}
               value={omit(metadata, [
                 'target_dir',
                 'autovar',
