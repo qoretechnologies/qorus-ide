@@ -347,3 +347,25 @@ export const SelectionBox: StoryFSM = {
     await _testsCreateSelectionBox(400, 200, 600, 400);
   },
 };
+
+export const LastRunErrorShown: StoryFSM = {
+  args: {
+    fsm: qodex,
+    initialData: {
+      fsmMetadata: {
+        lastError:
+          '"EXCEPTION: /export/home2/dnichols/src/Qorus/current/qlib/QorusApiDataProvider/QorusApiThrowExceptionDataProvider.qc:61 (Qore): FSM "on-demand-test" state "Call API" exec ID 0: ("factory/qorus-api/util/throw-exception" API call duration: <time: 460 microseconds>) This is a log test"',
+      },
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await SwitchesToBuilder.play({ canvasElement, ...rest });
+
+    await waitFor(
+      () =>
+        expect(canvas.queryByText('Qog Finished In Error')).toBeInTheDocument(),
+      { timeout: 10000 }
+    );
+  },
+};

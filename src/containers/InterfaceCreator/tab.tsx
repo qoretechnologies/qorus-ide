@@ -433,15 +433,17 @@ const Tab: React.FC<ITabProps> = ({
         },
       });
 
+      const metadata = data[`${type}Metadata`] || {};
+
       actions.push({
         as: EnableToggle,
         props: {
-          enabled: data?.enabled,
+          enabled: metadata?.enabled,
           type,
           id: data[type].id,
           hasLabel: true,
         },
-        show: data?.supports_enabled ? true : false,
+        show: metadata?.supports_enabled ? true : false,
       });
     }
 

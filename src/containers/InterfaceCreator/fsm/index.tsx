@@ -790,6 +790,27 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       // Apply the draft with "type" as first parameter and a custom function
       applyDraft();
+
+      // Check if this FSM has ended in error the last time it ran
+      if (init.fsmMetadata?.lastError) {
+        addModal({
+          minimal: true,
+          blur: 4,
+          flat: true,
+          maxSize: '700px',
+          label: 'Qog Finished In Error',
+          children: (
+            <ReqoreMessage
+              intent='danger'
+              style={{ fontFamily: 'monospace' }}
+              size='small'
+              title='This Qog Finished In An Error The Last Time It Ran'
+            >
+              "{init.fsmMetadata.lastError}"
+            </ReqoreMessage>
+          ),
+        });
+      }
     } else {
       setInterfaceId(defaultInterfaceId);
       setSettings(storageSettings[defaultInterfaceId] || {});

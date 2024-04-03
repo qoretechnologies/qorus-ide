@@ -162,10 +162,23 @@ export default () =>
           ({ data, metadata, ...rest }) => {
             // only set initial data if we are switching tabs
             if (data?.tab) {
+              const newData = data || {};
+
+              if (data?.subtab) {
+                newData[`${data.subtab}Metadata`] = {
+                  lastError: data.last_error,
+                  enabled: data.enabled,
+                  supportsEnable: data.supports_enable,
+                  active: data.active,
+                  supportsActive: data.supports_active,
+                };
+              }
+
               setInitialData((current) => ({
                 ...current,
-                ...data,
+                ...newData,
               }));
+
               changeTab(
                 data.tab,
                 data.subtab,
@@ -481,6 +494,8 @@ export default () =>
       if (!initialData) {
         return null;
       }
+
+      console.log(initialData);
 
       return (
         <InitialContext.Provider
