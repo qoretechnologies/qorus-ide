@@ -31,7 +31,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   play: async ({ canvasElement }) => {
     await waitFor(
-      () => expect(document.querySelectorAll('.reqore-panel')).toHaveLength(7),
+      () => expect(document.querySelectorAll('.reqore-panel')).toHaveLength(8),
       { timeout: 14000 }
     );
   },
