@@ -512,12 +512,7 @@ const Tab: React.FC<ITabProps> = ({
         breadcrumbs={{
           size: 'normal',
           flat: true,
-          style: {
-            border: 'none',
-            paddingTop: '10px',
-            paddingBottom: '10px',
-            margin: 0,
-          },
+          padded: false,
           items: [
             {
               icon: 'Home4Fill',
