@@ -1,12 +1,11 @@
 import {
+  ReqoreButton,
   ReqoreHeader,
   ReqoreNavbarGroup,
   ReqoreNavbarItem,
-  ReqoreButton,
 } from '@qoretechnologies/reqore';
 import { GlobalSearch } from './components/GlobalSearch';
 import { useQorusStorage } from './hooks/useQorusStorage';
-import Logo from './images/logo.png';
 
 export const Topbar = () => {
   const [isSidebarOpen, update] = useQorusStorage<boolean>(
@@ -29,7 +28,7 @@ export const Topbar = () => {
             />
           )}
           <img
-            src={Logo}
+            src={`${process.env.PUBLIC_URL}/logo.png`}
             style={{
               padding: '14px 0px 10px 5px',
               verticalAlign: 'middle',
