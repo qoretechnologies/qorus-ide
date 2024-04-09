@@ -41,6 +41,7 @@ import compose from 'recompose/compose';
 import mapProps from 'recompose/mapProps';
 import withState from 'recompose/withState';
 import shortid from 'shortid';
+import { useContextSelector } from 'use-context-selector';
 import Content from '../../components/Content';
 import CustomDialog from '../../components/CustomDialog';
 import Field from '../../components/Field';
@@ -66,6 +67,7 @@ import {
   IDraftsContext,
 } from '../../context/drafts';
 import { InitialContext } from '../../context/init';
+import { InterfacesContext } from '../../context/interfaces';
 import {
   mapFieldsToGroups,
   maybeSendOnChangeEvent,
@@ -164,6 +166,10 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   const initialData = useContext(InitialContext);
   const { maybeApplyDraft, draft } = useContext<IDraftsContext>(DraftsContext);
   const originalData = useRef(data);
+  const categories = useContextSelector(
+    InterfacesContext,
+    (context) => context.categories
+  );
 
   useEffect(() => {
     originalData.current = data;
@@ -216,7 +222,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     () => {
       const draftId = getDraftId(parentData || data, interfaceId);
 
-      if (draftId && type !== 'config-item') {
+      if ((draftId || draftId === 0) && type !== 'config-item') {
         (async () => {
           let hasAnyChanges;
 
@@ -262,7 +268,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   const updateDraft = async () => {
     const draftId = getDraftId(parentData || data, interfaceId);
 
-    if (!draftId) {
+    if (!draftId && draftId !== 0) {
       return;
     }
 
@@ -1013,10 +1019,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       if (result.ok) {
         // We need to change the `orig_name` field to a new name
         //handleFieldChange('orig_name', newData.name);
-
-        if (onSubmitSuccess) {
-          onSubmitSuccess(newData);
-        }
+        onSubmitSuccess?.(newData);
         // If this is config item, reset only the fields
         // local fields will be unmounted
         if (type === 'config-item') {
@@ -1390,7 +1393,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           {
             label: 'Edit code',
             icon: 'CodeView',
-            show: !codeEditorVisible,
+            show: !codeEditorVisible && categories[type].supports_code,
             tooltip: 'Edit the code for this interface',
             active: codeEditorVisible,
             effect: QorusColorEffect,
@@ -1411,6 +1414,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
                   type: 'auto',
                   viewportOnly: true,
                 },
+                className: 'q-select-input',
                 pill: true,
                 intent: 'muted',
               },
@@ -1485,7 +1489,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
                 () => {
                   resetLocalFields(activeId);
                 },
-                'Discard changes',
+                'Confirm',
                 'warning'
               );
             },

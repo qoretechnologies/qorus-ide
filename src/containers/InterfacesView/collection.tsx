@@ -120,6 +120,10 @@ export const InterfacesViewCollection = ({
       label={display_name}
       filterable
       sortable
+      paging={{
+        itemsPerPage: 100,
+        changePageOnScroll: 'horizontal',
+      }}
       defaultSortBy='date'
       defaultSort='desc'
       minimal

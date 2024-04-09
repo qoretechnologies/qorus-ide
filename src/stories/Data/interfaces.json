@@ -1890,7 +1890,7 @@
       "data": {
         "id": 22,
         "type": "class",
-        "desc": "## Summary\n\nBase class for running a mapper in autonomous mode, meaning that the input and output data are provided by data providers configured in the mapper.\n\nThis building block is not suitable for mapping input data and returning output data, for that use `BBM_GenericMapper` or a mapper in an FSM, a data pipeline, or in a class connection in an interface.\n\nUse this object's configuration to provide input or search filtering as well as to tune the output data handling.\n\n## Connectors\n\n### Input/Output Connector `runMapper`\n\nThis connector runs the mapper in autonomous mode.\n\nThe input data is available as `$local:input` for all config items resolved with this connector (in internal calls to `UserApi::expandTemplatedValue()`).\n\n## References\n\nSee `BBM_GenericMapper`",
+        "desc": "## Summary\n\nBase class for running a mapper in autonomous mode, meaning that the input and output data are provided by data providers configured in the mapper.",
         "lang": "qore",
         "code": "/home/david/src/Qorus/git/building-blocks/generic/dataprovider/BBM_AutoMapper-v1.0.qclass",
         "name": "BBM_AutoMapper",
@@ -29038,13 +29038,7 @@
         "code": "/home/david/src/Qorus/git/training/03_basics_building_blocks/01_exchange_rates_app/07_job_get_exchange_rates/java/bb_basics_get_exchange_rates_job_java_1_0_job/BB_BasicsGetExchangeRatesJobJava.java",
         "base-class-name": "QorusJob",
         "class-name": "BB_BasicsGetExchangeRatesJobJava",
-        "schedule": {
-          "minutes": "0",
-          "hours": "0",
-          "days": "*",
-          "months": "*",
-          "dow": "*"
-        },
+        "schedule": "0 0 * * *",
         "name": "bb-basics-get-exchange-rates-job-java",
         "display_name": "Bb Basics Get Exchange Rates Job Java",
         "short_desc": "Job logs exchange rates every 10th minute",

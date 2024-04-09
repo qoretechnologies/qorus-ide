@@ -7,6 +7,7 @@ import {
 import timeago from 'epoch-timeago';
 import { size } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
+import Loader from '../../components/Loader';
 import { InitialContext } from '../../context/init';
 import { addMessageListener } from '../../hocomponents/withMessageHandler';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
@@ -25,7 +26,7 @@ export interface IQogLogItem {
 export const DashboardQogLog = () => {
   const { changeTab } = useContext(InitialContext);
   const [log, setLog] = useState<IQogLogItem[]>([]);
-  const { loading, value } = useFetchInterfaces('fsm');
+  const { loading, value = [] } = useFetchInterfaces('fsm');
 
   useEffect(() => {
     if (!loading) {
@@ -76,10 +77,6 @@ export const DashboardQogLog = () => {
     }
   }, [loading, value]);
 
-  if (loading) {
-    return null;
-  }
-
   const logs = log.slice(0, 6);
 
   return (
@@ -121,35 +118,45 @@ export const DashboardQogLog = () => {
         },
       }}
     >
-      {size(logs) ? (
-        <ReqoreControlGroup vertical fluid>
-          {logs.map((item) => (
-            <ReqoreButton
-              compact
-              icon={item.success === false ? 'ErrorWarningLine' : 'CheckLine'}
-              tooltip={{
-                maxWidth: '400px',
-                intent: 'danger',
-                content: item.error,
-              }}
-              label={`${item.display_name} ${
-                item.exec_time ? 'finished' : 'started'
-              } ${item.error ? 'with error' : ''}`}
-              onClick={() => changeTab('CreateInterface', 'fsm', item.fsmid)}
-              customTheme={{
-                main: `${
-                  item.success === false ? 'danger' : 'main'
-                }:darken:3:0.6`,
-              }}
-              badge={{
-                label: timeago(Math.floor(new Date(item.time).getTime())),
-                align: 'right',
-              }}
-            />
-          ))}
-        </ReqoreControlGroup>
+      {loading ? (
+        <Loader text='Loading...' />
       ) : (
-        <ReqoreH4 effect={{ opacity: 0.5 }}>Nothing to show yet</ReqoreH4>
+        <>
+          {size(logs) ? (
+            <ReqoreControlGroup vertical fluid>
+              {logs.map((item) => (
+                <ReqoreButton
+                  compact
+                  icon={
+                    item.success === false ? 'ErrorWarningLine' : 'CheckLine'
+                  }
+                  tooltip={{
+                    maxWidth: '400px',
+                    intent: 'danger',
+                    content: item.error,
+                  }}
+                  label={`${item.display_name} ${
+                    item.exec_time ? 'finished' : 'started'
+                  } ${item.error ? 'with error' : ''}`}
+                  onClick={() =>
+                    changeTab('CreateInterface', 'fsm', item.fsmid)
+                  }
+                  customTheme={{
+                    main: `${
+                      item.success === false ? 'danger' : 'main'
+                    }:darken:3:0.6`,
+                  }}
+                  badge={{
+                    label: timeago(Math.floor(new Date(item.time).getTime())),
+                    align: 'right',
+                  }}
+                />
+              ))}
+            </ReqoreControlGroup>
+          ) : (
+            <ReqoreH4 effect={{ opacity: 0.5 }}>Nothing to show yet</ReqoreH4>
+          )}
+        </>
       )}
     </ReqorePanel>
   );

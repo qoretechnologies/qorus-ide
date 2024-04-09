@@ -3,12 +3,16 @@ import {
   ReqoreControlGroup,
   ReqoreH4,
   ReqorePanel,
+  useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import timeago from 'epoch-timeago';
-import { size } from 'lodash';
+import { reduce, size } from 'lodash';
 import { useContext } from 'react';
+import Loader from '../../components/Loader';
 import { interfaceIcons } from '../../constants/interfaces';
+import { IQorusListInterface } from '../../containers/InterfacesView';
 import { InitialContext } from '../../context/init';
+import { deleteDraft } from '../../helpers/functions';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
 
 export interface IQogLogItem {
@@ -24,13 +28,19 @@ export interface IQogLogItem {
 
 export const DashboardDrafts = () => {
   const { changeTab } = useContext(InitialContext);
-  const { loading, value } = useFetchInterfaces('fsm');
+  const addNotification = useReqoreProperty('addNotification');
+  const { loading, value = {}, retry } = useFetchInterfaces();
 
-  if (loading) {
-    return null;
-  }
-
-  const drafts = value
+  const drafts = reduce<
+    Record<string, IQorusListInterface[]>,
+    IQorusListInterface[]
+  >(
+    value as Record<string, IQorusListInterface[]>,
+    (acc, item) => {
+      return [...acc, ...item];
+    },
+    []
+  )
     .filter((item) => !!item.draft)
     .sort((a, b) => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -74,25 +84,42 @@ export const DashboardDrafts = () => {
         },
       }}
     >
-      {size(drafts) ? (
-        <ReqoreControlGroup vertical fluid>
-          {drafts.map((item) => (
-            <ReqoreButton
-              icon={interfaceIcons.fsm}
-              label={`${item.label}`}
-              onClick={() =>
-                changeTab('CreateInterface', item.type, item.data.id)
-              }
-              customTheme={{ main: '#8e5930:darken:5:0.5' }}
-              badge={{
-                label: timeago(Math.floor(new Date(item.date).getTime())),
-                align: 'right',
-              }}
-            />
-          ))}
-        </ReqoreControlGroup>
+      {loading ? (
+        <Loader text='Loading...' />
       ) : (
-        <ReqoreH4 effect={{ opacity: 0.5 }}>Nothing to show yet</ReqoreH4>
+        <>
+          {size(drafts) ? (
+            <ReqoreControlGroup vertical fluid>
+              {drafts.map((item) => (
+                <ReqoreControlGroup stack key={item.id}>
+                  <ReqoreButton
+                    icon={interfaceIcons[item.type]}
+                    label={`${item.label}`}
+                    onClick={() =>
+                      changeTab('CreateInterface', item.type, item.data.id)
+                    }
+                    customTheme={{ main: '#8e5930:darken:5:0.5' }}
+                    badge={{
+                      label: timeago(Math.floor(new Date(item.date).getTime())),
+                      align: 'right',
+                    }}
+                  />
+                  <ReqoreButton
+                    icon='CloseLine'
+                    customTheme={{ main: '#8e5930:darken:5:0.5' }}
+                    fixed
+                    onClick={() => {
+                      deleteDraft(item.type, item.id, true, addNotification);
+                      retry();
+                    }}
+                  />
+                </ReqoreControlGroup>
+              ))}
+            </ReqoreControlGroup>
+          ) : (
+            <ReqoreH4 effect={{ opacity: 0.5 }}>Nothing to show yet</ReqoreH4>
+          )}
+        </>
       )}
     </ReqorePanel>
   );

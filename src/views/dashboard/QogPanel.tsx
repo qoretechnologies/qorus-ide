@@ -9,6 +9,7 @@ import {
 import RelativeTime from '@yaireo/relative-time';
 import { size } from 'lodash';
 import { useContext, useState } from 'react';
+import Loader from '../../components/Loader';
 import { QodexTestRunModal } from '../../containers/InterfaceCreator/fsm/TestRunModal';
 import { InitialContext } from '../../context/init';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
@@ -21,11 +22,7 @@ export const DashboardQogPanel = () => {
     id: string | number;
     label: string;
   }>(undefined);
-  const { loading, value } = useFetchInterfaces('fsm');
-
-  if (loading) {
-    return null;
-  }
+  const { loading, value = [] } = useFetchInterfaces('fsm');
 
   const latest = value
     .sort((a, b) => {
@@ -49,8 +46,6 @@ export const DashboardQogPanel = () => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     })
     .slice(0, 5);
-
-  console.log(latest, next, runnable);
 
   return (
     <ReqorePanel
@@ -99,55 +94,27 @@ export const DashboardQogPanel = () => {
         },
       ]}
     >
-      <ReqoreColumns style={{ width: '100%' }}>
-        <ReqoreColumn>
-          <ReqoreMenu
-            padded={false}
-            transparent
-            width='100%'
-            customTheme={{ main: '#4f0f68:darken:2:0.3' }}
-          >
-            <ReqoreMenuDivider
-              label='Latest'
-              align='left'
-              padded='top'
-              margin='left'
-            />
-            {latest.map((item) => (
-              <ReqoreMenuItem
-                compact
-                badge={{
-                  label: relativeTime.from(new Date(item.date || 0)),
-                  align: 'right',
-                }}
-                key={item.id}
-                onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
-              >
-                {item.label}
-              </ReqoreMenuItem>
-            ))}
-          </ReqoreMenu>
-        </ReqoreColumn>
-        {size(next) > 0 ? (
+      {loading ? <Loader text='Loading...' /> : null}
+      {!loading && (
+        <ReqoreColumns style={{ width: '100%' }}>
           <ReqoreColumn>
             <ReqoreMenu
               padded={false}
               transparent
-              style={{ paddingLeft: '5px' }}
               width='100%'
               customTheme={{ main: '#4f0f68:darken:2:0.3' }}
             >
               <ReqoreMenuDivider
-                label='Upcoming'
+                label='Latest'
                 align='left'
                 padded='top'
                 margin='left'
               />
-              {next.map((item) => (
+              {latest.map((item) => (
                 <ReqoreMenuItem
                   compact
                   badge={{
-                    label: relativeTime.from(new Date(item.data.next || 0)),
+                    label: relativeTime.from(new Date(item.date || 0)),
                     align: 'right',
                   }}
                   key={item.id}
@@ -158,41 +125,76 @@ export const DashboardQogPanel = () => {
               ))}
             </ReqoreMenu>
           </ReqoreColumn>
-        ) : null}
-        <ReqoreColumn>
-          <ReqoreMenu
-            padded={false}
-            transparent
-            style={{ paddingLeft: '5px' }}
-            width='100%'
-            customTheme={{ main: '#4f0f68:darken:2:0.3' }}
-          >
-            <ReqoreMenuDivider
-              label='Run Now'
-              align='left'
-              padded='top'
-              margin='left'
-            />
-            {runnable.map((item) => (
-              <ReqoreMenuItem
-                compact
-                badge={{
-                  label: relativeTime.from(new Date(item.date || 0)),
-                  align: 'right',
-                }}
-                key={item.id}
-                onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
-                rightIcon='PlayLine'
-                onRightIconClick={() => {
-                  setTestRunId({ id: item.id, label: item.data?.display_name });
-                }}
+          {size(next) > 0 ? (
+            <ReqoreColumn>
+              <ReqoreMenu
+                padded={false}
+                transparent
+                style={{ paddingLeft: '5px' }}
+                width='100%'
+                customTheme={{ main: '#4f0f68:darken:2:0.3' }}
               >
-                {item.label}
-              </ReqoreMenuItem>
-            ))}
-          </ReqoreMenu>
-        </ReqoreColumn>
-      </ReqoreColumns>
+                <ReqoreMenuDivider
+                  label='Upcoming'
+                  align='left'
+                  padded='top'
+                  margin='left'
+                />
+                {next.map((item) => (
+                  <ReqoreMenuItem
+                    compact
+                    badge={{
+                      label: relativeTime.from(new Date(item.data.next || 0)),
+                      align: 'right',
+                    }}
+                    key={item.id}
+                    onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
+                  >
+                    {item.label}
+                  </ReqoreMenuItem>
+                ))}
+              </ReqoreMenu>
+            </ReqoreColumn>
+          ) : null}
+          <ReqoreColumn>
+            <ReqoreMenu
+              padded={false}
+              transparent
+              style={{ paddingLeft: '5px' }}
+              width='100%'
+              customTheme={{ main: '#4f0f68:darken:2:0.3' }}
+            >
+              <ReqoreMenuDivider
+                label='Run Now'
+                align='left'
+                padded='top'
+                margin='left'
+              />
+              {runnable.map((item) => (
+                <ReqoreMenuItem
+                  key={item.id}
+                  compact
+                  badge={{
+                    label: relativeTime.from(new Date(item.date || 0)),
+                    align: 'right',
+                  }}
+                  key={item.id}
+                  onClick={() => changeTab('CreateInterface', 'fsm', item.id)}
+                  rightIcon='PlayLine'
+                  onRightIconClick={() => {
+                    setTestRunId({
+                      id: item.id,
+                      label: item.data?.display_name,
+                    });
+                  }}
+                >
+                  {item.label}
+                </ReqoreMenuItem>
+              ))}
+            </ReqoreMenu>
+          </ReqoreColumn>
+        </ReqoreColumns>
+      )}
       {testRunId && (
         <QodexTestRunModal
           label={`Execution of "${testRunId.label}"`}

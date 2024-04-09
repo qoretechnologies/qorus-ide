@@ -495,8 +495,6 @@ export default () =>
         return null;
       }
 
-      console.log(initialData);
-
       return (
         <InitialContext.Provider
           value={{

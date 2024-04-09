@@ -95,6 +95,7 @@ export const FieldWrapper = ({
 
   const removeButtonProps = {
     icon: 'DeleteBinLine',
+    className: 'creator-field-remove',
     intent: 'danger',
     tooltip: t('RemoveField'),
     onClick: () => {
@@ -112,6 +113,7 @@ export const FieldWrapper = ({
     return (
       <ReqorePanel
         size='small'
+        className='creator-field'
         flat
         padded={false}
         ref={ref}
@@ -163,6 +165,7 @@ export const FieldWrapper = ({
     <ReqorePanel
       label={label}
       minimal
+      className='creator-field'
       size='small'
       flat
       customTheme={{
@@ -189,7 +192,7 @@ export const FieldWrapper = ({
     >
       {info && (
         <>
-          <ReqoreMessage intent='info' size='small'>
+          <ReqoreMessage intent='info' size='small' opaque={false}>
             {info}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />

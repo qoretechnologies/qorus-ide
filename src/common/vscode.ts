@@ -42,6 +42,20 @@ export const vscode =
               break;
             }
             case 'save-draft': {
+              messageData = {
+                action: 'save-draft-complete',
+                ok: true,
+                request_id: data.request_id,
+              };
+              break;
+            }
+            case 'creator-create-interface':
+            case 'creator-edit-interface': {
+              messageData = {
+                action: `${data.action}-complete`,
+                request_id: data.request_id,
+                ok: true,
+              };
               break;
             }
             case 'get-all-text':
@@ -128,7 +142,7 @@ export const vscode =
             case 'get-drafts': {
               messageData = {
                 action: 'get-drafts-complete',
-                data: items[data.type].filter((item) => item.draft),
+                data: [],
                 request_id: data.request_id,
               };
               break;

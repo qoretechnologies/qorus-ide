@@ -646,7 +646,7 @@ export const getDraftId = (
   data: IQorusInterface['data'],
   interfaceId?: string
 ) => {
-  return data?.id || interfaceId;
+  return data?.id ?? interfaceId;
 };
 
 export const filterTemplatesByType = (

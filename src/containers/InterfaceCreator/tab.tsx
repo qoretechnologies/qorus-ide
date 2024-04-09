@@ -508,6 +508,8 @@ const Tab: React.FC<ITabProps> = ({
       <ReqorePanel
         fill
         flat
+        responsiveTitle={false}
+        responsiveActions={false}
         actions={getActions()}
         breadcrumbs={{
           size: 'normal',
@@ -530,6 +532,8 @@ const Tab: React.FC<ITabProps> = ({
             },
             {
               icon: isEditing() ? 'Edit2Line' : 'AddCircleFill',
+              maxWidth: '250px',
+              tooltip: isEditing() ? name : t('New'),
               label: isEditing() ? name : t('New'),
               intent: 'info',
               flat: false,

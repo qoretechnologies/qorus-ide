@@ -267,7 +267,7 @@ const App: FunctionComponent<IApp> = ({
   if (!t || isLoading) {
     return (
       <>
-        <Loader text='Loading app...' centered />;
+        <Loader text='Loading app...' centered />
       </>
     );
   }

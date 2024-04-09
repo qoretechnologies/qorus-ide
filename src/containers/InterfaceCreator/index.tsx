@@ -1,4 +1,3 @@
-import { FunctionComponent } from 'react';
 import { useMount } from 'react-use';
 import compose from 'recompose/compose';
 import { withIdChecker } from '../../hocomponents/withIdChecker';
@@ -19,22 +18,22 @@ import WorkflowsView, { CreatorWrapper } from './workflowsView';
 
 export interface ICreateInterface {
   initialData: {
-    updateCurrentHistoryTab: (data: { [key: string]: any }) => void;
+    updateCurrentHistoryTab?: (data: { [key: string]: any }) => void;
     [key: string]: any;
   };
-  onSubmit: any;
+  onSubmit: () => any;
   onDelete?: () => any;
   context: any;
   data: any;
 }
 
-export const CreateInterface: FunctionComponent<ICreateInterface> = ({
+export const CreateInterface = ({
   initialData,
   onSubmit,
   onDelete,
   data,
   context,
-}) => {
+}: ICreateInterface) => {
   initialData = { ...initialData, ...data };
 
   const getName: () => string = () =>
@@ -85,6 +84,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
           context={context}
           onSubmitSuccess={onSubmit}
           isEditing={!!initialData.connection}
+          connection={initialData.connection}
         />
       )}
       {initialData.subtab === 'pipeline' && (
@@ -234,4 +234,4 @@ export default compose(
   withTextContext(),
   withInitialDataConsumer(),
   withIdChecker()
-)(CreateInterface);
+)(CreateInterface) as (props: ICreateInterface) => JSX.Element;

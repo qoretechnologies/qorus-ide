@@ -35,7 +35,9 @@ export const useFetchInterfaces = (type?: string) => {
     loading,
     retry,
     error,
-  } = useAsyncRetry<IQorusListInterface[]>(async () => {
+  } = useAsyncRetry<
+    IQorusListInterface[] | Record<string, IQorusListInterface[]>
+  >(async () => {
     const data = await callBackendBasic(
       Messages.GET_ALL_INTERFACES,
       undefined,

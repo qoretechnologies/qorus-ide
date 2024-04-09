@@ -53,7 +53,7 @@ export const DashboardStatus = () => {
     return () => {
       listener();
     };
-  }, [value]);
+  }, [JSON.stringify(value)]);
 
   if (loading) {
     return null;

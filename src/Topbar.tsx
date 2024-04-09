@@ -1,5 +1,6 @@
 import {
   ReqoreButton,
+  ReqoreControlGroup,
   ReqoreHeader,
   ReqoreNavbarGroup,
   ReqoreNavbarItem,
@@ -40,7 +41,17 @@ export const Topbar = () => {
       </ReqoreNavbarGroup>
       <ReqoreNavbarGroup position='right'>
         <ReqoreNavbarItem>
-          <GlobalSearch />
+          <ReqoreControlGroup>
+            <GlobalSearch />
+            <ReqoreButton
+              icon='UserFill'
+              minimal
+              flat
+              as='a'
+              href='/user'
+              tooltip='User Settings'
+            />
+          </ReqoreControlGroup>
         </ReqoreNavbarItem>
       </ReqoreNavbarGroup>
     </ReqoreHeader>

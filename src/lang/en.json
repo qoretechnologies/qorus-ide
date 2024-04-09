@@ -2064,6 +2064,10 @@
     "text": "Name"
   },
   {
+    "id": "field-label-display_name",
+    "text": "Display Name"
+  },
+  {
     "id": "field-desc-name",
     "text": "The name of the object"
   },

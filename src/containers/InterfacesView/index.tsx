@@ -66,6 +66,7 @@ export interface IQorusInterfaceCountItem {
   display_name: string;
   short_desc: string;
   singular_display_name: string;
+  supports_code?: boolean;
 }
 export type TQorusInterfaceCount = Record<string, IQorusInterfaceCountItem>;
 

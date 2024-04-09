@@ -35,7 +35,6 @@ export const buildMenu = (
         icon: interfaceIcons[id],
         minimal: false,
         to: `/Interfaces/${id}`,
-        customTheme: { main: 'main:darken:1' },
         badge: [{ label: item.items + item.drafts, align: 'right' }],
         tooltip: {
           content: item.short_desc,

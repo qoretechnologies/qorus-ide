@@ -125,13 +125,7 @@ export const SelectorColorEffect: IReqoreEffect = {
 
 const MultiPairField: FunctionComponent<
   TTranslator & IField & IFieldChange
-> = ({
-  fields,
-  name,
-  onChange,
-  value = [{ id: 1, [fields[0]]: '', [fields[1]]: '' }],
-  t,
-}) => {
+> = ({ fields, name, onChange, value, t }) => {
   const changePairData: (index: number, key: string, val: any) => void = (
     index,
     key,
@@ -148,7 +142,7 @@ const MultiPairField: FunctionComponent<
 
   const handleAddClick: () => void = () => {
     onChange(name, [
-      ...value,
+      ...(value || []),
       { id: size(value) + 1, [fields[0]]: '', [fields[1]]: '' },
     ]);
   };
@@ -163,23 +157,25 @@ const MultiPairField: FunctionComponent<
 
   return (
     <>
-      {value.map((pair: IPair, index: number) => (
-        <StyledPairField key={index + 1}>
-          <PairField
-            index={index + 1}
-            canBeRemoved={size(value) !== 1}
-            onRemoveClick={() => handleRemoveClick(index)}
-            key={index + 1}
-            keyName={fields[0]}
-            valueName={fields[1]}
-            keyValue={pair[fields[0]]}
-            valueValue={pair[fields[1]]}
-            onChange={(fieldName: string, value: any) => {
-              changePairData(index, fieldName, value);
-            }}
-          />
-        </StyledPairField>
-      ))}
+      {size(value)
+        ? value.map((pair: IPair, index: number) => (
+            <StyledPairField key={index + 1}>
+              <PairField
+                index={index + 1}
+                canBeRemoved={size(value) !== 1}
+                onRemoveClick={() => handleRemoveClick(index)}
+                key={index + 1}
+                keyName={fields[0]}
+                valueName={fields[1]}
+                keyValue={pair[fields[0]]}
+                valueValue={pair[fields[1]]}
+                onChange={(fieldName: string, value: any) => {
+                  changePairData(index, fieldName, value);
+                }}
+              />
+            </StyledPairField>
+          ))
+        : null}
       <ReqoreControlGroup fluid>
         <ReqoreButton
           icon={'AddLine'}

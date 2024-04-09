@@ -3638,5 +3638,161 @@
     "action": "creator-return-objects",
     "ok": true,
     "message": "fsms"
+  },
+  "step-base-class": {
+    "request_id": "4mgDKyT8cTg4H7E",
+    "tab_token": "none",
+    "object_type": "step-base-class",
+    "objects": [
+      {
+        "name": "BBM_AutoMapperRecordStep",
+        "display_name": "BBM Auto Mapper Record Step",
+        "short_desc": "## Summary",
+        "id": 82,
+        "desc": "## Summary\n\nStep base class for running a mapper with a record-based output data provider in autonomous mode, meaning that the input and output data are provided by data providers configured in the mapper.\n\nUse this object's configuration to provide input or search filtering as well as to tune the output data handling.\n\n## Connectors\n\nThere are no connectors in this building block, as it is already a step class with the `primary()` and `validation()` methods implemented to execute the auto mapper configuration."
+      },
+      {
+        "name": "BBM_DataProviderRequestWithRecoveryStep",
+        "display_name": "BBM Data Provider Request With Recovery Step",
+        "short_desc": "## Summary",
+        "id": 83,
+        "desc": "## Summary\n\nBuilding block for request-based data providers with recovery logic; supports recovery with a single request\n\nThis class has no connectors as it is meant to be directly usable as a normal step class; the `primary()` and `validation()` logic is implemented already in this class.\n\n**NOTE**:  This building block's functionality has been superceded by an API (request - response) data provider; it's recommended to use the `data-provider/do-request` API data provider in the `qorus-api` factory instead"
+      },
+      {
+        "name": "BBM_RestActionStep",
+        "display_name": "BBM Rest Action Step",
+        "short_desc": "generic step for making a transaction-safe REST request",
+        "id": 84,
+        "desc": "generic step for making a transaction-safe REST request"
+      }
+    ],
+    "action": "creator-return-objects",
+    "ok": true,
+    "message": "step base classes"
+  },
+  "service-base-class": {
+    "request_id": "Qo9XXMi0Pf8wbVI",
+    "tab_token": "none",
+    "object_type": "service-base-class",
+    "objects": [
+      {
+        "name": "BBM_AwsSnsServiceBase",
+        "display_name": "BBM Aws Sns Service Base",
+        "short_desc": "## Summary",
+        "id": 67,
+        "desc": "## Summary\n\nBase AWS [Simple Notification Service][Simple Notification Service] handler service abstract base class.\n\nThis class is not meant to be used directly.\n\n## References\n\nSee `BBM_AwsSnsServiceEventSource`\n\n"
+      },
+      {
+        "name": "BBM_AwsSnsServiceEventSource",
+        "display_name": "BBM Aws Sns Service Event Source",
+        "short_desc": "## Summary",
+        "id": 68,
+        "desc": "## Summary\n\nBase AWS [Simple Notification Service][Simple Notification Service] handler service event source class.\n\n## Connectors\n\n### Input/Output Connector `snsEvent`\n\nProvides SNS event information when it's received by this class.\n\n## References\n\nSee `BBM_AwsSnsServiceBase`\n"
+      },
+      {
+        "name": "BBM_HttpFileHandler",
+        "display_name": "BBM Http File Handler",
+        "short_desc": "## Summary",
+        "id": 61,
+        "desc": "## Summary\n\nA generic building block for HTTP file handling for use in Qorus services.\n\nThis class can be used to expose files from the filesystem to HTTP clients iin a Qorus service.\n\nIt contains no connectors; it is driven entirely by configuration.  \n\nInitialization is performed automatically when the class is instantiated."
+      },
+      {
+        "name": "BBM_HttpReverseProxyService",
+        "display_name": "BBM Http Reverse Proxy Service",
+        "short_desc": "## Summary",
+        "id": 62,
+        "desc": "## Summary\n\nReverse HTTP proxy building block for use in a Qorus service.\n\nProvides HTTP and also WebSocket proxying functionality; also chunked transfers are forwarded directly as well.\n\nThere are no connectors; this building block class is driven entirely by configuration."
+      },
+      {
+        "name": "BBM_HttpServiceBase",
+        "display_name": "BBM Http Service Base",
+        "short_desc": "## Summary",
+        "id": 63,
+        "desc": "## Summary\n\nAbstract base class for HTTP handler services.\n\nAs an abstract class, it cannot support connectors; it is entirely driven by configuration."
+      },
+      {
+        "name": "BBM_HttpServiceGenericBase",
+        "display_name": "BBM Http Service Generic Base",
+        "short_desc": "## Summary",
+        "id": 60,
+        "desc": "## Summary\n\nAbstract base class for HTTP handler services.\n\nAs an abstract class, it cannot support connectors; it is entirely driven by configuration."
+      },
+      {
+        "name": "BBM_RestServiceBase",
+        "display_name": "BBM Rest Service Base",
+        "short_desc": "## Summary",
+        "id": 65,
+        "desc": "## Summary\n\nBase class for REST handler services\n\nThere are no connectors; this class is driven entirely by configuration."
+      },
+      {
+        "name": "BBM_RestServiceBase_1695384446897",
+        "display_name": "BBM Rest Service Base 1695384446897",
+        "short_desc": "## Summary",
+        "id": 66,
+        "desc": "## Summary\n\nBase class for REST handler services\n\nThere are no connectors; this class is driven entirely by configuration."
+      },
+      {
+        "name": "BBM_WebSocketServiceBase",
+        "display_name": "BBM Web Socket Service Base",
+        "short_desc": "## Summary",
+        "id": 69,
+        "desc": "## Summary\n\nA base class for WebSocket handler services in Qorus services\n\nThere are no connectors; it is entirely driven by configuration, and WebSocket server services are initialized when the object is created."
+      },
+      {
+        "name": "BBM_WebSocketServiceDataEventSource",
+        "display_name": "BBM Web Socket Service Data Event Source",
+        "short_desc": "## Summary",
+        "id": 229,
+        "desc": "## Summary\n\nA data event source for WebSocket events in Qorus services, supporting serialized data for events.\n\nThe class's constructor initializes the object, so if it's used as an event source (or generally in any connection) or as the primary service class, there is no need to use the `init` connector.\n\n## Data Serialization\n\nThe default data serialization is `json`, as this is the most common serialization used; `yaml` is also supported.\n\n## Connectors\n\n### Event Connector `webSocketReceiveEvent`\n\nProvides a hash event when a WebSocket message is received from a client.\n\n### Input/Output Connector `init`\n\nMust be used to initialize the object in a service if this class is not used as an event source (or generally in any connection) or as the primary service class.\n\n### Input/Output Connector `webSocketSendEvent`\n\nSends a message or a response to a client; the client is identified by the `cid` key in the input hash.\n\nNo ouput data is provided.\n\n### Input/Output Connector `webSocketBroadcastEvent`\n\nBroadcasts a message to all clients; the message is provided as the `msg` key in the input data.\n\nNo ouput data is provided."
+      },
+      {
+        "name": "BBM_WebSocketServiceEventSource",
+        "display_name": "BBM Web Socket Service Event Source",
+        "short_desc": "## Summary",
+        "id": 70,
+        "desc": "## Summary\n\nAn event source for WebSocket events in Qorus services\n\nThis class is designed to be used as an event source for services.\n\nThe class's constructor initializes the object, so if it's used as an event source (or generally in any connection) or as the primary service class, there is no need to use the `init` connector.\n\n## Connectors\n\n### Event Connector `webSocketReceiveEvent`\n\nProvides a hash event when a WebSocket message is received from a client.\n\n### Input/Output Connector `init`\n\nMust be used to initialize the object in a service if this class is not used as an event source (or generally in any connection) or as the primary service class.\n\n### Input/Output Connector `webSocketSendEvent`\n\nSends a message or a response to a client; the client is identified by the `cid` key in the input hash.\n\nNo ouput data is provided.\n\n### Input/Output Connector `webSocketBroadcastEvent`\n\nBroadcasts a message to all clients; the message is provided as the `msg` key in the input data.\n\nNo ouput data is provided."
+      },
+      {
+        "name": "BBM_WsgiServer",
+        "display_name": "BBM Wsgi Server",
+        "short_desc": "WSGi Server Building Block for Qorus",
+        "id": 73,
+        "desc": "WSGi Server Building Block for Qorus\n\nThis class is written in Qore instead of Python to be thread-safe and scalable.\n\nThe `WsgiAppHelper` class is used to initialize the WSGi app with the same syntax as [Gunicorn](https://gunicorn.org/)"
+      }
+    ],
+    "action": "creator-return-objects",
+    "ok": true,
+    "message": "service base classes"
+  },
+  "job-base-class": {
+    "request_id": "jD44d7ivsuIonEN",
+    "tab_token": "none",
+    "object_type": "job-base-class",
+    "objects": [
+      {
+        "name": "BBM_FtpPollerCreateOrderJob",
+        "display_name": "BBM Ftp Poller Create Order Job",
+        "short_desc": "## Summary",
+        "id": 51,
+        "desc": "## Summary \n\nBuilding block job base class for polling for files from an FTP server and creating a workflow order from files polled.\n\nThe local context data for the internal workflow order creation call is the file event data as described by data type `qoretechnologies/building-blocks/ftp/event`; therefore this information can be used when creating the order; for example `create-workflow-staticdata` = `$local:*` would set the initial static order data to the file event hash.\n\nDuplicates can be detected from order keys, i.e. if one of the following config items is used: \n- `create-workflow-specific-unique-key`\n- `create-workflow-unique-key`\n- `create-workflow-global-unique-key`\n\nIn this case this object also contains configuration that allows for an alternative \"duplicate-file-handling\" workflow order to be created.  See config items in the **FTP Polling Workflow Creation Duplicate File Handling** group for more information.\n\n**Note** The `ftp-polling-interval-secs` config item is always ignored in this class; this class must be used as the base class for a job, and the job's schedule determines the polling interval."
+      },
+      {
+        "name": "BBM_SftpPollerCreateOrderJob",
+        "display_name": "BBM Sftp Poller Create Order Job",
+        "short_desc": "## Summary",
+        "id": 52,
+        "desc": "## Summary \n\nBuilding block job base class for polling for files from an SFTP server and creating a workflow order from files polled.\n\nThe local context data for the internal workflow order creation call is the file event data as described by data type `qoretechnologies/building-blocks/sftp/event`; therefore this information can be used when creating the order; for example `create-workflow-staticdata` = `$local:*` would set the initial static order data to the file event hash.\n\nDuplicates can be detected from order keys, i.e. if one of the following config items is used: \n- `create-workflow-specific-unique-key`\n- `create-workflow-unique-key`\n- `create-workflow-global-unique-key`\n\nIn this case this object also contains configuration that allows for an alternative \"duplicate-file-handling\" workflow order to be created.  See config items in the **SFTP Polling Workflow Creation Duplicate File Handling** group for more information.\n\n**Note** The `sftp-polling-interval-secs` config item is always ignored in this class; this class must be used as the base class for a job, and the job's schedule determines the polling interval.\n\n## Connectors\n\n### Input/Output Connector `runJob`\n\nRuns the poll action once."
+      },
+      {
+        "name": "JobClassTesttRGrMoaeUlDVFbsDJATA",
+        "display_name": "Job Class TesttR Gr Moae UlDV FbsDJATA",
+        "short_desc": "NblFB6PpDxrDpZw",
+        "id": 253,
+        "desc": "NblFB6PpDxrDpZw"
+      }
+    ],
+    "action": "creator-return-objects",
+    "ok": true,
+    "message": "job base classes"
   }
 }

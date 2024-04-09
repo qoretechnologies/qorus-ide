@@ -1,5 +1,49 @@
 {
+  "connection": {
+    "request_id": "eexX13aNGTIRCVS",
+    "tab_token": "none",
+    "iface_kind": "connection",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true
+      },
+      {
+        "name": "tags",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
   "job": {
+    "request_id": "F1dDbAaqIv2wKyQ",
     "tab_token": "none",
     "iface_kind": "job",
     "fields": [
@@ -125,7 +169,7 @@
       },
       {
         "name": "mappers",
-        "type": "string",
+        "type": "select-array",
         "mandatory": false,
         "get_message": {
           "action": "creator-get-objects",
@@ -188,13 +232,21 @@
       {
         "name": "desc",
         "type": "long-string",
-        "mandatory": false
+        "mandatory": true
       },
       {
         "name": "tags",
         "type": "array-of-pairs",
         "mandatory": false,
         "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
       },
       {
         "name": "classes",
@@ -215,8 +267,45 @@
         "notify_on_remove": true
       },
       {
+        "name": "constants",
+        "type": "constant-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "constant",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "constant",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "fsm",
+        "type": "fsm-list",
+        "mandatory": false
+      },
+      {
+        "name": "functions",
+        "type": "function-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "function",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "function",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
         "name": "groups",
-        "type": "multi-select",
+        "type": "select-array",
         "mandatory": false,
         "get_message": {
           "action": "creator-get-objects",
@@ -241,11 +330,6 @@
         "type": "cron",
         "mandatory": true,
         "default_value": "0 0 * * *"
-      },
-      {
-        "name": "fsm",
-        "type": "fsm-list",
-        "mandatory": false
       }
     ],
     "action": "creator-return-fields",
@@ -253,6 +337,7 @@
     "message": "all fields"
   },
   "class": {
+    "request_id": "QjDl9A8KzD17gDR",
     "tab_token": "none",
     "iface_kind": "class",
     "fields": [
@@ -350,13 +435,21 @@
       {
         "name": "desc",
         "type": "long-string",
-        "mandatory": false
+        "mandatory": true
       },
       {
         "name": "tags",
         "type": "array-of-pairs",
         "mandatory": false,
         "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
       },
       {
         "name": "requires",
@@ -393,6 +486,7 @@
     "message": "all fields"
   },
   "service": {
+    "request_id": "w2wd8B5zhWfPKwX",
     "tab_token": "none",
     "iface_kind": "service",
     "fields": [
@@ -503,7 +597,7 @@
       },
       {
         "name": "mappers",
-        "type": "string",
+        "type": "select-array",
         "mandatory": false,
         "get_message": {
           "action": "creator-get-objects",
@@ -649,13 +743,21 @@
       {
         "name": "desc",
         "type": "long-string",
-        "mandatory": false
+        "mandatory": true
       },
       {
         "name": "tags",
         "type": "array-of-pairs",
         "mandatory": false,
         "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
       },
       {
         "name": "classes",
@@ -676,8 +778,45 @@
         "notify_on_remove": true
       },
       {
+        "name": "constants",
+        "type": "constant-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "constant",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "constant",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "fsm",
+        "type": "fsm-list",
+        "mandatory": false
+      },
+      {
+        "name": "functions",
+        "type": "function-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "function",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "function",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
         "name": "groups",
-        "type": "multi-select",
+        "type": "select-array",
         "mandatory": false,
         "get_message": {
           "action": "creator-get-objects",
@@ -696,11 +835,6 @@
         "type": "options",
         "mandatory": false,
         "url": "system"
-      },
-      {
-        "name": "fsm",
-        "type": "fsm-list",
-        "mandatory": false
       },
       {
         "name": "api-manager",
@@ -884,6 +1018,898 @@
         "type": "boolean",
         "mandatory": false,
         "default_value": false
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "mapper-code": {
+    "request_id": "UlLMj9VuV36WPWZ",
+    "tab_token": "none",
+    "iface_kind": "mapper-code",
+    "fields": [
+      {
+        "name": "class-class-name",
+        "type": "string",
+        "mandatory": false,
+        "has_to_be_valid_identifier": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "lang",
+        "type": "enum",
+        "mandatory": true,
+        "on_change": "lang-changed",
+        "compact": true,
+        "group": "info",
+        "default_value": "qore",
+        "items": [
+          {
+            "value": "qore",
+            "icon_filename": "qore-106x128.png"
+          },
+          {
+            "value": "python",
+            "icon_filename": "python-129x128.png"
+          },
+          {
+            "value": "java",
+            "icon_filename": "java-96x128.png"
+          }
+        ]
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "mapper-methods": {
+    "request_id": "SNdixIndG1oev9d",
+    "tab_token": "none",
+    "iface_kind": "mapper-methods",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "has_to_be_valid_identifier": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "step": {
+    "request_id": "cgqJiJUPU6vRa8K",
+    "tab_token": "none",
+    "iface_kind": "step",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "lang",
+        "type": "enum",
+        "mandatory": true,
+        "on_change": "lang-changed",
+        "compact": true,
+        "group": "info",
+        "default_value": "qore",
+        "items": [
+          {
+            "value": "qore",
+            "icon_filename": "qore-106x128.png"
+          },
+          {
+            "value": "python",
+            "icon_filename": "python-129x128.png"
+          },
+          {
+            "value": "java",
+            "icon_filename": "java-96x128.png"
+          }
+        ]
+      },
+      {
+        "name": "class-name",
+        "type": "string",
+        "mandatory": false,
+        "has_to_be_valid_identifier": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "mappers",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "mapper",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "mapper",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "vmaps",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "value-map",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "value-map",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "queue",
+        "type": "select-string",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "queue",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "queue",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "event",
+        "type": "select-string",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "event",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "event",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      },
+      {
+        "name": "tags",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
+      },
+      {
+        "name": "base-class-name",
+        "type": "select-string",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "step-base-class",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "step-base-class",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "on_change": ["get-config-items", "creator-set-fields"],
+        "notify_on_remove": true
+      },
+      {
+        "name": "classes",
+        "type": "class-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "class",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "class",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "on_change": "get-config-items",
+        "notify_on_remove": true
+      },
+      {
+        "name": "constants",
+        "type": "constant-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "constant",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "constant",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "fsm",
+        "type": "fsm-list",
+        "mandatory": false
+      },
+      {
+        "name": "functions",
+        "type": "function-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "function",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "function",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "steptype",
+        "type": "string",
+        "mandatory": false,
+        "default_value": "NORMAL",
+        "items": [
+          {
+            "value": "NORMAL",
+            "icon_filename": null
+          },
+          {
+            "value": "ASYNC",
+            "icon_filename": null
+          },
+          {
+            "value": "SUBWORKFLOW",
+            "icon_filename": null
+          },
+          {
+            "value": "EVENT",
+            "icon_filename": null
+          }
+        ]
+      },
+      {
+        "name": "steptype",
+        "type": "string",
+        "mandatory": false,
+        "default_value": "NONE",
+        "items": [
+          {
+            "value": "NONE",
+            "icon_filename": null
+          },
+          {
+            "value": "SERIES",
+            "icon_filename": null
+          }
+        ]
+      },
+      {
+        "name": "user-interaction",
+        "type": "bool",
+        "mandatory": false,
+        "default_value": false
+      },
+      {
+        "name": "user-metadata",
+        "type": "hash",
+        "mandatory": false
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "workflow": {
+    "request_id": "UwfpPivB8aXVh75",
+    "tab_token": "none",
+    "iface_kind": "workflow",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "lang",
+        "type": "enum",
+        "mandatory": true,
+        "on_change": "lang-changed",
+        "compact": true,
+        "group": "info",
+        "default_value": "qore",
+        "items": [
+          {
+            "value": "qore",
+            "icon_filename": "qore-106x128.png"
+          },
+          {
+            "value": "python",
+            "icon_filename": "python-129x128.png"
+          },
+          {
+            "value": "java",
+            "icon_filename": "java-96x128.png"
+          }
+        ]
+      },
+      {
+        "name": "class-name",
+        "type": "string",
+        "mandatory": false,
+        "has_to_be_valid_identifier": true,
+        "notify_on_add": true,
+        "notify_on_remove": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "sla_threshold",
+        "type": "number",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "default_value": 1800
+      },
+      {
+        "name": "keylist",
+        "type": "array",
+        "mandatory": false,
+        "compact": true,
+        "group": "other"
+      },
+      {
+        "name": "mappers",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "mapper",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "mapper",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "vmaps",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "value-map",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "value-map",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "modules",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "wf-modules",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "wf-modules",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "resources"
+      },
+      {
+        "name": "remote",
+        "type": "boolean",
+        "mandatory": false,
+        "compact": true,
+        "group": "scaling",
+        "default_value": true
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true
+      },
+      {
+        "name": "tags",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
+      },
+      {
+        "name": "base-class-name",
+        "type": "select-string",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "workflow-base-class",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "workflow-base-class",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "notify_on_add": true,
+        "notify_on_remove": true
+      },
+      {
+        "name": "classes",
+        "type": "class-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "class",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "class",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "on_change": "get-config-items",
+        "notify_on_remove": true
+      },
+      {
+        "name": "constants",
+        "type": "constant-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "constant",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "constant",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "fsm",
+        "type": "fsm-list",
+        "mandatory": false
+      },
+      {
+        "name": "functions",
+        "type": "function-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "function",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "function",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "groups",
+        "type": "multi-select",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "group",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "group",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "system-options",
+        "type": "options",
+        "mandatory": false,
+        "url": "system"
+      },
+      {
+        "name": "workflow-autostart",
+        "type": "number",
+        "mandatory": false,
+        "default_value": 1
+      },
+      {
+        "name": "attach",
+        "type": "string",
+        "mandatory": false
+      },
+      {
+        "name": "detach",
+        "type": "string",
+        "mandatory": false
+      },
+      {
+        "name": "errorfunction",
+        "type": "string",
+        "mandatory": false
+      },
+      {
+        "name": "error_handler",
+        "type": "string",
+        "mandatory": false
+      },
+      {
+        "name": "onetimeinit",
+        "type": "string",
+        "mandatory": false
+      },
+      {
+        "name": "workflow_errors",
+        "type": "select-string",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "errors",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "workflow-base-class",
+          "return_value": "errors",
+          "useWebSocket": true
+        }
+      },
+      {
+        "name": "max_instances",
+        "type": "number",
+        "mandatory": false
+      },
+      {
+        "name": "workflow_options",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "staticdata-type",
+        "type": "type-selector",
+        "mandatory": false
+      },
+      {
+        "name": "statuses",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["code", "desc"]
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "group": {
+    "request_id": "z83XPEPYN66iUwK",
+    "tab_token": "none",
+    "iface_kind": "group",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "queue": {
+    "request_id": "36WYNRD0wtFnaL8",
+    "tab_token": "none",
+    "iface_kind": "queue",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "event": {
+    "request_id": "VSyuo5ok7EB1nBx",
+    "tab_token": "none",
+    "iface_kind": "event",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
       }
     ],
     "action": "creator-return-fields",

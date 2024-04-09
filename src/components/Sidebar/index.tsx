@@ -65,12 +65,26 @@ export const Sidebar = (props: ISidebar) => {
     return (
       <ReqoreMenuItem
         key={menuId}
+        customTheme={{ main: '#050505' }}
+        effect={
+          matchesPath
+            ? {
+                gradient: {
+                  colors: {
+                    0: 'info:darken:5:0.4',
+                    40: '#181818',
+                    100: '#181818',
+                  },
+                },
+              }
+            : undefined
+        }
+        leftIconColor={matchesPath ? 'info:lighten:10' : undefined}
         label={menuData.label}
         icon={menuData.icon}
         as={menuData.as}
         tooltip={menuData.label.toString()}
         verticalPadding='tiny'
-        selected={matchesPath}
         {...menuData}
       />
     );
