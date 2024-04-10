@@ -18,6 +18,7 @@ import {
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
   _testsWaitForText,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -121,17 +122,18 @@ export const FieldCanBeRemoved: Story = {
 export const FieldsCanBeAdded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(3, true);
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'base-class-name',
-      'Optional fields available (9)'
-    )();
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
-      'SelectAll',
+      'base-class-name',
       'Optional fields available (8)'
+    )();
+    await _testsExpectFieldsCountToMatch(5, true);
+    await sleep(300);
+    await _testsSelectItemFromDropdown(
+      undefined,
+      'SelectAll',
+      'Optional fields available (7)'
     )();
     await _testsExpectFieldsCountToMatch(12, true);
   },
@@ -140,16 +142,16 @@ export const FieldsCanBeAdded: Story = {
 export const ChangesCanBeDiscarded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(3, true);
+    await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (9)'
+      'Optional fields available (8)'
     )();
     await _testsExpectFieldsCountToMatch(12, true);
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(3, true);
+    await _testsExpectFieldsCountToMatch(4, true);
   },
 };
 
