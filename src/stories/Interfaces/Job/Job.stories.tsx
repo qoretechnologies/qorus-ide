@@ -97,10 +97,10 @@ export const FieldsAreFiltered: Story = {
 export const FieldCanBeRemoved: Story = {
   ...Existing,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(14, true);
+    await _testsExpectFieldsCountToMatch(13, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(13, true);
+    await _testsExpectFieldsCountToMatch(12, true);
   },
 };
 
