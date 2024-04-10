@@ -71,6 +71,7 @@ import { InterfacesContext } from '../../context/interfaces';
 import {
   mapFieldsToGroups,
   maybeSendOnChangeEvent,
+  subTypeToType,
 } from '../../helpers/common';
 import { deleteDraft, getDraftId } from '../../helpers/functions';
 import {
@@ -1393,7 +1394,9 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           {
             label: 'Edit code',
             icon: 'CodeView',
-            show: !codeEditorVisible && categories[type].supports_code,
+            show:
+              !codeEditorVisible &&
+              categories[subTypeToType(type)].supports_code,
             tooltip: 'Edit the code for this interface',
             active: codeEditorVisible,
             effect: QorusColorEffect,
