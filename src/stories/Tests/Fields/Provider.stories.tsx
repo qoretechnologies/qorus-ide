@@ -208,10 +208,11 @@ export const ReplaceWithExistingFavorite: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
     await Type.play({ canvasElement, ...rest });
-
+    await sleep(1000);
     await fireEvent.click(
       document.querySelector('.data-provider-show-favorites')
     );
+    await sleep(1000);
     await fireEvent.click(
       document.querySelector('.data-provider-favorite-apply')
     );
