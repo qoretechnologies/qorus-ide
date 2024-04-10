@@ -93,52 +93,52 @@ export const FieldsAreFiltered: Story = {
       target: { value: 'desc' },
     });
 
-    await _testsExpectFieldsCountToMatch(2);
+    await _testsExpectFieldsCountToMatch(2, true, 'service');
   },
 };
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(9, true);
+    await _testsExpectFieldsCountToMatch(9, true, 'service');
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(8, true, 'service');
   },
 };
 
 export const FieldsCanBeAdded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(5, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'service');
     await _testsSelectItemFromDropdown(
       undefined,
       'base-class-name',
-      'Optional fields available (19)'
+      'Optional fields available (28)'
     )();
-    await _testsExpectFieldsCountToMatch(6, true);
+    await _testsExpectFieldsCountToMatch(5, true, 'service');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (18)'
+      'Optional fields available (27)'
     )();
-    await _testsExpectFieldsCountToMatch(24, true);
+    await _testsExpectFieldsCountToMatch(24, true, 'service');
   },
 };
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(5, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'service');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (19)'
+      'Optional fields available (28)'
     )();
-    await _testsExpectFieldsCountToMatch(24, true);
+    await _testsExpectFieldsCountToMatch(24, true, 'service');
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(5, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'service');
   },
 };
 

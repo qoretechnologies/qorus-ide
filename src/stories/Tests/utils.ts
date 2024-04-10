@@ -539,20 +539,20 @@ export async function _testsCreatorDraftSaveCheck() {
 
 export async function _testsExpectFieldsCountToMatch(
   count: number,
-  wait?: boolean
+  wait?: boolean,
+  type?: string
 ) {
+  const selector = type ? `.${type}-creator .creator-field` : '.creator-field';
+
   if (wait) {
     await waitFor(
-      () =>
-        expect(document.querySelectorAll('.creator-field')).toHaveLength(count),
+      () => expect(document.querySelectorAll(selector)).toHaveLength(count),
       {
         timeout: 5000,
       }
     );
   } else {
-    await expect(document.querySelectorAll('.creator-field')).toHaveLength(
-      count
-    );
+    await expect(document.querySelectorAll(selector)).toHaveLength(count);
   }
 }
 

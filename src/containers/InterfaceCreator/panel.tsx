@@ -1373,7 +1373,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       <Content
         title={'Fill in the details'}
         responsiveTitle
-        responsiveActions
+        className={`${type}-creator`}
+        responsiveActions={false}
         actions={[
           {
             as: ReqoreInput,
