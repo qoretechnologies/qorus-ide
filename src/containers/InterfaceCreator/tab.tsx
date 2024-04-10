@@ -514,6 +514,7 @@ const Tab: React.FC<ITabProps> = ({
         breadcrumbs={{
           size: 'normal',
           flat: true,
+          responsive: false,
           padded: false,
           items: [
             {
