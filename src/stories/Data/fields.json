@@ -1149,7 +1149,7 @@
     "message": "all fields"
   },
   "step": {
-    "request_id": "cgqJiJUPU6vRa8K",
+    "request_id": "DYm9kvS1e6tUj30",
     "tab_token": "none",
     "iface_kind": "step",
     "fields": [
@@ -1398,7 +1398,7 @@
       },
       {
         "name": "steptype",
-        "type": "string",
+        "type": "enum",
         "mandatory": false,
         "default_value": "NORMAL",
         "items": [
@@ -1421,8 +1421,8 @@
         ]
       },
       {
-        "name": "steptype",
-        "type": "string",
+        "name": "arraytype",
+        "type": "enum",
         "mandatory": false,
         "default_value": "NONE",
         "items": [

@@ -90,36 +90,36 @@ export const FieldsAreFiltered: Story = {
       target: { value: 'desc' },
     });
 
-    await _testsExpectFieldsCountToMatch(2);
+    await _testsExpectFieldsCountToMatch(1);
   },
 };
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(9, true);
+    await _testsExpectFieldsCountToMatch(7, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(6, true);
   },
 };
 
 export const FieldsCanBeAdded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(5, true);
+    await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
       'base-class-name',
-      'Optional fields available (19)'
+      'Optional fields available (18)'
     )();
-    await _testsExpectFieldsCountToMatch(6, true);
+    await _testsExpectFieldsCountToMatch(5, true);
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (18)'
+      'Optional fields available (17)'
     )();
-    await _testsExpectFieldsCountToMatch(24, true);
+    await _testsExpectFieldsCountToMatch(22, true);
   },
 };
 
