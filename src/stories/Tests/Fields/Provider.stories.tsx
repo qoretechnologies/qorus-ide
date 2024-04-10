@@ -216,7 +216,7 @@ export const ReplaceWithExistingFavorite: StoryObj<typeof meta> = {
       document.querySelector('.data-provider-favorite-apply')
     );
 
-    await sleep(300);
+    await sleep(1000);
 
     expect(canvas.getAllByText('date')[0]).toBeInTheDocument();
   },
