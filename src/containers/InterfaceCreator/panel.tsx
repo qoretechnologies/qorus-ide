@@ -878,9 +878,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     let result;
 
     if (!onSubmit || forceSubmit) {
-      // Delete the draft for this interface
-      deleteDraft(type, fileName, false);
-
       let newData: { [key: string]: any };
       // If this is service methods
       if (
@@ -1018,6 +1015,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       }
 
       if (result.ok) {
+        setInterfaceId(type, result.id, interfaceIndex);
         // We need to change the `orig_name` field to a new name
         //handleFieldChange('orig_name', newData.name);
         onSubmitSuccess?.(newData);

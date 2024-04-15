@@ -1,6 +1,5 @@
 import {
   ReqoreButton,
-  ReqoreMessage,
   ReqoreModal,
   useReqoreTheme,
 } from '@qoretechnologies/reqore';
@@ -12,24 +11,17 @@ import compose from 'recompose/compose';
 import shortid from 'shortid';
 import Content from '../../components/Content';
 import Field from '../../components/Field';
-import FileField from '../../components/Field/fileString';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
   SaveColorEffect,
 } from '../../components/Field/multiPair';
-import String from '../../components/Field/string';
 import Suggest from '../../components/Field/suggest';
 import FieldGroup from '../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../components/FieldWrapper';
 import { Messages } from '../../constants/messages';
 import { DraftsContext, IDraftData } from '../../context/drafts';
-import {
-  deleteDraft,
-  fetchData,
-  getDraftId,
-  hasValue,
-} from '../../helpers/functions';
+import { fetchData, getDraftId, hasValue } from '../../helpers/functions';
 import { flattenFields, getLastChildIndex } from '../../helpers/mapper';
 import { validateField } from '../../helpers/validations';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
@@ -97,11 +89,11 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {}
     )
   );
-  const [targetDir, setTargetDir] = useState(
-    initialData?.type?.target_dir || ''
+  const [displayName, setDisplayName] = useState(
+    initialData?.type?.display_name || ''
   );
-  const [targetFile, setTargetFile] = useState(
-    initialData?.type?.target_file || ''
+  const [shortDesc, setShortDesc] = useState(
+    initialData?.type?.short_desc || ''
   );
   const [desc, setDesc] = useState(initialData?.type?.desc || '');
   const [selectedField, setSelectedField] = useState(undefined);
@@ -109,7 +101,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
 
   const reset = (soft?: boolean) => {
-    setInterfaceId(shortid.generate());
+    setInterfaceId(initialData?.type?.id || shortid.generate());
 
     if (soft) {
       setVal(initialData?.type?.path || '');
@@ -117,15 +109,15 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       setFields(
         initialData.type ? cloneDeep(initialData.type.typeinfo.fields) : {}
       );
-      setTargetDir(initialData?.type?.target_dir || '');
-      setTargetFile(initialData?.type?.target_file || '');
+      setDisplayName(initialData?.type?.display_name || '');
+      setShortDesc(initialData?.type?.short_desc || '');
       setDesc(initialData?.type?.desc || '');
     } else {
       setVal('');
       setAddDialog({});
       setFields({});
-      setTargetDir('');
-      setTargetFile('');
+      setDisplayName('');
+      setShortDesc('');
       setDesc('');
     }
   };
@@ -137,15 +129,15 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       undefined,
       initialData?.type,
       ({
-        typeData: { fields, val, targetDir, targetFile, types, desc },
+        typeData: { fields, val, displayName, shortDesc, types, desc },
         id,
       }: IDraftData) => {
         setInterfaceId(id);
         setVal(val);
         setTypes(types);
         setDesc(desc);
-        setTargetDir(targetDir);
-        setTargetFile(targetFile);
+        setDisplayName(displayName);
+        setShortDesc(shortDesc);
         setFields(fields);
       }
     );
@@ -160,14 +152,12 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
   useMount(() => {
     setTypeReset(() => reset);
 
-    if (initialData.qorus_instance) {
-      (async () => {
-        const data = await fetchData('/system/metadata/types');
-        setTypes(data.data);
-        setInterfaceId(initialData?.type?.iface_id || shortid.generate());
-        applyDraft();
-      })();
-    }
+    (async () => {
+      const data = await fetchData('/system/metadata/types');
+      setTypes(data.data);
+      setInterfaceId(initialData?.type?.id || shortid.generate());
+      applyDraft();
+    })();
 
     return () => {
       setTypeReset(null);
@@ -179,8 +169,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
     return (
       initialData.type?.path !== val ||
       !isEqual(initialData.type?.typeinfo?.fields, fields) ||
-      initialData.type?.target_dir !== targetDir ||
-      initialData.type?.target_file !== targetFile
+      initialData.type?.display_name !== displayName ||
+      initialData.type?.short_desc !== shortDesc
     );
   };
 
@@ -192,8 +182,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       if (
         draftId &&
         (hasValue(val) ||
-          hasValue(targetDir) ||
-          hasValue(targetFile) ||
+          hasValue(displayName) ||
+          hasValue(shortDesc) ||
           size(fields)) &&
         hasChanged
       ) {
@@ -203,8 +193,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
           {
             typeData: {
               val,
-              targetDir,
-              targetFile,
+              displayName,
+              shortDesc,
               desc,
               fields,
               types,
@@ -215,16 +205,8 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       }
     },
     1500,
-    [val, types, fields, targetDir, targetFile]
+    [val, types, fields, displayName, shortDesc]
   );
-
-  if (!initialData.qorus_instance) {
-    return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
-        {t('NoInstance')}
-      </ReqoreMessage>
-    );
-  }
 
   const addField = (path: string, data) => {
     // Set the new fields
@@ -339,9 +321,9 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         orig_data: initialData.type,
         no_data_return: !!onSubmitSuccess,
         data: {
-          target_dir: !targetDir || targetDir === '' ? undefined : targetDir,
-          target_file:
-            !targetFile || targetFile === '' ? undefined : targetFile,
+          display_name:
+            !displayName || displayName === '' ? undefined : displayName,
+          short_desc: !shortDesc || shortDesc === '' ? undefined : shortDesc,
           desc,
           path: val,
           typeinfo: {
@@ -356,11 +338,13 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
     );
 
     if (result.ok) {
+      setInterfaceId(result.id);
+
       if (onSubmitSuccess) {
         onSubmitSuccess({
-          target_dir: !targetDir || targetDir === '' ? undefined : targetDir,
-          target_file:
-            !targetFile || targetFile === '' ? undefined : targetFile,
+          display_name:
+            !displayName || displayName === '' ? undefined : displayName,
+          short_desc: !shortDesc || shortDesc === '' ? undefined : shortDesc,
           desc,
           path: val,
           typeinfo: {
@@ -371,9 +355,6 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
           },
         });
       }
-
-      deleteDraft('type', interfaceId, false);
-      reset();
     }
   };
 
@@ -391,7 +372,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
               () => {
                 reset(true);
               },
-              'Reset',
+              'Confirm',
               'warning'
             );
           },
@@ -449,26 +430,35 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
         </ReqoreModal>
       )}
       <ContentWrapper style={{ flex: '0 auto' }}>
-        <FieldWrapper
-          name='selected-field'
-          label={t('field-label-target_dir')}
-          isValid={validateField('file-string', targetDir)}
-        >
-          <FileField
-            onChange={(_name, value) => setTargetDir(value)}
-            name='target_dir'
-            value={targetDir}
-            get_message={{
-              action: 'creator-get-directories',
-              object_type: 'target_dir',
-            }}
-            return_message={{
-              action: 'creator-return-directories',
-              object_type: 'target_dir',
-              return_value: 'directories',
-            }}
-          />
-        </FieldWrapper>
+        <FieldGroup>
+          <FieldWrapper
+            compact
+            name='selected-field'
+            label={t('field-label-display_name')}
+            isValid={validateField('string', displayName)}
+          >
+            <Field
+              onChange={(_name, value) => setDisplayName(value)}
+              name='display_name'
+              value={displayName}
+              type='string'
+            />
+          </FieldWrapper>
+          <FieldWrapper
+            compact
+            name='selected-field'
+            label={t('field-label-short_desc')}
+            type={t('Optional')}
+            isValid
+          >
+            <Field
+              onChange={(_name, value) => setShortDesc(value)}
+              name='short_desc'
+              value={shortDesc}
+              type='string'
+            />
+          </FieldWrapper>
+        </FieldGroup>
         <FieldWrapper
           compact
           name='selected-field'
@@ -485,19 +475,6 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
           />
         </FieldWrapper>
         <FieldGroup isValid={validateField('string', val)}>
-          <FieldWrapper
-            compact
-            name='selected-field'
-            label={t('field-label-target_file')}
-            type={t('Optional')}
-            isValid
-          >
-            <String
-              onChange={(_name, value) => setTargetFile(value)}
-              name='target-dir'
-              value={targetFile}
-            />
-          </FieldWrapper>
           <FieldWrapper
             name='selected-field'
             label={t('Path')}

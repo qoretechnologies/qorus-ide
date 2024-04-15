@@ -76,7 +76,7 @@
     "react-app-polyfill": "^3.0.0",
     "react-autocomplete": "^1.8.1",
     "react-color": "^2.19.3",
-    "react-d3-tree": "^1.16.1",
+    "react-d3-tree": "^3.6.2",
     "react-dev-utils": "^12.0.1",
     "react-dnd": "^16.0.1",
     "react-dnd-cjs": "^9.5.1",

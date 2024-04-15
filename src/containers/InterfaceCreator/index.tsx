@@ -1,7 +1,8 @@
+import { useContext } from 'react';
 import { useMount } from 'react-use';
 import compose from 'recompose/compose';
+import { InitialContext } from '../../context/init';
 import { withIdChecker } from '../../hocomponents/withIdChecker';
-import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 import ClassConnectionsStateProvider from '../ClassConnectionsStateProvider';
 import { ConnectionView } from './connection';
@@ -28,13 +29,13 @@ export interface ICreateInterface {
 }
 
 export const CreateInterface = ({
-  initialData,
   onSubmit,
   onDelete,
   data,
   context,
 }: ICreateInterface) => {
-  initialData = { ...initialData, ...data };
+  const init = useContext(InitialContext);
+  const initialData = { ...init, ...data };
 
   const getName: () => string = () =>
     initialData?.[initialData.subtab]?.name ||
@@ -218,7 +219,9 @@ export const CreateInterface = ({
           />
         </CreatorWrapper>
       )}
-      {initialData.subtab === 'type' && <TypeView onSubmitSuccess={onSubmit} />}
+      {initialData.subtab === 'type' && (
+        <TypeView onSubmitSuccess={onSubmit} initialData={initialData} />
+      )}
       {initialData.subtab === 'errors' && (
         <ErrorsView
           errors={initialData.errors}
@@ -230,8 +233,6 @@ export const CreateInterface = ({
   );
 };
 
-export default compose(
-  withTextContext(),
-  withInitialDataConsumer(),
-  withIdChecker()
-)(CreateInterface) as (props: ICreateInterface) => JSX.Element;
+export default compose(withTextContext(), withIdChecker())(CreateInterface) as (
+  props: ICreateInterface
+) => JSX.Element;

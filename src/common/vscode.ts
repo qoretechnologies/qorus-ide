@@ -514,7 +514,9 @@ export const vscode =
           }
 
           if (messageData) {
-            window.postMessage(messageData, '*');
+            setTimeout(() => {
+              window.postMessage(messageData, '*');
+            }, 50);
           }
         },
         setState: () => {},

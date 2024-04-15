@@ -22,16 +22,15 @@ import styled from 'styled-components';
 import Content from '../../../components/Content';
 import Field from '../../../components/Field';
 import ConnectorField from '../../../components/Field/connectors';
-import FileString from '../../../components/Field/fileString';
 import { NegativeColorEffect } from '../../../components/Field/multiPair';
 import MultiSelect from '../../../components/Field/multiSelect';
 import String from '../../../components/Field/string';
 import Options from '../../../components/Field/systemOptions';
+import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { InputOutputType } from '../../../components/InputOutputType';
 import Loader from '../../../components/Loader';
 import { Messages } from '../../../constants/messages';
-import { ContextMenuContext } from '../../../context/contextMenu';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
 import { GlobalContext } from '../../../context/global';
 import { InitialContext } from '../../../context/init';
@@ -83,9 +82,10 @@ export type IPipelineElement =
   | IPipelineMapper;
 
 export interface IPipelineMetadata {
-  target_dir: string;
-  name: string;
+  name?: string;
+  display_name: string;
   desc: string;
+  short_desc?: string;
   options?: { [key: string]: any };
   groups?: any;
   'input-provider': any;
@@ -101,43 +101,32 @@ const StyledDiagramWrapper = styled.div<{ path: string }>`
   border-radius: 7px;
 `;
 
-const StyledNodeLabel = styled.div<{ isValid?: boolean }>`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-flow: column;
-
-  background-color: ${({ isValid }) =>
-    isValid === false ? '#d13913' : 'transparent'};
-
-  span {
-    text-align: center;
+const StyledNodeWrapper = styled(ReqoreControlGroup)`
+  * {
+    position: unset !important;
+    transition: unset !important;
+    transform: unset !important;
   }
 `;
 
 const NodeLabel = ({
-  nodeData,
   onEditClick,
   onDeleteClick,
   onAddClick,
   onAddQueueClick,
+  ...rest
 }) => {
-  const { addMenu } = useContext(ContextMenuContext);
+  const nodeData = rest.nodeData?.nodeDatum;
   const t = useContext(TextContext);
 
   const hasOnlyQueues = nodeData.children?.every(
     (child) => child.type === 'queue'
   );
 
+  console.log('nodeData', nodeData);
+
   return (
-    <ReqoreControlGroup
-      vertical
-      stack
-      style={{ margin: 'auto', width: '300px' }}
-      fluid
-    >
+    <StyledNodeWrapper vertical stack fluid>
       <ReqoreButton
         wrap
         intent={
@@ -178,20 +167,6 @@ const NodeLabel = ({
               }
             : undefined
         }
-        // tooltip={
-        //   nodeData.type !== 'start' && nodeData.type !== 'queue'
-        //     ? {
-        //         useTargetWidth: true,
-        //         content: (
-        //           <InputOutputType
-        //             inputProvider={{ interfaceName: nodeData.name, interfaceKind: nodeData.type }}
-        //             outputProvider={{ interfaceName: nodeData.name, interfaceKind: nodeData.type }}
-        //             compact
-        //           />
-        //         ),
-        //       }
-        //     : undefined
-        // }
         maxWidth='350px'
         onClick={
           nodeData.type === 'start'
@@ -242,7 +217,7 @@ const NodeLabel = ({
           {hasOnlyQueues ? t('AddQueue') : t('AddElement')}
         </ReqoreButton>
       ) : null}
-    </ReqoreControlGroup>
+    </StyledNodeWrapper>
   );
 };
 
@@ -315,7 +290,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
   const [isDiagramShown, setIsDiagramShown] = useState(false);
   const [isFromDraft, setIsFromDraft] = useState(false);
   const [metadata, setMetadata] = useState<IPipelineMetadata>({
-    target_dir: pipeline?.target_dir || interfaceContext?.target_dir || null,
+    display_name: pipeline?.display_name || null,
+    short_desc: pipeline?.short_desc || null,
     name: pipeline?.name || null,
     desc: pipeline?.desc || null,
     groups: pipeline?.groups || [],
@@ -426,7 +402,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
         : true;
       if (
         draftId &&
-        (hasValue(metadata.target_dir) ||
+        (hasValue(metadata.display_name) ||
+          hasValue(metadata.short_desc) ||
           hasValue(metadata.desc) ||
           hasValue(metadata.name) ||
           size(metadata.groups) ||
@@ -506,7 +483,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       (fields ? true : isDiagramValid(data)) &&
       validateField('string', metadata.name) &&
       validateField('string', metadata.desc) &&
-      validateField('string', metadata.target_dir)
+      validateField('string', metadata.display_name) &&
+      validateField('string', metadata.short_desc)
     );
   };
 
@@ -589,7 +567,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       setMetadata({
         name: null,
         desc: null,
-        target_dir: null,
+        display_name: null,
+        short_desc: null,
         groups: [],
         'input-provider': null,
         'input-provider-options': null,
@@ -598,7 +577,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       setMetadata({
         name: pipeline?.name,
         desc: pipeline?.desc,
-        target_dir: pipeline?.target_dir,
+        display_name: pipeline?.display_name,
+        short_desc: pipeline?.short_desc,
         groups: pipeline?.groups || [],
         'input-provider': pipeline?.['input-provider'],
         'input-provider-options': pipeline?.['input-provider-options'],
@@ -785,39 +765,46 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
             display: isDiagramShown ? 'none' : 'flex',
           }}
         >
-          <FieldWrapper
-            name='selected-field'
-            label={t('field-label-target_dir')}
-            isValid={validateField('file-string', metadata.target_dir)}
-          >
-            <FileString
-              onChange={handleMetadataChange}
-              name='target_dir'
-              value={metadata.target_dir}
-              get_message={{
-                action: 'creator-get-directories',
-                object_type: 'target_dir',
-              }}
-              return_message={{
-                action: 'creator-return-directories',
-                object_type: 'target_dir',
-                return_value: 'directories',
-              }}
-            />
-          </FieldWrapper>
-          <FieldWrapper
-            name='selected-field'
-            isValid={validateField('string', metadata.name)}
-            label={t('field-label-name')}
-            compact
-          >
-            <String
-              onChange={handleMetadataChange}
-              value={metadata.name}
-              name='name'
-              autoFocus
-            />
-          </FieldWrapper>
+          <FieldGroup>
+            <FieldWrapper
+              name='selected-field'
+              isValid={validateField('string', metadata.display_name)}
+              label={t('field-label-display_name')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.display_name}
+                name='display_name'
+                autoFocus
+              />
+            </FieldWrapper>
+            <FieldWrapper
+              name='selected-field'
+              isValid
+              label={t('field-label-name')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.name}
+                name='name'
+              />
+            </FieldWrapper>
+            <FieldWrapper
+              name='selected-field'
+              isValid
+              label={t('field-label-short_desc')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.short_desc}
+                name='short_desc'
+              />
+            </FieldWrapper>
+          </FieldGroup>
+
           <FieldWrapper
             name='selected-field'
             isValid={validateField('string', metadata.desc)}
@@ -922,65 +909,27 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               orientation='vertical'
               pathFunc='step'
               translate={{ x: window.innerWidth / 2 - 50, y: 100 }}
-              nodeSize={{ x: 350, y: 120 }}
               transitionDuration={0}
-              textLayout={{
-                textAnchor: 'middle',
-              }}
               separation={{
                 siblings: 1,
                 nonSiblings: 1,
               }}
-              allowForeignObjects
-              nodeLabelComponent={{
-                render: (
-                  <NodeLabel
-                    onEditClick={setSelectedElement}
-                    onAddClick={setSelectedElement}
-                    onDeleteClick={(elementData) => removeElement(elementData)}
-                    onAddQueueClick={handleDataSubmit}
-                  />
-                ),
-                foreignObjectWrapper: {
-                  width: '350px',
-                  x: -(350 / 2),
-                },
-              }}
+              renderCustomNodeElement={(nodeData) => (
+                <g>
+                  <foreignObject {...{ width: 300, height: 200, x: -150 }}>
+                    <NodeLabel
+                      nodeData={nodeData}
+                      onEditClick={setSelectedElement}
+                      onAddClick={setSelectedElement}
+                      onDeleteClick={(elementData) =>
+                        removeElement(elementData)
+                      }
+                      onAddQueueClick={handleDataSubmit}
+                    />
+                  </foreignObject>
+                </g>
+              )}
               collapsible={false}
-              styles={{
-                links: {
-                  stroke: theme.intents.info,
-                  strokeWidth: 2,
-                },
-                nodes: {
-                  node: {
-                    ellipse: {
-                      stroke: '#a9a9a9',
-                    },
-                    rect: {
-                      stroke: '#a9a9a9',
-                      rx: 25,
-                    },
-                    name: {
-                      stroke: '#333',
-                      strokeWidth: 0.8,
-                    },
-                  },
-                  leafNode: {
-                    ellipse: {
-                      stroke: '#a9a9a9',
-                    },
-                    rect: {
-                      stroke: '#a9a9a9',
-                      rx: 25,
-                    },
-                    name: {
-                      stroke: '#333',
-                      strokeWidth: 0.8,
-                    },
-                  },
-                },
-              }}
             />
           </StyledDiagramWrapper>
         </ContentWrapper>

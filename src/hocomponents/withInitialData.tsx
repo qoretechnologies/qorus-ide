@@ -478,8 +478,6 @@ export default () =>
           true
         );
 
-        updateCurrentHistoryTab({ draftId: id });
-
         setIsSavingDraft(false);
       };
 

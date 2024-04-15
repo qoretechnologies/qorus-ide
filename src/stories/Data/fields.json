@@ -1915,5 +1915,163 @@
     "action": "creator-return-fields",
     "ok": true,
     "message": "all fields"
+  },
+  "value-map": {
+    "request_id": "RIclOAUX4t7vQSW",
+    "tab_token": "none",
+    "iface_kind": "value-map",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "dateformat",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "disabled": true,
+        "default_value": "YYYY-MM-DD"
+      },
+      {
+        "name": "valuetype",
+        "type": "enum",
+        "mandatory": false,
+        "on_change": "valuetype-changed",
+        "notify_on_remove": true,
+        "compact": true,
+        "group": "resources",
+        "items": [
+          {
+            "value": "int",
+            "icon_filename": null
+          },
+          {
+            "value": "string",
+            "icon_filename": null
+          },
+          {
+            "value": "float",
+            "icon_filename": null
+          },
+          {
+            "value": "raw",
+            "icon_filename": null
+          },
+          {
+            "value": "date",
+            "icon_filename": null
+          }
+        ]
+      },
+      {
+        "name": "value-maps",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "compact": true,
+        "group": "resources",
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      },
+      {
+        "name": "groups",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "group",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "group",
+          "return_value": "objects",
+          "useWebSocket": true
+        }
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "errors": {
+    "request_id": "PmTsx2O2L7ShcJi",
+    "tab_token": "none",
+    "iface_kind": "errors",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
   }
 }
