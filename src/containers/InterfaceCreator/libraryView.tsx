@@ -48,12 +48,16 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
   t,
   isSubItemValid,
   removeSubItemFromFields,
-  initialData: { 'mapper-code': library },
+  library,
   interfaceId,
   onSubmitSuccess,
 }) => {
-  const [interfaceIndex, setInterfaceIndex] = useState(size(interfaceId['mapper-code']));
-  const [methodsIndex, setMethodIndex] = useState(size(interfaceId['mapper-methods']));
+  const [interfaceIndex, setInterfaceIndex] = useState(
+    size(interfaceId['mapper-code'])
+  );
+  const [methodsIndex, setMethodIndex] = useState(
+    size(interfaceId['mapper-methods'])
+  );
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const {
     showFunctions,
@@ -91,9 +95,11 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
   return (
     <CreatorWrapper>
       <PanelWrapper>
-        <div style={{ display: !showFunctions ? 'flex' : 'none', width: '100%' }}>
+        <div
+          style={{ display: !showFunctions ? 'flex' : 'none', width: '100%' }}
+        >
           <InterfaceCreatorPanel
-            type="mapper-code"
+            type='mapper-code'
             submitLabel={t('Next')}
             onSubmit={() => {
               setActiveFunction(1);
@@ -111,9 +117,11 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
             }
           />
         </div>
-        <div style={{ display: showFunctions ? 'flex' : 'none', width: '100%' }}>
+        <div
+          style={{ display: showFunctions ? 'flex' : 'none', width: '100%' }}
+        >
           <SidePanel>
-            <ReqoreMenu style={{ flex: 1 }} width="250px" rounded>
+            <ReqoreMenu style={{ flex: 1 }} width='250px' rounded>
               <ReqoreMenuDivider label={t('AddFunctionsTitle')} />
               <ReqoreMenuItem
                 icon={'MenuAddLine'}
@@ -123,27 +131,40 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
               >
                 {t('AddError')}
               </ReqoreMenuItem>
-              {functions.map((fun: { id: number; name?: string }, index: number) => (
-                <MethodSelector
-                  key={fun.id}
-                  selected={fun.id === activeFunction}
-                  isValid={isSubItemValid(fun.id, 'mapper-methods', methodsIndex)}
-                  onClick={() => setActiveFunction(fun.id)}
-                  onRemoveClick={
-                    functionsCount !== 1
-                      ? () => {
-                          setFunctions((current) =>
-                            current.filter((currentFunction) => currentFunction.id !== fun.id)
-                          );
-                          removeSubItemFromFields(fun.id, 'mapper-methods', methodsIndex);
-                          setFunctionsCount((current: number) => current - 1);
-                        }
-                      : undefined
-                  }
-                >
-                  {fun.name || `${t('Method')} ${fun.id}`}
-                </MethodSelector>
-              ))}
+              {functions.map(
+                (fun: { id: number; name?: string }, index: number) => (
+                  <MethodSelector
+                    key={fun.id}
+                    selected={fun.id === activeFunction}
+                    isValid={isSubItemValid(
+                      fun.id,
+                      'mapper-methods',
+                      methodsIndex
+                    )}
+                    onClick={() => setActiveFunction(fun.id)}
+                    onRemoveClick={
+                      functionsCount !== 1
+                        ? () => {
+                            setFunctions((current) =>
+                              current.filter(
+                                (currentFunction) =>
+                                  currentFunction.id !== fun.id
+                              )
+                            );
+                            removeSubItemFromFields(
+                              fun.id,
+                              'mapper-methods',
+                              methodsIndex
+                            );
+                            setFunctionsCount((current: number) => current - 1);
+                          }
+                        : undefined
+                    }
+                  >
+                    {fun.name || `${t('Method')} ${fun.id}`}
+                  </MethodSelector>
+                )
+              )}
             </ReqoreMenu>
           </SidePanel>
           <ReqoreHorizontalSpacer width={10} />
@@ -157,7 +178,7 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
               setShowFunctions(false);
             }}
             initialInterfaceId={
-              library ? library.interfaceId : interfaceId['mapper-code'][interfaceIndex]
+              library ? library.id : interfaceId['mapper-code'][interfaceIndex]
             }
             onDataFinishLoadingRecur={(id) => {
               if (!hasAllMethodsLoaded) {
@@ -169,7 +190,7 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
                 }
               }
             }}
-            type="mapper-methods"
+            type='mapper-methods'
             activeId={activeFunction}
             isEditing={!!library}
             allMethodsData={functionsData}
@@ -179,17 +200,23 @@ const LibraryView: FunctionComponent<ILibraryView> = ({
               hasAllMethodsLoaded = false;
             }}
             forceSubmit
-            data={functionsData && functionsData.find((fun) => fun.id === activeFunction)}
+            data={
+              functionsData &&
+              functionsData.find((fun) => fun.id === activeFunction)
+            }
             parentData={library}
             onNameChange={(functionId: number, name: string) => {
               setFunctions((currentFunctions: { id: number; name: string }[]) =>
-                currentFunctions.reduce((cur, fun: { id: number; name: string }) => {
-                  if (functionId === fun.id) {
-                    fun.name = name;
-                  }
+                currentFunctions.reduce(
+                  (cur, fun: { id: number; name: string }) => {
+                    if (functionId === fun.id) {
+                      fun.name = name;
+                    }
 
-                  return [...cur, fun];
-                }, [])
+                    return [...cur, fun];
+                  },
+                  []
+                )
               );
             }}
           />

@@ -318,6 +318,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
       undefined,
       {
         iface_kind: 'type',
+        replace: !!initialData.type,
         orig_data: initialData.type,
         no_data_return: !!onSubmitSuccess,
         data: {
@@ -486,7 +487,7 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
               value={val}
               name='path'
               onChange={(_name, value) => setVal(value)}
-              autoFocus
+              autoFocus={!initialData.type}
             />
           </FieldWrapper>
         </FieldGroup>

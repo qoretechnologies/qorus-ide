@@ -1,4 +1,8 @@
-import { ReqoreMessage, ReqoreVerticalSpacer, useReqore } from '@qoretechnologies/reqore';
+import {
+  ReqoreMessage,
+  ReqoreVerticalSpacer,
+  useReqore,
+} from '@qoretechnologies/reqore';
 import { cloneDeep, omit, size } from 'lodash';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useLifecycles, useUpdateEffect } from 'react-use';
@@ -61,7 +65,7 @@ const MapperView: FunctionComponent<IMapperViewProps> = ({
 
   if (!qorus_instance) {
     return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent="warning">
+      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
         {t('NoInstance')}
       </ReqoreMessage>
     );
@@ -83,7 +87,10 @@ const MapperView: FunctionComponent<IMapperViewProps> = ({
     }
   );
 
-  const fixedOptions = omit(mapper?.options, ['mapper-input', 'mapper-output']);
+  const fixedOptions = omit(mapper?.mapper_options, [
+    'mapper-input',
+    'mapper-output',
+  ]);
   const newMapper = cloneDeep(mapper);
 
   if (newMapper) {
@@ -114,9 +121,15 @@ const MapperView: FunctionComponent<IMapperViewProps> = ({
 
   return (
     <>
-      {inputsError && <ReqoreMessage intent="warning">{t(inputsError)}</ReqoreMessage>}
-      {outputsError && <ReqoreMessage intent="warning">{t(outputsError)}</ReqoreMessage>}
-      {inputsError || outputsError ? <ReqoreVerticalSpacer height={10} /> : null}
+      {inputsError && (
+        <ReqoreMessage intent='warning'>{t(inputsError)}</ReqoreMessage>
+      )}
+      {outputsError && (
+        <ReqoreMessage intent='warning'>{t(outputsError)}</ReqoreMessage>
+      )}
+      {inputsError || outputsError ? (
+        <ReqoreVerticalSpacer height={10} />
+      ) : null}
       {!showMapperConnections && (
         <CreatorWrapper>
           <InterfaceCreatorPanel
@@ -148,8 +161,9 @@ const MapperView: FunctionComponent<IMapperViewProps> = ({
             )?.value
           }
           context={
-            selectedFields.mapper[interfaceIndex].find((field: IField) => field.name === 'context')
-              ?.value
+            selectedFields.mapper[interfaceIndex].find(
+              (field: IField) => field.name === 'context'
+            )?.value
           }
           isEditing={isEditing || !!mapper}
           onSubmitSuccess={onSubmitSuccess}

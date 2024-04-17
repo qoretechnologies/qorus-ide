@@ -38,7 +38,7 @@ export const Type: StoryObj<typeof meta> = {
         timeout: 10000,
       }
     );
-    await _testsSelectItemFromCollection(canvas, 'Hash<auto>')();
+    await _testsSelectItemFromCollection(canvas, '/qore/hash')();
     await sleep(500);
   },
 };

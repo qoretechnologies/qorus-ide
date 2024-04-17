@@ -107,7 +107,7 @@ export const InterfacesProvider = ({ children }) => {
     );
 
     const data = await fetchData(
-      `/${interfaceToPlural[type]}/${id}/clone`,
+      `/${categories[type].url_root}/${id}/clone`,
       'POST'
     );
 

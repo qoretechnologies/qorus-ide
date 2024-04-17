@@ -61,7 +61,7 @@ export default () =>
             break;
           case 'mapper':
             // Reset mapper
-            props.resetMapper(soft);
+            props?.resetMapper?.(soft);
             break;
           case 'type':
             // Reset type

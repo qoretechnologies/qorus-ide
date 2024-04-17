@@ -12,7 +12,7 @@ import { SaveColorEffect } from '../../components/Field/multiPair';
 import { ContentWrapper, IField } from '../../components/FieldWrapper';
 import { Messages } from '../../constants/messages';
 import { DraftsContext } from '../../context/drafts';
-import { deleteDraft, getDraftId } from '../../helpers/functions';
+import { getDraftId } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
@@ -59,6 +59,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
   selectedFields,
   initialData,
   interfaceId,
+  setInterfaceId,
   resetFields,
   showSteps,
   setShowSteps,
@@ -140,10 +141,11 @@ const ServicesView: FunctionComponent<IServicesView> = ({
       !!workflow ? Messages.EDIT_INTERFACE : Messages.CREATE_INTERFACE,
       undefined,
       {
+        replace: !!workflow,
         iface_kind: 'workflow',
         orig_data: workflow,
         data: newData,
-        iface_id: workflow?.iface_id || interfaceId.workflow[workflowIndex],
+        iface_id: workflow?.id || interfaceId.workflow[workflowIndex],
         open_file_on_success: !onSubmitSuccess,
         no_data_return: !!onSubmitSuccess,
       },
@@ -151,15 +153,8 @@ const ServicesView: FunctionComponent<IServicesView> = ({
     );
 
     if (result.ok) {
-      if (onSubmitSuccess) {
-        onSubmitSuccess(newData);
-      }
-      const fileName = getDraftId(
-        initialData.type,
-        interfaceId.workflow[workflowIndex]
-      );
-      // Delete the draft for this interface
-      deleteDraft('workflow', fileName, false);
+      setInterfaceId('workflow', result.id, workflowIndex);
+      onSubmitSuccess?.(newData);
       resetAllInterfaceData('workflow');
     }
   };

@@ -15,13 +15,11 @@ import interfaces from '../../Data/interface_samples.json';
 import {
   _testsClickButton,
   _testsConfirmDialog,
+  _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
-  _testsWaitForText,
-  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
-import * as ClassStories from '../Class/Class.stories';
 
 const Creator = compose(
   withFields(),
@@ -34,11 +32,11 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
-  title: 'Interfaces Manager/Value Map',
+  title: 'Interfaces Manager/Mapper',
   render: (args) => {
     return (
       <InterfacesProvider>
-        <Creator>
+        <Creator mapper={args.data?.mapper}>
           <CreateInterface {...args} />
         </Creator>
       </InterfacesProvider>
@@ -52,30 +50,30 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    data: { subtab: 'value-map' },
+    data: { subtab: 'mapper' },
   },
 };
 
 export const Existing: Story = {
   args: {
     data: {
-      subtab: 'value-map',
-      'value-map': interfaces['value-map'][0].data['value-map'],
+      subtab: 'mapper',
+      mapper: interfaces.mapper[3].data.mapper,
     },
+  },
+};
+
+export const ViewDiagram: Story = {
+  ...Existing,
+  play: async () => {
+    await _testsClickButton({ label: 'Next' });
   },
 };
 
 export const DraftIsSaved: Story = {
   ...New,
   play: async () => {
-    await _testsWaitForText('field-label-display_name');
-
-    await fireEvent.change(
-      document.querySelector('.creator-field .reqore-input'),
-      { target: { value: 'Test' } }
-    );
-
-    await _testsWaitForText('DraftSaved just now');
+    await _testsCreatorDraftSaveCheck();
   },
 };
 
@@ -93,54 +91,52 @@ export const FieldsAreFiltered: Story = {
       target: { value: 'desc' },
     });
 
-    await _testsExpectFieldsCountToMatch(2);
+    await _testsExpectFieldsCountToMatch(2, true, 'mapper');
   },
 };
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
-  play: async (args) => {
-    await ClassStories.FieldCanBeRemoved.play({
-      ...args,
-      beforeCount: 9,
-      afterCount: 8,
-    });
+  play: async () => {
+    await _testsExpectFieldsCountToMatch(7, true, 'mapper');
+    await _testsClickButton({ selector: '.creator-field-remove' });
+    await _testsConfirmDialog();
+    await _testsExpectFieldsCountToMatch(6, true, 'mapper');
   },
 };
 
 export const FieldsCanBeAdded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(2, true, 'mapper');
     await _testsSelectItemFromDropdown(
       undefined,
-      'short_desc',
-      'Optional fields available (7)'
+      'name',
+      'Optional fields available (8)'
     )();
-    await _testsExpectFieldsCountToMatch(3, true);
-    await sleep(300);
+    await _testsExpectFieldsCountToMatch(3, true, 'mapper');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (6)'
+      'Optional fields available (7)'
     )();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(10, true, 'mapper');
   },
 };
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(2, true, 'mapper');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (7)'
+      'Optional fields available (8)'
     )();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(10, true, 'mapper');
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(2, true, 'mapper');
   },
 };
 
@@ -151,7 +147,8 @@ export const SubmittedDataAreCorrect: Story = {
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });
     await DraftIsSaved.play({ args, ...rest });
-    await _testsClickButton({ label: 'Submit' });
+    await _testsClickButton({ label: 'Next' });
+    await _testsClickButton({ label: 'Submit', wait: 10000 });
 
     await waitFor(
       () =>

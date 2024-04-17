@@ -51,13 +51,13 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    initialData: { subtab: 'class' },
+    data: { subtab: 'class' },
   },
 };
 
 export const Existing: Story = {
   args: {
-    initialData: { subtab: 'class', class: interfaces.class[5].data.class },
+    data: { subtab: 'class', class: interfaces.class[5].data.class },
   },
 };
 
@@ -112,10 +112,10 @@ export const FieldsAreFiltered: Story = {
 export const FieldCanBeRemoved: Story = {
   ...Existing,
   play: async ({ beforeCount, afterCount }) => {
-    await _testsExpectFieldsCountToMatch(beforeCount ?? 6, true);
+    await _testsExpectFieldsCountToMatch(beforeCount ?? 7, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(afterCount ?? 5, true);
+    await _testsExpectFieldsCountToMatch(afterCount ?? 6, true);
   },
 };
 

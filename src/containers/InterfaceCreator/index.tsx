@@ -109,7 +109,7 @@ export const CreateInterface = ({
       )}
       {initialData.subtab === 'mapper-code' && (
         <LibraryView
-          library={initialData.library}
+          library={initialData['mapper-code']}
           onSubmitSuccess={onSubmit}
           interfaceContext={context}
         />
@@ -177,6 +177,7 @@ export const CreateInterface = ({
           onSubmitSuccess={onSubmit}
           interfaceContext={context}
           initialData={initialData}
+          data={initialData.mapper}
         />
       )}
       {initialData.subtab === 'group' && (
@@ -206,6 +207,16 @@ export const CreateInterface = ({
             onSubmitSuccess={onSubmit}
             data={initialData.queue}
             isEditing={!!initialData.queue}
+          />
+        </CreatorWrapper>
+      )}
+      {initialData.subtab === 'sla' && (
+        <CreatorWrapper>
+          <InterfaceCreatorPanel
+            type={'sla'}
+            onSubmitSuccess={onSubmit}
+            data={initialData.sla}
+            isEditing={!!initialData.sla}
           />
         </CreatorWrapper>
       )}

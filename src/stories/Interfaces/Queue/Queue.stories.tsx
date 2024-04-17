@@ -51,13 +51,13 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    initialData: { subtab: 'queue' },
+    data: { subtab: 'queue' },
   },
 };
 
 export const Existing: Story = {
   args: {
-    initialData: {
+    data: {
       subtab: 'queue',
       queue: interfaces.queue[0].data.queue,
     },

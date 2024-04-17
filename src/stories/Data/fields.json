@@ -1025,7 +1025,7 @@
     "message": "all fields"
   },
   "mapper-code": {
-    "request_id": "UlLMj9VuV36WPWZ",
+    "request_id": "2ovLplhkLl6ZaIr",
     "tab_token": "none",
     "iface_kind": "mapper-code",
     "fields": [
@@ -1103,7 +1103,8 @@
       {
         "name": "desc",
         "type": "long-string",
-        "mandatory": true
+        "mandatory": true,
+        "markdown": true
       }
     ],
     "action": "creator-return-fields",
@@ -1111,7 +1112,7 @@
     "message": "all fields"
   },
   "mapper-methods": {
-    "request_id": "SNdixIndG1oev9d",
+    "request_id": "sPi85Yl1cMi2Ypd",
     "tab_token": "none",
     "iface_kind": "mapper-methods",
     "fields": [
@@ -1124,24 +1125,10 @@
         "group": "info"
       },
       {
-        "name": "display_name",
-        "type": "string",
-        "mandatory": true,
-        "compact": true,
-        "group": "info",
-        "autoFocus": true
-      },
-      {
-        "name": "short_desc",
-        "type": "string",
-        "mandatory": false,
-        "compact": true,
-        "group": "info"
-      },
-      {
         "name": "desc",
         "type": "long-string",
-        "mandatory": true
+        "mandatory": true,
+        "markdown": true
       }
     ],
     "action": "creator-return-fields",
@@ -1453,7 +1440,7 @@
     "message": "all fields"
   },
   "workflow": {
-    "request_id": "UwfpPivB8aXVh75",
+    "request_id": "0alsylGM0yIuqSN",
     "tab_token": "none",
     "iface_kind": "workflow",
     "fields": [
@@ -1617,21 +1604,14 @@
       {
         "name": "desc",
         "type": "long-string",
-        "mandatory": true
+        "mandatory": true,
+        "markdown": true
       },
       {
         "name": "tags",
         "type": "array-of-pairs",
         "mandatory": false,
         "fields": ["key", "value"]
-      },
-      {
-        "name": "source",
-        "type": "string",
-        "mandatory": true,
-        "isValid": true,
-        "selected": true,
-        "internal": true
       },
       {
         "name": "base-class-name",
@@ -1708,7 +1688,7 @@
       },
       {
         "name": "groups",
-        "type": "multi-select",
+        "type": "select-array",
         "mandatory": false,
         "get_message": {
           "action": "creator-get-objects",
@@ -1727,6 +1707,14 @@
         "type": "options",
         "mandatory": false,
         "url": "system"
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": false,
+        "isValid": true,
+        "selected": true,
+        "internal": true
       },
       {
         "name": "workflow-autostart",
@@ -2062,6 +2050,163 @@
         "mandatory": false,
         "compact": true,
         "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "error": {
+    "request_id": "S8Troa4LzpFGEHU",
+    "tab_token": "none",
+    "iface_kind": "error",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "severity",
+        "type": "enum",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "default_value": "MAJOR",
+        "items": [
+          {
+            "value": "FATAL"
+          },
+          {
+            "value": "MAJOR"
+          },
+          {
+            "value": "MINOR"
+          },
+          {
+            "value": "WARNING"
+          },
+          {
+            "value": "INFO"
+          },
+          {
+            "value": "NONE"
+          }
+        ]
+      },
+      {
+        "name": "status",
+        "type": "enum",
+        "mandatory": true,
+        "on_change": "error-status-changed",
+        "notify_on_remove": true,
+        "compact": true,
+        "group": "info",
+        "default_value": "ERROR",
+        "items": [
+          {
+            "value": "ERROR"
+          },
+          {
+            "value": "RETRY"
+          }
+        ]
+      },
+      {
+        "name": "business",
+        "type": "boolean",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "default_value": false
+      },
+      {
+        "name": "retry-delay",
+        "type": "int",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "level",
+        "type": "enum",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "default_value": "AUTO",
+        "items": [
+          {
+            "value": "AUTO"
+          },
+          {
+            "value": "GLOBAL"
+          },
+          {
+            "value": "WORKFLOW"
+          }
+        ]
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "sla": {
+    "request_id": "9Htb2Rx5pYcYaPq",
+    "tab_token": "none",
+    "iface_kind": "sla",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "display_name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "autoFocus": true
+      },
+      {
+        "name": "short_desc",
+        "type": "string",
+        "mandatory": false,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "units",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "default_value": "seconds",
+        "items": [
+          {
+            "value": "seconds"
+          },
+          {
+            "value": "other"
+          }
+        ]
       },
       {
         "name": "desc",

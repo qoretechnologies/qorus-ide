@@ -3,7 +3,9 @@ import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
+import withErrors from '../../../hocomponents/withErrors';
 import withFields from '../../../hocomponents/withFields';
+import withFunctions from '../../../hocomponents/withFunctions';
 import withGlobalOptions from '../../../hocomponents/withGlobalOptions';
 import withInitialData from '../../../hocomponents/withInitialData';
 import withMapper from '../../../hocomponents/withMapper';
@@ -15,13 +17,11 @@ import interfaces from '../../Data/interface_samples.json';
 import {
   _testsClickButton,
   _testsConfirmDialog,
+  _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
-  _testsWaitForText,
-  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
-import * as ClassStories from '../Class/Class.stories';
 
 const Creator = compose(
   withFields(),
@@ -29,16 +29,18 @@ const Creator = compose(
   withMethods(),
   withSteps(),
   withGlobalOptions(),
-  withMapper()
+  withMapper(),
+  withErrors(),
+  withFunctions()
 )(DraftsProvider);
 
 const meta = {
   component: CreateInterface,
-  title: 'Interfaces Manager/Value Map',
+  title: 'Interfaces Manager/Mapper Code',
   render: (args) => {
     return (
       <InterfacesProvider>
-        <Creator>
+        <Creator {...{ 'mapper-code': args?.data?.['mapper-code'] }}>
           <CreateInterface {...args} />
         </Creator>
       </InterfacesProvider>
@@ -52,30 +54,30 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    data: { subtab: 'value-map' },
+    data: { subtab: 'mapper-code' },
   },
 };
 
 export const Existing: Story = {
   args: {
     data: {
-      subtab: 'value-map',
-      'value-map': interfaces['value-map'][0].data['value-map'],
+      subtab: 'mapper-code',
+      'mapper-code': interfaces['mapper-code'][0].data['mapper-code'],
     },
+  },
+};
+
+export const ShowsMethods: Story = {
+  ...Existing,
+  play: async () => {
+    await _testsClickButton({ label: 'Next' });
   },
 };
 
 export const DraftIsSaved: Story = {
   ...New,
   play: async () => {
-    await _testsWaitForText('field-label-display_name');
-
-    await fireEvent.change(
-      document.querySelector('.creator-field .reqore-input'),
-      { target: { value: 'Test' } }
-    );
-
-    await _testsWaitForText('DraftSaved just now');
+    await _testsCreatorDraftSaveCheck();
   },
 };
 
@@ -93,54 +95,52 @@ export const FieldsAreFiltered: Story = {
       target: { value: 'desc' },
     });
 
-    await _testsExpectFieldsCountToMatch(2);
+    await _testsExpectFieldsCountToMatch(2, true, 'mapper-code');
   },
 };
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
-  play: async (args) => {
-    await ClassStories.FieldCanBeRemoved.play({
-      ...args,
-      beforeCount: 9,
-      afterCount: 8,
-    });
+  play: async () => {
+    await _testsExpectFieldsCountToMatch(6, true, 'mapper-code');
+    await _testsClickButton({ selector: '.creator-field-remove' });
+    await _testsConfirmDialog();
+    await _testsExpectFieldsCountToMatch(5, true, 'mapper-code');
   },
 };
 
 export const FieldsCanBeAdded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
     await _testsSelectItemFromDropdown(
       undefined,
-      'short_desc',
-      'Optional fields available (7)'
+      'class-class-name',
+      'Optional fields available (3)'
     )();
-    await _testsExpectFieldsCountToMatch(3, true);
-    await sleep(300);
+    await _testsExpectFieldsCountToMatch(5, true, 'mapper-code');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (6)'
+      'Optional fields available (2)'
     )();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(7, true, 'mapper-code');
   },
 };
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (7)'
+      'Optional fields available (3)'
     )();
-    await _testsExpectFieldsCountToMatch(8, true);
+    await _testsExpectFieldsCountToMatch(7, true, 'mapper-code');
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(2, true);
+    await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
   },
 };
 
@@ -151,7 +151,8 @@ export const SubmittedDataAreCorrect: Story = {
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });
     await DraftIsSaved.play({ args, ...rest });
-    await _testsClickButton({ label: 'Submit' });
+    await _testsClickButton({ label: 'Next' });
+    await _testsClickButton({ label: 'Submit', wait: 10000 });
 
     await waitFor(
       () =>

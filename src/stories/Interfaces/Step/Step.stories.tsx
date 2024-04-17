@@ -52,13 +52,13 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    initialData: { subtab: 'step' },
+    data: { subtab: 'step' },
   },
 };
 
 export const Existing: Story = {
   args: {
-    initialData: { subtab: 'step', step: interfaces.step[0].data.step },
+    data: { subtab: 'step', step: interfaces.step[0].data.step },
   },
 };
 
@@ -90,17 +90,17 @@ export const FieldsAreFiltered: Story = {
       target: { value: 'desc' },
     });
 
-    await _testsExpectFieldsCountToMatch(1);
+    await _testsExpectFieldsCountToMatch(2);
   },
 };
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
   play: async () => {
-    await _testsExpectFieldsCountToMatch(7, true);
+    await _testsExpectFieldsCountToMatch(12, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(6, true);
+    await _testsExpectFieldsCountToMatch(11, true);
   },
 };
 
@@ -110,7 +110,7 @@ export const FieldsCanBeAdded: Story = {
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
-      'base-class-name',
+      'name',
       'Optional fields available (18)'
     )();
     await _testsExpectFieldsCountToMatch(5, true);

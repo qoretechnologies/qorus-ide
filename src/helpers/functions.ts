@@ -2,7 +2,7 @@ import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/D
 import { IReqoreDropdownItem } from '@qoretechnologies/reqore/dist/components/Dropdown/list';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { IReqoreNotificationData } from '@qoretechnologies/reqore/dist/containers/ReqoreProvider';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
 import isBoolean from 'lodash/isBoolean';
@@ -40,7 +40,6 @@ import {
 } from '../hocomponents/withMessageHandler';
 import { IQorusTypeObject } from '../hooks/useQorusTypes';
 import { isStateValid } from './fsm';
-const md5 = require('md5');
 
 const functionOrStringExp: Function = (
   item: Function | string,

@@ -25,6 +25,7 @@ export const interfaceKindTransform = {
   'schema-modules': 'schema-modules',
   scripts: 'scripts',
   tests: 'tests',
+  sla: 'sla',
 };
 
 export const interfaceToPlural = {
@@ -48,6 +49,7 @@ export const interfaceToPlural = {
   'schema-modules': 'schema-modules',
   scripts: 'scripts',
   tests: 'tests',
+  sla: 'slas',
 };
 
 export const viewsIcons: Record<string, IReqoreIconName> = {
@@ -87,6 +89,7 @@ export const interfaceIcons: Record<string, IReqoreIconName> = {
   'schema-modules': 'Database2Line',
   scripts: 'FileCodeLine',
   tests: 'FilterLine',
+  sla: 'TimerLine',
 };
 
 export const interfaceNameToKind = {
@@ -110,10 +113,14 @@ export const interfaceNameToKind = {
   'Schema Module': 'schema-modules',
   Script: 'scripts',
   Test: 'tests',
+  Sla: 'sla',
 };
 
 // Reverse the interfaceNameToKind object
-export const interfaceKindToName = keys(interfaceNameToKind).reduce((acc, key) => {
-  acc[interfaceNameToKind[key]] = key;
-  return acc;
-}, {});
+export const interfaceKindToName = keys(interfaceNameToKind).reduce(
+  (acc, key) => {
+    acc[interfaceNameToKind[key]] = key;
+    return acc;
+  },
+  {}
+);

@@ -13,7 +13,10 @@ import compose from 'recompose/compose';
 import styled from 'styled-components';
 import { TTranslator } from '../../App';
 import { TApiManagerEndpoint } from '../../components/Field/apiManager';
-import { PositiveColorEffect, SelectorColorEffect } from '../../components/Field/multiPair';
+import {
+  PositiveColorEffect,
+  SelectorColorEffect,
+} from '../../components/Field/multiPair';
 import SidePanel from '../../components/SidePanel';
 import { DraftsContext } from '../../context/drafts';
 import { MethodsContext } from '../../context/methods';
@@ -155,7 +158,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
   classConnectionsProps,
 }) => {
   const [serviceIndex, setServiceIndex] = useState(size(interfaceId.service));
-  const [methodsIndex, setMethodsIndex] = useState(size(interfaceId['service-methods']));
+  const [methodsIndex, setMethodsIndex] = useState(
+    size(interfaceId['service-methods'])
+  );
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const {
     showMethods,
@@ -208,7 +213,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
     <>
       <CreatorWrapper>
         <PanelWrapper>
-          <div style={{ display: !showMethods ? 'flex' : 'none', width: '100%' }}>
+          <div
+            style={{ display: !showMethods ? 'flex' : 'none', width: '100%' }}
+          >
             <InterfaceCreatorPanel
               type={'service'}
               submitLabel={t('Next')}
@@ -234,9 +241,11 @@ const ServicesView: FunctionComponent<IServicesView> = ({
               }
             />
           </div>
-          <div style={{ display: showMethods ? 'flex' : 'none', width: '100%' }}>
+          <div
+            style={{ display: showMethods ? 'flex' : 'none', width: '100%' }}
+          >
             <SidePanel>
-              <ReqoreMenu style={{ flex: 1 }} width="250px" rounded>
+              <ReqoreMenu style={{ flex: 1 }} width='250px' rounded>
                 <ReqoreMenuDivider label={t('AddMethodsTitle')} />
                 <ReqoreMenuItem
                   icon={'MenuAddLine'}
@@ -257,20 +266,35 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                     <MethodSelector
                       key={index}
                       selected={method.id === activeMethod}
-                      isValid={isSubItemValid(method.id, 'service-methods', methodsIndex)}
+                      isValid={isSubItemValid(
+                        method.id,
+                        'service-methods',
+                        methodsIndex
+                      )}
                       onClick={() => setActiveMethod(method.id)}
                       onRemoveClick={
                         methodsCount !== 1
                           ? () => {
                               setMethods((current) =>
-                                current.filter((currentMethod) => currentMethod.id !== method.id)
+                                current.filter(
+                                  (currentMethod) =>
+                                    currentMethod.id !== method.id
+                                )
                               );
-                              removeSubItemFromFields(method.id, 'service-methods', methodsIndex);
+                              removeSubItemFromFields(
+                                method.id,
+                                'service-methods',
+                                methodsIndex
+                              );
                               setMethodsCount((current: number) => current - 1);
                               // Check if there is an endpoint that uses this method
                               // Rename methods in api manager
                               const apiManager = cloneDeep(
-                                getFieldData('service', serviceIndex, 'api-manager')?.value || {}
+                                getFieldData(
+                                  'service',
+                                  serviceIndex,
+                                  'api-manager'
+                                )?.value || {}
                               );
                               /* Updating the endpoint name in the api-manager. */
                               /* Checking if the apiManager exists and if it has an endpoint with the name of the
@@ -278,24 +302,28 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                               if (
                                 apiManager &&
                                 apiManager?.endpoints?.find(
-                                  (endpoint: TApiManagerEndpoint) => endpoint.value === method.name
+                                  (endpoint: TApiManagerEndpoint) =>
+                                    endpoint.value === method.name
                                 )
                               ) {
                                 // Rename the endpoint
-                                apiManager.endpoints = apiManager.endpoints.filter(
-                                  (endpoint: TApiManagerEndpoint) => {
-                                    if (endpoint.value === method.name) {
-                                      return false;
+                                apiManager.endpoints =
+                                  apiManager.endpoints.filter(
+                                    (endpoint: TApiManagerEndpoint) => {
+                                      if (endpoint.value === method.name) {
+                                        return false;
+                                      }
+                                      return true;
                                     }
-                                    return true;
-                                  }
-                                );
+                                  );
                                 // Update the field
                                 updateField(
                                   'service',
                                   'api-manager',
                                   apiManager,
-                                  service ? service.iface_id : interfaceId.service[serviceIndex],
+                                  service
+                                    ? service.iface_id
+                                    : interfaceId.service[serviceIndex],
                                   serviceIndex
                                 );
                               }
@@ -324,7 +352,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                 }
               }}
               onDataFinishLoadingRecur={handleDataFinishLoadingRecur}
-              initialInterfaceId={service ? service.iface_id : interfaceId.service[serviceIndex]}
+              initialInterfaceId={
+                service ? service.id : interfaceId.service[serviceIndex]
+              }
               type={'service-methods'}
               activeId={activeMethod}
               isEditing={!!service}
@@ -338,17 +368,24 @@ const ServicesView: FunctionComponent<IServicesView> = ({
               }}
               forceSubmit
               data={{
-                ...(methodsData || []).find((method) => method.id === activeMethod),
+                ...(methodsData || []).find(
+                  (method) => method.id === activeMethod
+                ),
                 lang: service?.lang,
               }}
               parentData={service}
-              onNameChange={(methodId: number, name: string, originalName?: string) => {
+              onNameChange={(
+                methodId: number,
+                name: string,
+                originalName?: string
+              ) => {
                 if (originalName) {
                   // Rename the trigger
                   classConnectionsProps.renameTrigger(originalName, name);
                   // Rename methods in api manager
                   const apiManager = cloneDeep(
-                    getFieldData('service', serviceIndex, 'api-manager')?.value || {}
+                    getFieldData('service', serviceIndex, 'api-manager')
+                      ?.value || {}
                   );
                   /* Updating the endpoint name in the api-manager. */
                   /* Checking if the apiManager exists and if it has an endpoint with the name of the
@@ -356,7 +393,8 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                   if (
                     apiManager &&
                     apiManager?.endpoints?.find(
-                      (endpoint: TApiManagerEndpoint) => endpoint.value === originalName
+                      (endpoint: TApiManagerEndpoint) =>
+                        endpoint.value === originalName
                     )
                   ) {
                     // Rename the endpoint
@@ -373,7 +411,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                       'service',
                       'api-manager',
                       apiManager,
-                      service ? service.iface_id : interfaceId.service[serviceIndex],
+                      service
+                        ? service.iface_id
+                        : interfaceId.service[serviceIndex],
                       serviceIndex
                     );
                   }

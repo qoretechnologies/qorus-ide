@@ -51,13 +51,13 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    initialData: { subtab: 'group' },
+    data: { subtab: 'group' },
   },
 };
 
 export const Existing: Story = {
   args: {
-    initialData: {
+    data: {
       subtab: 'group',
       group: interfaces.group[0].data.group,
     },

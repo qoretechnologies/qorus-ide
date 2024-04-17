@@ -52,13 +52,13 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    initialData: { subtab: 'job' },
+    data: { subtab: 'job' },
   },
 };
 
 export const Existing: Story = {
   args: {
-    initialData: { subtab: 'job', job: interfaces.job[1].data.job },
+    data: { subtab: 'job', job: interfaces.job[1].data.job },
   },
 };
 

@@ -500,7 +500,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       // Remove the message listener if it exists
       messageListenerHandler();
     };
-  }, [activeId, interfaceId, initialInterfaceId, data]);
+  }, [activeId, interfaceId, initialInterfaceId, JSON.stringify(data)]);
 
   const resetLocalFields: (newActiveId?: number) => void = async (
     newActiveId
@@ -847,8 +847,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   submit function.
   */
   const handleSubmitClick: () => void = async () => {
-    // File name
-    const fileName = getDraftId(parentData || data, interfaceId);
     // Set the value flag for all selected fields
     setSelectedFields(
       type,
@@ -977,10 +975,12 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           undefined,
           {
             iface_kind,
+            replace: isEditing,
             data: {
               ...data,
               ...newData,
               'class-connections': classConnectionsData,
+              source: code,
             },
             workflow,
             no_data_return: !!onSubmitSuccess,
@@ -1001,11 +1001,14 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           undefined,
           {
             iface_kind,
+            replace: isEditing,
             data: {
               ...data,
               ...newData,
               'class-connections': classConnectionsData,
               default_value_true_type: true_type,
+              source: code,
+              id: interfaceId,
             },
             no_data_return: !!onSubmitSuccess,
           },
@@ -1395,7 +1398,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
             icon: 'CodeView',
             show:
               !codeEditorVisible &&
-              categories[subTypeToType(type)].supports_code,
+              categories[subTypeToType(type)]?.supports_code,
             tooltip: 'Edit the code for this interface',
             active: codeEditorVisible,
             effect: QorusColorEffect,

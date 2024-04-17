@@ -614,7 +614,8 @@ const Options = ({
   if (
     (operatorsUrl && !operators) ||
     (!rest.options && !options) ||
-    templates.loading
+    templates.loading ||
+    loading
   ) {
     return (
       <ReqorePanel fill flat transparent>

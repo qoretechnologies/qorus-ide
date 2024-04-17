@@ -10,19 +10,44 @@ import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/T
 import { size } from 'lodash';
 import { useContext, useEffect, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
-import { TextContext } from '../../context/text';
-import { fetchData, filterTemplatesByType } from '../../helpers/functions';
 import {
   ExpressionBuilder,
   IExpression,
   IExpressionSchema,
-} from '../ExpressionBuilder';
-import Auto from './auto';
-import BooleanField from './boolean';
-import DateField from './date';
-import LongStringField from './longString';
-import Number from './number';
-import { IQorusType } from './systemOptions';
+} from '../../components/ExpressionBuilder';
+import { TextContext } from '../../context/text';
+import { fetchData, filterTemplatesByType } from '../../helpers/functions';
+import Auto from '../Field/auto';
+import BooleanField from '../Field/boolean';
+import DateField from '../Field/date';
+import LongStringField from '../Field/longString';
+import Number from '../Field/number';
+
+export type IQorusType =
+  | 'string'
+  | 'int'
+  | 'integer'
+  | 'list'
+  | 'bool'
+  | 'boolean'
+  | 'float'
+  | 'binary'
+  | 'hash'
+  | 'date'
+  | 'any'
+  | 'auto'
+  | 'mapper'
+  | 'workflow'
+  | 'service'
+  | 'job'
+  | 'select-string'
+  | 'data-provider'
+  | 'file-as-string'
+  | 'connection'
+  | 'number'
+  | 'nothing'
+  | 'null'
+  | 'rgbcolor';
 
 /**
  * It checks if a string starts with a dollar sign, contains a colon, and if the text between the

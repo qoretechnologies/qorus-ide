@@ -37,7 +37,6 @@ import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
 import {
   checkPipelineCompatibility,
-  deleteDraft,
   getDraftId,
   hasValue,
 } from '../../../helpers/functions';
@@ -99,6 +98,10 @@ const StyledDiagramWrapper = styled.div<{ path: string }>`
   background: ${({ theme }) => `${theme.main} url(${TinyGrid})`};
   overflow: hidden;
   border-radius: 7px;
+
+  .rd3t-link {
+    stroke: #d7d7d7;
+  }
 `;
 
 const StyledNodeWrapper = styled(ReqoreControlGroup)`
@@ -119,11 +122,9 @@ const NodeLabel = ({
   const nodeData = rest.nodeData?.nodeDatum;
   const t = useContext(TextContext);
 
-  const hasOnlyQueues = nodeData.children?.every(
-    (child) => child.type === 'queue'
-  );
-
-  console.log('nodeData', nodeData);
+  const hasOnlyQueues = size(nodeData.children)
+    ? nodeData.children?.every((child) => child.type === 'queue')
+    : false;
 
   return (
     <StyledNodeWrapper vertical stack fluid>
@@ -532,6 +533,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
     );
 
     if (result.ok) {
+      setInterfaceId(result.id);
+
       if (onSubmitSuccess) {
         onSubmitSuccess({
           ...metadata,
@@ -539,10 +542,6 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
           children: elements[0].children,
         });
       }
-      const fileName = getDraftId(pipeline, interfaceId);
-      deleteDraft('pipeline', fileName, false);
-      reset();
-      resetAllInterfaceData('pipeline');
     }
   };
 
@@ -745,7 +744,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               () => {
                 reset();
               },
-              'Reset',
+              'Confirm',
               'warning'
             );
           }),
@@ -911,9 +910,10 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               translate={{ x: window.innerWidth / 2 - 50, y: 100 }}
               transitionDuration={0}
               separation={{
-                siblings: 1,
-                nonSiblings: 1,
+                siblings: 2.5,
+                nonSiblings: 2.5,
               }}
+              hasInteractiveNodes
               renderCustomNodeElement={(nodeData) => (
                 <g>
                   <foreignObject {...{ width: 300, height: 200, x: -150 }}>

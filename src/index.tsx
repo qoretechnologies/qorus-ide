@@ -1,5 +1,6 @@
 import { ReqoreColors, ReqoreUIProvider } from '@qoretechnologies/reqore';
 import { IReqoreUIProviderProps } from '@qoretechnologies/reqore/dist/containers/UIProvider';
+import * as Sentry from '@sentry/browser';
 import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -15,6 +16,13 @@ import { createStore } from 'redux';
 import { createGlobalStyle } from 'styled-components';
 import AppContainer from './App';
 import reducer from './reducers';
+
+Sentry.init({
+  dsn: 'https://1228ced0a5ab4f4a9604bf4aa58f2fb9@app.glitchtip.com/6336',
+  _experiments: {
+    showReportDialog: true,
+  },
+});
 
 require('./fonts/NeoLight.ttf');
 

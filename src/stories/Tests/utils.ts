@@ -243,10 +243,10 @@ export function _testsSelectItemFromDropdown(
       }
     );
 
-    await waitFor(async () => await canvas.getAllByText(itemLabel)[1], {
+    await waitFor(async () => await canvas.getAllByText(itemLabel)[0], {
       timeout: 10000,
     });
-    await fireEvent.click(canvas.getAllByText(itemLabel)[1]);
+    await fireEvent.click(canvas.getAllByText(itemLabel)[0]);
   };
 }
 
@@ -260,7 +260,7 @@ export function _testsSelectItemFromCollection(
       timeout: 30000,
     });
 
-    await fireEvent.click(canvas.getAllByText(collectionLabel)[1]);
+    await fireEvent.click(canvas.getAllByText(collectionLabel)[0]);
 
     await waitFor(
       () =>

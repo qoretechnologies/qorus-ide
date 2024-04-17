@@ -15,13 +15,9 @@ import interfaces from '../../Data/interface_samples.json';
 import {
   _testsClickButton,
   _testsConfirmDialog,
-  _testsExpectFieldsCountToMatch,
-  _testsSelectItemFromDropdown,
   _testsWaitForText,
-  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
-import * as ClassStories from '../Class/Class.stories';
 
 const Creator = compose(
   withFields(),
@@ -34,7 +30,7 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
-  title: 'Interfaces Manager/Value Map',
+  title: 'Interfaces Manager/Pipeline',
   render: (args) => {
     return (
       <InterfacesProvider>
@@ -52,15 +48,15 @@ type Story = StoryObj<typeof meta>;
 
 export const New: Story = {
   args: {
-    data: { subtab: 'value-map' },
+    data: { subtab: 'pipeline' },
   },
 };
 
 export const Existing: Story = {
   args: {
     data: {
-      subtab: 'value-map',
-      'value-map': interfaces['value-map'][0].data['value-map'],
+      subtab: 'pipeline',
+      pipeline: interfaces.pipeline[0].data.pipeline,
     },
   },
 };
@@ -79,68 +75,21 @@ export const DraftIsSaved: Story = {
   },
 };
 
-export const FieldsAreFiltered: Story = {
-  ...Existing,
-  play: async () => {
-    await waitFor(
-      () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
-      {
-        timeout: 5000,
-      }
-    );
-
-    await fireEvent.change(document.querySelector('.reqore-input'), {
-      target: { value: 'desc' },
-    });
-
-    await _testsExpectFieldsCountToMatch(2);
-  },
-};
-
-export const FieldCanBeRemoved: Story = {
+export const ChangesCanBeDiscarded: Story = {
   ...Existing,
   play: async (args) => {
-    await ClassStories.FieldCanBeRemoved.play({
-      ...args,
-      beforeCount: 9,
-      afterCount: 8,
-    });
-  },
-};
-
-export const FieldsCanBeAdded: Story = {
-  ...New,
-  play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'short_desc',
-      'Optional fields available (7)'
-    )();
-    await _testsExpectFieldsCountToMatch(3, true);
-    await sleep(300);
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'SelectAll',
-      'Optional fields available (6)'
-    )();
-    await _testsExpectFieldsCountToMatch(8, true);
-  },
-};
-
-export const ChangesCanBeDiscarded: Story = {
-  ...New,
-  play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true);
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'SelectAll',
-      'Optional fields available (7)'
-    )();
-    await _testsExpectFieldsCountToMatch(8, true);
-    await _testsClickButton({ label: 'DiscardChangesButton' });
+    await DraftIsSaved.play(args);
+    await _testsClickButton({ label: 'Reset' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(2, true);
+  },
+};
+
+export const BackButtonWorks: Story = {
+  ...Existing,
+  play: async () => {
+    await _testsClickButton({ label: 'Next' });
+    await _testsWaitForText('start');
+    await _testsClickButton({ label: 'Back' });
   },
 };
 
@@ -149,9 +98,9 @@ export const SubmittedDataAreCorrect: Story = {
     ...Existing.args,
   },
   play: async ({ args, ...rest }) => {
-    await FieldCanBeRemoved.play({ args, ...rest });
     await DraftIsSaved.play({ args, ...rest });
-    await _testsClickButton({ label: 'Submit' });
+    await _testsClickButton({ label: 'Next' });
+    await _testsClickButton({ label: 'Submit', wait: 10000 });
 
     await waitFor(
       () =>
