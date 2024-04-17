@@ -187,7 +187,7 @@
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
-      "<rootDir>/node_modules/(?!react-dnd|core-dnd|@react-dnd|dnd-core|react-dnd-html5-backend)",
+      "<rootDir>/node_modules/(?!react-dnd|core-dnd|@react-dnd|dnd-core|react-d3-tree|react-dnd-html5-backend)",
       "^.+\\.module\\.(css|sass|scss)$"
     ],
     "modulePaths": [],
