@@ -257,8 +257,10 @@ export function _testsSelectItemFromCollection(
 ) {
   return async () => {
     await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], {
-      timeout: 30000,
+      timeout: 10000,
     });
+
+    await sleep(500);
 
     await fireEvent.click(canvas.getAllByText(collectionLabel)[0]);
 
