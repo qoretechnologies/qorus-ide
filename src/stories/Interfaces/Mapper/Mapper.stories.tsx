@@ -18,6 +18,7 @@ import {
   _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -148,6 +149,7 @@ export const SubmittedDataAreCorrect: Story = {
     await FieldCanBeRemoved.play({ args, ...rest });
     await DraftIsSaved.play({ args, ...rest });
     await _testsClickButton({ label: 'Next' });
+    await sleep(1000);
     await _testsClickButton({ label: 'Submit', wait: 10000 });
 
     await waitFor(
