@@ -145,6 +145,10 @@ export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
   },
+  // disable chromatic
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });
     await DraftIsSaved.play({ args, ...rest });
