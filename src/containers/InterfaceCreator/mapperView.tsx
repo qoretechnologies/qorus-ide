@@ -137,7 +137,6 @@ const MapperView: FunctionComponent<IMapperViewProps> = ({
             interfaceIndex={interfaceIndex}
             submitLabel={t('Next')}
             context={interfaceContext}
-            disabledSubmit={inputsLoading || outputsLoading}
             onSubmit={() => {
               setShowMapperConnections(true);
             }}
