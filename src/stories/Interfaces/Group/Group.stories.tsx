@@ -66,6 +66,9 @@ export const Existing: Story = {
 
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsCreatorDraftSaveCheck();
   },
@@ -73,6 +76,9 @@ export const DraftIsSaved: Story = {
 
 export const FieldsAreFiltered: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await waitFor(
       () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
@@ -91,6 +97,9 @@ export const FieldsAreFiltered: Story = {
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async (args) => {
     await ClassStories.FieldCanBeRemoved.play({
       ...args,
@@ -102,6 +111,9 @@ export const FieldCanBeRemoved: Story = {
 
 export const FieldsCanBeAdded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(2, true);
     await _testsSelectItemFromDropdown(
@@ -121,6 +133,9 @@ export const FieldsCanBeAdded: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(2, true);
     await _testsSelectItemFromDropdown(
@@ -136,6 +151,9 @@ export const ChangesCanBeDiscarded: Story = {
 };
 
 export const SubmittedDataAreCorrect: Story = {
+  parameters: {
+    chromatic: { disable: true },
+  },
   args: {
     ...Existing.args,
   },

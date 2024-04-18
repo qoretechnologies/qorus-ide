@@ -79,6 +79,9 @@ export const ViewCode: Story = {
 
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsWaitForText('field-label-display_name');
 
@@ -93,6 +96,9 @@ export const DraftIsSaved: Story = {
 
 export const FieldsAreFiltered: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await waitFor(
       () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
@@ -111,6 +117,9 @@ export const FieldsAreFiltered: Story = {
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async ({ beforeCount, afterCount }) => {
     await _testsExpectFieldsCountToMatch(beforeCount ?? 7, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
@@ -121,6 +130,9 @@ export const FieldCanBeRemoved: Story = {
 
 export const FieldsCanBeAdded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
@@ -141,6 +153,9 @@ export const FieldsCanBeAdded: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
@@ -166,6 +181,9 @@ export const ConfigItemsAreLoaded: Story = {
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });

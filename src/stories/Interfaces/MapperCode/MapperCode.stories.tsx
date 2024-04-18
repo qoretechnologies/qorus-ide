@@ -76,6 +76,9 @@ export const ShowsMethods: Story = {
 
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsCreatorDraftSaveCheck();
   },
@@ -83,6 +86,9 @@ export const DraftIsSaved: Story = {
 
 export const FieldsAreFiltered: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await waitFor(
       () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
@@ -101,6 +107,9 @@ export const FieldsAreFiltered: Story = {
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(6, true, 'mapper-code');
     await _testsClickButton({ selector: '.creator-field-remove' });
@@ -111,6 +120,9 @@ export const FieldCanBeRemoved: Story = {
 
 export const FieldsCanBeAdded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
     await _testsSelectItemFromDropdown(
@@ -130,6 +142,9 @@ export const FieldsCanBeAdded: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
     await _testsSelectItemFromDropdown(
@@ -147,6 +162,9 @@ export const ChangesCanBeDiscarded: Story = {
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });

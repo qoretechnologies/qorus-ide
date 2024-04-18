@@ -64,6 +64,9 @@ export const Existing: Story = {
 
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async (args) => {
     await _testsWaitForText('field-label-display_name');
 
@@ -78,7 +81,8 @@ export const DraftIsSaved: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
-  play: async () => {
+  play: async (args) => {
+    await DraftIsSaved.play(args);
     await _testsExpectFieldsCountToMatch(6, true);
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
@@ -88,6 +92,9 @@ export const ChangesCanBeDiscarded: Story = {
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ args, ...rest }) => {
     await DraftIsSaved.play({ args, ...rest });

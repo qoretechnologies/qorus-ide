@@ -68,7 +68,7 @@ const preview: Preview = {
       },
     },
     chromatic: {
-      viewports: [800, 1440],
+      viewports: [1440],
       pauseAnimationAtEnd: true,
     },
   },

@@ -71,6 +71,9 @@ export const ViewCode: Story = {
 
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsCreatorDraftSaveCheck();
   },
@@ -78,6 +81,9 @@ export const DraftIsSaved: Story = {
 
 export const FieldsAreFiltered: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await waitFor(
       () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
@@ -96,6 +102,9 @@ export const FieldsAreFiltered: Story = {
 
 export const FieldCanBeRemoved: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(13, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
@@ -106,6 +115,9 @@ export const FieldCanBeRemoved: Story = {
 
 export const FieldsCanBeAdded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(5, true);
     await _testsSelectItemFromDropdown(
@@ -125,6 +137,9 @@ export const FieldsCanBeAdded: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsExpectFieldsCountToMatch(5, true);
     await _testsSelectItemFromDropdown(
@@ -141,6 +156,7 @@ export const ChangesCanBeDiscarded: Story = {
 
 export const ConfigItemsAreLoaded: Story = {
   ...New,
+
   play: async () => {
     await _testsClickButton({ label: 'Manage Configuration Items' });
     await _testsWaitForText('Global Item 10');
@@ -150,6 +166,9 @@ export const ConfigItemsAreLoaded: Story = {
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });

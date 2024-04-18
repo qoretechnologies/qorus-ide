@@ -61,8 +61,19 @@ export const Existing: Story = {
   },
 };
 
+export const ShowsDiagram: Story = {
+  ...Existing,
+  play: async () => {
+    await _testsClickButton({ label: 'Next' });
+    await _testsWaitForText('start');
+  },
+};
+
 export const DraftIsSaved: Story = {
   ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async () => {
     await _testsWaitForText('field-label-display_name');
 
@@ -77,6 +88,9 @@ export const DraftIsSaved: Story = {
 
 export const ChangesCanBeDiscarded: Story = {
   ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async (args) => {
     await DraftIsSaved.play(args);
     await _testsClickButton({ label: 'Reset' });
@@ -86,9 +100,8 @@ export const ChangesCanBeDiscarded: Story = {
 
 export const BackButtonWorks: Story = {
   ...Existing,
-  play: async () => {
-    await _testsClickButton({ label: 'Next' });
-    await _testsWaitForText('start');
+  play: async (args) => {
+    await ShowsDiagram.play(args);
     await _testsClickButton({ label: 'Back' });
   },
 };
@@ -96,6 +109,9 @@ export const BackButtonWorks: Story = {
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ args, ...rest }) => {
     await DraftIsSaved.play({ args, ...rest });
