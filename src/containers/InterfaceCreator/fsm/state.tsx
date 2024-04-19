@@ -50,6 +50,7 @@ export interface IFSMStateProps extends IFSMState {
   onDblClick: (id: string) => any;
   onClick: (id: string) => any;
   onDeleteClick: (id: string) => any;
+  onCloneClick?: (id: string) => any;
   onUpdate: (id: string, data: any) => any;
   onTransitionOrderClick: (id: string) => any;
   onNewStateClick: (id: string, branch?: IFSMTransition['branch']) => any;
@@ -57,7 +58,7 @@ export interface IFSMStateProps extends IFSMState {
   startTransitionDrag: (id: string) => any;
   stopTransitionDrag: (id: string) => any;
   selectedState?: number | string;
-  isAvailableForTransition: (stateId: string, id: string) => boolean;
+  isAvailableForTransition: (stateId: string, id: string) => Promise<boolean>;
   onExecutionOrderClick: () => void;
   id: string;
   isIsolated: boolean;
@@ -71,6 +72,8 @@ export interface IFSMStateProps extends IFSMState {
   isActive?: boolean;
   hoveredState?: string | number;
   isConnectedToHoveredState?: boolean;
+  onMouseEnter?: any;
+  onMouseLeave?: any;
 }
 
 export interface IFSMStateStyleProps {
@@ -108,14 +111,14 @@ export const getStateColor = (
     : 'info';
   return {
     colors: {
-      0: `${color}:darken:2`,
+      0: `${color}:darken:6`,
       50: `${color}:darken`,
-      100: `${color}:lighten`,
+      100: `${color}:lighten:3`,
     },
     borderColor: isInitial
-      ? 'success:lighten:2'
+      ? 'success:lighten:6'
       : stateType !== 'action'
-      ? '#6f1977:lighten:2'
+      ? '#6f1977:lighten:6'
       : 'info',
     animationSpeed: 1,
     direction: 'to right bottom',
@@ -263,6 +266,7 @@ const FSMState: React.FC<IFSMStateProps> = ({
   onClick,
   onDblClick,
   onDeleteClick,
+  onCloneClick,
   onTransitionOrderClick,
   onNewStateClick,
   name,
@@ -643,6 +647,18 @@ const FSMState: React.FC<IFSMStateProps> = ({
           {
             show: isInSelectedList ? false : 'hover',
             group: [
+              {
+                icon: 'FileCopyLine' as IReqoreIconName,
+                onMouseDown: (e) => {
+                  e?.stopPropagation();
+                  onCloneClick?.(id);
+                },
+                minimal: true,
+                flat: true,
+                size: 'small',
+                tooltip: 'Clone state',
+                show: !!onCloneClick && !is_event_trigger ? 'hover' : false,
+              },
               {
                 icon: 'DeleteBin4Fill' as IReqoreIconName,
                 onMouseDown: (e) => {

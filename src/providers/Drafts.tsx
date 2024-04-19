@@ -9,11 +9,16 @@ import { InitialContext } from '../context/init';
 import { MapperContext } from '../context/mapper';
 import { MethodsContext } from '../context/methods';
 import { StepsContext } from '../context/steps';
-import { callBackendBasic, getDraftId, getTargetFile } from '../helpers/functions';
+import {
+  callBackendBasic,
+  getDraftId,
+  getTargetFile,
+} from '../helpers/functions';
 
 export const DraftsProvider = ({ children }: any) => {
   const [draft, setDraft] = useState<IDraftData>(null);
-  const { setDraftData, draftData, changeTab, setLastDraft } = useContext(InitialContext);
+  const { setDraftData, draftData, changeTab, setLastDraft } =
+    useContext(InitialContext);
   const { setInterfaceId, setFieldsFromDraft } = useContext(FieldContext);
   const { setMethodsFromDraft } = useContext(MethodsContext);
   const { setStepsFromDraft } = useContext(StepsContext);
@@ -51,7 +56,11 @@ export const DraftsProvider = ({ children }: any) => {
 
         if (fetchedDraft.ok) {
           addDraft({ ...fetchedDraft.data });
-          changeTab('CreateInterface', fetchedDraft.data.type);
+          changeTab(
+            'CreateInterface',
+            fetchedDraft.data.type,
+            typeof id === 'number' ? id : undefined
+          );
           setDraftData(null);
         }
       })();

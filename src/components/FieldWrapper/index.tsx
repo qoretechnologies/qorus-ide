@@ -95,6 +95,7 @@ export const FieldWrapper = ({
 
   const removeButtonProps = {
     icon: 'DeleteBinLine',
+    className: 'creator-field-remove',
     intent: 'danger',
     tooltip: t('RemoveField'),
     onClick: () => {
@@ -112,9 +113,11 @@ export const FieldWrapper = ({
     return (
       <ReqorePanel
         size='small'
+        className='creator-field'
         flat
         padded={false}
         ref={ref}
+        transparent
         contentStyle={{
           display: 'flex',
           flexFlow: 'column',
@@ -162,7 +165,12 @@ export const FieldWrapper = ({
     <ReqorePanel
       label={label}
       minimal
+      className='creator-field'
       size='small'
+      flat
+      customTheme={{
+        main: 'main:darken:1:0.5',
+      }}
       responsiveTitle={false}
       collapsible={collapsible}
       icon='PriceTagLine'
@@ -184,7 +192,7 @@ export const FieldWrapper = ({
     >
       {info && (
         <>
-          <ReqoreMessage intent='info' size='small'>
+          <ReqoreMessage intent='info' size='small' opaque={false}>
             {info}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
@@ -209,7 +217,7 @@ export const ContentWrapper = styled.div`
   overflow-x: hidden;
   display: flex;
   flex-flow: column;
-  gap: 25px;
+  gap: 10px;
 
   > * {
     flex-shrink: 0 !important;

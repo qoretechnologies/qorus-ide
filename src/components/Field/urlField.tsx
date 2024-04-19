@@ -1,6 +1,6 @@
 import { ReqoreControlGroup } from '@qoretechnologies/reqore';
 import { size } from 'lodash';
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { InitialContext } from '../../context/init';
 import { fetchData } from '../../helpers/functions';

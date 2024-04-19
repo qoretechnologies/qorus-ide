@@ -1,7 +1,8 @@
-import { FunctionComponent } from 'react';
+import { useContext } from 'react';
 import { useMount } from 'react-use';
 import compose from 'recompose/compose';
-import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
+import { InitialContext } from '../../context/init';
+import { withIdChecker } from '../../hocomponents/withIdChecker';
 import withTextContext from '../../hocomponents/withTextContext';
 import ClassConnectionsStateProvider from '../ClassConnectionsStateProvider';
 import { ConnectionView } from './connection';
@@ -18,23 +19,23 @@ import WorkflowsView, { CreatorWrapper } from './workflowsView';
 
 export interface ICreateInterface {
   initialData: {
-    updateCurrentHistoryTab: (data: { [key: string]: any }) => void;
+    updateCurrentHistoryTab?: (data: { [key: string]: any }) => void;
     [key: string]: any;
   };
-  onSubmit: any;
+  onSubmit: () => any;
   onDelete?: () => any;
   context: any;
   data: any;
 }
 
-export const CreateInterface: FunctionComponent<ICreateInterface> = ({
-  initialData,
+export const CreateInterface = ({
   onSubmit,
   onDelete,
   data,
   context,
-}) => {
-  initialData = { ...initialData, ...data };
+}: ICreateInterface) => {
+  const init = useContext(InitialContext);
+  const initialData = { ...init, ...data };
 
   const getName: () => string = () =>
     initialData?.[initialData.subtab]?.name ||
@@ -70,6 +71,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
       version={getVersion()}
       data={initialData}
       onDelete={onDelete}
+      hasCode={!!initialData[initialData.subtab]?.source}
     >
       {initialData.subtab === 'fsm' && (
         <FSMView
@@ -83,6 +85,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
           context={context}
           onSubmitSuccess={onSubmit}
           isEditing={!!initialData.connection}
+          connection={initialData.connection}
         />
       )}
       {initialData.subtab === 'pipeline' && (
@@ -106,7 +109,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
       )}
       {initialData.subtab === 'mapper-code' && (
         <LibraryView
-          library={initialData.library}
+          library={initialData['mapper-code']}
           onSubmitSuccess={onSubmit}
           interfaceContext={context}
         />
@@ -174,6 +177,7 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
           onSubmitSuccess={onSubmit}
           interfaceContext={context}
           initialData={initialData}
+          data={initialData.mapper}
         />
       )}
       {initialData.subtab === 'group' && (
@@ -206,6 +210,16 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
           />
         </CreatorWrapper>
       )}
+      {initialData.subtab === 'sla' && (
+        <CreatorWrapper>
+          <InterfaceCreatorPanel
+            type={'sla'}
+            onSubmitSuccess={onSubmit}
+            data={initialData.sla}
+            isEditing={!!initialData.sla}
+          />
+        </CreatorWrapper>
+      )}
       {initialData.subtab === 'value-map' && (
         <CreatorWrapper>
           <InterfaceCreatorPanel
@@ -216,7 +230,9 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
           />
         </CreatorWrapper>
       )}
-      {initialData.subtab === 'type' && <TypeView onSubmitSuccess={onSubmit} />}
+      {initialData.subtab === 'type' && (
+        <TypeView onSubmitSuccess={onSubmit} initialData={initialData} />
+      )}
       {initialData.subtab === 'errors' && (
         <ErrorsView
           errors={initialData.errors}
@@ -228,7 +244,6 @@ export const CreateInterface: FunctionComponent<ICreateInterface> = ({
   );
 };
 
-export default compose(
-  withTextContext(),
-  withInitialDataConsumer()
-)(CreateInterface);
+export default compose(withTextContext(), withIdChecker())(CreateInterface) as (
+  props: ICreateInterface
+) => JSX.Element;

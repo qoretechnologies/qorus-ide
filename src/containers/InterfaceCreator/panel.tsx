@@ -1,7 +1,9 @@
+import Editor from '@monaco-editor/react';
+
 import {
   ReqoreDropdown,
   ReqoreInput,
-  ReqoreVerticalSpacer,
+  ReqorePanel,
 } from '@qoretechnologies/reqore';
 import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/Dropdown';
 import { IReqoreDropdownItemProps } from '@qoretechnologies/reqore/dist/components/Dropdown/item';
@@ -39,12 +41,14 @@ import compose from 'recompose/compose';
 import mapProps from 'recompose/mapProps';
 import withState from 'recompose/withState';
 import shortid from 'shortid';
+import { useContextSelector } from 'use-context-selector';
 import Content from '../../components/Content';
 import CustomDialog from '../../components/CustomDialog';
 import Field from '../../components/Field';
 import { allowedTypes } from '../../components/Field/arrayAuto';
 import {
   PositiveColorEffect,
+  QorusColorEffect,
   SaveColorEffect,
   SelectorColorEffect,
 } from '../../components/Field/multiPair';
@@ -63,9 +67,11 @@ import {
   IDraftsContext,
 } from '../../context/drafts';
 import { InitialContext } from '../../context/init';
+import { InterfacesContext } from '../../context/interfaces';
 import {
   mapFieldsToGroups,
   maybeSendOnChangeEvent,
+  subTypeToType,
 } from '../../helpers/common';
 import { deleteDraft, getDraftId } from '../../helpers/functions';
 import {
@@ -77,7 +83,7 @@ import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 import withMapperConsumer from '../../hocomponents/withMapperConsumer';
-import withMessageHandler, {
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
@@ -152,6 +158,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
 }) => {
   const isInitialMount = useRef(true);
   const [show, setShow] = useState<boolean>(false);
+  const [codeEditorVisible, setCodeEditorVisible] = useState<boolean>(false);
+  const [code, setCode] = useState<string>(data?.source);
   const [messageListener, setMessageListener] = useState(null);
   const [showConfigItemsManager, setShowConfigItemsManager] =
     useState<boolean>(false);
@@ -159,10 +167,20 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   const initialData = useContext(InitialContext);
   const { maybeApplyDraft, draft } = useContext<IDraftsContext>(DraftsContext);
   const originalData = useRef(data);
+  const categories = useContextSelector(
+    InterfacesContext,
+    (context) => context.categories
+  );
 
   useEffect(() => {
     originalData.current = data;
   }, [data]);
+
+  useEffect(() => {
+    if (data?.source) {
+      setCode(data.source);
+    }
+  }, [data?.source]);
 
   useUpdateEffect(() => {
     if (draft && show) {
@@ -205,7 +223,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     () => {
       const draftId = getDraftId(parentData || data, interfaceId);
 
-      if (draftId && type !== 'config-item') {
+      if ((draftId || draftId === 0) && type !== 'config-item') {
         (async () => {
           let hasAnyChanges;
 
@@ -251,7 +269,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   const updateDraft = async () => {
     const draftId = getDraftId(parentData || data, interfaceId);
 
-    if (!draftId) {
+    if (!draftId && draftId !== 0) {
       return;
     }
 
@@ -482,7 +500,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       // Remove the message listener if it exists
       messageListenerHandler();
     };
-  }, [activeId, interfaceId, initialInterfaceId, data]);
+  }, [activeId, interfaceId, initialInterfaceId, JSON.stringify(data)]);
 
   const resetLocalFields: (newActiveId?: number) => void = async (
     newActiveId
@@ -829,8 +847,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
   submit function.
   */
   const handleSubmitClick: () => void = async () => {
-    // File name
-    const fileName = getDraftId(parentData || data, interfaceId);
     // Set the value flag for all selected fields
     setSelectedFields(
       type,
@@ -860,9 +876,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     let result;
 
     if (!onSubmit || forceSubmit) {
-      // Delete the draft for this interface
-      deleteDraft(type, fileName, false);
-
       let newData: { [key: string]: any };
       // If this is service methods
       if (
@@ -962,10 +975,12 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           undefined,
           {
             iface_kind,
+            replace: isEditing,
             data: {
               ...data,
               ...newData,
               'class-connections': classConnectionsData,
+              source: code,
             },
             workflow,
             no_data_return: !!onSubmitSuccess,
@@ -986,11 +1001,14 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           undefined,
           {
             iface_kind,
+            replace: isEditing,
             data: {
               ...data,
               ...newData,
               'class-connections': classConnectionsData,
               default_value_true_type: true_type,
+              source: code,
+              id: interfaceId,
             },
             no_data_return: !!onSubmitSuccess,
           },
@@ -1000,12 +1018,10 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
       }
 
       if (result.ok) {
+        setInterfaceId(type, result.id, interfaceIndex);
         // We need to change the `orig_name` field to a new name
         //handleFieldChange('orig_name', newData.name);
-
-        if (onSubmitSuccess) {
-          onSubmitSuccess(newData);
-        }
+        onSubmitSuccess?.(newData);
         // If this is config item, reset only the fields
         // local fields will be unmounted
         if (type === 'config-item') {
@@ -1357,7 +1373,39 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     <>
       <Content
         title={'Fill in the details'}
+        responsiveTitle
+        className={`${type}-creator`}
+        responsiveActions={false}
         actions={[
+          {
+            as: ReqoreInput,
+            props: {
+              fixed: true,
+              pill: true,
+              fluid: false,
+              placeholder: t('FilterSelectedFields'),
+              value: selectedQuery,
+              onChange: (event: FormEvent<HTMLInputElement>) => {
+                setSelectedQuery(type, event.currentTarget.value);
+              },
+              icon: 'Search2Line',
+              intent: selectedQuery !== '' ? 'info' : 'muted',
+              onClearClick: () => setSelectedQuery(type, ''),
+            },
+          },
+          {
+            label: 'Edit code',
+            icon: 'CodeView',
+            show:
+              !codeEditorVisible &&
+              categories[subTypeToType(type)]?.supports_code,
+            tooltip: 'Edit the code for this interface',
+            active: codeEditorVisible,
+            effect: QorusColorEffect,
+            onClick: () => {
+              setCodeEditorVisible(!codeEditorVisible);
+            },
+          },
           {
             as: ReqoreDropdown,
             props: {
@@ -1371,6 +1419,9 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
                   type: 'auto',
                   viewportOnly: true,
                 },
+                className: 'q-select-input',
+                pill: true,
+                intent: 'muted',
               },
               items: [
                 {
@@ -1443,7 +1494,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
                 () => {
                   resetLocalFields(activeId);
                 },
-                'Discard changes',
+                'Confirm',
                 'warning'
               );
             },
@@ -1460,20 +1511,49 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
             position: 'right',
           },
         ]}
+        contentStyle={{ display: 'flex' }}
       >
-        <ReqoreInput
-          placeholder={t('FilterSelectedFields')}
-          value={selectedQuery}
-          onChange={(event: FormEvent<HTMLInputElement>) =>
-            setSelectedQuery(type, event.currentTarget.value)
-          }
-          icon={'Search2Line'}
-          intent={selectedQuery !== '' ? 'info' : undefined}
-          onClearClick={() => setSelectedQuery(type, '')}
-        />
-
-        <ReqoreVerticalSpacer height={10} />
         <ContentWrapper>{renderGroups(fieldsToRender)}</ContentWrapper>
+        {codeEditorVisible && (
+          <ReqorePanel
+            style={{ marginLeft: '10px', borderLeft: '1px dashed #444444' }}
+            flat
+            showHeaderTooltip={false}
+            size='small'
+            resizable={{
+              enable: { left: true },
+              defaultSize: { width: '30%', height: '100%' },
+            }}
+            label='Code Editor'
+            padded={false}
+            onClose={() => setCodeEditorVisible(false)}
+          >
+            <Editor
+              theme='vs-dark'
+              defaultLanguage={requestFieldData('language')}
+              language={requestFieldData('language')}
+              defaultValue={data?.source}
+              height='100%'
+              options={{
+                fontSize: 13,
+                minimap: {
+                  enabled: false,
+                },
+                suggest: {
+                  showWords: false,
+                },
+                padding: {
+                  top: 15,
+                },
+                scrollBeyondLastLine: false,
+                wordBasedSuggestions: false,
+                theme: 'vs-dark',
+              }}
+              value={code}
+              onChange={(val) => setCode(val || '')}
+            />
+          </ReqorePanel>
+        )}
       </Content>
       {showClassConnectionsManager &&
         hasClassConnections &&
@@ -1548,7 +1628,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
 export default compose(
   withInitialDataConsumer(),
   withTextContext(),
-  withMessageHandler(),
   withMethodsConsumer(),
   withGlobalOptionsConsumer(),
   withMapperConsumer(),

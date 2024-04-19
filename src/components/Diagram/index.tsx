@@ -18,7 +18,10 @@ import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
 import { validateField } from '../../helpers/validations';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
-import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 import CustomDialog from '../CustomDialog';
 import Field from '../Field';
@@ -250,7 +253,10 @@ class GraphBuilder {
    * @param startNode node from which to start searching
    * @param stepNodeId id of step node we want to find
    */
-  static findStepNodeById(startNode: StepNode, stepNodeId: number): StepNode | undefined {
+  static findStepNodeById(
+    startNode: StepNode,
+    stepNodeId: number
+  ): StepNode | undefined {
     if (startNode.id === stepNodeId) {
       return startNode;
     }
@@ -316,7 +322,10 @@ class GraphBuilder {
     while (assignLater.length > 0) {
       for (let i = 0; i < assignLater.length; ++i) {
         const item = assignLater[i];
-        const parentNode = GraphBuilder.findStepNodeById(rootNode, item.parentId);
+        const parentNode = GraphBuilder.findStepNodeById(
+          rootNode,
+          item.parentId
+        );
         if (parentNode !== undefined) {
           item.stepNode.parents.push(parentNode);
           if (!arrayContainsNode(parentNode.children, item.stepNode)) {
@@ -413,7 +422,9 @@ class GraphBuilder {
               newParentName = groupPrefix + parent.id.toString();
             } else {
               newParentName =
-                newParentName.substr(0, lastDash + 1) + groupPrefix + parent.id.toString();
+                newParentName.substr(0, lastDash + 1) +
+                groupPrefix +
+                parent.id.toString();
             }
             parent.sortName = newParentName;
             parentNames.push(newParentName);
@@ -436,11 +447,15 @@ class GraphBuilder {
    * @param rows rows of the graph
    * @param graphWidth width of the graph
    */
-  static assignBasePositionsToStepNodes(rows: Array<Array<StepNode>>, graphWidth: number) {
+  static assignBasePositionsToStepNodes(
+    rows: Array<Array<StepNode>>,
+    graphWidth: number
+  ) {
     for (let i = 0; i < rows.length; ++i) {
       const row = rows[i];
       const rowWidth =
-        row.length * BOX_WIDTH + (row.length > 1 ? (row.length - 1) * BOX_H_MARGIN : 0);
+        row.length * BOX_WIDTH +
+        (row.length > 1 ? (row.length - 1) * BOX_H_MARGIN : 0);
       const startX = (graphWidth - rowWidth) * 0.5;
       for (let j = 0; j < row.length; ++j) {
         row[j].x = startX + j * (BOX_WIDTH + BOX_H_MARGIN);
@@ -528,7 +543,8 @@ class GraphBuilder {
       for (const group of rowGroups) {
         for (let k = 0; k < group.nodes.length; ++k) {
           const node = group.nodes[k];
-          node.x = group.avgX - group.width * 0.5 + k * (BOX_WIDTH + BOX_H_MARGIN);
+          node.x =
+            group.avgX - group.width * 0.5 + k * (BOX_WIDTH + BOX_H_MARGIN);
           node.centerX = node.x + BOX_WIDTH * 0.5;
         }
       }
@@ -557,14 +573,20 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
   };
 
   renderGridPath(startX, startY, endX, endY) {
-    return <path fill="none" stroke="#0E5A8A" d={`M${startX},${startY} L${endX},${endY}`} />;
+    return (
+      <path
+        fill='none'
+        stroke='#0E5A8A'
+        d={`M${startX},${startY} L${endX},${endY}`}
+      />
+    );
   }
 
   renderGrid2PartPath(startX, startY, middleX, middleY, endX, endY) {
     return (
       <path
-        fill="none"
-        stroke="#0E5A8A"
+        fill='none'
+        stroke='#0E5A8A'
         d={`M${startX},${startY} L${middleX},${middleY} L${endX},${endY}`}
       />
     );
@@ -573,8 +595,8 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
   renderGrid3PartPath(aX, aY, bX, bY, cX, cY, dX, dY) {
     return (
       <path
-        fill="none"
-        stroke="#0E5A8A"
+        fill='none'
+        stroke='#0E5A8A'
         d={`M${aX},${aY} L${bX},${bY} L${cX},${cY} L${dX},${dY}`}
       />
     );
@@ -598,7 +620,18 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
       const endX = child.x + BOX_WIDTH * 0.5;
       const endY = child.y;
       const cY = endY - BOX_LINE_SHORT;
-      connections.push(this.renderGrid3PartPath(startX, startY, startX, bY, endX, cY, endX, endY));
+      connections.push(
+        this.renderGrid3PartPath(
+          startX,
+          startY,
+          startX,
+          bY,
+          endX,
+          cY,
+          endX,
+          endY
+        )
+      );
     }
     return connections;
   }
@@ -615,7 +648,18 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
       const endX = child.x + BOX_WIDTH * 0.5;
       const endY = child.y;
       const cY = endY - BOX_LINE_SHORT;
-      connections.push(this.renderGrid3PartPath(startX, startY, startX, bY, endX, cY, endX, endY));
+      connections.push(
+        this.renderGrid3PartPath(
+          startX,
+          startY,
+          startX,
+          bY,
+          endX,
+          cY,
+          endX,
+          endY
+        )
+      );
     }
     return connections;
   }
@@ -624,15 +668,25 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
     return (
       <g>
         {this.renderRootStepConnections(step)}
-        <g className={`diagram__box`} transform={this.getRootStepTransform(step)}>
-          <circle cx="0" cy="0" r={ROOT_CIRCLE_R} fill="#0E5A8A" />
+        <g
+          className={`diagram__box`}
+          transform={this.getRootStepTransform(step)}
+        >
+          <circle cx='0' cy='0' r={ROOT_CIRCLE_R} fill='#0E5A8A' />
         </g>
       </g>
     );
   }
 
   renderNormalStep(step) {
-    const { stepsData, steps, t, handleStepInsert, onStepRemove, onStepUpdate } = this.props;
+    const {
+      stepsData,
+      steps,
+      t,
+      handleStepInsert,
+      onStepRemove,
+      onStepUpdate,
+    } = this.props;
     const { highlightedSteps } = this.state;
     stepsData[step.id].sortName = step.sortName;
     return (
@@ -642,7 +696,7 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
             diagram__box: true,
           })}
           key={step.id}
-          fill="transparent"
+          fill='transparent'
           transform={this.getStepTransform(step)}
         >
           <rect {...this.getDefaultParams()} />
@@ -711,7 +765,7 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
           margin: 'auto',
         }}
       >
-        <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className="diagram">
+        <svg viewBox={`0 0 ${graphWidth} ${graphHeight}`} className='diagram'>
           {this.renderRows(rows)}
         </svg>
       </div>
@@ -813,7 +867,10 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
     return (
       <>
         {this.state.dialog && (
-          <StepDialog onClose={() => this.setState({ dialog: null })} {...this.state.dialog} />
+          <StepDialog
+            onClose={() => this.setState({ dialog: null })}
+            {...this.state.dialog}
+          />
         )}
         <ReqoreVerticalSpacer height={10} />
         {/* <Field
@@ -848,12 +905,12 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
         <ReqoreButton
           minimal
           fixed
-          textAlign="center"
+          textAlign='center'
           style={{
             margin: 'auto',
           }}
-          intent="info"
-          icon="AddLine"
+          intent='info'
+          icon='AddLine'
           onClick={() => this.handleAddStep(true, t('AddNewStepBefore'))}
         >
           {t('AddNewStepBefore')}
@@ -871,7 +928,11 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
             {this.renderGraph()}
           </div>
         ) : (
-          <ReqoreMessage title={t('DiagramIsEmpty')} icon="NodeTree" style={{ margin: 'auto' }}>
+          <ReqoreMessage
+            title={t('DiagramIsEmpty')}
+            icon='NodeTree'
+            style={{ margin: 'auto' }}
+          >
             {t('DiagramEmptyDescription')}
           </ReqoreMessage>
         )}
@@ -881,8 +942,8 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
           style={{
             margin: 'auto',
           }}
-          intent="info"
-          icon="AddLine"
+          intent='info'
+          icon='AddLine'
           onClick={() => this.handleAddStep(false, t('AddNewStepAfter'))}
         >
           {t('AddNewStepAfter')}
@@ -933,11 +994,14 @@ const StepDialog = ({ step, onClose, onSubmit, title, stepName, onDelete }) => {
         },
       ]}
     >
-      <FieldWrapper isValid={validateField('string', stepState)} collapsible={false}>
+      <FieldWrapper
+        isValid={validateField('string', stepState)}
+        collapsible={false}
+      >
         <Field
-          type="select-string"
+          type='select-string'
           onChange={(_name, value) => setStepState(value)}
-          name="step"
+          name='step'
           reference={{
             iface_kind: 'step',
             onDelete,
@@ -1015,7 +1079,8 @@ const StyledAddStepButton = styled.div<{ position: string }>`
 `;
 
 const StyledStep = styled(ReqoreButton)<{ isHighlighted?: boolean }>`
-  box-shadow: 0 0 ${({ isHighlighted }) => (isHighlighted ? 15 : 10)}px 0px #00000080;
+  box-shadow: 0 0 ${({ isHighlighted }) => (isHighlighted ? 15 : 10)}px 0px
+    #00000080;
   position: relative;
   width: 100%;
 
@@ -1054,19 +1119,22 @@ const StepBox = ({
 
   useEffect(() => {
     // Wait for the interface data message
-    const msgListener = addMessageListener(Messages.RETURN_INTERFACE_DATA, ({ data }) => {
-      if (
-        data.step &&
-        origStepData.name === data.step.name &&
-        origStepData.version == data.step.version
-      ) {
-        setStepData({
-          name: data.step.name,
-          version: data.step.version,
-          type: data.step['step-type'],
-        });
+    const msgListener = addMessageListener(
+      Messages.RETURN_INTERFACE_DATA,
+      ({ data }) => {
+        if (
+          data.step &&
+          origStepData.name === data.step.name &&
+          origStepData.version == data.step.version
+        ) {
+          setStepData({
+            name: data.step.name,
+            version: data.step.version,
+            type: data.step['step-type'],
+          });
+        }
       }
-    });
+    );
     // Ask for the interface data on every change to
     // this step
     postMessage(Messages.GET_INTERFACE_DATA, {
@@ -1133,7 +1201,8 @@ const StepBox = ({
     >
       {dialog && <StepDialog onClose={() => setDialog(null)} {...dialog} />}
       <StyledStep
-        name="workflow-diagram-step"
+        name='workflow-diagram-step'
+        className='workflow-step'
         theme={theme}
         flat={false}
         active={highlightedSteps.includes(stepId)}
@@ -1149,22 +1218,36 @@ const StepBox = ({
             data: [
               {
                 item: t('AddSequentialStepBefore'),
-                onClick: () => handleAddStep(event, true, false, t('AddSequentialStepBefore')),
+                onClick: () =>
+                  handleAddStep(
+                    event,
+                    true,
+                    false,
+                    t('AddSequentialStepBefore')
+                  ),
                 icon: 'ArrowUpLine',
               },
               {
                 item: t('AddSequentialStepAfter'),
-                onClick: () => handleAddStep(event, false, false, t('AddSequentialStepAfter')),
+                onClick: () =>
+                  handleAddStep(
+                    event,
+                    false,
+                    false,
+                    t('AddSequentialStepAfter')
+                  ),
                 icon: 'ArrowDownLine',
               },
               {
                 item: t('AddParallelStepBefore'),
-                onClick: () => handleAddStep(event, true, true, t('AddParallelStepBefore')),
+                onClick: () =>
+                  handleAddStep(event, true, true, t('AddParallelStepBefore')),
                 icon: 'ArrowLeftLine',
               },
               {
                 item: t('AddParallelStepAfter'),
-                onClick: () => handleAddStep(event, false, true, t('AddParallelStepAfter')),
+                onClick: () =>
+                  handleAddStep(event, false, true, t('AddParallelStepAfter')),
                 icon: 'ArrowRightLine',
               },
               {
@@ -1186,41 +1269,49 @@ const StepBox = ({
         }}
         onClick={() => handleClick()}
         description={t(stepData.type || '-')}
-        textAlign="center"
+        textAlign='center'
       >
         {stepData.name}:{stepData.version}
       </StyledStep>
       <StyledAddStepButton
-        position="top"
+        position='top'
         theme={theme}
-        onClick={(event) => handleAddStep(event, true, false, t('AddSequentialStepBefore'))}
+        onClick={(event) =>
+          handleAddStep(event, true, false, t('AddSequentialStepBefore'))
+        }
         name={`add-sequential-step-before-${stepData.name}`}
       >
-        <ReqoreIcon icon="AddLine" size="14px" color="#ffffff" />
+        <ReqoreIcon icon='AddLine' size='14px' color='#ffffff' />
       </StyledAddStepButton>
       <StyledAddStepButton
-        position="left"
+        position='left'
         theme={theme}
-        onClick={(event) => handleAddStep(event, true, true, t('AddParallelStepBefore'))}
+        onClick={(event) =>
+          handleAddStep(event, true, true, t('AddParallelStepBefore'))
+        }
         name={`add-parallel-step-before-${stepData.name}`}
       >
-        <ReqoreIcon icon="AddLine" size="14px" color="#ffffff" />
+        <ReqoreIcon icon='AddLine' size='14px' color='#ffffff' />
       </StyledAddStepButton>
       <StyledAddStepButton
-        position="bottom"
+        position='bottom'
         theme={theme}
-        onClick={(event) => handleAddStep(event, false, false, t('AddSequentialStepAfter'))}
+        onClick={(event) =>
+          handleAddStep(event, false, false, t('AddSequentialStepAfter'))
+        }
         name={`add-sequential-step-after-${stepData.name}`}
       >
-        <ReqoreIcon icon="AddLine" size="14px" color="#ffffff" />
+        <ReqoreIcon icon='AddLine' size='14px' color='#ffffff' />
       </StyledAddStepButton>
       <StyledAddStepButton
-        position="right"
+        position='right'
         theme={theme}
-        onClick={(event) => handleAddStep(event, false, true, t('AddParallelStepAfter'))}
+        onClick={(event) =>
+          handleAddStep(event, false, true, t('AddParallelStepAfter'))
+        }
         name={`add-parallel-step-after-${stepData.name}`}
       >
-        <ReqoreIcon icon="AddLine" size="14px" color="#ffffff" />
+        <ReqoreIcon icon='AddLine' size='14px' color='#ffffff' />
       </StyledAddStepButton>
     </div>
   );

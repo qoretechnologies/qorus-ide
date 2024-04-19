@@ -1,9 +1,9 @@
 import {
-    ReqoreButton,
-    ReqoreCollection,
-    ReqoreP,
-    ReqoreSpacer,
-    ReqoreVerticalSpacer,
+  ReqoreButton,
+  ReqoreCollection,
+  ReqoreP,
+  ReqoreSpacer,
+  ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
 import cloneDeep from 'lodash/cloneDeep';
@@ -102,10 +102,15 @@ const FSMListField: React.FC<IFSMListFieldProps> = ({
       <ReqoreCollection
         sortable
         filterable
+        minimal
         flat={false}
+        inputProps={{ pill: true, intent: 'muted' }}
         items={data.map(
           (datum, index): IReqoreCollectionItemProps => ({
             label: `Item ${index + 1}`,
+            padded: false,
+            minimal: true,
+            transparent: true,
             customTheme: { main: 'main:darken:1' },
             actions: [
               {
@@ -119,7 +124,9 @@ const FSMListField: React.FC<IFSMListFieldProps> = ({
               <>
                 <Select
                   key={`fsm-${index}`}
-                  onChange={(_name, value) => updateFSMData(index, 'name', value)}
+                  onChange={(_name, value) =>
+                    updateFSMData(index, 'name', value)
+                  }
                   name={`fsm-${index}`}
                   description={t('FiniteStateMachine')}
                   value={datum.name}
@@ -155,9 +162,9 @@ const FSMListField: React.FC<IFSMListFieldProps> = ({
       <ReqoreButton
         onClick={() => setData((cur) => [...cur, { name: null, triggers: [] }])}
         fluid
-        rightIcon="AddLine"
-        intent="info"
-        icon="AddLine"
+        rightIcon='AddLine'
+        intent='info'
+        icon='AddLine'
       >
         {t('AddNew')}
       </ReqoreButton>

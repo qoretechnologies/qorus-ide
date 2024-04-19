@@ -23,14 +23,22 @@ export const Type: StoryObj<typeof meta> = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('type'));
 
-    await waitFor(() => expect(document.querySelectorAll('.provider-selector').length).toBe(1), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll('.provider-selector').length).toBe(1),
+      {
+        timeout: 10000,
+      }
+    );
     await _testsSelectItemFromDropdown(canvas, 'qore')();
-    await waitFor(() => expect(document.querySelectorAll('.provider-selector').length).toBe(2), {
-      timeout: 10000,
-    });
-    await _testsSelectItemFromCollection(canvas, 'hash')();
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll('.provider-selector').length).toBe(2),
+      {
+        timeout: 10000,
+      }
+    );
+    await _testsSelectItemFromCollection(canvas, '/qore/hash')();
     await sleep(500);
   },
 };
@@ -45,16 +53,26 @@ export const Event: StoryObj<typeof meta> = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
-    await waitFor(() => expect(document.querySelector('.provider-selector')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(
+          document.querySelector('.provider-selector')
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
 
     await fireEvent.click(document.querySelector('.provider-selector'));
     await fireEvent.click(canvas.getAllByText('wsclient')[0]);
 
-    await waitFor(() => expect(document.querySelector('.system-option')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelector('.system-option')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
     await fireEvent.change(document.querySelector('.system-option textarea'), {
       target: {
         value: 'wss://sandbox:sandbox@sandbox.qoretechnologies.com/apievents',
@@ -83,16 +101,26 @@ export const Message: StoryObj<typeof meta> = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
-    await waitFor(() => expect(document.querySelector('.provider-selector')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(
+          document.querySelector('.provider-selector')
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
 
     await fireEvent.click(document.querySelector('.provider-selector'));
     await fireEvent.click(canvas.getAllByText('wsclient')[0]);
 
-    await waitFor(() => expect(document.querySelector('.system-option')).toBeInTheDocument(), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelector('.system-option')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
 
     await fireEvent.change(document.querySelector('.system-option textarea'), {
       target: {
@@ -110,8 +138,12 @@ export const Message: StoryObj<typeof meta> = {
 
     await waitFor(
       async () => {
-        await expect(document.querySelector('.provider-message-selector')).toBeInTheDocument();
-        await fireEvent.click(document.querySelector('.provider-message-selector'));
+        await expect(
+          document.querySelector('.provider-message-selector')
+        ).toBeInTheDocument();
+        await fireEvent.click(
+          document.querySelector('.provider-message-selector')
+        );
       },
       { timeout: 10000 }
     );
@@ -127,10 +159,15 @@ export const Message: StoryObj<typeof meta> = {
 
     await waitFor(
       async () => {
-        await expect(document.querySelector('.provider-message-data textarea')).toBeInTheDocument();
-        await fireEvent.change(document.querySelector('.provider-message-data textarea'), {
-          target: { value: 'Hello World' },
-        });
+        await expect(
+          document.querySelector('.provider-message-data textarea')
+        ).toBeInTheDocument();
+        await fireEvent.change(
+          document.querySelector('.provider-message-data textarea'),
+          {
+            target: { value: 'Hello World' },
+          }
+        );
       },
       { timeout: 10000 }
     );
@@ -147,25 +184,37 @@ export const ApiCall: StoryObj<typeof meta> = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
-    await waitFor(() => expect(document.querySelectorAll('.provider-selector').length).toBe(1), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll('.provider-selector').length).toBe(1),
+      {
+        timeout: 10000,
+      }
+    );
 
     await fireEvent.click(document.querySelector('.provider-selector'));
     await fireEvent.click(canvas.getAllByText('qorus-api')[0]);
 
-    await waitFor(() => expect(document.querySelectorAll('.provider-selector').length).toBe(2), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll('.provider-selector').length).toBe(2),
+      {
+        timeout: 10000,
+      }
+    );
 
     await sleep(1500);
 
     await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
     await fireEvent.click(canvas.getAllByText('Util')[0]);
 
-    await waitFor(() => expect(document.querySelectorAll('.provider-selector').length).toBe(3), {
-      timeout: 10000,
-    });
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll('.provider-selector').length).toBe(3),
+      {
+        timeout: 10000,
+      }
+    );
 
     await sleep(1500);
 
@@ -229,8 +278,12 @@ export const ExistingFavorites: StoryObj<typeof meta> = {
     },
   },
   play: async () => {
-    await fireEvent.click(document.querySelector('.data-provider-show-favorites'));
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(1);
+    await fireEvent.click(
+      document.querySelector('.data-provider-show-favorites')
+    );
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(1);
   },
 };
 
@@ -260,9 +313,15 @@ export const SelectedFavorite: StoryObj<typeof meta> = {
     },
   },
   play: async () => {
-    await fireEvent.click(document.querySelector('.data-provider-show-favorites'));
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(1);
-    await fireEvent.click(document.querySelector('.data-provider-favorite-apply'));
+    await fireEvent.click(
+      document.querySelector('.data-provider-show-favorites')
+    );
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(1);
+    await fireEvent.click(
+      document.querySelector('.data-provider-favorite-apply')
+    );
   },
 };
 
@@ -355,7 +414,11 @@ export const MultipleFavorites: StoryObj<typeof meta> = {
     },
   },
   play: async () => {
-    await fireEvent.click(document.querySelector('.data-provider-show-favorites'));
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(4);
+    await fireEvent.click(
+      document.querySelector('.data-provider-show-favorites')
+    );
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(4);
   },
 };

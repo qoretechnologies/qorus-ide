@@ -2,7 +2,7 @@ import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/D
 import { IReqoreDropdownItem } from '@qoretechnologies/reqore/dist/components/Dropdown/list';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { IReqoreNotificationData } from '@qoretechnologies/reqore/dist/containers/ReqoreProvider';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
 import isBoolean from 'lodash/isBoolean';
@@ -40,7 +40,6 @@ import {
 } from '../hocomponents/withMessageHandler';
 import { IQorusTypeObject } from '../hooks/useQorusTypes';
 import { isStateValid } from './fsm';
-const md5 = require('md5');
 
 const functionOrStringExp: Function = (
   item: Function | string,
@@ -519,6 +518,11 @@ const doFetchData = async (
       Authorization: `Bearer ${apiToken}`,
     },
     body: JSON.stringify(body),
+  }).catch((error) => {
+    return new Response(JSON.stringify({}), {
+      status: 500,
+      statusText: `Request failed ${error.message}`,
+    });
   });
 };
 
@@ -548,10 +552,9 @@ export const fetchData: (
     }
 
     const requestData = await fetchCall;
-    const json = await requestData.json();
 
-    if (cache) {
-      fetchCache[cacheKey].data = json;
+    if (requestData.status === 401) {
+      window.location.href = '/?next=' + window.location.pathname;
     }
 
     if (!requestData.ok) {
@@ -559,10 +562,17 @@ export const fetchData: (
 
       return {
         action: 'fetch-data-complete',
-        data: json,
+        data: null,
         ok: false,
-        error: json,
+        code: requestData.status,
+        error: requestData.statusText,
       };
+    }
+
+    const json = await requestData.json();
+
+    if (cache) {
+      fetchCache[cacheKey].data = json;
     }
 
     return {
@@ -573,7 +583,7 @@ export const fetchData: (
     };
   } else {
     // We need to wait for the call to finish and the data to be available
-    while (!fetchCache[cacheKey].data) {
+    while (!fetchCache[cacheKey]?.data) {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
@@ -635,7 +645,7 @@ export const getDraftId = (
   data: IQorusInterface['data'],
   interfaceId?: string
 ) => {
-  return data?.id || interfaceId;
+  return data?.id ?? interfaceId;
 };
 
 export const filterTemplatesByType = (

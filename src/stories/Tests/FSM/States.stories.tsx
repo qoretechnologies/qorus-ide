@@ -3,6 +3,7 @@ import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { size, upperFirst } from 'lodash';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import { NewExpression } from '../../Components/ExpressionBuilder.stories';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
@@ -23,6 +24,11 @@ import { NewVariableState } from './Variables.stories';
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/New states',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -117,7 +123,7 @@ export const NewMapperState: StoryFSM = {
     // Submit the state
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await waitFor(() =>
-      expect(canvas.getAllByText('bb-test-db-step').length).toBe(4)
+      expect(canvas.getAllByText('bb-test-db-step').length).toBe(2)
     );
     await _testsQodexCanBePublished();
   },
@@ -136,7 +142,7 @@ export const NewPipelineState: StoryFSM = {
     // Submit the state
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await waitFor(() =>
-      expect(canvas.getAllByText('factory-test').length).toBe(4)
+      expect(canvas.getAllByText('factory-test').length).toBe(2)
     );
     await _testsQodexCanBePublished();
   },
@@ -189,7 +195,7 @@ export const NewFSMState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
 
     await waitFor(() =>
-      expect(canvas.getAllByText('fsm-event-test').length).toBe(5)
+      expect(canvas.getAllByText('fsm-event-test').length).toBe(3)
     );
     await _testsQodexCanBePublished();
   },

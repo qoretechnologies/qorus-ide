@@ -210,7 +210,7 @@ export async function _testsAddNewVariableState(
 }
 
 export function _testsSelectItemFromDropdown(
-  canvas,
+  canvas = screen,
   itemLabel: string | number,
   dropdownLabel: string = 'PleaseSelect',
   className?: string
@@ -226,13 +226,13 @@ export function _testsSelectItemFromDropdown(
       );
       await fireEvent.click(document.querySelectorAll(className)[0]);
     } else {
-      await waitFor(async () => await canvas.getAllByText(dropdownLabel)[0], {
+      await waitFor(async () => await canvas.queryAllByText(dropdownLabel)[0], {
         timeout: 10000,
       });
       // HOW TO GET RID OF THIS SLEEP?????????????
       await sleep(100);
 
-      await fireEvent.click(canvas.getAllByText(dropdownLabel)[0]);
+      await fireEvent.click(canvas.queryAllByText(dropdownLabel)[0]);
     }
 
     await waitFor(
@@ -243,10 +243,10 @@ export function _testsSelectItemFromDropdown(
       }
     );
 
-    await waitFor(async () => await canvas.getAllByText(itemLabel)[1], {
+    await waitFor(async () => await canvas.getAllByText(itemLabel)[0], {
       timeout: 10000,
     });
-    await fireEvent.click(canvas.getAllByText(itemLabel)[1]);
+    await fireEvent.click(canvas.getAllByText(itemLabel)[0]);
   };
 }
 
@@ -257,10 +257,12 @@ export function _testsSelectItemFromCollection(
 ) {
   return async () => {
     await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], {
-      timeout: 30000,
+      timeout: 10000,
     });
 
-    await fireEvent.click(canvas.getAllByText(collectionLabel)[1]);
+    await sleep(500);
+
+    await fireEvent.click(canvas.getAllByText(collectionLabel)[0]);
 
     await waitFor(
       () =>
@@ -373,6 +375,18 @@ export async function _testsConfirmDialog() {
   await sleep(200);
 }
 
+export async function _testsCloneState(name: string) {
+  await _testsClickState(name);
+  await waitFor(
+    () => expect(document.querySelector('.state-clone-button')).toBeEnabled(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('.state-clone-button'));
+  await sleep(200);
+}
+
 export async function _testsDeleteState(name: string) {
   await _testsClickState(name);
   await waitFor(
@@ -385,6 +399,21 @@ export async function _testsDeleteState(name: string) {
     }
   );
   await fireEvent.click(document.querySelector('.state-delete-button'));
+  await sleep(200);
+  await _testsConfirmDialog();
+}
+
+export async function _testsDeleteMultipleStates() {
+  await waitFor(
+    () =>
+      expect(
+        document.querySelector('#delete-multiple-states')
+      ).toBeInTheDocument(),
+    {
+      timeout: 5000,
+    }
+  );
+  await fireEvent.click(document.querySelector('#delete-multiple-states'));
   await sleep(200);
   await _testsConfirmDialog();
 }
@@ -474,4 +503,87 @@ export async function _testsOpenTemplates() {
       ).toBeInTheDocument(),
     { timeout: 10000 }
   );
+}
+
+export async function _testsWaitForText(text: string, selector?: string) {
+  await waitFor(
+    () =>
+      expect(screen.queryAllByText(text, { selector })[0]).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
+}
+
+export async function _testsCreatorViewCode() {
+  const canvas = screen;
+  await waitFor(
+    () => expect(canvas.queryAllByText('Edit code')[0]).toBeInTheDocument(),
+    { timeout: 5000 }
+  );
+  await fireEvent.click(canvas.queryAllByText('Edit code')[0]);
+  await waitFor(
+    () => expect(canvas.queryAllByText('Code Editor')[0]).toBeInTheDocument(),
+    { timeout: 5000 }
+  );
+}
+
+export async function _testsCreatorDraftSaveCheck() {
+  await _testsWaitForText('field-label-display_name');
+
+  await fireEvent.change(
+    document.querySelector('.creator-field .reqore-input'),
+    { target: { value: 'Test' } }
+  );
+
+  await _testsWaitForText('DraftSaved just now');
+}
+
+export async function _testsExpectFieldsCountToMatch(
+  count: number,
+  wait?: boolean,
+  type?: string
+) {
+  const selector = type ? `.${type}-creator .creator-field` : '.creator-field';
+
+  if (wait) {
+    await waitFor(
+      () => expect(document.querySelectorAll(selector)).toHaveLength(count),
+      {
+        timeout: 5000,
+      }
+    );
+  } else {
+    await expect(document.querySelectorAll(selector)).toHaveLength(count);
+  }
+}
+
+export async function _testsClickButton({
+  label,
+  selector,
+  nth = 0,
+  wait = 5000,
+}: {
+  label?: string;
+  selector?: string;
+  nth?: number;
+  wait?: number;
+}) {
+  if (!label) {
+    await waitFor(
+      () =>
+        expect(document.querySelectorAll(selector)[nth]).toBeInTheDocument(),
+      { timeout: wait }
+    );
+    await fireEvent.click(document.querySelectorAll(selector)[nth]);
+  } else {
+    await waitFor(
+      () =>
+        expect(
+          screen.queryAllByText(label, { selector })[nth]
+        ).toBeInTheDocument(),
+      { timeout: wait }
+    );
+    await fireEvent.click(screen.queryAllByText(label, { selector })[nth]);
+  }
 }

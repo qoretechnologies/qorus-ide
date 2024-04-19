@@ -22,38 +22,40 @@ import styled from 'styled-components';
 import Content from '../../../components/Content';
 import Field from '../../../components/Field';
 import ConnectorField from '../../../components/Field/connectors';
-import FileString from '../../../components/Field/fileString';
 import { NegativeColorEffect } from '../../../components/Field/multiPair';
 import MultiSelect from '../../../components/Field/multiSelect';
 import String from '../../../components/Field/string';
 import Options from '../../../components/Field/systemOptions';
+import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { InputOutputType } from '../../../components/InputOutputType';
 import Loader from '../../../components/Loader';
 import { Messages } from '../../../constants/messages';
-import { ContextMenuContext } from '../../../context/contextMenu';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
 import { GlobalContext } from '../../../context/global';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
 import {
   checkPipelineCompatibility,
-  deleteDraft,
   getDraftId,
   hasValue,
 } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
-import withMessageHandler, { TPostMessage } from '../../../hocomponents/withMessageHandler';
+import { postMessage } from '../../../hocomponents/withMessageHandler';
 import TinyGrid from '../../../images/graphy-dark.png';
-import { backControl, nextControl, resetControl, submitControl } from '../controls';
+import {
+  backControl,
+  nextControl,
+  resetControl,
+  submitControl,
+} from '../controls';
 import { StyledCompatibilityLoader } from '../fsm';
 import PipelineElementDialog from './elementDialog';
 
 export interface IPipelineViewProps {
   onSubmitSuccess: (data: any) => any;
   setPipelineReset: (func: any) => void;
-  postMessage: TPostMessage;
 }
 
 export interface IPipelineProcessor {
@@ -73,12 +75,16 @@ export interface IPipelineQueue {
   elements: IPipelineElement[];
 }
 
-export type IPipelineElement = IPipelineQueue | IPipelineProcessor | IPipelineMapper;
+export type IPipelineElement =
+  | IPipelineQueue
+  | IPipelineProcessor
+  | IPipelineMapper;
 
 export interface IPipelineMetadata {
-  target_dir: string;
-  name: string;
+  name?: string;
+  display_name: string;
   desc: string;
+  short_desc?: string;
   options?: { [key: string]: any };
   groups?: any;
   'input-provider': any;
@@ -92,35 +98,44 @@ const StyledDiagramWrapper = styled.div<{ path: string }>`
   background: ${({ theme }) => `${theme.main} url(${TinyGrid})`};
   overflow: hidden;
   border-radius: 7px;
-`;
 
-const StyledNodeLabel = styled.div<{ isValid?: boolean }>`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-flow: column;
-
-  background-color: ${({ isValid }) => (isValid === false ? '#d13913' : 'transparent')};
-
-  span {
-    text-align: center;
+  .rd3t-link {
+    stroke: #d7d7d7;
   }
 `;
 
-const NodeLabel = ({ nodeData, onEditClick, onDeleteClick, onAddClick, onAddQueueClick }) => {
-  const { addMenu } = useContext(ContextMenuContext);
+const StyledNodeWrapper = styled(ReqoreControlGroup)`
+  * {
+    position: unset !important;
+    transition: unset !important;
+    transform: unset !important;
+  }
+`;
+
+const NodeLabel = ({
+  onEditClick,
+  onDeleteClick,
+  onAddClick,
+  onAddQueueClick,
+  ...rest
+}) => {
+  const nodeData = rest.nodeData?.nodeDatum;
   const t = useContext(TextContext);
 
-  const hasOnlyQueues = nodeData.children?.every((child) => child.type === 'queue');
+  const hasOnlyQueues = size(nodeData.children)
+    ? nodeData.children?.every((child) => child.type === 'queue')
+    : false;
 
   return (
-    <ReqoreControlGroup vertical stack style={{ margin: 'auto', width: '300px' }} fluid>
+    <StyledNodeWrapper vertical stack fluid>
       <ReqoreButton
         wrap
         intent={
-          nodeData.type === 'start' ? 'success' : nodeData.type === 'queue' ? 'info' : undefined
+          nodeData.type === 'start'
+            ? 'success'
+            : nodeData.type === 'queue'
+            ? 'info'
+            : undefined
         }
         icon={
           nodeData.type === 'start'
@@ -153,32 +168,26 @@ const NodeLabel = ({ nodeData, onEditClick, onDeleteClick, onAddClick, onAddQueu
               }
             : undefined
         }
-        // tooltip={
-        //   nodeData.type !== 'start' && nodeData.type !== 'queue'
-        //     ? {
-        //         useTargetWidth: true,
-        //         content: (
-        //           <InputOutputType
-        //             inputProvider={{ interfaceName: nodeData.name, interfaceKind: nodeData.type }}
-        //             outputProvider={{ interfaceName: nodeData.name, interfaceKind: nodeData.type }}
-        //             compact
-        //           />
-        //         ),
-        //       }
-        //     : undefined
-        // }
-        maxWidth="350px"
-        onClick={nodeData.type === 'start' ? undefined : () => onEditClick({ nodeData })}
-        badge={nodeData.type !== 'start' && nodeData.type !== 'queue' ? nodeData.type : undefined}
-        textAlign="center"
+        maxWidth='350px'
+        onClick={
+          nodeData.type === 'start'
+            ? undefined
+            : () => onEditClick({ nodeData })
+        }
+        badge={
+          nodeData.type !== 'start' && nodeData.type !== 'queue'
+            ? nodeData.type
+            : undefined
+        }
+        textAlign='center'
       >
         {nodeData.name || nodeData.type}
       </ReqoreButton>
       {hasOnlyQueues || !size(nodeData.children) ? (
         <ReqoreButton
-          icon="AddLine"
-          textAlign="center"
-          rightIcon="AddLine"
+          icon='AddLine'
+          textAlign='center'
+          rightIcon='AddLine'
           onClick={() => {
             if (hasOnlyQueues) {
               onAddQueueClick({
@@ -198,19 +207,22 @@ const NodeLabel = ({ nodeData, onEditClick, onDeleteClick, onAddClick, onAddQueu
           }}
           customTheme={{
             main: `${
-              nodeData.type === 'start' ? 'success' : nodeData.type === 'queue' ? 'info' : 'main'
+              nodeData.type === 'start'
+                ? 'success'
+                : nodeData.type === 'queue'
+                ? 'info'
+                : 'main'
             }:lighten`,
           }}
         >
           {hasOnlyQueues ? t('AddQueue') : t('AddElement')}
         </ReqoreButton>
       ) : null}
-    </ReqoreControlGroup>
+    </StyledNodeWrapper>
   );
 };
 
 const PipelineView: React.FC<IPipelineViewProps> = ({
-  postMessage,
   setPipelineReset,
   onSubmitSuccess,
   interfaceContext,
@@ -245,7 +257,10 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       newItem.path = `${path}[${index}]`;
 
       if (item.children) {
-        newItem.children = transformNodeData(newItem.children, `${newItem.path}.children`);
+        newItem.children = transformNodeData(
+          newItem.children,
+          `${newItem.path}.children`
+        );
       }
 
       return [...newData, newItem];
@@ -255,20 +270,29 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
   const wrapperRef = useRef(null);
   const t = useContext(TextContext);
   const theme = useReqoreTheme();
-  const { image_path, confirmAction, callBackend, qorus_instance, saveDraft, ...init } =
-    useContext(InitialContext);
+  const {
+    image_path,
+    confirmAction,
+    callBackend,
+    qorus_instance,
+    saveDraft,
+    ...init
+  } = useContext(InitialContext);
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const pipeline = rest?.pipeline || init?.pipeline;
   const { resetAllInterfaceData } = useContext(GlobalContext);
   const changeHistory = useRef<string[]>([]);
   const currentHistoryPosition = useRef<number>(-1);
-  const [compatibilityChecked, setCompatibilityChecked] = useState<boolean>(false);
-  const [selectedElement, setSelectedElement] = useState<IPipelineElement | null>(null);
+  const [compatibilityChecked, setCompatibilityChecked] =
+    useState<boolean>(false);
+  const [selectedElement, setSelectedElement] =
+    useState<IPipelineElement | null>(null);
   const [interfaceId, setInterfaceId] = useState(null);
   const [isDiagramShown, setIsDiagramShown] = useState(false);
   const [isFromDraft, setIsFromDraft] = useState(false);
   const [metadata, setMetadata] = useState<IPipelineMetadata>({
-    target_dir: pipeline?.target_dir || interfaceContext?.target_dir || null,
+    display_name: pipeline?.display_name || null,
+    short_desc: pipeline?.short_desc || null,
     name: pipeline?.name || null,
     desc: pipeline?.desc || null,
     groups: pipeline?.groups || [],
@@ -379,7 +403,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
         : true;
       if (
         draftId &&
-        (hasValue(metadata.target_dir) ||
+        (hasValue(metadata.display_name) ||
+          hasValue(metadata.short_desc) ||
           hasValue(metadata.desc) ||
           hasValue(metadata.name) ||
           size(metadata.groups) ||
@@ -419,7 +444,10 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
 
   const isDiagramValid = (data, isDefValid = true) => {
     return data.reduce((isValid, item) => {
-      if ((item.type === 'queue' || item.type === 'start') && size(item.children) === 0) {
+      if (
+        (item.type === 'queue' || item.type === 'start') &&
+        size(item.children) === 0
+      ) {
         isValid = false;
       }
 
@@ -444,7 +472,9 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       }
 
       if (size(metadata['input-provider-options'])) {
-        if (!validateField('system-options', metadata['input-provider-options'])) {
+        if (
+          !validateField('system-options', metadata['input-provider-options'])
+        ) {
           return false;
         }
       }
@@ -454,11 +484,15 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       (fields ? true : isDiagramValid(data)) &&
       validateField('string', metadata.name) &&
       validateField('string', metadata.desc) &&
-      validateField('string', metadata.target_dir)
+      validateField('string', metadata.display_name) &&
+      validateField('string', metadata.short_desc)
     );
   };
 
-  const handleMetadataChange: (name: string, value: any) => void = (name, value) => {
+  const handleMetadataChange: (name: string, value: any) => void = (
+    name,
+    value
+  ) => {
     setMetadata((cur) => ({
       ...cur,
       [name]: value,
@@ -499,6 +533,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
     );
 
     if (result.ok) {
+      setInterfaceId(result.id);
+
       if (onSubmitSuccess) {
         onSubmitSuccess({
           ...metadata,
@@ -506,10 +542,6 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
           children: elements[0].children,
         });
       }
-      const fileName = getDraftId(pipeline, interfaceId);
-      deleteDraft('pipeline', fileName, false);
-      reset();
-      resetAllInterfaceData('pipeline');
     }
   };
 
@@ -534,7 +566,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       setMetadata({
         name: null,
         desc: null,
-        target_dir: null,
+        display_name: null,
+        short_desc: null,
         groups: [],
         'input-provider': null,
         'input-provider-options': null,
@@ -543,7 +576,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       setMetadata({
         name: pipeline?.name,
         desc: pipeline?.desc,
-        target_dir: pipeline?.target_dir,
+        display_name: pipeline?.display_name,
+        short_desc: pipeline?.short_desc,
         groups: pipeline?.groups || [],
         'input-provider': pipeline?.['input-provider'],
         'input-provider-options': pipeline?.['input-provider-options'],
@@ -611,7 +645,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
 
   if (!qorus_instance) {
     return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent="warning">
+      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
         {t('NoInstance')}
       </ReqoreMessage>
     );
@@ -628,11 +662,11 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
         <ReqoreDrawer
           isOpen
           label={t('ManagePipeElement')}
-          position="right"
+          position='right'
           hidable
           flat={false}
           floating
-          minSize="40vw"
+          minSize='40vw'
           hasBackdrop={false}
           onClose={() => setSelectedElement(null)}
           contentStyle={{
@@ -640,7 +674,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
             flexFlow: 'column',
             overflow: 'hidden',
           }}
-          size="50vw"
+          size='50vw'
           actions={[
             {
               label: t('Delete element'),
@@ -658,7 +692,11 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
             fill
             fillParent
             tabs={[
-              { label: 'Configuration', id: 'configuration', icon: 'SettingsLine' },
+              {
+                label: 'Configuration',
+                id: 'configuration',
+                icon: 'SettingsLine',
+              },
               {
                 label: 'Info',
                 id: 'info',
@@ -667,12 +705,12 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               },
             ]}
             activeTab={'configuration'}
-            tabsPadding="vertical"
+            tabsPadding='vertical'
             padded={false}
-            activeTabIntent="info"
+            activeTabIntent='info'
             style={{ overflow: 'hidden' }}
           >
-            <ReqoreTabsContent tabId="info">
+            <ReqoreTabsContent tabId='info'>
               <InputOutputType
                 inputProvider={{
                   interfaceName: selectedElement.nodeData.name,
@@ -684,7 +722,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
                 }}
               />
             </ReqoreTabsContent>
-            <ReqoreTabsContent tabId="configuration">
+            <ReqoreTabsContent tabId='configuration'>
               <PipelineElementDialog
                 key={selectedElement.nodeData.name}
                 data={selectedElement.nodeData}
@@ -706,7 +744,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               () => {
                 reset();
               },
-              'Reset',
+              'Confirm',
               'warning'
             );
           }),
@@ -726,52 +764,66 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
             display: isDiagramShown ? 'none' : 'flex',
           }}
         >
+          <FieldGroup>
+            <FieldWrapper
+              name='selected-field'
+              isValid={validateField('string', metadata.display_name)}
+              label={t('field-label-display_name')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.display_name}
+                name='display_name'
+                autoFocus
+              />
+            </FieldWrapper>
+            <FieldWrapper
+              name='selected-field'
+              isValid
+              label={t('field-label-name')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.name}
+                name='name'
+              />
+            </FieldWrapper>
+            <FieldWrapper
+              name='selected-field'
+              isValid
+              label={t('field-label-short_desc')}
+              compact
+            >
+              <String
+                onChange={handleMetadataChange}
+                value={metadata.short_desc}
+                name='short_desc'
+              />
+            </FieldWrapper>
+          </FieldGroup>
+
           <FieldWrapper
-            name="selected-field"
-            label={t('field-label-target_dir')}
-            isValid={validateField('file-string', metadata.target_dir)}
-          >
-            <FileString
-              onChange={handleMetadataChange}
-              name="target_dir"
-              value={metadata.target_dir}
-              get_message={{
-                action: 'creator-get-directories',
-                object_type: 'target_dir',
-              }}
-              return_message={{
-                action: 'creator-return-directories',
-                object_type: 'target_dir',
-                return_value: 'directories',
-              }}
-            />
-          </FieldWrapper>
-          <FieldWrapper
-            name="selected-field"
-            isValid={validateField('string', metadata.name)}
-            label={t('field-label-name')}
-            compact
-          >
-            <String onChange={handleMetadataChange} value={metadata.name} name="name" autoFocus />
-          </FieldWrapper>
-          <FieldWrapper
-            name="selected-field"
+            name='selected-field'
             isValid={validateField('string', metadata.desc)}
             label={t('field-label-desc')}
             compact
           >
             <Field
-              type="long-string"
+              type='long-string'
               markdown
               onChange={handleMetadataChange}
               value={metadata.desc}
-              name="desc"
+              name='desc'
             />
           </FieldWrapper>
           <FieldWrapper
-            name="selected-field"
+            name='selected-field'
             isValid={
-              metadata.groups.length === 0 ? true : validateField('select-array', metadata.groups)
+              metadata.groups.length === 0
+                ? true
+                : validateField('select-array', metadata.groups)
             }
             info={t('Optional')}
             label={t('field-label-groups')}
@@ -793,11 +845,11 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
                 type: 'group',
               }}
               value={metadata.groups}
-              name="groups"
+              name='groups'
             />
           </FieldWrapper>
           <FieldWrapper
-            name="selected-field"
+            name='selected-field'
             type={t('Optional')}
             label={t('field-label-input-provider')}
             isValid={
@@ -809,15 +861,15 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
             <ConnectorField
               value={metadata['input-provider']}
               isInitialEditing={!!pipeline || isFromDraft}
-              name="input-provider"
+              name='input-provider'
               onChange={handleMetadataChange}
-              providerType="inputs"
+              providerType='inputs'
               isPipeline
             />
           </FieldWrapper>
           {metadata['input-provider'] && (
             <FieldWrapper
-              name="selected-field"
+              name='selected-field'
               info={t('Optional')}
               label={t('field-label-input-provider-options')}
               isValid={validateField(
@@ -830,8 +882,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
               <Options
                 value={metadata?.['input-provider-options']}
                 onChange={handleMetadataChange}
-                name="input-provider-options"
-                url="/pipeline"
+                name='input-provider-options'
+                url='/pipeline'
               />
             </FieldWrapper>
           )}
@@ -842,77 +894,42 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
           }}
         >
           <StyledDiagramWrapper
-            id="pipeline-diagram"
+            id='pipeline-diagram'
             theme={theme}
             style={{
-              border: !isDiagramValid(elements) ? `1px solid ${theme.intents.danger}` : undefined,
+              border: !isDiagramValid(elements)
+                ? `1px solid ${theme.intents.danger}`
+                : undefined,
             }}
             onContextMenu={(e) => void e.preventDefault()}
           >
             <Tree
               data={cloneDeep(elements)}
-              orientation="vertical"
-              pathFunc="step"
+              orientation='vertical'
+              pathFunc='step'
               translate={{ x: window.innerWidth / 2 - 50, y: 100 }}
-              nodeSize={{ x: 350, y: 120 }}
               transitionDuration={0}
-              textLayout={{
-                textAnchor: 'middle',
-              }}
               separation={{
-                siblings: 1,
-                nonSiblings: 1,
+                siblings: 2.5,
+                nonSiblings: 2.5,
               }}
-              allowForeignObjects
-              nodeLabelComponent={{
-                render: (
-                  <NodeLabel
-                    onEditClick={setSelectedElement}
-                    onAddClick={setSelectedElement}
-                    onDeleteClick={(elementData) => removeElement(elementData)}
-                    onAddQueueClick={handleDataSubmit}
-                  />
-                ),
-                foreignObjectWrapper: {
-                  width: '350px',
-                  x: -(350 / 2),
-                },
-              }}
+              hasInteractiveNodes
+              renderCustomNodeElement={(nodeData) => (
+                <g>
+                  <foreignObject {...{ width: 300, height: 200, x: -150 }}>
+                    <NodeLabel
+                      nodeData={nodeData}
+                      onEditClick={setSelectedElement}
+                      onAddClick={setSelectedElement}
+                      onDeleteClick={(elementData) =>
+                        removeElement(elementData)
+                      }
+                      onAddQueueClick={handleDataSubmit}
+                    />
+                  </foreignObject>
+                </g>
+              )}
               collapsible={false}
-              styles={{
-                links: {
-                  stroke: theme.intents.info,
-                  strokeWidth: 2,
-                },
-                nodes: {
-                  node: {
-                    ellipse: {
-                      stroke: '#a9a9a9',
-                    },
-                    rect: {
-                      stroke: '#a9a9a9',
-                      rx: 25,
-                    },
-                    name: {
-                      stroke: '#333',
-                      strokeWidth: 0.8,
-                    },
-                  },
-                  leafNode: {
-                    ellipse: {
-                      stroke: '#a9a9a9',
-                    },
-                    rect: {
-                      stroke: '#a9a9a9',
-                      rx: 25,
-                    },
-                    name: {
-                      stroke: '#333',
-                      strokeWidth: 0.8,
-                    },
-                  },
-                },
-              }}
             />
           </StyledDiagramWrapper>
         </ContentWrapper>
@@ -921,4 +938,4 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
   );
 };
 
-export default compose(withGlobalOptionsConsumer(), withMessageHandler())(PipelineView);
+export default compose(withGlobalOptionsConsumer())(PipelineView);

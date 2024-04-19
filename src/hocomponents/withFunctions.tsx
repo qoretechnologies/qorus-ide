@@ -1,5 +1,6 @@
 import { map, size } from 'lodash';
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { useUpdateEffect } from 'react-use';
 import mapProps from 'recompose/mapProps';
 import { FunctionsContext } from '../context/functions';
 import { getNameFromFields } from './withMethods';
@@ -11,11 +12,22 @@ export default () =>
       const isInitialMount = useRef(true);
       const [showFunctions, setShowFunctions] = useState<boolean>(false);
       const [functions, setFunctions] = useState<any[]>(props.initialFunctions);
-      const [functionsCount, setFunctionsCount] = useState<number>(props.initialFunctionsCount);
-      const [lastFunctionId, setLastFunctionId] = useState<number>(props.initialFunctionId);
+      const [functionsCount, setFunctionsCount] = useState<number>(
+        props.initialFunctionsCount
+      );
+      const [lastFunctionId, setLastFunctionId] = useState<number>(
+        props.initialFunctionId
+      );
       const [activeFunction, setActiveFunction] = useState<any>(1);
       const [functionsData, setFunctionsData] = useState(props.functionsData);
 
+      useUpdateEffect(() => {
+        setFunctions(props.initialFunctions);
+        setFunctionsData(props.functionsData);
+      }, [
+        JSON.stringify(props.initialFunctions),
+        JSON.stringify(props.functionsData),
+      ]);
       /*
       "Reset the mapper methods."
       */
@@ -61,7 +73,10 @@ export default () =>
       */
       const handleAddFunctionClick: () => void = () => {
         setLastFunctionId((current) => current + 1);
-        setFunctions((current: any[]) => [...current, { id: lastFunctionId + 1 }]);
+        setFunctions((current: any[]) => [
+          ...current,
+          { id: lastFunctionId + 1 },
+        ]);
         setFunctionsCount((current: number) => current + 1);
       };
 
@@ -93,14 +108,21 @@ export default () =>
     return mapProps(({ 'mapper-code': mapperCode, ...rest }) => ({
       initialFunctions:
         mapperCode && mapperCode['mapper-methods']
-          ? mapperCode['mapper-methods'].map((fun, i) => ({ name: fun.name, id: i + 1 }))
+          ? mapperCode['mapper-methods'].map((fun, i) => ({
+              name: fun.name,
+              id: i + 1,
+            }))
           : [{ id: 1 }],
       initialFunctionsCount:
-        mapperCode && mapperCode['mapper-methods'] ? size(mapperCode['mapper-methods']) : 1,
+        mapperCode && mapperCode['mapper-methods']
+          ? size(mapperCode['mapper-methods'])
+          : 1,
       // Set the last function ID to the functions
       // count + 1 if functions exist
       initialFunctionId:
-        mapperCode && mapperCode['mapper-methods'] ? size(mapperCode['mapper-methods']) : 1,
+        mapperCode && mapperCode['mapper-methods']
+          ? size(mapperCode['mapper-methods'])
+          : 1,
       // If function is being edited, switch to it
       initialActiveFunctionId: (mapperCode && mapperCode.active_method) || 1,
       // Set to show functions if active function
@@ -112,7 +134,10 @@ export default () =>
       functionsData:
         mapperCode &&
         mapperCode['mapper-methods'] &&
-        mapperCode['mapper-methods'].map((fun, i) => ({ ...fun, id: i + 1 })),
+        mapperCode['mapper-methods'].map((fun, i) => ({
+          ...fun,
+          id: i + 1,
+        })),
       mapperCode,
       ...rest,
     }))(EnhancedComponent);

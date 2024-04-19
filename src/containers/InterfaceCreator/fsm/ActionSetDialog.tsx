@@ -3,9 +3,11 @@ import { IReqoreModalProps } from '@qoretechnologies/reqore/dist/components/Moda
 import { useContext, useState } from 'react';
 import shortid from 'shortid';
 import { IFSMStates } from '.';
-import Options, { IOptions, IOptionsSchema } from '../../../components/Field/systemOptions';
+import Options, {
+  IOptions,
+  IOptionsSchema,
+} from '../../../components/Field/systemOptions';
 import { AppsContext } from '../../../context/apps';
-import { changeStateIdsToGenerated, removeTransitionsFromStateGroup } from '../../../helpers/fsm';
 import { validateField } from '../../../helpers/validations';
 import { submitControl } from '../controls';
 
@@ -18,8 +20,9 @@ export interface IActionSetDialogProps extends IReqoreModalProps {
 
 export interface IActionSet {
   id: string;
-  options: IOptions;
+  options?: IOptions;
   states: IFSMStates;
+  updated?: number;
 }
 
 const schema: IOptionsSchema = {
@@ -78,15 +81,10 @@ export const ActionSetDialog = ({
   };
 
   const handleSubmitClick = () => {
-    // Fix the states
-    let fixedStates = changeStateIdsToGenerated(states);
-    // Remove non existing transitions
-    fixedStates = removeTransitionsFromStateGroup(states);
-
     apps.addNewActionSet({
       id: shortid.generate(),
       options,
-      states: fixedStates,
+      states,
     });
 
     rest.onClose();
@@ -94,20 +92,23 @@ export const ActionSetDialog = ({
 
   return (
     <ReqoreModal
-      label="Save Action Set"
+      label='Save Action Set'
       isOpen
       bottomActions={[
-        submitControl(handleSubmitClick, { disabled: !areOptionsValid(), id: 'submit-action-set' }),
+        submitControl(handleSubmitClick, {
+          disabled: !areOptionsValid(),
+          id: 'submit-action-set',
+        }),
       ]}
       {...rest}
     >
       <Options
         sortable={false}
-        label="Details"
+        label='Details'
         value={options}
         options={schema}
         onChange={(name, value) => setOptions(value)}
-        name="action-set"
+        name='action-set'
         allowTemplates={false}
       />
     </ReqoreModal>

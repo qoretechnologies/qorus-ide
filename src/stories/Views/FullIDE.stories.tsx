@@ -1,4 +1,6 @@
+import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
+import { waitFor } from '@storybook/testing-library';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import App from '../../App';
@@ -26,4 +28,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  play: async ({ canvasElement }) => {
+    await waitFor(
+      () => expect(document.querySelectorAll('.reqore-panel')).toHaveLength(8),
+      { timeout: 14000 }
+    );
+  },
+};

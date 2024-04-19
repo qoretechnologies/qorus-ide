@@ -1,6 +1,7 @@
 import { StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { QodexFields } from '../../containers/InterfaceCreator/fsm/Fields';
+import { InterfacesProvider } from '../../providers/Interfaces';
 import { StoryMeta } from '../types';
 
 const meta = {
@@ -8,15 +9,20 @@ const meta = {
   title: 'Fields/Qodex Fields',
   render: (args) => {
     const [val, setVal] = useState(args.value);
+    const [settings, setSettings] = useState(args.settings);
 
     return (
-      <QodexFields
-        {...args}
-        value={val}
-        onChange={(v) => {
-          setVal(v);
-        }}
-      />
+      <InterfacesProvider>
+        <QodexFields
+          {...args}
+          settings={settings}
+          onSettingsChange={setSettings}
+          value={val}
+          onChange={(v) => {
+            setVal(v);
+          }}
+        />
+      </InterfacesProvider>
     );
   },
 } as StoryMeta<typeof QodexFields>;
@@ -31,5 +37,6 @@ export const WithValue: StoryObj<typeof meta> = {
       desc: 'test',
       short_desc: 'short test',
     },
+    id: 10,
   },
 };

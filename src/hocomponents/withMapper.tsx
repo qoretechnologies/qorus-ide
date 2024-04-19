@@ -15,7 +15,7 @@ import {
 import { fixRelations, flattenFields } from '../helpers/mapper';
 import withFieldsConsumer from './withFieldsConsumer';
 import withInitialDataConsumer from './withInitialDataConsumer';
-import withMessageHandler from './withMessageHandler';
+import { addMessageListener, postMessage } from './withMessageHandler';
 import withTextContext from './withTextContext';
 
 export const addTrailingSlash = (path: string) => {
@@ -34,7 +34,6 @@ export const addTrailingSlash = (path: string) => {
 export default () =>
   (Component: FunctionComponent<any>): FunctionComponent<any> => {
     const EnhancedComponent: FunctionComponent = (props: any) => {
-      const { qorus_instance } = props;
       const [mapper, setMapper] = useState<any>(props.mapper);
       const [showMapperConnections, setShowMapperConnections] =
         useState<boolean>(false);
@@ -299,6 +298,7 @@ export default () =>
         const { type } = mapper.mapper_options[`mapper-input`];
 
         const inputs = await fetchData(inputUrl);
+
         // If one of the connections is down
         if (inputs.error) {
           setInputsError(inputs.error && 'InputConnError');
@@ -390,7 +390,7 @@ export default () =>
         const url = getUrlFromProvider(null, staticData);
 
         // Send the URL to backend
-        const listener = props.addMessageListener(
+        const listener = addMessageListener(
           Messages.RETURN_FIELDS_FROM_TYPE,
           ({ data }) => {
             if (data) {
@@ -403,7 +403,7 @@ export default () =>
           }
         );
         // Ask backend for the fields for this particular type
-        props.postMessage(Messages.GET_FIELDS_FROM_TYPE, {
+        postMessage(Messages.GET_FIELDS_FROM_TYPE, {
           ...staticData,
           url,
         });
@@ -416,77 +416,81 @@ export default () =>
       }, [contextInputs]);
 
       useEffect(() => {
-        if (qorus_instance) {
-          let mapperKeys;
-          // Fetch the mapper keys
-          (async () => {
-            const response = await fetchData('system/default_mapper_keys');
-            setMapperKeys(response.data);
-            mapperKeys = response.data;
-            setIsContextLoaded(false);
-            // Check if user is editing a mapper
-            if (mapper) {
-              // Process input fields
-              if (mapper.mapper_options?.['mapper-input']) {
-                await getInputsData();
-              }
-              // Process output fields
-              if (mapper.mapper_options?.['mapper-output']) {
-                await getOutputsData(mapperKeys);
-              }
-              const mapperContext =
-                mapper.interfaceContext || props.currentMapperContext;
-              // If this mapper has context
-              if (mapperContext) {
-                // If the context also has the static data
-                // do not ask the backend for the interface info
-                if (mapperContext.static_data) {
-                  getFieldsFromStaticData(mapperContext.static_data);
-                } else {
-                  // Ask backend for the context interface
-                  const { data } = await callBackendBasic(
-                    Messages.GET_INTERFACE_DATA,
-                    'return-interface-data-complete',
-                    {
-                      iface_kind: mapperContext.iface_kind,
-                      name: mapperContext.name,
-                      custom_data: {
-                        event: 'context',
-                        iface_kind: mapperContext.iface_kind,
-                      },
-                    }
-                  );
-
-                  if (
-                    data?.custom_data?.event === 'context' &&
-                    data[data.custom_data.iface_kind]['staticdata-type']
-                  ) {
-                    // Save the static data
-                    const staticData =
-                      data[data.custom_data.iface_kind]['staticdata-type'];
-                    // Get all the needed data from static data
-                    getFieldsFromStaticData(staticData);
-                    setIsContextLoaded(true);
-                  }
-                }
-              } else {
-                setContextInputs(null);
-                setIsContextLoaded(true);
-                maybeApplyStoredDraft();
-              }
+        let mapperKeys;
+        // Fetch the mapper keys
+        (async () => {
+          const response = await fetchData('system/default_mapper_keys');
+          setMapperKeys(response.data);
+          mapperKeys = response.data;
+          setIsContextLoaded(false);
+          // Check if user is editing a mapper
+          if (mapper) {
+            // Process input fields
+            if (mapper.mapper_options?.['mapper-input']) {
+              await getInputsData();
             } else {
-              setIsContextLoaded(true);
               // Cancel loading
               setInputsLoading(false);
+            }
+            // Process output fields
+            if (mapper.mapper_options?.['mapper-output']) {
+              await getOutputsData(mapperKeys);
+            } else {
               // Cancel loading
               setOutputsLoading(false);
+            }
+            const mapperContext =
+              mapper.interfaceContext || props.currentMapperContext;
+            // If this mapper has context
+            if (mapperContext) {
+              // If the context also has the static data
+              // do not ask the backend for the interface info
+              if (mapperContext.static_data) {
+                getFieldsFromStaticData(mapperContext.static_data);
+              } else {
+                // Ask backend for the context interface
+                const { data } = await callBackendBasic(
+                  Messages.GET_INTERFACE_DATA,
+                  'return-interface-data-complete',
+                  {
+                    iface_kind: mapperContext.iface_kind,
+                    name: mapperContext.name,
+                    custom_data: {
+                      event: 'context',
+                      iface_kind: mapperContext.iface_kind,
+                    },
+                  }
+                );
+
+                if (
+                  data?.custom_data?.event === 'context' &&
+                  data[data.custom_data.iface_kind]['staticdata-type']
+                ) {
+                  // Save the static data
+                  const staticData =
+                    data[data.custom_data.iface_kind]['staticdata-type'];
+                  // Get all the needed data from static data
+                  getFieldsFromStaticData(staticData);
+                  setIsContextLoaded(true);
+                }
+              }
+            } else {
+              setContextInputs(null);
+              setIsContextLoaded(true);
               maybeApplyStoredDraft();
             }
-          })();
-        }
+          } else {
+            setIsContextLoaded(true);
+            // Cancel loading
+            setInputsLoading(false);
+            // Cancel loading
+            setOutputsLoading(false);
+            maybeApplyStoredDraft();
+          }
+        })();
       }, [
-        qorus_instance,
-        mapper,
+        JSON.stringify(props.mapper),
+        JSON.stringify(mapper),
         props.currentMapperContext,
         draftSavedForLater.current,
       ]);
@@ -770,7 +774,6 @@ export default () =>
         currentMapperContext: getSelectedFieldValue('mapper', 'context'),
         ...rest,
       })),
-      withTextContext(),
-      withMessageHandler()
+      withTextContext()
     )(EnhancedComponent);
   };

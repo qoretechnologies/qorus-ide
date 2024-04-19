@@ -21,7 +21,9 @@ const getInterfaceCollectionType: (type: string) => [] | {} = (type) => {
 export default () =>
   (Component: FunctionComponent<any>): FunctionComponent<any> => {
     const EnhancedComponent: FunctionComponent = (props: any) => {
-      const [interfaceId, _setInterfaceId] = useState<{ [key: string]: string[] }>({
+      const [interfaceId, _setInterfaceId] = useState<{
+        [key: string]: string[];
+      }>({
         service: [],
         error: [],
         errors: [],
@@ -38,6 +40,7 @@ export default () =>
         mapper: [],
         ['config-item']: [],
         'value-map': [],
+        sla: [],
       });
       const [fields, setLocalFields] = useState<any>({
         service: [],
@@ -56,6 +59,7 @@ export default () =>
         queue: [],
         mapper: [],
         'value-map': [],
+        sla: [],
       });
       const [selectedFields, setLocalSelectedFields] = useState<any>({
         service: [],
@@ -74,6 +78,7 @@ export default () =>
         queue: [],
         mapper: [],
         'value-map': [],
+        sla: [],
       });
       const [query, setLocalQuery] = useState<any>({
         service: [],
@@ -92,6 +97,7 @@ export default () =>
         queue: [],
         mapper: [],
         'value-map': [],
+        sla: [],
       });
       const [selectedQuery, setLocalSelectedQuery] = useState<any>({
         service: [],
@@ -110,6 +116,7 @@ export default () =>
         queue: [],
         mapper: [],
         'value-map': [],
+        sla: [],
       });
 
       const resetAllData = () => {
@@ -130,6 +137,7 @@ export default () =>
           mapper: [],
           ['config-item']: [],
           'value-map': [],
+          sla: [],
         });
 
         setLocalFields({
@@ -149,6 +157,7 @@ export default () =>
           queue: [],
           mapper: [],
           'value-map': [],
+          sla: [],
         });
 
         setLocalSelectedFields({
@@ -168,6 +177,7 @@ export default () =>
           queue: [],
           mapper: [],
           'value-map': [],
+          sla: [],
         });
 
         setLocalQuery({
@@ -187,6 +197,7 @@ export default () =>
           queue: [],
           mapper: [],
           'value-map': [],
+          sla: [],
         });
 
         setLocalSelectedQuery({
@@ -206,6 +217,7 @@ export default () =>
           queue: [],
           mapper: [],
           'value-map': [],
+          sla: [],
         });
       };
 
@@ -215,7 +227,11 @@ export default () =>
         return selectedFields[type][index];
       };
 
-      const getSelectedFieldValue = (type: string, field: string, interfaceIndex?: number) => {
+      const getSelectedFieldValue = (
+        type: string,
+        field: string,
+        interfaceIndex?: number
+      ) => {
         const fields = getSelectedFields(type, interfaceIndex);
 
         return fields?.find((f) => f.name === field)?.value;
@@ -314,7 +330,10 @@ export default () =>
 
       const getInterfaceIndex = (type: string, interfaceIndex?: number) => {
         const theIndex =
-          interfaceIndex ?? (interfaceId[type].length - 1 <= 0 ? 0 : interfaceId[type].length - 1);
+          interfaceIndex ??
+          (interfaceId[type].length - 1 <= 0
+            ? 0
+            : interfaceId[type].length - 1);
 
         return theIndex < 0 ? 0 : theIndex;
       };
@@ -356,11 +375,11 @@ export default () =>
         }
       };
 
-      const setInterfaceId: (interfaceType: string, id: string, interfaceIndex: number) => void = (
-        interfaceType,
-        id,
-        interfaceIndex
-      ) => {
+      const setInterfaceId: (
+        interfaceType: string,
+        id: string,
+        interfaceIndex: number
+      ) => void = (interfaceType, id, interfaceIndex) => {
         const index = getInterfaceIndex(interfaceType, interfaceIndex);
         // Sets the interface id, which is only used
         // for config items management
@@ -372,7 +391,12 @@ export default () =>
         });
       };
 
-      const setFields = (type, value, activeId?: number, interfaceIndex?: number) => {
+      const setFields = (
+        type,
+        value,
+        activeId?: number,
+        interfaceIndex?: number
+      ) => {
         setLocalFields((current) => {
           const index = getInterfaceIndex(type, interfaceIndex);
           const newResult = { ...current };
@@ -380,10 +404,14 @@ export default () =>
           // a specific item
           if (activeId) {
             newResult[type][index][activeId] =
-              typeof value === 'function' ? value(current[type][index][activeId] || []) : value;
+              typeof value === 'function'
+                ? value(current[type][index][activeId] || [])
+                : value;
           } else {
             newResult[type][index] =
-              typeof value === 'function' ? value(current[type][index] || []) : value;
+              typeof value === 'function'
+                ? value(current[type][index] || [])
+                : value;
           }
           return newResult;
         });
@@ -394,7 +422,12 @@ export default () =>
         setSelectedFields(type, selectedFields);
       };
 
-      const setSelectedFields = (type, value, activeId?: number, interfaceIndex?: number) => {
+      const setSelectedFields = (
+        type,
+        value,
+        activeId?: number,
+        interfaceIndex?: number
+      ) => {
         setLocalSelectedFields((current) => {
           const index = getInterfaceIndex(type, interfaceIndex);
           const newResult = cloneDeep(current);
@@ -402,10 +435,14 @@ export default () =>
           // a specific item
           if (activeId || activeId === 0) {
             newResult[type][index][activeId] =
-              typeof value === 'function' ? value(current[type][index][activeId] || []) : value;
+              typeof value === 'function'
+                ? value(current[type][index][activeId] || [])
+                : value;
           } else {
             newResult[type][index] =
-              typeof value === 'function' ? value(current?.[type]?.[index] || []) : value;
+              typeof value === 'function'
+                ? value(current?.[type]?.[index] || [])
+                : value;
           }
 
           return newResult;
@@ -417,21 +454,24 @@ export default () =>
         setLocalSelectedFields((current) => {
           const newResult = { ...current };
 
-          newResult[type][index] = newResult[type][index].reduce((fields, currentField) => {
-            if (currentField.name === field) {
-              maybeSendOnChangeEvent(currentField, value, type, iface_id);
+          newResult[type][index] = newResult[type][index].reduce(
+            (fields, currentField) => {
+              if (currentField.name === field) {
+                maybeSendOnChangeEvent(currentField, value, type, iface_id);
 
-              return [
-                ...fields,
-                {
-                  ...currentField,
-                  value,
-                },
-              ];
-            }
+                return [
+                  ...fields,
+                  {
+                    ...currentField,
+                    value,
+                  },
+                ];
+              }
 
-            return [...fields, currentField];
-          }, []);
+              return [...fields, currentField];
+            },
+            []
+          );
 
           return newResult;
         });
@@ -502,27 +542,29 @@ export default () =>
       };
 
       // Checks if method is valid
-      const isSubItemValid: (itemId: number, type: string, interfaceIndex: number) => boolean = (
-        itemId,
-        type,
-        interfaceIndex
-      ) => {
+      const isSubItemValid: (
+        itemId: number,
+        type: string,
+        interfaceIndex: number
+      ) => boolean = (itemId, type, interfaceIndex) => {
         const index = getInterfaceIndex(type, interfaceIndex);
 
         if (itemId) {
           return (
             selectedFields?.[type]?.[index]?.[itemId] &&
-            selectedFields[type][index][itemId].every(({ isValid }: IField) => isValid)
+            selectedFields[type][index][itemId].every(
+              ({ isValid }: IField) => isValid
+            )
           );
         }
       };
 
       // Remove method from the methods
-      const removeSubItem: (itemId: string, type: string, interfaceIndex: number) => void = (
-        itemId,
-        type,
-        interfaceIndex
-      ) => {
+      const removeSubItem: (
+        itemId: string,
+        type: string,
+        interfaceIndex: number
+      ) => void = (itemId, type, interfaceIndex) => {
         const index = getInterfaceIndex(type, interfaceIndex);
 
         setLocalSelectedFields((current) => {
@@ -546,7 +588,12 @@ export default () =>
         });
       };
 
-      const getFieldData: IField = (type, interfaceIndex, field, activeId?: number) => {
+      const getFieldData: IField = (
+        type,
+        interfaceIndex,
+        field,
+        activeId?: number
+      ) => {
         const index = getInterfaceIndex(type, interfaceIndex);
 
         if (activeId) {
@@ -555,7 +602,9 @@ export default () =>
           );
         }
 
-        return selectedFields[type][index].find((fieldData: IField) => fieldData.name === field);
+        return selectedFields[type][index].find(
+          (fieldData: IField) => fieldData.name === field
+        );
       };
 
       const addMethod = (name, desc, addNewMethodWithData) => {
@@ -566,7 +615,9 @@ export default () =>
         if (firstFieldsItem) {
           setFields('service-methods', cloneDeep(firstFieldsItem), activeId);
 
-          const firstDataItem: IField[] = first(values(selectedFields['service-methods'][index]));
+          const firstDataItem: IField[] = first(
+            values(selectedFields['service-methods'][index])
+          );
 
           const newItem = firstDataItem!.map((field) => {
             if (field.name === 'name') {

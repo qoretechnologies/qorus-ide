@@ -6,10 +6,16 @@ import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import { _testsClickState, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/State Detail',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -30,9 +36,17 @@ export const StateDataIsShown: StoryFSM = {
     await SwitchesToBuilder.play({ canvasElement, ...rest });
     await _testsClickState(`Send Discord Message`);
     await sleep(500);
-    await waitFor(() => canvas.getAllByText('Message Content')[0], { timeout: 20000 });
+    await waitFor(() => canvas.getAllByText('Message Content')[0], {
+      timeout: 20000,
+    });
     await sleep(5000);
-    await fireEvent.click(document.querySelector('.system-option.reqore-textarea'));
+    await document
+      .querySelector('.system-option.reqore-textarea')
+      .scrollIntoView();
+    await fireEvent.click(
+      document.querySelector('.system-option.reqore-textarea')
+    );
+    await sleep(500);
     await expect(
       document.querySelectorAll('.reqore-popover-content .reqore-menu-item')
     ).toHaveLength(3);

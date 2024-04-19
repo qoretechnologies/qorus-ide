@@ -11,18 +11,18 @@ import { FunctionComponent, useMemo, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../App';
+import CustomDialog from '../../components/CustomDialog';
+import FieldEnhancer from '../../components/FieldEnhancer';
+import { IField, IFieldChange } from '../../components/FieldWrapper';
 import { submitControl } from '../../containers/InterfaceCreator/controls';
 import withMapperConsumer from '../../hocomponents/withMapperConsumer';
-import withMessageHandler, {
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
-import CustomDialog from '../CustomDialog';
-import FieldEnhancer from '../FieldEnhancer';
-import { IField, IFieldChange } from '../FieldWrapper';
-import { PositiveColorEffect } from './multiPair';
-import String from './string';
+import { PositiveColorEffect } from '../Field/multiPair';
+import String from '../Field/string';
 
 export type TMultiSelectItem = TReqoreMultiSelectItem & {
   short_desc?: string;
@@ -249,6 +249,5 @@ const MultiSelectField: FunctionComponent<
 
 export default compose(
   withTextContext(),
-  withMessageHandler(),
   withMapperConsumer()
 )(MultiSelectField) as FunctionComponent<IMultiSelectField & IField>;

@@ -42,6 +42,20 @@ export const vscode =
               break;
             }
             case 'save-draft': {
+              messageData = {
+                action: 'save-draft-complete',
+                ok: true,
+                request_id: data.request_id,
+              };
+              break;
+            }
+            case 'creator-create-interface':
+            case 'creator-edit-interface': {
+              messageData = {
+                action: `${data.action}-complete`,
+                request_id: data.request_id,
+                ok: true,
+              };
               break;
             }
             case 'get-all-text':
@@ -128,7 +142,7 @@ export const vscode =
             case 'get-drafts': {
               messageData = {
                 action: 'get-drafts-complete',
-                data: items[data.type].filter((item) => item.draft),
+                data: [],
                 request_id: data.request_id,
               };
               break;
@@ -197,80 +211,6 @@ export const vscode =
             }
             case 'creator-get-objects': {
               messageData = objects[data.object_type];
-
-              // switch (data.object_type) {
-              //   case 'mapper': {
-              //     messageData.objects = [
-              //       {
-              //         name: 'Test Mapper 1',
-              //         desc: 'Test Mapper 1 description',
-              //         version: '1.0',
-              //         type: 'mapper',
-              //       },
-              //     ];
-              //     break;
-              //   }
-              //   case 'pipeline': {
-              //     messageData.objects = [
-              //       {
-              //         name: 'Test Pipeline 1',
-              //         desc: 'Test Pipeline 1 description',
-              //         version: '1.0',
-              //         type: 'pipeline',
-              //       },
-              //     ];
-              //     break;
-              //   }
-              //   case 'fsm': {
-              //     messageData.objects = [
-              //       {
-              //         name: 'Test FSM 1',
-              //         type: 'fsm',
-              //       },
-              //     ];
-              //     break;
-              //   }
-              //   case 'group': {
-              //     messageData.objects = [
-              //       {
-              //         name: 'Test Group 1',
-              //         type: 'group',
-              //       },
-              //     ];
-              //     break;
-              //   }
-              //   case 'class-with-connectors': {
-              //     messageData.objects = [
-              //       {
-              //         name: 'Test Class With Connectors 1',
-              //         type: 'class',
-              //         'class-connectors': [
-              //           {
-              //             name: 'Input Connector ',
-              //             desc: 'Connector description',
-              //             type: 'input',
-              //           },
-              //           {
-              //             name: 'Ouptut Connector ',
-              //             desc: 'Connector description',
-              //             type: 'output',
-              //           },
-              //           {
-              //             name: 'Input Output Connector ',
-              //             desc: 'Connector description',
-              //             type: 'input-output',
-              //           },
-              //           {
-              //             name: 'Event Connector ',
-              //             desc: 'Connector description',
-              //             type: 'event',
-              //           },
-              //         ],
-              //       },
-              //     ];
-              //     break;
-              //   }
-              // }
 
               break;
             }
@@ -574,7 +514,9 @@ export const vscode =
           }
 
           if (messageData) {
-            window.postMessage(messageData, '*');
+            setTimeout(() => {
+              window.postMessage(messageData, '*');
+            }, 50);
           }
         },
         setState: () => {},

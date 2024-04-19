@@ -1,10 +1,10 @@
 import {
-    ReqoreButton,
-    ReqoreControlGroup,
-    ReqoreHorizontalSpacer,
-    ReqoreMessage,
-    ReqorePanel,
-    ReqoreVerticalSpacer,
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreHorizontalSpacer,
+  ReqoreMessage,
+  ReqorePanel,
+  ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { size } from 'lodash';
 import { FunctionComponent, useContext, useState } from 'react';
@@ -15,23 +15,24 @@ import { TTranslator } from '../../App';
 import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
 import { validateField } from '../../helpers/validations';
-import withMessageHandler, {
-    TMessageListener,
-    TPostMessage,
-    addMessageListener,
-    postMessage,
+import {
+  addMessageListener,
+  postMessage,
 } from '../../hocomponents/withMessageHandler';
 import SourceDirs from '../../project_config/sourceDirs';
 import CustomDialog from '../CustomDialog';
-import { ContentWrapper, FieldWrapper, IField, IFieldChange } from '../FieldWrapper';
+import {
+  ContentWrapper,
+  FieldWrapper,
+  IField,
+  IFieldChange,
+} from '../FieldWrapper';
 import Loader from '../Loader';
 import { PositiveColorEffect } from './multiPair';
 
 export interface ITreeField {
   get_message: { action: string; object_type: string };
   return_message: { action: string; object_type: string; return_value: string };
-  addMessageListener: TMessageListener;
-  postMessage: TPostMessage;
   name: string;
   t: TTranslator;
   single?: boolean;
@@ -45,7 +46,9 @@ const StyledTreeScroller = styled.div`
   overflow: auto;
 `;
 
-const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = ({
+const TreeField: FunctionComponent<
+  ITreeField & IField & IFieldChange & any
+> = ({
   get_message,
   return_message,
   onChange,
@@ -78,7 +81,10 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
     addMessageListener(return_message.action, (data: any) => {
       // Check if this is the correct
       // object type
-      if (!data.object_type || data.object_type === return_message.object_type) {
+      if (
+        !data.object_type ||
+        data.object_type === return_message.object_type
+      ) {
         setItems(data[return_message.return_value]);
       }
     });
@@ -87,7 +93,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
 
   const handleNodeClick: (node: any) => void = (node) => {
     // Which path should be used
-    const usedPath: string = useRelativePath ? node.nodeData.rel_path : node.nodeData.path;
+    const usedPath: string = useRelativePath
+      ? node.nodeData.rel_path
+      : node.nodeData.path;
     // If we are dealing with single string
     if (single) {
       onChange(name, usedPath);
@@ -107,7 +115,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
 
   const handleNodeCollapse: (node: any) => void = (node) => {
     // Which path should be used
-    const usedPath: string = useRelativePath ? node.nodeData.rel_path : node.nodeData.path;
+    const usedPath: string = useRelativePath
+      ? node.nodeData.rel_path
+      : node.nodeData.path;
 
     setExpanded((currentExpanded: string[]): string[] =>
       currentExpanded.filter((path: string) => path !== usedPath)
@@ -116,9 +126,14 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
 
   const handleNodeExpand: (node: any) => void = (node) => {
     // Which path should be used
-    const usedPath: string = useRelativePath ? node.nodeData.rel_path : node.nodeData.path;
+    const usedPath: string = useRelativePath
+      ? node.nodeData.rel_path
+      : node.nodeData.path;
 
-    setExpanded((currentExpanded: string[]): string[] => [...currentExpanded, usedPath]);
+    setExpanded((currentExpanded: string[]): string[] => [
+      ...currentExpanded,
+      usedPath,
+    ]);
   };
 
   const handleCreateDirSubmit = async (addSource?: boolean) => {
@@ -126,7 +141,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
 
     const data = await callBackend('create-directory', undefined, {
       path: `${folderDialog.abs_path}${
-        folderDialog.newPath.startsWith('/') ? folderDialog.newPath : `/${folderDialog.newPath}`
+        folderDialog.newPath.startsWith('/')
+          ? folderDialog.newPath
+          : `/${folderDialog.newPath}`
       }`,
       add_source: addSource,
     });
@@ -162,7 +179,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
           : useRelativePath
           ? item.rel_path
           : item.abs_path;
-      const isExpanded = _expanded.includes(useRelativePath ? item.rel_path : item.abs_path);
+      const isExpanded = _expanded.includes(
+        useRelativePath ? item.rel_path : item.abs_path
+      );
       // Return the transformed data
       return [
         ...newData,
@@ -171,8 +190,15 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
           id: index,
           depth: index,
           hasCaret: !isFile && size(item.dirs) + size(item.files) !== 0,
-          isSelected: single ? value === path : value.find((sel) => sel.name === path),
-          icon: isFile && filesOnly ? 'document' : isExpanded ? 'folder-open' : 'folder-close',
+          isSelected: single
+            ? value === path
+            : value.find((sel) => sel.name === path),
+          icon:
+            isFile && filesOnly
+              ? 'document'
+              : isExpanded
+              ? 'folder-open'
+              : 'folder-close',
           isFile,
           isExpanded,
           label: item.basename,
@@ -197,7 +223,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
               <ReqoreButton
                 fixed
                 onClick={() =>
-                  !item.isExpanded ? handleNodeExpand(item) : handleNodeCollapse(item)
+                  !item.isExpanded
+                    ? handleNodeExpand(item)
+                    : handleNodeCollapse(item)
                 }
                 minimal
                 flat
@@ -207,7 +235,7 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
             ) : (
               <>
                 {/* @ts-expect-error */}
-                <ReqoreButton readOnly fixed minimal flat icon="" />
+                <ReqoreButton readOnly fixed minimal flat icon='' />
               </>
             )}
             <ReqoreButton
@@ -250,7 +278,7 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
             <ReqoreButton
               fixed
               effect={PositiveColorEffect}
-              icon="FolderAddFill"
+              icon='FolderAddFill'
               onClick={() => setFolderDialog({ ...item, newPath: '' })}
             />
           </ReqoreControlGroup>
@@ -269,7 +297,7 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
     <>
       {folderDialog && (
         <CustomDialog
-          icon="FolderAddLine"
+          icon='FolderAddLine'
           isOpen
           label={t('CreateNewDir')}
           onClose={() => {
@@ -278,7 +306,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
           bottomActions={[
             {
               label: t('CreateFolder'),
-              disabled: folderDialog.loading || !validateField('string', folderDialog.newPath),
+              disabled:
+                folderDialog.loading ||
+                !validateField('string', folderDialog.newPath),
               icon: 'CheckLine',
               intent: 'success',
               onClick: () => handleCreateDirSubmit(),
@@ -286,7 +316,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
             },
             {
               label: t('CreateFolderAndAddSource'),
-              disabled: folderDialog.loading || !validateField('string', folderDialog.newPath),
+              disabled:
+                folderDialog.loading ||
+                !validateField('string', folderDialog.newPath),
               icon: 'CheckDoubleLine',
               intent: 'success',
               onClick: () => handleCreateDirSubmit(true),
@@ -294,13 +326,13 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
             },
           ]}
         >
-          <ReqoreMessage intent="info" size="small">
-            {t('AddingNewDirectoryTo')} <strong>{folderDialog.abs_path}</strong>.{' '}
-            {t('MultipleSubdirectoriesNewDir')}
+          <ReqoreMessage intent='info' size='small'>
+            {t('AddingNewDirectoryTo')} <strong>{folderDialog.abs_path}</strong>
+            . {t('MultipleSubdirectoriesNewDir')}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
           {folderDialog.error && (
-            <ReqoreMessage intent="danger">{folderDialog.error}</ReqoreMessage>
+            <ReqoreMessage intent='danger'>{folderDialog.error}</ReqoreMessage>
           )}
           <ContentWrapper>
             <FieldWrapper
@@ -309,10 +341,12 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
               isValid={validateField('string', folderDialog.newPath)}
             >
               <Field
-                type="string"
+                type='string'
                 value={folderDialog.newPath}
-                onChange={(_name, value) => setFolderDialog((cur) => ({ ...cur, newPath: value }))}
-                name="new-directory"
+                onChange={(_name, value) =>
+                  setFolderDialog((cur) => ({ ...cur, newPath: value }))
+                }
+                name='new-directory'
               />
             </FieldWrapper>
           </ContentWrapper>
@@ -323,13 +357,18 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
           isOpen
           onClose={() => {
             setManageSourceDirs(false);
-            postMessage(get_message.action, { object_type: get_message.object_type });
+            postMessage(get_message.action, {
+              object_type: get_message.object_type,
+            });
           }}
         />
       )}
       {single && value && showValue ? (
         <>
-          <ReqoreMessage intent={!size(value) ? 'warning' : 'info'} size="small">
+          <ReqoreMessage
+            intent={!size(value) ? 'warning' : 'info'}
+            size='small'
+          >
             {!size(value) ? t('ValueIsEmpty') : value}
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
@@ -339,9 +378,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
         label={label || 'Add / Remove Source Directories'}
         collapsible
         isCollapsed={!expanded}
-        icon="FolderAddLine"
+        icon='FolderAddLine'
         fluid
-        size="small"
+        size='small'
         minimal
         actions={[
           {
@@ -353,7 +392,9 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
         ]}
       >
         {size(items) ? (
-          <StyledTreeScroller>{renderFolders(transformItems(items))}</StyledTreeScroller>
+          <StyledTreeScroller>
+            {renderFolders(transformItems(items))}
+          </StyledTreeScroller>
         ) : (
           <Loader inline />
         )}
@@ -362,4 +403,4 @@ const TreeField: FunctionComponent<ITreeField & IField & IFieldChange & any> = (
   );
 };
 
-export default withMessageHandler()(TreeField);
+export default TreeField;

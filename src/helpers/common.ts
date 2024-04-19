@@ -3,11 +3,19 @@ import { IField } from '../components/FieldWrapper';
 import { TConfigItem } from '../containers/ConfigItemManager/filters';
 import { postMessage } from '../hocomponents/withMessageHandler';
 
-export const maybeSendOnChangeEvent = (field, value, type, interfaceId, sendResponse?: boolean) => {
+export const maybeSendOnChangeEvent = (
+  field,
+  value,
+  type,
+  interfaceId,
+  sendResponse?: boolean
+) => {
   // Check if this field has an on_change message
   if (field.on_change) {
     // Check if on_change is a list
-    const onChange: string[] = isArray(field.on_change) ? field.on_change : [field.on_change];
+    const onChange: string[] = isArray(field.on_change)
+      ? field.on_change
+      : [field.on_change];
     // Post all the actions
     onChange.forEach((action) => {
       // Post the message with this handler
@@ -36,7 +44,10 @@ export const mapFieldsToGroups = (fields: IField[]) => {
   return groups;
 };
 
-export const getUniqueValuesFromConfigItemsByKey = (configItems: TConfigItem[], key: string) => {
+export const getUniqueValuesFromConfigItemsByKey = (
+  configItems: TConfigItem[],
+  key: string
+) => {
   const uniqueValues = new Set();
 
   configItems.forEach((item) => {
@@ -63,4 +74,16 @@ export const getFilteredItems = (
   });
 
   return filteredItems;
+};
+
+export const subTypeToType = (type: string) => {
+  if (type === 'service-methods') {
+    return 'service';
+  } else if (type === 'mapper-methods') {
+    return 'mapper-code';
+  } else if (type === 'error') {
+    return 'errors';
+  }
+
+  return type;
 };

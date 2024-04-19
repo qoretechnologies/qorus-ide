@@ -31,6 +31,7 @@ import {
   isStateValid,
 } from '../../../helpers/fsm';
 import { postMessage } from '../../../hocomponents/withMessageHandler';
+import { IActionSetsHook } from '../../../hooks/useActionSets';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useFetchAutoVarContext } from '../../../hooks/useFetchAutoVarContext';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
@@ -51,7 +52,10 @@ export interface IFSMStateDetailProps {
   onClose: () => void;
   onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean) => void;
   onDelete: (unfilled?: boolean) => void;
+  onFavorite: (data: Partial<IFSMState>) => void;
+  onCloneClick: () => void;
   onSavedStatusChanged?: (hasSaved: boolean) => void;
+  getIsAlreadySaved?: IActionSetsHook['isSingleActionWithNameSaved'];
 }
 
 export const FSMStateDetail = memo(
@@ -60,7 +64,10 @@ export const FSMStateDetail = memo(
     onClose,
     onSubmit,
     onDelete,
+    onCloneClick,
+    onFavorite,
     onSavedStatusChanged,
+    getIsAlreadySaved,
     activeTab,
     inputProvider,
     outputProvider,
@@ -350,6 +357,26 @@ export const FSMStateDetail = memo(
             className: 'state-delete-button',
             icon: 'DeleteBinLine',
             onClick: onDelete,
+          },
+          {
+            disabled: isLoading,
+            tooltip: t('Clone state'),
+            className: 'state-clone-button',
+            icon: 'FileCopyLine',
+            onClick: onCloneClick,
+            show: !data.is_event_trigger,
+          },
+          {
+            disabled: isLoading,
+            tooltip: getIsAlreadySaved(dataToSubmit.name)
+              ? t('Remove from favorites')
+              : t('Save as favorite'),
+            className: 'state-favorite-button',
+            icon: getIsAlreadySaved(dataToSubmit.name)
+              ? 'StarFill'
+              : 'StarLine',
+            intent: getIsAlreadySaved(dataToSubmit.name) ? 'info' : undefined,
+            onClick: () => onFavorite(dataToSubmit),
           },
           {
             show: isCustomBlockFirstPage(),

@@ -20,7 +20,7 @@ import ReactMarkdown from 'react-markdown';
 import useMount from 'react-use/lib/useMount';
 import { compose } from 'recompose';
 import styled from 'styled-components';
-import withMessageHandler, {
+import {
   addMessageListener,
   postMessage,
 } from '../../hocomponents/withMessageHandler';
@@ -737,10 +737,7 @@ const SelectField: React.FC<
   );
 };
 
-export default compose(
-  withTextContext(),
-  withMessageHandler()
-)(SelectField) as React.FC<
+export default compose(withTextContext())(SelectField) as React.FC<
   ISelectField &
     IField &
     Omit<IReqoreControlGroupProps, 'onChange' | 'children'>

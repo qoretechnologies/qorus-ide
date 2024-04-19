@@ -12,11 +12,10 @@ import { SaveColorEffect } from '../../components/Field/multiPair';
 import { ContentWrapper, IField } from '../../components/FieldWrapper';
 import { Messages } from '../../constants/messages';
 import { DraftsContext } from '../../context/drafts';
-import { deleteDraft, getDraftId } from '../../helpers/functions';
+import { getDraftId } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
-import withMessageHandler, { TPostMessage } from '../../hocomponents/withMessageHandler';
 import withStepsConsumer from '../../hocomponents/withStepsConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 import TinyGrid from '../../images/graphy-dark.png';
@@ -36,7 +35,6 @@ export interface IServicesView {
   targetDir: string;
   t: TTranslator;
   workflow: any;
-  postMessage: TPostMessage;
   initialData: any;
 }
 
@@ -59,10 +57,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
   workflow,
   fields,
   selectedFields,
-  postMessage,
-  addMessageListener,
   initialData,
   interfaceId,
+  setInterfaceId,
   resetFields,
   showSteps,
   setShowSteps,
@@ -82,8 +79,11 @@ const ServicesView: FunctionComponent<IServicesView> = ({
   lastStepId,
   isFormValid,
 }) => {
-  const [showConfigItemsManager, setShowConfigItemsManager] = useState<boolean>(false);
-  const [workflowIndex, setWorkflowIndex] = useState(size(interfaceId.workflow));
+  const [showConfigItemsManager, setShowConfigItemsManager] =
+    useState<boolean>(false);
+  const [workflowIndex, setWorkflowIndex] = useState(
+    size(interfaceId.workflow)
+  );
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const theme = useReqoreTheme();
 
@@ -105,7 +105,10 @@ const ServicesView: FunctionComponent<IServicesView> = ({
 
   useDebounce(
     () => {
-      const draftId = getDraftId(initialData.type, interfaceId.workflow[workflowIndex]);
+      const draftId = getDraftId(
+        initialData.type,
+        interfaceId.workflow[workflowIndex]
+      );
 
       if (showSteps && draftId && size(steps)) {
         initialData.saveDraft('workflow', draftId, {
@@ -138,10 +141,11 @@ const ServicesView: FunctionComponent<IServicesView> = ({
       !!workflow ? Messages.EDIT_INTERFACE : Messages.CREATE_INTERFACE,
       undefined,
       {
+        replace: !!workflow,
         iface_kind: 'workflow',
         orig_data: workflow,
         data: newData,
-        iface_id: workflow?.iface_id || interfaceId.workflow[workflowIndex],
+        iface_id: workflow?.id || interfaceId.workflow[workflowIndex],
         open_file_on_success: !onSubmitSuccess,
         no_data_return: !!onSubmitSuccess,
       },
@@ -149,12 +153,8 @@ const ServicesView: FunctionComponent<IServicesView> = ({
     );
 
     if (result.ok) {
-      if (onSubmitSuccess) {
-        onSubmitSuccess(newData);
-      }
-      const fileName = getDraftId(initialData.type, interfaceId.workflow[workflowIndex]);
-      // Delete the draft for this interface
-      deleteDraft('workflow', fileName, false);
+      setInterfaceId('workflow', result.id, workflowIndex);
+      onSubmitSuccess?.(newData);
       resetAllInterfaceData('workflow');
     }
   };
@@ -243,7 +243,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
               style={{ width: '80vw', backgroundColor: '#fff' }}
             >
               <ConfigItemManager
-                type="workflow"
+                type='workflow'
                 interfaceId={interfaceId.workflow}
                 resetFields={resetFields}
                 steps={processSteps(steps, stepsData)}
@@ -259,7 +259,6 @@ const ServicesView: FunctionComponent<IServicesView> = ({
 export default compose(
   withTextContext(),
   withFieldsConsumer(),
-  withMessageHandler(),
   withInitialDataConsumer(),
   withGlobalOptionsConsumer(),
   withStepsConsumer()

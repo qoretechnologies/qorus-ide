@@ -454,7 +454,7 @@ export const Expression = ({
                       flat
                       compact
                       customTheme={{
-                        main: 'warning:darken:1:0.5',
+                        main: 'warning:darken:3:0.5',
                       }}
                       fixed
                       className='expression-remove-arg'

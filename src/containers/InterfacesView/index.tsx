@@ -1,24 +1,45 @@
-import {
-  ReqoreHorizontalSpacer,
-  ReqoreMenu,
-  ReqoreMenuItem,
-  ReqorePanel,
-} from '@qoretechnologies/reqore';
-import { map } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
-import { useMount } from 'react-use';
-import { PositiveColorEffect } from '../../components/Field/multiPair';
+import { ReqorePanel } from '@qoretechnologies/reqore';
+import { useContext, useEffect } from 'react';
+import { useContextSelector } from 'use-context-selector';
 import { IField } from '../../components/FieldWrapper';
-import Loader from '../../components/Loader';
-import { interfaceIcons, interfaceKindToName } from '../../constants/interfaces';
-import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
-import { callBackendBasic } from '../../helpers/functions';
+import { InterfacesContext } from '../../context/interfaces';
 import { IClassConnections } from '../ClassConnectionsManager';
 import { IConnection } from '../InterfaceCreator/connection';
 import { IFSMMetadata, IFSMStates } from '../InterfaceCreator/fsm';
-import { IPipelineElement, IPipelineMetadata } from '../InterfaceCreator/pipeline';
+import {
+  IPipelineElement,
+  IPipelineMetadata,
+} from '../InterfaceCreator/pipeline';
 import { InterfacesViewCollection } from './collection';
+
+export interface IQorusListInterface {
+  label?: string;
+  id: string | number;
+  type?: string;
+  draft?: boolean;
+  hasDraft?: boolean;
+  date?: string;
+  fsmData?: any;
+  data?: {
+    id?: string;
+    date?: string;
+    desc?: string;
+    short_desc?: string;
+    display_name?: string;
+    enabled?: boolean;
+    supports_enable?: boolean;
+    active?: boolean;
+    supports_active?: boolean;
+    last_executed?: number;
+    last_error?: string;
+    next?: string;
+    on_demand?: boolean;
+    running?: boolean;
+    schedule?: Record<string, any>;
+    type?: string;
+  };
+}
 
 export interface IQorusInterface extends Partial<IDraftData> {
   label?: string;
@@ -39,7 +60,16 @@ export interface IQorusInterface extends Partial<IDraftData> {
   date?: string;
 }
 
-export type TQorusInterfaceCount = Record<string, { items: number; drafts: number }>;
+export interface IQorusInterfaceCountItem {
+  items: number;
+  drafts: number;
+  display_name: string;
+  short_desc: string;
+  singular_display_name: string;
+  supports_code?: boolean;
+  url_root: string;
+}
+export type TQorusInterfaceCount = Record<string, IQorusInterfaceCountItem>;
 
 export interface IDraftData {
   interfaceKind: string;
@@ -72,36 +102,22 @@ export interface IDraftData {
   associatedInterface?: string;
 }
 
-export interface IQorusInterfacesViewProps {}
+export interface IQorusInterfacesViewProps {
+  type: string;
+}
 
-export const InterfacesView = () => {
-  const { qorus_instance, subtab, changeTab, is_hosted_instance } = useContext(InitialContext);
-  const [items, setItems] = useState<TQorusInterfaceCount>(null);
-  const [type, setType] = useState(subtab || 'class');
-  const [zoom, setZoom] = useState(0.5);
+export const InterfacesView = ({ type }: IQorusInterfacesViewProps) => {
+  const { changeTab } = useContext(InitialContext);
+  const { categories } = useContextSelector(
+    InterfacesContext,
+    ({ categories }) => ({ categories })
+  );
 
   useEffect(() => {
-    setType(subtab || 'class');
-  }, [subtab]);
-
-  useMount(() => {
-    (async () => {
-      const data = await callBackendBasic(
-        Messages.GET_ALL_INTERFACES_COUNT,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        true
-      );
-
-      setItems(data.data);
-    })();
-  });
-
-  if (!items) {
-    return <Loader text="Loading interfaces" />;
-  }
+    if (!type) {
+      changeTab('Interfaces', 'fsm');
+    }
+  }, [type]);
 
   return (
     <ReqorePanel
@@ -118,25 +134,7 @@ export const InterfacesView = () => {
         paddingBottom: 0,
       }}
     >
-      <ReqoreMenu transparent width="250px">
-        {map(items, (data, iface) => (
-          <ReqoreMenuItem
-            key={iface}
-            icon={interfaceIcons[iface]}
-            flat={type !== iface}
-            effect={type === iface ? PositiveColorEffect : undefined}
-            onClick={() => {
-              changeTab?.('Interfaces', iface);
-              setType(iface);
-            }}
-            badge={[data.items, data.drafts]}
-          >
-            {interfaceKindToName[iface]}
-          </ReqoreMenuItem>
-        ))}
-      </ReqoreMenu>
-      <ReqoreHorizontalSpacer width={10} />
-      <InterfacesViewCollection type={type} zoom={zoom} />
+      <InterfacesViewCollection type={type} {...categories[type]} />
     </ReqorePanel>
   );
 };

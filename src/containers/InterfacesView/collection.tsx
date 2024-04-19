@@ -1,49 +1,47 @@
-import {
-  ReqoreCollection,
-  ReqoreTag,
-  useReqoreProperty,
-} from '@qoretechnologies/reqore';
+import { ReqoreCollection, useReqoreProperty } from '@qoretechnologies/reqore';
 import { TReqoreBadge } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
-import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
-import { capitalize, size } from 'lodash';
+import timeago from 'epoch-timeago';
+import { size } from 'lodash';
 import { useContext, useMemo } from 'react';
+import { useContextSelector } from 'use-context-selector';
+import { IQorusInterfaceCountItem } from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
-  SaveColorEffect,
-  SelectorColorEffect,
+  SynthColorEffect,
   WarningColorEffect,
 } from '../../components/Field/multiPair';
 import Loader from '../../components/Loader';
 import {
   interfaceIcons,
   interfaceKindTransform,
-  interfaceToPlural,
 } from '../../constants/interfaces';
-import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
+import { InterfacesContext } from '../../context/interfaces';
+import { EnableToggle } from '../../handlers/EnableToggle';
 import { deleteDraft } from '../../helpers/functions';
-import { postMessage } from '../../hocomponents/withMessageHandler';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
-import { zoomToSize, zoomToWidth } from '../ConfigItemManager/table';
+import { QodexTestRunModal } from '../InterfaceCreator/fsm/TestRunModal';
 import { InterfacesViewItem } from './item';
 
-export interface IInterfaceViewCollectionProps {
+export interface IInterfaceViewCollectionProps
+  extends IQorusInterfaceCountItem {
   type: string;
-  zoom: number;
 }
-
-let showAsTable = false;
 
 export const InterfacesViewCollection = ({
   type,
-  zoom,
+  display_name,
+  singular_display_name,
 }: IInterfaceViewCollectionProps) => {
   const addNotification = useReqoreProperty('addNotification');
   const confirmAction = useReqoreProperty('confirmAction');
-  const { changeDraft, changeTab, qorus_instance, is_hosted_instance } =
-    useContext(InitialContext);
+  const addModal = useReqoreProperty('addModal');
+  const { changeDraft, changeTab, qorus_instance } = useContext(InitialContext);
+  const { clone } = useContextSelector(InterfacesContext, ({ clone }) => ({
+    clone,
+  }));
 
   const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
     useFetchInterfaces(type);
@@ -62,10 +60,53 @@ export const InterfacesViewCollection = ({
     return size(value.filter((item) => item.draft || item.hasDraft));
   };
 
+  const getTags = (item): IReqoreCollectionItemProps['tags'] => {
+    let tags: IReqoreCollectionItemProps['tags'] = [];
+
+    if (type === 'fsm') {
+      if (!item.data?.on_demand) {
+        tags.push({
+          icon: item.data?.type === 'event' ? 'LightbulbLine' : 'Calendar2Line',
+          tooltip: item.data?.type ? 'Event' : 'Scheduled',
+        });
+      }
+
+      tags = [
+        ...tags,
+        {
+          icon: item.data?.running ? 'PlayCircleLine' : 'PauseCircleLine',
+          intent: item.data?.running ? 'success' : undefined,
+          tooltip: item.data?.running ? 'Running' : 'Not currently running',
+        },
+        {
+          icon: 'HistoryLine',
+          label: item.data?.last_executed
+            ? timeago(item.data?.last_executed)
+            : 'Never',
+        },
+      ];
+    }
+
+    if (item.draft) {
+      tags.push({
+        icon: 'EditLine',
+        label: 'Draft',
+        intent: item.data ? 'pending' : 'success',
+      });
+    }
+
+    return tags;
+  };
+
   const badges = useMemo(() => {
     const badgeList: TReqoreBadge[] = [getRemotesCount()];
 
-    badgeList.push({ label: getDraftsCount(), intent: 'pending' });
+    badgeList.push({
+      label: getDraftsCount(),
+      intent: 'pending',
+      tooltip: 'Number of drafts, click to remove all drafts',
+      onRemoveClick: () => onDeleteClick(type),
+    });
 
     return badgeList;
   }, [getDraftsCount, getRemotesCount, qorus_instance]);
@@ -76,11 +117,17 @@ export const InterfacesViewCollection = ({
 
   return (
     <ReqoreCollection
-      label={capitalize(interfaceToPlural[type]).replace('-', ' ')}
+      label={display_name}
       filterable
-      sortable={false}
+      sortable
+      paging={{
+        itemsPerPage: 100,
+        changePageOnScroll: 'horizontal',
+      }}
+      defaultSortBy='date'
+      defaultSort='desc'
       minimal
-      minColumnWidth={zoomToWidth[zoom]}
+      minColumnWidth='300px'
       badge={badges}
       maxItemHeight={120}
       responsiveActions={false}
@@ -88,41 +135,55 @@ export const InterfacesViewCollection = ({
       actions={[
         {
           icon: 'AddCircleLine',
-          tooltip: `Create new ${type}`,
-          label: 'Create new',
-          minimal: true,
+          label: `Create New ${singular_display_name}`,
           flat: false,
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
-        },
-        {
-          icon: 'CloseLine',
-          tooltip: `Delete ${type} drafts`,
-          effect: WarningColorEffect,
-          minimal: true,
-          flat: false,
-          onClick: () => {
-            onDeleteClick(type);
-          },
+          pill: true,
         },
       ]}
       icon={interfaceIcons[type]}
+      sortKeys={{
+        running: 'Is Running',
+        last_executed: 'Last Executed',
+        on_demand: 'Runs On Demand',
+        date: 'Modified',
+        type: 'Type',
+        id: 'ID',
+      }}
       inputProps={{
         focusRules: {
           type: 'keypress',
           shortcut: 'letters',
+        },
+        pill: true,
+        intent: 'muted',
+        leftIconProps: {
+          size: 'small',
+          intent: 'muted',
         },
       }}
       items={value.map(
         ({
           label,
           data,
+          date,
           draft,
           hasDraft,
           ...rest
         }): IReqoreCollectionItemProps => ({
           label: label || data?.display_name,
           icon: interfaceIcons[type],
+          metadata: {
+            date: date || data?.date,
+            running: data?.running,
+            last_executed: data?.last_executed
+              ? Date.parse(data?.last_executed)
+              : 0,
+            on_demand: data?.on_demand,
+            type: data?.type,
+            id: data?.id,
+          },
           content: <InterfacesViewItem data={data} />,
           contentEffect: {
             gradient: {
@@ -138,11 +199,12 @@ export const InterfacesViewCollection = ({
               },
             },
           },
+          tags: getTags({ label, data, draft, hasDraft, rest }),
           flat: true,
           showHeaderTooltip: true,
           responsiveTitle: false,
           responsiveActions: false,
-          size: zoomToSize[zoom],
+          size: 'small',
           onClick: () => {
             if (draft) {
               changeDraft({
@@ -150,34 +212,17 @@ export const InterfacesViewCollection = ({
                 id: rest.id,
               });
             } else {
-              postMessage(
-                Messages.GET_INTERFACE_DATA,
-                {
-                  type,
-                  id: data?.id,
-                  include_tabs: true,
-                },
-                true
-              );
+              changeTab('CreateInterface', type, data?.id);
             }
           },
           actions: [
-            {
-              as: ReqoreTag,
-              show: draft ? true : false,
-              props: {
-                icon: 'EditLine',
-                label: draft && !data ? 'New' : 'Draft',
-                intent: draft && !data ? 'success' : 'pending',
-                size: 'tiny',
-              } as IReqoreTagProps,
-            },
             {
               icon: 'CloseLine',
               effect: WarningColorEffect,
               tooltip: 'Delete draft',
               size: 'tiny',
               show: draft ? 'hover' : false,
+              compact: true,
               onClick: () => {
                 confirmAction({
                   title: 'Delete draft',
@@ -189,19 +234,53 @@ export const InterfacesViewCollection = ({
               },
             },
             {
-              icon: 'ToggleLine',
-              effect: data?.enabled ? SaveColorEffect : SelectorColorEffect,
-              tooltip: data?.enabled ? 'Disable' : 'Enable',
-              size: 'tiny',
-              show: data?.supports_enable ? 'hover' : false,
-              onClick: () => {
-                onToggleEnabledClick(data.id, !data.enabled);
+              icon: 'PlayLine',
+              leftIconProps: {
+                size: '17px',
               },
+              compact: true,
+              effect: SynthColorEffect,
+              tooltip: 'Execute',
+              size: 'tiny',
+              show:
+                type === 'fsm' && (data?.on_demand || data?.type !== 'event')
+                  ? 'hover'
+                  : false,
+              onClick: () => {
+                addModal({
+                  label: `Execution of "${data?.display_name}"`,
+                  children: <QodexTestRunModal id={rest.id} liveRun />,
+                });
+              },
+            },
+            {
+              icon: 'FileCopyLine',
+              compact: true,
+              effect: SynthColorEffect,
+              tooltip: 'Clone This Interface',
+              size: 'tiny',
+              show: data ? 'hover' : false,
+              onClick: () => {
+                clone(type, rest.id);
+              },
+            },
+            {
+              as: EnableToggle,
+              props: {
+                enabled: data?.enabled,
+                type,
+                id: data?.id,
+                size: 'tiny',
+                label: '',
+                compact: true,
+              },
+              show: data?.supports_enable ? true : false,
             },
             {
               icon: 'DeleteBinLine',
               effect: NegativeColorEffect,
               tooltip: 'Delete',
+              compact: true,
               size: 'tiny',
               show: !draft || data ? 'hover' : false,
               onClick: () => {

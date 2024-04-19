@@ -52,6 +52,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
   errors,
   onSubmitSuccess,
   interfaceId,
+  initialData,
 }) => {
   const [errorIndex, setErrorIndex] = useState(size(interfaceId.error));
   const [errorsIndex, setErrorsIndex] = useState(size(interfaceId['errors']));
@@ -104,7 +105,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
         </div>
         <div style={{ display: showErrors ? 'flex' : 'none', width: '100%' }}>
           <SidePanel>
-            <ReqoreMenu style={{ flex: 1 }} width="250px" rounded>
+            <ReqoreMenu style={{ flex: 1 }} width='250px' rounded>
               <ReqoreMenuDivider label={t('AddErrorsTitle')} />
               <ReqoreMenuItem
                 icon={'MenuAddLine'}
@@ -114,27 +115,36 @@ const ServicesView: FunctionComponent<IServicesView> = ({
               >
                 {t('AddError')}
               </ReqoreMenuItem>
-              {subErrors.map((method: { id: number; name?: string }, index: number) => (
-                <MethodSelector
-                  key={method.id}
-                  selected={method.id === activeError}
-                  isValid={isSubItemValid(method.id, 'error', errorsIndex)}
-                  onClick={() => setActiveError(method.id)}
-                  onRemoveClick={
-                    errorsCount !== 1
-                      ? () => {
-                          setSubErrors((current) =>
-                            current.filter((currentMethod) => currentMethod.id !== method.id)
-                          );
-                          removeSubItemFromFields(method.id, 'error', errorsIndex);
-                          setErrorsCount((current: number) => current - 1);
-                        }
-                      : undefined
-                  }
-                >
-                  {method.name || `${t('Error')} ${method.id}`}
-                </MethodSelector>
-              ))}
+              {subErrors.map(
+                (method: { id: number; name?: string }, index: number) => (
+                  <MethodSelector
+                    key={method.id}
+                    selected={method.id === activeError}
+                    isValid={isSubItemValid(method.id, 'error', errorsIndex)}
+                    onClick={() => setActiveError(method.id)}
+                    onRemoveClick={
+                      errorsCount !== 1
+                        ? () => {
+                            setSubErrors((current) =>
+                              current.filter(
+                                (currentMethod) =>
+                                  currentMethod.id !== method.id
+                              )
+                            );
+                            removeSubItemFromFields(
+                              method.id,
+                              'error',
+                              errorsIndex
+                            );
+                            setErrorsCount((current: number) => current - 1);
+                          }
+                        : undefined
+                    }
+                  >
+                    {method.name || `${t('Error')} ${method.id}`}
+                  </MethodSelector>
+                )
+              )}
             </ReqoreMenu>
           </SidePanel>
           <ReqoreHorizontalSpacer width={10} />
@@ -144,8 +154,11 @@ const ServicesView: FunctionComponent<IServicesView> = ({
             interfaceIndex={errorsIndex}
             onBackClick={() => {
               hasAllMethodsLoaded = false;
-              setActiveError(null);
+              setActiveError(1);
               setShowErrors(false);
+              if (errors) {
+                initialData.changeInitialData('errors.active_error', null);
+              }
             }}
             onDataFinishLoadingRecur={(id) => {
               if (!hasAllMethodsLoaded) {
@@ -157,7 +170,9 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                 }
               }
             }}
-            initialInterfaceId={errors ? errors.iface_id : interfaceId.errors[errorIndex]}
+            initialInterfaceId={
+              errors ? errors.id : interfaceId.errors[errorIndex]
+            }
             type={'error'}
             activeId={activeError}
             isEditing={!!errors}
@@ -168,17 +183,23 @@ const ServicesView: FunctionComponent<IServicesView> = ({
               hasAllMethodsLoaded = false;
             }}
             forceSubmit
-            data={errorsData && errorsData.find((method) => method.id === activeError)}
+            data={
+              errorsData &&
+              errorsData.find((method) => method.id === activeError)
+            }
             parentData={errors}
             onNameChange={(methodId: number, name: string) => {
               setSubErrors((currentMethods: { id: number; name: string }[]) =>
-                currentMethods.reduce((cur, method: { id: number; name: string }) => {
-                  if (methodId === method.id) {
-                    method.name = name;
-                  }
+                currentMethods.reduce(
+                  (cur, method: { id: number; name: string }) => {
+                    if (methodId === method.id) {
+                      method.name = name;
+                    }
 
-                  return [...cur, method];
-                }, [])
+                    return [...cur, method];
+                  },
+                  []
+                )
               );
             }}
           />

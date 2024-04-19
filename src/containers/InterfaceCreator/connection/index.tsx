@@ -1,3 +1,4 @@
+import { ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
 import { capitalize, isEqual, some } from 'lodash';
 import map from 'lodash/map';
 import size from 'lodash/size';
@@ -7,9 +8,14 @@ import shortid from 'shortid';
 import Content from '../../../components/Content';
 import Field from '../../../components/Field';
 import { SaveColorEffect } from '../../../components/Field/multiPair';
+import { IOptions } from '../../../components/Field/systemOptions';
 import { getProtocol } from '../../../components/Field/urlField';
 import FieldGroup from '../../../components/FieldGroup';
-import { ContentWrapper, FieldWrapper, IField } from '../../../components/FieldWrapper';
+import {
+  ContentWrapper,
+  FieldWrapper,
+  IField,
+} from '../../../components/FieldWrapper';
 import Loader from '../../../components/Loader';
 import { Messages } from '../../../constants/messages';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
@@ -17,27 +23,31 @@ import { GlobalContext } from '../../../context/global';
 import { InitialContext } from '../../../context/init';
 import { TextContext } from '../../../context/text';
 import { mapFieldsToGroups } from '../../../helpers/common';
-import { deleteDraft, getDraftId, hasValue } from '../../../helpers/functions';
+import { getDraftId, hasValue } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import { addMessageListener, postMessage } from '../../../hocomponents/withMessageHandler';
+import {
+  addMessageListener,
+  postMessage,
+} from '../../../hocomponents/withMessageHandler';
 
 export interface IConnection {
-  target_dir: string;
-  target_file?: string;
-  name: string;
+  name?: string;
+  display_name: string;
+  short_desc?: string;
   desc: string;
   url: string;
-  connection_options?: { [key: string]: any };
+  options?: IOptions;
 }
 
-export const ConnectionView = ({ onSubmitSuccess }) => {
-  const { connection, confirmAction, callBackend, saveDraft } = useContext(InitialContext);
-  const { resetAllInterfaceData, setConnectionReset } = useContext(GlobalContext);
+export const ConnectionView = ({ onSubmitSuccess, connection }) => {
+  const { confirmAction, callBackend, saveDraft } = useContext(InitialContext);
+  const { resetAllInterfaceData, setConnectionReset } =
+    useContext(GlobalContext);
   const t = useContext(TextContext);
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
 
   const [data, setData] = useState<IConnection>({
-    connection_options: {},
+    options: {},
     ...(connection || {}),
   });
   const [interfaceId, setInterfaceId] = useState(null);
@@ -49,7 +59,7 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
 
       // Remove the connection options if they are empty
       if (name === 'connection_options' && size(value) === 0) {
-        delete result.connection_options;
+        delete result.options;
       } else {
         result[name] = value;
       }
@@ -71,7 +81,11 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
       true
     );
 
-    postMessage(Messages.GET_FIELDS, { iface_kind: 'connection', is_editing: !!connection }, true);
+    postMessage(
+      Messages.GET_FIELDS,
+      { iface_kind: 'connection', is_editing: !!connection },
+      true
+    );
   });
 
   const applyDraft = () => {
@@ -80,7 +94,10 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
       'connection',
       undefined,
       connection,
-      ({ connectionData: { fields, data }, interfaceId: ifaceId }: IDraftData) => {
+      ({
+        connectionData: { fields, data },
+        interfaceId: ifaceId,
+      }: IDraftData) => {
         setInterfaceId(ifaceId);
         setData(data);
         setFields(fields);
@@ -105,10 +122,10 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
 
       if (
         draftId &&
-        (hasValue(data.target_dir) ||
+        (hasValue(data.display_name) ||
           hasValue(data.desc) ||
           hasValue(data.name) ||
-          hasValue(data.target_file) ||
+          hasValue(data.short_desc) ||
           (hasValue(data.url) && data.url !== '://')) &&
         hasChanged
       ) {
@@ -135,21 +152,20 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
 
   const isDataValid = () => {
     return (
-      validateField('string', data.target_dir) &&
-      validateField('string', data.name) &&
+      validateField('string', data.display_name) &&
       validateField('string', data.desc) &&
       validateField('url', data.url) &&
-      (!data.connection_options ||
-        size(data.connection_options) === 0 ||
-        validateField('options', data.connection_options))
+      (!data.options ||
+        size(data.options) === 0 ||
+        validateField('options', data.options))
     );
   };
 
   const handleSubmitClick = async () => {
     let fixedMetadata = { ...data };
 
-    if (size(fixedMetadata.connection_options) === 0) {
-      delete fixedMetadata.connection_options;
+    if (size(fixedMetadata.options) === 0) {
+      delete fixedMetadata.options;
     }
 
     const result = await callBackend(
@@ -169,12 +185,8 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
       if (onSubmitSuccess) {
         onSubmitSuccess(data);
       }
-      const fileName = getDraftId(connection, interfaceId);
 
-      deleteDraft('connection', fileName, false);
-
-      reset();
-      resetAllInterfaceData('connection');
+      setInterfaceId(result.id);
     }
   };
 
@@ -185,7 +197,8 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
   const renderFields = (fields: IField[]) => {
     return map(fields, (field: IField) => (
       <FieldWrapper
-        name="selected-field"
+        key={field.name}
+        name='selected-field'
         label={t(`field-label-${field.name}`)}
         desc={t(`field-desc-${field.name}`)}
         info={
@@ -230,7 +243,9 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
         );
       }
 
-      return <React.Fragment key={groupName}>{renderFields(fields)}</React.Fragment>;
+      return (
+        <React.Fragment key={groupName}>{renderFields(fields)}</React.Fragment>
+      );
     });
   };
 
@@ -249,7 +264,7 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
                 () => {
                   reset();
                 },
-                'Reset',
+                'Confirm',
                 'warning'
               );
             },
@@ -270,52 +285,37 @@ export const ConnectionView = ({ onSubmitSuccess }) => {
         <ContentWrapper>
           {renderGroups(mapFieldsToGroups(fields))}
           <FieldWrapper
-            name="selected-field"
+            name='selected-field'
             desc={t(`field-desc-url`)}
             label={t('field-label-url')}
-            isValid={validateField('url', data.url)}
+            isValid={
+              validateField('url', data.url) &&
+              (data.options && size(data.options)
+                ? validateField('options', data.options)
+                : true)
+            }
             collapsible={false}
           >
             <Field
-              type="url"
+              type='url'
               value={data.url}
-              url="options/remote?list"
+              url='options/remote?list'
               onChange={handleDataChange}
-              name="url"
+              name='url'
             />
-          </FieldWrapper>
-          <FieldGroup
-            label="Connection options"
-            isValid={
-              validateField('url', data.url) &&
-              (data.connection_options && size(data.connection_options)
-                ? validateField('options', data.connection_options)
-                : true)
-            }
-          >
             {getProtocol(data.url) && (
-              <FieldWrapper
-                name="selected-field"
-                desc={t(`field-desc-connection_options`)}
-                label={t('field-label-options')}
-                info={t('Optional')}
-                isValid={
-                  data.connection_options && size(data.connection_options)
-                    ? validateField('options', data.connection_options)
-                    : true
-                }
-                collapsible={false}
-              >
+              <>
+                <ReqoreVerticalSpacer height={10} />
                 <Field
-                  type="options"
-                  value={data.connection_options}
+                  type='options'
+                  value={data.options}
                   url={`remote/${getProtocol(data.url)}`}
                   onChange={handleDataChange}
-                  name="connection_options"
+                  name='connection_options'
                 />
-              </FieldWrapper>
+              </>
             )}
-          </FieldGroup>
+          </FieldWrapper>
         </ContentWrapper>
       </Content>
     </>

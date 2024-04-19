@@ -26,7 +26,6 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { isObject } from 'util';
-import { InitialContext } from '../../context/init';
 import { TextContext } from '../../context/text';
 import { fetchData, insertAtIndex } from '../../helpers/functions';
 import {
@@ -135,7 +134,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
     (newOptions, option, optionName) => {
       return {
         ...newOptions,
-        [optionName]: option?.value,
+        [optionName]: typeof option === 'object' ? option?.value : option,
       };
     },
     {}
@@ -343,7 +342,6 @@ const Options = ({
   const [operators, setOperators] = useState<IOperatorsSchema | undefined>(
     undefined
   );
-  const { qorus_instance }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(rest.options ? false : true);
@@ -351,7 +349,7 @@ const Options = ({
   const getUrl = () => customUrl || `/options/${url}`;
 
   useMount(() => {
-    if (qorus_instance && (url || customUrl)) {
+    if (url || customUrl) {
       (async () => {
         setOptions(undefined);
         setLoading(true);
@@ -371,7 +369,7 @@ const Options = ({
         onOptionsLoaded?.(data.data);
       })();
     }
-    if (qorus_instance && operatorsUrl) {
+    if (operatorsUrl) {
       (async () => {
         setOperators(undefined);
         setLoading(true);
@@ -391,7 +389,7 @@ const Options = ({
   });
 
   useUpdateEffect(() => {
-    if ((url || customUrl) && qorus_instance) {
+    if (url || customUrl) {
       (async () => {
         setOptions(undefined);
         setError(null);
@@ -414,7 +412,7 @@ const Options = ({
         onChange(name, fixOptions({}, data.data));
       })();
     }
-  }, [url, qorus_instance, customUrl]);
+  }, [url, customUrl]);
 
   useEffect(() => {
     setOptions(rest.options);
@@ -426,7 +424,7 @@ const Options = ({
   }, [JSON.stringify(options)]);
 
   useUpdateEffect(() => {
-    if (operatorsUrl && qorus_instance) {
+    if (operatorsUrl) {
       (async () => {
         setOperators(undefined);
         setLoading(true);
@@ -443,7 +441,7 @@ const Options = ({
         setOperators(data.data);
       })();
     }
-  }, [operatorsUrl, qorus_instance]);
+  }, [operatorsUrl]);
 
   const templates = useTemplates(allowTemplates, rest.stringTemplates);
 
@@ -584,6 +582,73 @@ const Options = ({
     onChange(name, undefined);
   };
 
+  const buildBadges = useCallback(
+    (option: IOptionsSchemaArg): IReqorePanelProps['badge'] => {
+      const badges: IReqorePanelProps['badge'] = [];
+
+      if (option.required) {
+        badges.push({
+          icon: 'Asterisk',
+          leftIconProps: {
+            size: 'tiny',
+          },
+          tooltip: t('This option is required'),
+        });
+      }
+
+      if (option.has_dependents) {
+        badges.push({
+          icon: 'LinkUnlink',
+          intent: 'info',
+          tooltip: t(
+            'Other options depend on this option, changing it may result in configuration changes.'
+          ),
+        });
+      }
+
+      return badges;
+    },
+    []
+  );
+
+  if (
+    (operatorsUrl && !operators) ||
+    (!rest.options && !options) ||
+    templates.loading ||
+    loading
+  ) {
+    return (
+      <ReqorePanel fill flat transparent>
+        <ReqoreSpinner
+          iconColor='info'
+          type={3}
+          centered
+          size='big'
+          iconProps={{
+            image:
+              'https://hq.qoretechnologies.com:8092/api/public/apps/QorusBuiltinApi/qorus-builtin-api.svg',
+          }}
+          labelEffect={{
+            uppercase: true,
+            spaced: 4,
+            textSize: 'small',
+            weight: 'bold',
+          }}
+        >
+          {t('LoadingOptions')}
+        </ReqoreSpinner>
+      </ReqorePanel>
+    );
+  }
+
+  if (!options || !size(options)) {
+    return (
+      <ReqoreMessage intent='warning' opaque={false}>
+        {t('NoOptionsAvailable')}
+      </ReqoreMessage>
+    );
+  }
+
   const fixedValue: IOptions = value;
   const removeSelectedOption = (optionName: string) => {
     const newValue = cloneDeep(value);
@@ -638,7 +703,7 @@ const Options = ({
   const filteredOptions: IOptionsSchema = reduce(
     options,
     (newOptions, option, name) => {
-      if (fixedValue && fixedValue[name]) {
+      if (fixedValue && name in fixedValue) {
         return newOptions;
       }
 
@@ -678,84 +743,10 @@ const Options = ({
     return intent || options[name].intent;
   };
 
-  const buildBadges = useCallback(
-    (option: IOptionsSchemaArg): IReqorePanelProps['badge'] => {
-      const badges: IReqorePanelProps['badge'] = [];
-
-      if (option.required) {
-        badges.push({
-          icon: 'Asterisk',
-          leftIconProps: {
-            size: 'tiny',
-          },
-          tooltip: t('This option is required'),
-        });
-      }
-
-      if (option.has_dependents) {
-        badges.push({
-          icon: 'LinkUnlink',
-          intent: 'info',
-          tooltip: t(
-            'Other options depend on this option, changing it may result in configuration changes.'
-          ),
-        });
-      }
-
-      return badges;
-    },
-    []
-  );
-
-  if (!qorus_instance) {
-    return (
-      <ReqoreMessage intent='warning'>
-        {t('OptionsQorusInstanceRequired')}
-      </ReqoreMessage>
-    );
-  }
-
   if (error) {
     return (
       <ReqoreMessage intent='danger' title={t('ErrorLoadingOptions')}>
         {t(error)}
-      </ReqoreMessage>
-    );
-  }
-
-  if (
-    (operatorsUrl && !operators) ||
-    (!rest.options && !options) ||
-    templates.loading
-  ) {
-    return (
-      <ReqorePanel fill flat transparent>
-        <ReqoreSpinner
-          iconColor='info'
-          type={3}
-          centered
-          size='big'
-          iconProps={{
-            image:
-              'https://hq.qoretechnologies.com:8092/api/public/apps/QorusBuiltinApi/qorus-builtin-api.svg',
-          }}
-          labelEffect={{
-            uppercase: true,
-            spaced: 4,
-            textSize: 'small',
-            weight: 'bold',
-          }}
-        >
-          {t('LoadingOptions')}
-        </ReqoreSpinner>
-      </ReqorePanel>
-    );
-  }
-
-  if (!options || !size(options)) {
-    return (
-      <ReqoreMessage intent='warning' opaque={false}>
-        {t('NoOptionsAvailable')}
       </ReqoreMessage>
     );
   }
@@ -791,6 +782,30 @@ const Options = ({
               </>
             ) : null}
             {children}
+            {size(filteredOptions) >= 1 && !readOnly ? (
+              <>
+                <ReqoreVerticalSpacer height={10} />
+                <SelectField
+                  name='options'
+                  defaultItems={Object.keys(filteredOptions).map(
+                    (option): ISelectFieldItem => ({
+                      name: option,
+                      desc: options[option].desc,
+                      short_desc: options[option].short_desc,
+                      disabled: options[option].disabled,
+                      display_name: options[option].display_name,
+                      intent: options[option].intent,
+                      messages: options[option].messages,
+                    })
+                  )}
+                  fill
+                  onChange={(_name, value) => addSelectedOption(value)}
+                  placeholder={`${t(placeholder || 'AddNewOption')} (${size(
+                    filteredOptions
+                  )})`}
+                />
+              </>
+            ) : null}
           </>
         )}
         badge={size(fixedValue)}
@@ -802,7 +817,7 @@ const Options = ({
           ({ type, ...other }, optionName): IReqoreCollectionItemProps => ({
             label: options[optionName]?.display_name || optionName,
             customTheme: {
-              main: 'main:lighten',
+              main: 'main:darken:1',
             },
             icon: !isOptionValid(optionName, type, other.value)
               ? 'SpamFill'
@@ -999,31 +1014,6 @@ const Options = ({
         )}
         {...rest}
       />
-
-      {size(filteredOptions) >= 1 && !readOnly ? (
-        <>
-          {rest.flat ? null : <ReqoreVerticalSpacer height={10} />}
-          <SelectField
-            name='options'
-            defaultItems={Object.keys(filteredOptions).map(
-              (option): ISelectFieldItem => ({
-                name: option,
-                desc: options[option].desc,
-                short_desc: options[option].short_desc,
-                disabled: options[option].disabled,
-                display_name: options[option].display_name,
-                intent: options[option].intent,
-                messages: options[option].messages,
-              })
-            )}
-            fill
-            onChange={(_name, value) => addSelectedOption(value)}
-            placeholder={`${t(placeholder || 'AddNewOption')} (${size(
-              filteredOptions
-            )})`}
-          />
-        </>
-      ) : null}
     </>
   );
 };

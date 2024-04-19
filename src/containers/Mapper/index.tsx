@@ -44,7 +44,6 @@ import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import withInitialDataConsumer from '../../hocomponents/withInitialDataConsumer';
 import withMapperConsumer from '../../hocomponents/withMapperConsumer';
-import withMessageHandler, { TPostMessage } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
 
 const FIELD_HEIGHT = 31;
@@ -77,9 +76,9 @@ export const StyledMapperWrapper = styled.div`
   margin: 0 auto;
 `;
 
-export const StyledFieldsWrapper: React.FC<IReqoreControlGroupProps & { width?: string }> = styled(
-  ReqoreControlGroup
-)`
+export const StyledFieldsWrapper: React.FC<
+  IReqoreControlGroupProps & { width?: string }
+> = styled(ReqoreControlGroup)`
   width: ${({ width }) => width || '300px'} !important;
 `;
 
@@ -122,7 +121,8 @@ export const StyledMapperFieldWrapper = styled(ReqoreControlGroup)`
                     right: 5px;
                   `};
             top: ${FIELD_HEIGHT}px;
-            height: ${childrenCount * (FIELD_HEIGHT + FIELD_MARGIN) - FIELD_HEIGHT / 2}px;
+            height: ${childrenCount * (FIELD_HEIGHT + FIELD_MARGIN) -
+            FIELD_HEIGHT / 2}px;
             background-color: ${({ theme }) => theme.intents.muted};
             z-index: 0;
           }
@@ -154,7 +154,9 @@ export const StyledMapperFieldWrapper = styled(ReqoreControlGroup)`
       : null}
 `;
 
-export const StyledMapperField: React.FC<IReqoreButtonProps> = styled(ReqoreButton)``;
+export const StyledMapperField: React.FC<IReqoreButtonProps> = styled(
+  ReqoreButton
+)``;
 
 const StyledLine = styled.line`
   stroke-width: 1px;
@@ -186,8 +188,18 @@ export interface IMapperCreatorProps {
   outputsLoading: boolean;
   setOutputsLoading: (loading: boolean) => void;
   onBackClick: () => void;
-  addField: (fieldsType: string, path: string, name: string, data?: any) => void;
-  editField: (fieldsType: string, path: string, name: string, data?: any) => void;
+  addField: (
+    fieldsType: string,
+    path: string,
+    name: string,
+    data?: any
+  ) => void;
+  editField: (
+    fieldsType: string,
+    path: string,
+    name: string,
+    data?: any
+  ) => void;
   isFormValid: boolean;
   setMapperKeys: (keys: any) => void;
   mapperKeys: any;
@@ -197,7 +209,6 @@ export interface IMapperCreatorProps {
   setInputOptionProvider: any;
   setOutputOptionProvider: any;
   isEditing?: boolean;
-  postMessage: TPostMessage;
 }
 
 export interface IMapperRelation {
@@ -247,7 +258,6 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
   setHideInputSelector,
   setHideOutputSelector,
   isEditingMapper: isEditing,
-  postMessage,
   interfaceId,
   getUrlFromProvider,
   mapperSubmit,
@@ -300,11 +310,16 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
           (newResult, relation, outputField) => {
             if (relation.context) {
               // check if the field exists in inputs
-              const contextInputFieldName = getStaticDataFieldname(relation.context);
+              const contextInputFieldName = getStaticDataFieldname(
+                relation.context
+              );
 
               if (
                 hasStaticDataField(relation.context) &&
-                (!contextFields || !contextFields.find((cF) => cF.path === contextInputFieldName))
+                (!contextFields ||
+                  !contextFields.find(
+                    (cF) => cF.path === contextInputFieldName
+                  ))
               ) {
                 hasFixedContext = true;
                 return {
@@ -341,11 +356,11 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     return <p> Loading context... </p>;
   }
 
-  const saveRelationData: (outputPath: string, data: any, merge?: boolean) => void = (
-    outputPath,
-    data,
-    merge
-  ) => {
+  const saveRelationData: (
+    outputPath: string,
+    data: any,
+    merge?: boolean
+  ) => void = (outputPath, data, merge) => {
     setRelations((current) => {
       const result = { ...current };
       // Check if this output already exists
@@ -369,34 +384,44 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     });
   };
 
-  const removeRelation: (outputPath: string, usesContext?: boolean, isInputHash?: boolean) => void =
-    (outputPath, usesContext, isInputHash) => {
-      if (inputsError || outputsError) {
-        return;
-      }
-      // Remove the selected relation
-      // @ts-ignore
-      setRelations((current: any): any =>
-        reduce(
-          current,
-          (newRelations, rel: any, relationOutput): boolean => {
-            if (relationOutput === outputPath) {
-              return {
-                ...newRelations,
-                [relationOutput]: omit(
-                  rel,
-                  usesContext ? ['context'] : isInputHash ? ['use_input_record'] : ['name']
-                ),
-              };
-            }
-            return { ...newRelations, [relationOutput]: rel };
-          },
-          {}
-        )
-      );
-    };
+  const removeRelation: (
+    outputPath: string,
+    usesContext?: boolean,
+    isInputHash?: boolean
+  ) => void = (outputPath, usesContext, isInputHash) => {
+    if (inputsError || outputsError) {
+      return;
+    }
+    // Remove the selected relation
+    // @ts-ignore
+    setRelations((current: any): any =>
+      reduce(
+        current,
+        (newRelations, rel: any, relationOutput): boolean => {
+          if (relationOutput === outputPath) {
+            return {
+              ...newRelations,
+              [relationOutput]: omit(
+                rel,
+                usesContext
+                  ? ['context']
+                  : isInputHash
+                  ? ['use_input_record']
+                  : ['name']
+              ),
+            };
+          }
+          return { ...newRelations, [relationOutput]: rel };
+        },
+        {}
+      )
+    );
+  };
 
-  const removeFieldRelations: (path: string, type: string) => void = (path, type) => {
+  const removeFieldRelations: (path: string, type: string) => void = (
+    path,
+    type
+  ) => {
     // Remove the selected relation
     // @ts-ignore
     setRelations((current) =>
@@ -422,11 +447,11 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     );
   };
 
-  const renameFieldRelation: (oldPath: string, newPath: string, type: string) => void = (
-    oldPath,
-    newPath,
-    type
-  ) => {
+  const renameFieldRelation: (
+    oldPath: string,
+    newPath: string,
+    type: string
+  ) => void = (oldPath, newPath, type) => {
     // Remove the selected relation
     // @ts-ignore
     setRelations((current) =>
@@ -505,7 +530,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
             types.includes('any') ||
             output.type.types_accepted.includes('any') ||
             (size(types) <= size(output.type.types_accepted) &&
-              output.type.types_accepted.some((type: string) => types.includes(type)))
+              output.type.types_accepted.some((type: string) =>
+                types.includes(type)
+              ))
         )
         .forEach((output) => {
           if (isAvailableForDrop(output.path)) {
@@ -527,12 +554,17 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     const uniqueRoles: string[] = reduce(
       relations[outputPath],
       (roles, _value, key) =>
-        mapperKeys[key].unique_roles ? [...roles, ...mapperKeys[key].unique_roles] : roles,
+        mapperKeys[key].unique_roles
+          ? [...roles, ...mapperKeys[key].unique_roles]
+          : roles,
       []
     );
     // Check if none of the keys roles & a * role isn't
     // yet included
-    if (unique_roles.every((role) => !uniqueRoles.includes(role)) && !uniqueRoles.includes('*')) {
+    if (
+      unique_roles.every((role) => !uniqueRoles.includes(role)) &&
+      !uniqueRoles.includes('*')
+    ) {
       return true;
     }
     return false;
@@ -556,7 +588,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     const field = fieldTypes[type].find((input) => input.path === name);
     if (field) {
       // Return the color
-      return TYPE_COLORS[field.type.types_returned[0].replace(/</g, '').replace(/>/g, '')];
+      return TYPE_COLORS[
+        field.type.types_returned[0].replace(/</g, '').replace(/>/g, '')
+      ];
     }
     return null;
   };
@@ -665,7 +699,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     else {
       saveRelationData(
         outputPath,
-        usesContext ? { context: `$static:{${inputPath}}` } : { name: inputPath },
+        usesContext
+          ? { context: `$static:{${inputPath}}` }
+          : { name: inputPath },
         true
       );
     }
@@ -700,7 +736,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
     // Create the mapper field options type list
     const relationTypeList = [];
     forEach(mapper.fields, (relationData, outputFieldName) => {
-      const outputField = flattenedOutputs.find((o) => o.path === outputFieldName);
+      const outputField = flattenedOutputs.find(
+        (o) => o.path === outputFieldName
+      );
       // Go through the data in the output field relation
       forEach(relationData, (_, relationName) => {
         relationTypeList.push({
@@ -770,7 +808,8 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
       relations,
       (relation, outputPath) =>
         outputPath === path &&
-        ('name' in relation || ('context' in relation && relation.context.startsWith('$static:')))
+        ('name' in relation ||
+          ('context' in relation && relation.context.startsWith('$static:')))
     );
   };
 
@@ -830,7 +869,11 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
               icon: 'DeleteBinLine',
               effect: NegativeColorEffect,
               onClick: () => {
-                handleClick(selectedField.fieldType)(selectedField, false, true);
+                handleClick(selectedField.fieldType)(
+                  selectedField,
+                  false,
+                  true
+                );
                 setSelectedField(undefined);
               },
               show: selectedField.isCustom === true,
@@ -854,7 +897,12 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
             icon: 'HistoryLine',
             disabled: inputsLoading || outputsLoading,
             onClick: () => {
-              initialData.confirmAction('ResetFieldsConfirm', reset, 'Reset', 'warning');
+              initialData.confirmAction(
+                'ResetFieldsConfirm',
+                reset,
+                'Reset',
+                'warning'
+              );
             },
           },
           {
@@ -878,7 +926,7 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
             <div style={{ width: '50%' }}>
               <Connectors
                 title={t('Input fields')}
-                providerType="inputs"
+                providerType='inputs'
                 value={inputOptionProvider}
                 onChange={(_name, provider) => {
                   setInputOptionProvider(provider);
@@ -894,7 +942,7 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
             <div style={{ width: '50%' }}>
               <Connectors
                 title={t('Output fields')}
-                providerType="outputs"
+                providerType='outputs'
                 value={outputOptionProvider}
                 onChange={(_name, provider) => {
                   setOutputOptionProvider(provider);
@@ -911,7 +959,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
           style={{
             width: '100%',
             marginTop:
-              isFromConnectors || isEditing || (hideInputSelector && hideOutputSelector)
+              isFromConnectors ||
+              isEditing ||
+              (hideInputSelector && hideOutputSelector)
                 ? 0
                 : '15px',
             padding: 10,
@@ -927,8 +977,8 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                 <ReqorePanel
                   badge={'hash<auto>'}
                   label={'Input'}
-                  size="small"
-                  id="input-provider-info"
+                  size='small'
+                  id='input-provider-info'
                   responsiveActions={false}
                   responsiveTitle={false}
                   flat
@@ -939,7 +989,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                   }}
                   tooltip={{
                     content: (
-                      <p style={{ wordBreak: 'break-all' }}>{getUrlFromProvider('input')}</p>
+                      <p style={{ wordBreak: 'break-all' }}>
+                        {getUrlFromProvider('input')}
+                      </p>
                     ),
                   }}
                   actions={[
@@ -968,43 +1020,49 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                       field={input}
                       hasRelation={hasInputRelation(input.path)}
                       id={index + 1}
-                      lastChildIndex={getLastChildIndex(input, flattenedInputs) - index}
+                      lastChildIndex={
+                        getLastChildIndex(input, flattenedInputs) - index
+                      }
                       onClick={() => {
                         setSelectedField({
                           ...input,
                           fieldType: 'inputs',
                         });
                       }}
-                      hasAvailableOutput={hasAvailableRelation(input.type.types_returned)}
+                      hasAvailableOutput={hasAvailableRelation(
+                        input.type.types_returned
+                      )}
                     />
                   ))
                 : null}
               {!inputsError &&
               size(flattenedInputs) === 0 &&
               !(hideInputSelector && inputOptionProvider?.can_manage_fields) ? (
-                <ReqorePanel intent="warning">
+                <ReqorePanel intent='warning'>
                   {inputOptionProvider?.type === 'factory'
                     ? t('NoMapperFieldsAvailable')
                     : t('MapperNoInputFields')}
                 </ReqorePanel>
               ) : null}
-              {!inputsError && hideInputSelector && inputOptionProvider?.can_manage_fields && (
-                <ReqoreButton
-                  fluid
-                  minimal
-                  intent="success"
-                  icon="AddLine"
-                  onClick={() => handleClick('inputs')()}
-                >
-                  {t('AddNewField')}
-                </ReqoreButton>
-              )}
+              {!inputsError &&
+                hideInputSelector &&
+                inputOptionProvider?.can_manage_fields && (
+                  <ReqoreButton
+                    fluid
+                    minimal
+                    intent='success'
+                    icon='AddLine'
+                    onClick={() => handleClick('inputs')()}
+                  >
+                    {t('AddNewField')}
+                  </ReqoreButton>
+                )}
               {size(flattenedContextInputs) !== 0 && (
                 <ReqorePanel
                   badge={'hash<auto>'}
                   label={t('StaticData')}
-                  size="small"
-                  id="input-provider-info-static-data"
+                  size='small'
+                  id='input-provider-info-static-data'
                   responsiveActions={false}
                   flat
                   isCollapsed
@@ -1013,7 +1071,11 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                     wordBreak: 'break-all',
                   }}
                   tooltip={{
-                    content: <p style={{ wordBreak: 'break-all' }}>{t('StaticDataFieldDesc')}</p>,
+                    content: (
+                      <p style={{ wordBreak: 'break-all' }}>
+                        {t('StaticDataFieldDesc')}
+                      </p>
+                    ),
                   }}
                 />
               )}
@@ -1026,7 +1088,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                       {...input}
                       field={input}
                       id={(flattenedInputs?.length || 0) + (index + 1)}
-                      lastChildIndex={getLastChildIndex(input, flattenedContextInputs) - index}
+                      lastChildIndex={
+                        getLastChildIndex(input, flattenedContextInputs) - index
+                      }
                       usesContext
                       hasRelation={hasInputRelation(input.path)}
                       onClick={() => {
@@ -1035,7 +1099,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                           fieldType: 'inputs',
                         });
                       }}
-                      hasAvailableOutput={hasAvailableRelation(input.type.types_returned)}
+                      hasAvailableOutput={hasAvailableRelation(
+                        input.type.types_returned
+                      )}
                     />
                   ))
                 : null}
@@ -1045,7 +1111,10 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                 <svg
                   height={
                     Math.max(
-                      [...(flattenedInputs || []), ...(flattenedContextInputs || [])]?.length,
+                      [
+                        ...(flattenedInputs || []),
+                        ...(flattenedContextInputs || []),
+                      ]?.length,
                       flattenedOutputs?.length
                     ) *
                       (FIELD_HEIGHT + FIELD_MARGIN) +
@@ -1062,7 +1131,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                             stroke={theme.intents.success}
                             x1={0}
                             y1={
-                              (flattenedInputs.findIndex((input) => input.path === relation.name) +
+                              (flattenedInputs.findIndex(
+                                (input) => input.path === relation.name
+                              ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
                               (FIELD_HEIGHT / 2 + FIELD_MARGIN) +
@@ -1070,7 +1141,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                             }
                             x2={300}
                             y2={
-                              (flattenedOutputs.findIndex((output) => output.path === outputPath) +
+                              (flattenedOutputs.findIndex(
+                                (output) => output.path === outputPath
+                              ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
                               (FIELD_HEIGHT / 2 + FIELD_MARGIN) +
@@ -1083,13 +1156,17 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                         <>
                           <StyledLine
                             key={outputPath.replace(/ /g, '')}
-                            onClick={() => removeRelation(outputPath, false, true)}
+                            onClick={() =>
+                              removeRelation(outputPath, false, true)
+                            }
                             stroke={theme.intents.success}
                             x1={0}
                             y1={20}
                             x2={300}
                             y2={
-                              (flattenedOutputs.findIndex((output) => output.path === outputPath) +
+                              (flattenedOutputs.findIndex(
+                                (output) => output.path === outputPath
+                              ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
                               (FIELD_HEIGHT / 2 + FIELD_MARGIN) +
@@ -1104,16 +1181,22 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                         <>
                           <StyledLine
                             key={outputPath}
-                            onClick={() => removeRelation(outputPath, true, true)}
+                            onClick={() =>
+                              removeRelation(outputPath, true, true)
+                            }
                             stroke={theme.intents.success}
                             x1={0}
                             y1={
                               getProviderInfoHeight('input-provider-info') +
                               getProviderInfoHeight('input-provider-info') +
                               (size(flattenedInputs) +
-                                (inputOptionProvider?.can_manage_fields ? 1 : 0) +
+                                (inputOptionProvider?.can_manage_fields
+                                  ? 1
+                                  : 0) +
                                 flattenedContextInputs.findIndex(
-                                  (input) => input.path === getStaticDataFieldname(relation.context)
+                                  (input) =>
+                                    input.path ===
+                                    getStaticDataFieldname(relation.context)
                                 ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
@@ -1121,7 +1204,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                             }
                             x2={300}
                             y2={
-                              (flattenedOutputs.findIndex((output) => output.path === outputPath) +
+                              (flattenedOutputs.findIndex(
+                                (output) => output.path === outputPath
+                              ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
                               (FIELD_HEIGHT / 2 + FIELD_MARGIN) +
@@ -1143,12 +1228,16 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                               getProviderInfoHeight('input-provider-info') +
                               getProviderInfoHeight('input-provider-info') +
                               (size(flattenedInputs) +
-                                (inputOptionProvider?.can_manage_fields ? 1 : 0)) *
+                                (inputOptionProvider?.can_manage_fields
+                                  ? 1
+                                  : 0)) *
                                 (FIELD_HEIGHT + FIELD_MARGIN)
                             }
                             x2={300}
                             y2={
-                              (flattenedOutputs.findIndex((output) => output.path === outputPath) +
+                              (flattenedOutputs.findIndex(
+                                (output) => output.path === outputPath
+                              ) +
                                 1) *
                                 (FIELD_HEIGHT + FIELD_MARGIN) -
                               (FIELD_HEIGHT / 2 + FIELD_MARGIN) +
@@ -1167,8 +1256,8 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                 <ReqorePanel
                   badge={'hash<auto>'}
                   label={'Output'}
-                  size="small"
-                  id="output-provider-info"
+                  size='small'
+                  id='output-provider-info'
                   responsiveActions={false}
                   responsiveTitle={false}
                   flat
@@ -1192,7 +1281,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                   ]}
                   tooltip={{
                     content: (
-                      <p style={{ wordBreak: 'break-all' }}>{getUrlFromProvider('output')}</p>
+                      <p style={{ wordBreak: 'break-all' }}>
+                        {getUrlFromProvider('output')}
+                      </p>
                     ),
                   }}
                   intent={outputsError ? 'danger' : undefined}
@@ -1211,7 +1302,9 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                       onDrop={handleDrop}
                       id={index + 1}
                       accepts={output.type.types_accepted}
-                      lastChildIndex={getLastChildIndex(output, flattenedOutputs) - index}
+                      lastChildIndex={
+                        getLastChildIndex(output, flattenedOutputs) - index
+                      }
                       onClick={() => {
                         setSelectedField({
                           ...output,
@@ -1226,20 +1319,26 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                 : null}
               {!outputsError &&
               size(flattenedOutputs) === 0 &&
-              !(hideOutputSelector && outputOptionProvider?.can_manage_fields) ? (
-                <ReqorePanel intent="warning">{t('MapperNoOutputFields')}</ReqorePanel>
+              !(
+                hideOutputSelector && outputOptionProvider?.can_manage_fields
+              ) ? (
+                <ReqorePanel intent='warning'>
+                  {t('MapperNoOutputFields')}
+                </ReqorePanel>
               ) : null}
-              {!outputsError && hideOutputSelector && outputOptionProvider?.can_manage_fields && (
-                <ReqoreButton
-                  fluid
-                  minimal
-                  intent="success"
-                  icon="AddLine"
-                  onClick={() => handleClick('outputs')()}
-                >
-                  {t('AddNewField')}
-                </ReqoreButton>
-              )}
+              {!outputsError &&
+                hideOutputSelector &&
+                outputOptionProvider?.can_manage_fields && (
+                  <ReqoreButton
+                    fluid
+                    minimal
+                    intent='success'
+                    icon='AddLine'
+                    onClick={() => handleClick('outputs')()}
+                  >
+                    {t('AddNewField')}
+                  </ReqoreButton>
+                )}
             </StyledFieldsWrapper>
           </StyledMapperWrapper>
         </div>
@@ -1271,6 +1370,5 @@ export default compose(
   withTextContext(),
   withMapperConsumer(),
   withFieldsConsumer(),
-  withMessageHandler(),
   withGlobalOptionsConsumer()
 )(MapperCreator);

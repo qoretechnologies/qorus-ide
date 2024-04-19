@@ -5,10 +5,16 @@ import FSMView from '../../../containers/InterfaceCreator/fsm';
 import QodexWithIfState from '../../Data/qodexWithIfState.json';
 import { StoryMeta } from '../../types';
 import { SwitchesToBuilder } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Test Runs',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {

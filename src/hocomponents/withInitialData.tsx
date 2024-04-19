@@ -3,6 +3,7 @@ import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
 import { find } from 'lodash';
 import set from 'lodash/set';
 import { FunctionComponent, useEffect, useState } from 'react';
+import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { useEffectOnce } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import shortid from 'shortid';
@@ -23,9 +24,13 @@ const pastTexts: { [id: string]: { isTranslated: boolean; text: string } } = {};
 export default () =>
   (Component: FunctionComponent<any>): FunctionComponent<any> => {
     const EnhancedComponent: FunctionComponent = (props: any) => {
+      const routerData = useParams();
+      const navigate = useNavigate();
+
       const [isReady, setIsReady] = useState(true);
       const [initialData, setInitialData] = useState<any>({
-        tab: 'Dashboard',
+        tab: routerData.tab || 'Dashboard',
+        subtab: routerData.subtab || null,
         sidebarOpen: false,
         is_hosted_instance: true,
         qorus_instance: {
@@ -60,18 +65,15 @@ export default () =>
       const changeTab: (
         tab: string,
         subtab?: string,
-        force?: boolean
-      ) => void = (tab, subtab, force) => {
+        id?: string,
+        query?: Record<string, any>
+      ) => void = (tab, subtab, id, query) => {
         const setTabs = () => {
-          setInitialData((current) => ({
-            ...current,
-            tab,
-            subtab: subtab || null,
-          }));
-          setTabHistory((current) => {
-            const newHistory = [...current];
-            newHistory.push({ tab, subtab });
-            return newHistory;
+          navigate({
+            pathname: `/${tab}${
+              subtab ? `/${subtab}${id ? `/${id}` : ''}` : ''
+            }`,
+            search: createSearchParams({ ...query }).toString(),
           });
         };
 
@@ -81,6 +83,14 @@ export default () =>
       useMount(() => {
         postMessage(Messages.GET_INITIAL_DATA);
       });
+
+      useEffect(() => {
+        setInitialData((current) => ({
+          ...current,
+          tab: routerData?.tab || 'Dashboard',
+          subtab: routerData?.subtab || null,
+        }));
+      }, [routerData?.tab, routerData?.subtab]);
 
       useEffect(() => {
         if (texts) {
@@ -142,29 +152,39 @@ export default () =>
               ...data,
             }));
 
-            if (data?.tab) {
-              setTabHistory((current) => {
-                const newHistory = [...current];
-                newHistory.push({ tab: data.tab, subtab: data.subtab });
-                return newHistory;
-              });
-            }
-
-            setIsReady(true);
+            //setIsReady(true);
           },
           true
         );
 
         const interfaceDataListener = addMessageListener(
           Messages.RETURN_INTERFACE_DATA,
-          ({ data }) => {
+          ({ data, metadata, ...rest }) => {
             // only set initial data if we are switching tabs
             if (data?.tab) {
+              const newData = data || {};
+
+              if (data?.subtab) {
+                newData[`${data.subtab}Metadata`] = {
+                  lastError: data.last_error,
+                  enabled: data.enabled,
+                  supportsEnable: data.supports_enable,
+                  active: data.active,
+                  supportsActive: data.supports_active,
+                };
+              }
+
               setInitialData((current) => ({
                 ...current,
-                ...data,
+                ...newData,
               }));
-              changeTab(data.tab, data.subtab);
+
+              changeTab(
+                data.tab,
+                data.subtab,
+                data[data.subtab]?.id,
+                metadata?.searchParams
+              );
             }
           },
           true
@@ -178,7 +198,7 @@ export default () =>
       });
 
       if (!texts || !t || !isReady) {
-        return <Loader text='Loading translations...' centered />;
+        return <Loader text='Loading app...' centered />;
       }
 
       // this action is called when the user clicks the confirm button
@@ -457,8 +477,6 @@ export default () =>
           undefined,
           true
         );
-
-        updateCurrentHistoryTab({ draftId: id });
 
         setIsSavingDraft(false);
       };

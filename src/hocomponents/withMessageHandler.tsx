@@ -1,5 +1,6 @@
 import { FunctionComponent } from 'react';
 import { buildWsAuth, vscode } from '../common/vscode';
+import { fetchData } from '../helpers/functions';
 
 export const WS_RECONNECT_MAX_TRIES = 10;
 export const isWebSocketSupported = 'WebSocket' in window;
@@ -53,14 +54,24 @@ export const createOrGetWebSocket = (
     wsConnections[url].onclose = function (this, ev) {
       options?.onClose?.(ev);
 
-      console.log('Websocket disconnected with', ev);
-
       removeWebSocketData(url);
 
       if (reconnectTries < WS_RECONNECT_MAX_TRIES) {
         reconnectTries++;
-        reconnectInterval = setTimeout(() => {
+        reconnectInterval = setTimeout(async () => {
           options.onReconnecting?.(reconnectTries);
+
+          // Check if Qorus is up
+          const check = await fetchData('/system/pid');
+
+          if (check.status === 401) {
+            // Qorus is back up again but we need to re-authenticate
+            // Get the current pathname and redirect to the login page
+            const pathname = window.location.pathname;
+
+            window.location.href = `/?next=${pathname}`;
+          }
+
           connect();
         }, 5000);
       } else {
@@ -122,7 +133,7 @@ export type TPostMessage = (
 ) => void;
 export type TMessageListener = (
   action: string,
-  callback: (data: any) => any,
+  callback: (data: any, metadata?: Record<any, any>) => any,
   useWebSockets?: boolean,
   connection?: string,
   eventKey?: string

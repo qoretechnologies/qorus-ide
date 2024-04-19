@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { fireEvent, within } from '@storybook/testing-library';
 import { AppCatalogue, IApp } from '../../components/AppCatalogue';
 import { buildAppFromActionSets } from '../../hooks/useActionSets';
 import apps from '../Data/apps.json';
@@ -23,30 +23,30 @@ const actionSetsApp = buildAppFromActionSets([
       },
     },
     states: {
-      "1": {
-        "position": {
-          "x": 47,
-          "y": 42
+      '1': {
+        position: {
+          x: 47,
+          y: 42,
         },
-        "initial": true,
-        "name": "Save Intent Info",
-        "display_name": "Qorus Built-In Action",
-        "desc": "",
-        "type": "state",
-        "id": "djsGWd6mm",
-        "action": {
-          "type": "connector",
-          "value": {
-            "class": "BBM_OutputData",
-            "connector": "writeOutputData"
-          }
+        initial: true,
+        name: 'Save Intent Info',
+        display_name: 'Qorus Built-In Action',
+        desc: '',
+        type: 'state',
+        id: 'djsGWd6mm',
+        action: {
+          type: 'connector',
+          value: {
+            class: 'BBM_OutputData',
+            connector: 'writeOutputData',
+          },
         },
-        "execution_order": 1,
-        "transitions": [
+        execution_order: 1,
+        transitions: [
           {
-            "state": "2",
-            "language": "qore"
-          }
+            state: '2',
+            language: 'qore',
+          },
         ],
       },
       '2': {
@@ -80,7 +80,8 @@ const actionSetsApp = buildAppFromActionSets([
               },
               content: {
                 type: 'string',
-                value: 'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
+                value:
+                  'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
               },
             },
           },
@@ -168,7 +169,8 @@ const actionSetsApp = buildAppFromActionSets([
               },
               content: {
                 type: 'string',
-                value: 'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
+                value:
+                  'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
               },
             },
           },
@@ -235,7 +237,8 @@ export const Builtin: StoryObj<typeof meta> = {
   args: {
     apps: typedBuiltInApps,
     icon: 'AppsLine',
-    image: 'https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg',
+    image:
+      'https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg',
     label: 'Built in modules',
   },
 };
@@ -245,14 +248,18 @@ export const WithActionSets: StoryObj<typeof meta> = {
     apps: typedAppsWithActionSets,
   },
   play: async (args) => {
-    await DefaultQuery.play(args);
+    const canvas = within(args.canvasElement);
+
+    await fireEvent.click(canvas.queryAllByText('Saved Favorites')[0]);
   },
 };
 
 export const AppSelected: StoryObj<typeof meta> = {
   ...Basic,
   play: async () => {
-    await fireEvent.click(document.querySelectorAll('.reqore-collection-item')[5]);
+    await fireEvent.click(
+      document.querySelectorAll('.reqore-collection-item')[5]
+    );
   },
 };
 
@@ -262,7 +269,9 @@ export const DefaultQuery: StoryObj<typeof meta> = {
     defaultQuery: 'get file',
   },
   play: async () => {
-    await fireEvent.click(document.querySelectorAll('.reqore-collection-item')[0]);
+    await fireEvent.click(
+      document.querySelectorAll('.reqore-collection-item')[0]
+    );
   },
 };
 

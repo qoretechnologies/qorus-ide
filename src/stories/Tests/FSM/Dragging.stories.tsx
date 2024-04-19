@@ -3,12 +3,23 @@ import { fireEvent } from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import fsm from '../../Data/fsm.json';
 import { StoryMeta } from '../../types';
-import { _testsCreateSelectionBox, _testsMoveState, _testsSelectState, sleep } from '../utils';
+import {
+  _testsCreateSelectionBox,
+  _testsMoveState,
+  _testsSelectState,
+  sleep,
+} from '../utils';
 import { SwitchesToBuilder, ZoomIn, ZoomOut } from './Basic.stories';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
   title: 'Tests/FSM/Drag and drop',
+  render: (args) => (
+    <InterfacesProvider>
+      <FSMView {...args} />
+    </InterfacesProvider>
+  ),
   args: {
     reqoreOptions: {
       animations: {
@@ -56,7 +67,11 @@ export const StateCanBeDraggedAndDroppedWithZoomIn: StoryFSM = {
     fsm,
   },
   play: async ({ canvasElement, zoomIn, zoomOut, ...rest }) => {
-    await StateCanBeDraggedAndDropped.play({ canvasElement, zoomIn: true, ...rest });
+    await StateCanBeDraggedAndDropped.play({
+      canvasElement,
+      zoomIn: true,
+      ...rest,
+    });
   },
 };
 
@@ -65,7 +80,11 @@ export const StateCanBeDraggedAndDroppedWithZoomOut: StoryFSM = {
     fsm,
   },
   play: async ({ canvasElement, zoomIn, zoomOut, ...rest }) => {
-    await StateCanBeDraggedAndDropped.play({ canvasElement, zoomOut: true, ...rest });
+    await StateCanBeDraggedAndDropped.play({
+      canvasElement,
+      zoomOut: true,
+      ...rest,
+    });
   },
 };
 
@@ -92,7 +111,9 @@ export const MultipleStatesCanBeDraggedAndDropped: StoryFSM = {
 
     await fireEvent.mouseDown(document.querySelector('#state-3'));
 
-    const { left, top } = document.querySelector('#state-3').getBoundingClientRect();
+    const { left, top } = document
+      .querySelector('#state-3')
+      .getBoundingClientRect();
 
     await fireEvent.mouseMove(document.querySelector('#state-3'), {
       clientX: left,
@@ -102,7 +123,9 @@ export const MultipleStatesCanBeDraggedAndDropped: StoryFSM = {
     await sleep(200);
 
     for await (const _ of Array(Math.round(3)).keys()) {
-      const { left, top } = document.querySelector('#state-3').getBoundingClientRect();
+      const { left, top } = document
+        .querySelector('#state-3')
+        .getBoundingClientRect();
 
       if (top > window.innerHeight - 100) {
         break;

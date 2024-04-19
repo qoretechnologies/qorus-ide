@@ -31,7 +31,7 @@ export const FancyColorEffect: IReqoreEffect = {
 export const QorusColorEffect: IReqoreEffect = {
   gradient: {
     colors: {
-      0: '#6e1977:lighten',
+      0: '#6e1977:lighten:3',
       100: '#6e1977',
     },
     animate: 'hover',
@@ -55,7 +55,7 @@ export const PositiveColorEffect: IReqoreEffect = {
     direction: 'to right',
     colors: {
       0: 'info',
-      100: 'info:darken',
+      100: 'info:darken:3',
     },
     animate: 'hover',
   },
@@ -66,7 +66,7 @@ export const WarningColorEffect: IReqoreEffect = {
     direction: 'to right',
     colors: {
       0: 'warning:lighten:2',
-      100: 'warning:lighten',
+      100: 'warning:lighten:3',
     },
     animate: 'always',
   },
@@ -76,7 +76,7 @@ export const PendingColorEffect: IReqoreEffect = {
   gradient: {
     direction: 'to right bottom',
     colors: {
-      0: 'pending:lighten',
+      0: 'pending:lighten:3',
       100: '#160437',
     },
   },
@@ -86,8 +86,8 @@ export const NegativeColorEffect: IReqoreEffect = {
   gradient: {
     direction: 'to right bottom',
     colors: {
-      0: 'danger:lighten',
-      100: 'danger:darken',
+      0: 'danger:lighten:3',
+      100: 'danger:darken:3',
     },
     animate: 'hover',
   },
@@ -96,8 +96,8 @@ export const NegativeColorEffect: IReqoreEffect = {
 export const SaveColorEffect: IReqoreEffect = {
   gradient: {
     colors: {
-      0: 'success:lighten',
-      100: 'success:darken',
+      0: 'success:lighten:3',
+      100: 'success:darken:3',
     },
     animate: 'hover',
   },
@@ -106,7 +106,7 @@ export const SaveColorEffect: IReqoreEffect = {
 export const SaveColorEffectAlt: IReqoreEffect = {
   gradient: {
     colors: {
-      0: 'success:darken',
+      0: 'success:darken:3',
       100: 'info',
     },
     animate: 'hover',
@@ -117,20 +117,20 @@ export const SelectorColorEffect: IReqoreEffect = {
   gradient: {
     direction: 'to right bottom',
     colors: {
-      0: 'main:lighten',
-      100: 'main:darken',
+      0: 'main:lighten:3',
+      100: 'main:darken:3',
     },
   },
 };
 
-const MultiPairField: FunctionComponent<TTranslator & IField & IFieldChange> = ({
-  fields,
-  name,
-  onChange,
-  value = [{ id: 1, [fields[0]]: '', [fields[1]]: '' }],
-  t,
-}) => {
-  const changePairData: (index: number, key: string, val: any) => void = (index, key, val) => {
+const MultiPairField: FunctionComponent<
+  TTranslator & IField & IFieldChange
+> = ({ fields, name, onChange, value, t }) => {
+  const changePairData: (index: number, key: string, val: any) => void = (
+    index,
+    key,
+    val
+  ) => {
     const newValue = [...value];
     // Get the pair based on the index
     const pair: IPair = newValue[index];
@@ -141,7 +141,10 @@ const MultiPairField: FunctionComponent<TTranslator & IField & IFieldChange> = (
   };
 
   const handleAddClick: () => void = () => {
-    onChange(name, [...value, { id: size(value) + 1, [fields[0]]: '', [fields[1]]: '' }]);
+    onChange(name, [
+      ...(value || []),
+      { id: size(value) + 1, [fields[0]]: '', [fields[1]]: '' },
+    ]);
   };
 
   const handleRemoveClick: (id: number) => void = (id) => {
@@ -154,28 +157,30 @@ const MultiPairField: FunctionComponent<TTranslator & IField & IFieldChange> = (
 
   return (
     <>
-      {value.map((pair: IPair, index: number) => (
-        <StyledPairField key={index + 1}>
-          <PairField
-            index={index + 1}
-            canBeRemoved={size(value) !== 1}
-            onRemoveClick={() => handleRemoveClick(index)}
-            key={index + 1}
-            keyName={fields[0]}
-            valueName={fields[1]}
-            keyValue={pair[fields[0]]}
-            valueValue={pair[fields[1]]}
-            onChange={(fieldName: string, value: any) => {
-              changePairData(index, fieldName, value);
-            }}
-          />
-        </StyledPairField>
-      ))}
+      {size(value)
+        ? value.map((pair: IPair, index: number) => (
+            <StyledPairField key={index + 1}>
+              <PairField
+                index={index + 1}
+                canBeRemoved={size(value) !== 1}
+                onRemoveClick={() => handleRemoveClick(index)}
+                key={index + 1}
+                keyName={fields[0]}
+                valueName={fields[1]}
+                keyValue={pair[fields[0]]}
+                valueValue={pair[fields[1]]}
+                onChange={(fieldName: string, value: any) => {
+                  changePairData(index, fieldName, value);
+                }}
+              />
+            </StyledPairField>
+          ))
+        : null}
       <ReqoreControlGroup fluid>
         <ReqoreButton
           icon={'AddLine'}
           rightIcon={'AddLine'}
-          textAlign="center"
+          textAlign='center'
           fluid
           onClick={handleAddClick}
           effect={PositiveColorEffect}

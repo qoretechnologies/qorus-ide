@@ -1,8 +1,8 @@
 import {
-    ReqoreButton,
-    ReqoreControlGroup,
-    ReqoreMessage,
-    ReqoreVerticalSpacer,
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqoreMessage,
+  ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
 import { size } from 'lodash';
 import { FunctionComponent } from 'react';
@@ -15,7 +15,6 @@ import SelectPairField from './selectPair';
 
 type IPair = {
   id: number;
-  prefix: string;
   name: string;
 };
 
@@ -34,7 +33,7 @@ const ClassArrayField: FunctionComponent<
 > = ({
   name,
   onChange,
-  value = [{ id: 1, prefix: '', name: '' }],
+  value = [{ id: 1, name: '' }],
   get_message,
   return_message,
   t,
@@ -47,7 +46,11 @@ const ClassArrayField: FunctionComponent<
   requestFieldData,
   canRemoveLast,
 }) => {
-  const changePairData: (index: number, key: string, val: any) => void = (index, key, val) => {
+  const changePairData: (index: number, key: string, val: any) => void = (
+    index,
+    key,
+    val
+  ) => {
     // Check if the current value is empty
     if (key === 'name' && !(value[index][key] === '' || !value[index][key])) {
       // Reset the class connections if it's not
@@ -63,12 +66,14 @@ const ClassArrayField: FunctionComponent<
   };
 
   const handleAddClick: () => void = () => {
-    onChange(name, [...value, { id: size(value) + 1, prefix: '', name: '' }]);
+    onChange(name, [...value, { id: size(value) + 1, name: '' }]);
   };
 
   const handleRemoveClick: (id: number) => void = (id) => {
     // Get the pair data
-    const pairData: IPair = value.find((_p: IPair, index: number) => id === index);
+    const pairData: IPair = value.find(
+      (_p: IPair, index: number) => id === index
+    );
     // Check if this field had a class selected
     if (pairData.name) {
       // Reset the class connections if it's not
@@ -85,7 +90,9 @@ const ClassArrayField: FunctionComponent<
     <>
       {showClassesWarning && (
         <>
-          <ReqoreMessage intent="warning">{t('ClassChangesWarning')}</ReqoreMessage>
+          <ReqoreMessage intent='warning' opaque={false} size='small'>
+            {t('ClassChangesWarning')}
+          </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
         </>
       )}
@@ -97,9 +104,7 @@ const ClassArrayField: FunctionComponent<
               canBeRemoved={canRemoveLast || size(value) !== 1}
               onRemoveClick={() => handleRemoveClick(index)}
               key={index + 1}
-              keyName="prefix"
-              valueName="name"
-              keyValue={pair.prefix}
+              valueName='name'
               valueValue={pair.name}
               get_message={get_message}
               defaultSelectItems={defaultSelectItems}
@@ -120,7 +125,7 @@ const ClassArrayField: FunctionComponent<
         <ReqoreButton
           icon={'AddLine'}
           rightIcon={'AddLine'}
-          textAlign="center"
+          textAlign='center'
           onClick={handleAddClick}
           effect={PositiveColorEffect}
         >
