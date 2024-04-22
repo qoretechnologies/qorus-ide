@@ -100,7 +100,7 @@ export const FieldWrapper = ({
     tooltip: t('RemoveField'),
     onClick: () => {
       if (onClick) {
-        if (size(value)) {
+        if (size(value) || value === true) {
           initContext.confirmAction('ConfirmRemoveField', () => onClick(name));
         } else {
           onClick(name);

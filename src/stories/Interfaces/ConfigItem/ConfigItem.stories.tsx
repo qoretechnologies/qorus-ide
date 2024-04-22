@@ -1,4 +1,6 @@
+import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
+import { fireEvent, waitFor } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import Panel from '../../../containers/InterfaceCreator/panel';
@@ -11,6 +13,13 @@ import withSteps from '../../../hocomponents/withSteps';
 import { DraftsProvider } from '../../../providers/Drafts';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import interfaces from '../../Data/interface_samples.json';
+import {
+  _testsClickButton,
+  _testsConfirmDialog,
+  _testsExpectFieldsCountToMatch,
+  _testsSelectItemFromDropdown,
+  sleep,
+} from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
 const classData = interfaces.class[0].data.class;
@@ -30,7 +39,7 @@ const meta = {
   args: {
     id: classData.id,
   },
-  render: ({ id, data }) => {
+  render: ({ id, data, onSubmit }) => {
     return (
       <InterfacesProvider>
         <Creator>
@@ -40,6 +49,7 @@ const meta = {
             type={'config-item'}
             initialInterfaceId={id}
             data={data}
+            onSubmitSuccess={onSubmit}
             disabledFields={data && data.parent && ['name']}
             isEditing={!!data}
           />
@@ -58,5 +68,87 @@ export const New: Story = {};
 export const Existing: Story = {
   args: {
     data: classData['config-items'][0],
+  },
+};
+
+export const FieldCanBeRemoved: Story = {
+  ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async ({ beforeCount, afterCount }) => {
+    await _testsExpectFieldsCountToMatch(beforeCount ?? 7, true);
+    await _testsClickButton({ selector: '.creator-field-remove' });
+    await _testsConfirmDialog();
+    await _testsExpectFieldsCountToMatch(afterCount ?? 6, true);
+  },
+};
+
+export const FieldsCanBeAdded: Story = {
+  ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async () => {
+    await _testsExpectFieldsCountToMatch(4, true);
+    await _testsSelectItemFromDropdown(
+      undefined,
+      'strictly_local',
+      'Optional fields available (5)'
+    )();
+    await _testsExpectFieldsCountToMatch(5, true);
+    await sleep(300);
+    await _testsSelectItemFromDropdown(
+      undefined,
+      'SelectAll',
+      'Optional fields available (4)'
+    )();
+    await _testsExpectFieldsCountToMatch(9, true);
+  },
+};
+
+export const ChangesCanBeDiscarded: Story = {
+  ...New,
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async () => {
+    await _testsExpectFieldsCountToMatch(4, true);
+    await _testsSelectItemFromDropdown(
+      undefined,
+      'SelectAll',
+      'Optional fields available (5)'
+    )();
+    await _testsExpectFieldsCountToMatch(9, true);
+    await _testsClickButton({ label: 'DiscardChangesButton' });
+    await _testsConfirmDialog();
+    await _testsExpectFieldsCountToMatch(4, true);
+  },
+};
+
+export const SubmittedDataAreCorrect: Story = {
+  args: {
+    ...Existing.args,
+  },
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async ({ args, ...rest }) => {
+    await FieldCanBeRemoved.play({ args, ...rest });
+    await fireEvent.change(
+      document.querySelector('.creator-field .reqore-input'),
+      { target: { value: 'Test' } }
+    );
+    await _testsClickButton({ label: 'Submit' });
+
+    console.log(args);
+
+    await waitFor(
+      () =>
+        expect(args.onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'Test' })
+        ),
+      { timeout: 5000 }
+    );
   },
 };
