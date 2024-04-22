@@ -68,8 +68,8 @@ const PipelineElementDialog = ({
   useEffect(() => {
     if (newData.type === 'processor' && newData.name) {
       postMessage(Messages.GET_CONFIG_ITEMS, {
-        iface_kind: 'pipeline',
-        iface_id: interfaceId,
+        type: 'pipeline',
+        id: interfaceId,
         processor_data: {
           pid: newData.pid,
           class_name: newData.name,
@@ -138,7 +138,8 @@ const PipelineElementDialog = ({
           resetControl(() => {
             if (newData.type === 'processor' && newData.name) {
               postMessage(Messages.RESET_CONFIG_ITEMS, {
-                iface_id: interfaceId,
+                id: interfaceId,
+                type: 'pipeline',
                 processor_id: newData.pid,
               });
             }

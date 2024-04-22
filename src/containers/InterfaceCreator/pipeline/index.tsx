@@ -347,7 +347,7 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       )
     );
 
-    setInterfaceId(pipeline?.iface_id || shortid.generate());
+    setInterfaceId(pipeline?.id || shortid.generate());
     // Apply the draft with "type" as first parameter and a custom function
     applyDraft();
 
@@ -547,7 +547,8 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
 
   const reset = (hard?: boolean) => {
     postMessage(Messages.RESET_CONFIG_ITEMS, {
-      iface_id: interfaceId,
+      id: interfaceId,
+      type: 'pipeline',
     });
 
     setElements(

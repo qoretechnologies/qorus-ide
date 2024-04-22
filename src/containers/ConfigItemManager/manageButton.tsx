@@ -55,7 +55,8 @@ const ManageConfigButton: FunctionComponent<IManageConfigButton> = memo(
         // Fetch the config items for this interface
         // Ask for the config items
         postMessage(Messages.GET_CONFIG_ITEMS, {
-          iface_kind: type,
+          type,
+          id: rest.iface_id,
           ...rest,
         });
       }

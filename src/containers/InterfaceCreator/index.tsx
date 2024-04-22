@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import { useMount } from 'react-use';
 import compose from 'recompose/compose';
 import { InitialContext } from '../../context/init';
 import { withIdChecker } from '../../hocomponents/withIdChecker';
@@ -45,23 +44,6 @@ export const CreateInterface = ({
 
   const getVersion: () => string = () =>
     initialData?.[initialData.subtab]?.version;
-
-  const getNameWithVersion: () => string = () => {
-    const name = getName();
-    const version = getVersion();
-
-    return version ? `${name}:${version}` : name;
-  };
-
-  useMount(() => {
-    if (initialData[initialData.subtab]?.iface_id) {
-      // Update the history tab with this iface_id
-      initialData.updateCurrentHistoryTab({
-        iface_id: initialData[initialData.subtab]?.iface_id,
-        name: getNameWithVersion(),
-      });
-    }
-  });
 
   return (
     <Tab

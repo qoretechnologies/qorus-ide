@@ -59,6 +59,8 @@ const Field = ({ type, interfaceId, interfaceKind, ...rest }: IFieldProps) => {
           [rest.name]: rest.value,
           iface_kind: interfaceKind,
           iface_id: interfaceId,
+          id: interfaceId,
+          type: interfaceKind,
         });
       });
     }

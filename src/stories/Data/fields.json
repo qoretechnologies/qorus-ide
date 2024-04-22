@@ -2218,5 +2218,162 @@
     "action": "creator-return-fields",
     "ok": true,
     "message": "all fields"
+  },
+  "config-item": {
+    "request_id": "K66lnZaF4aTPgFd",
+    "tab_token": "none",
+    "iface_kind": "config-item",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "is-set": false
+      },
+      {
+        "name": "can_be_undefined",
+        "type": "boolean",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "default_value": false,
+        "is-set": false
+      },
+      {
+        "name": "config_group",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info",
+        "is-set": false
+      },
+      {
+        "name": "sensitive",
+        "type": "boolean",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "default_value": false,
+        "is-set": false
+      },
+      {
+        "name": "strictly_local",
+        "type": "boolean",
+        "mandatory": false,
+        "compact": true,
+        "group": "info",
+        "default_value": false,
+        "is-set": false
+      },
+      {
+        "name": "description",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true,
+        "is-set": false
+      },
+      {
+        "name": "allowed_values",
+        "type": "array-auto",
+        "mandatory": false,
+        "is-set": false,
+        "type-depends-on": "type",
+        "allowed-types": [
+          "string",
+          "int",
+          "bool",
+          "float",
+          "date",
+          "hash",
+          "list",
+          "any"
+        ]
+      },
+      {
+        "name": "default_value",
+        "type": "auto",
+        "mandatory": false,
+        "is-set": false,
+        "type-depends-on": "type",
+        "allowed-types": [
+          "string",
+          "int",
+          "bool",
+          "float",
+          "date",
+          "hash",
+          "list",
+          "any"
+        ]
+      },
+      {
+        "name": "type",
+        "type": "enum",
+        "mandatory": true,
+        "on_change": "config-item-type-changed",
+        "default_value": "string",
+        "items": [
+          {
+            "isDivider": true,
+            "title": "Basic types"
+          },
+          {
+            "value": "string"
+          },
+          {
+            "value": "int"
+          },
+          {
+            "value": "bool"
+          },
+          {
+            "value": "float"
+          },
+          {
+            "value": "date"
+          },
+          {
+            "value": "hash"
+          },
+          {
+            "value": "list"
+          },
+          {
+            "value": "any"
+          },
+          {
+            "isDivider": true,
+            "title": "Interface subtypes"
+          },
+          {
+            "value": "mapper"
+          },
+          {
+            "value": "value-map"
+          },
+          {
+            "value": "data-provider"
+          },
+          {
+            "value": "connection"
+          },
+          {
+            "value": "workflow"
+          },
+          {
+            "value": "job"
+          },
+          {
+            "value": "service"
+          }
+        ],
+        "is-set": false
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
   }
 }

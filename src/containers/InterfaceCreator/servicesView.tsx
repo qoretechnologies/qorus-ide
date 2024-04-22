@@ -322,7 +322,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                                   'api-manager',
                                   apiManager,
                                   service
-                                    ? service.iface_id
+                                    ? service.id
                                     : interfaceId.service[serviceIndex],
                                   serviceIndex
                                 );
@@ -411,9 +411,7 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                       'service',
                       'api-manager',
                       apiManager,
-                      service
-                        ? service.iface_id
-                        : interfaceId.service[serviceIndex],
+                      service ? service.id : interfaceId.service[serviceIndex],
                       serviceIndex
                     );
                   }

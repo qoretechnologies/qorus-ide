@@ -17,3 +17,10 @@ export default meta;
 export type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {};
+export const ActivePath: Story = {
+  args: {
+    _location: {
+      pathname: '/Interfaces/mapper',
+    },
+  },
+};

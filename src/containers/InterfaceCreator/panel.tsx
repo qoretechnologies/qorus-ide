@@ -205,8 +205,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     currentIfaceId
   ) => {
     postMessage(Messages.GET_CONFIG_ITEMS, {
-      iface_id: currentIfaceId || interfaceId,
-      iface_kind: type,
+      id: currentIfaceId || interfaceId,
+      type,
       classes: type === 'workflow' ? undefined : getClasses(),
       steps:
         type === 'workflow' && size(steps)
@@ -444,7 +444,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           onDataFinishLoadingRecur(activeId);
         }
         const currentInterfaceId = data
-          ? clonedData.iface_id
+          ? clonedData.id
           : type === 'service-methods' ||
             type === 'mapper-methods' ||
             type === 'error'
@@ -511,7 +511,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     await deleteDraft(type, draftId, false);
     // Reset also config items
     postMessage(Messages.RESET_CONFIG_ITEMS, {
-      iface_id: interfaceId,
+      id: interfaceId,
+      type,
     });
     // Hide the fields until they are fetched
     setShow(false);
@@ -1396,9 +1397,9 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           {
             label: 'Edit code',
             icon: 'CodeView',
-            show:
-              !codeEditorVisible &&
-              categories[subTypeToType(type)]?.supports_code,
+            show: categories[subTypeToType(type)]?.supports_code
+              ? !codeEditorVisible
+              : false,
             tooltip: 'Edit the code for this interface',
             active: codeEditorVisible,
             effect: QorusColorEffect,
