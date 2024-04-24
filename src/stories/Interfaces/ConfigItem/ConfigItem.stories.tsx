@@ -141,8 +141,6 @@ export const SubmittedDataAreCorrect: Story = {
     );
     await _testsClickButton({ label: 'Submit' });
 
-    console.log(args);
-
     await waitFor(
       () =>
         expect(args.onSubmit).toHaveBeenCalledWith(
