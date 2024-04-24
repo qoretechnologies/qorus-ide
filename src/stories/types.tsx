@@ -1,5 +1,6 @@
 import { IReqoreUIProviderProps } from '@qoretechnologies/reqore/dist/containers/UIProvider';
 import { Meta } from '@storybook/react';
+import { TQorusStorage } from '../providers/Interfaces';
 
 export type StoryMeta<
   Component extends
@@ -13,5 +14,6 @@ export type StoryMeta<
       qorus_instance?: boolean;
       isFullIDE?: boolean;
       initialData?: Record<string, any>;
+      storage?: TQorusStorage;
     }
 >;

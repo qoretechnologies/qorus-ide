@@ -37,6 +37,10 @@ export const Sidebar = (props: ISidebar) => {
     'sidebar-open',
     true
   );
+  const [sidebarSize, updateSidebarSize] = useQorusStorage<number>(
+    'sidebar-size',
+    250
+  );
 
   const renderMenuItem = (menuData: TMenuItem, menuId: number) => {
     if ('divider' in menuData) {
@@ -148,8 +152,11 @@ export const Sidebar = (props: ISidebar) => {
         enable: { right: true },
         minWidth: '250px',
         maxWidth: '350px',
+        onResizeStop: (e, direction, ref, d) => {
+          updateSidebarSize(sidebarSize + d.width);
+        },
         defaultSize: {
-          width: '250px',
+          width: `${sidebarSize}px`,
           height: '100%',
         },
       }}
