@@ -10,7 +10,7 @@ import { sleep } from '../stories/Tests/utils';
 
 export const apiHost =
   process.env.NODE_ENV !== 'production'
-    ? 'https://hq2.qoretechnologies.com:8092/'
+    ? 'https://hq.qoretechnologies.com:8092/'
     : window.location.origin + '/';
 export const apiToken =
   process.env.NODE_ENV === 'production'

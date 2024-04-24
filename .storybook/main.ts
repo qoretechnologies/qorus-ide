@@ -14,7 +14,7 @@ const config = {
   features: {
     interactionsDebugger: true,
   },
-  typescript: { reactDocgen: 'react-docgen' },
+  typescript: { reactDocgen: false },
   env: (config) => ({
     ...config,
     NODE_ENV: 'storybook',
