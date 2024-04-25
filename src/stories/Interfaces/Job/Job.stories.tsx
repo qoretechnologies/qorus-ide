@@ -1,6 +1,6 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withFields from '../../../hocomponents/withFields';
@@ -20,6 +20,7 @@ import {
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
   _testsWaitForText,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -66,6 +67,21 @@ export const ViewCode: Story = {
   ...Existing,
   play: async () => {
     await _testsCreatorViewCode();
+  },
+};
+
+export const CodeCanBeDocked: Story = {
+  ...Existing,
+  play: async ({ canvasElement, rest }) => {
+    const canvas = within(canvasElement);
+    await ViewCode.play({ canvasElement, ...rest });
+
+    await waitFor(
+      () => expect(canvas.queryAllByText('Dock')[0]).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
+    await fireEvent.click(canvas.queryAllByText('Dock')[0]);
+    await sleep(200);
   },
 };
 

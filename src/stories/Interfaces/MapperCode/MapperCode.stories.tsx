@@ -1,6 +1,6 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withErrors from '../../../hocomponents/withErrors';
@@ -18,8 +18,10 @@ import {
   _testsClickButton,
   _testsConfirmDialog,
   _testsCreatorDraftSaveCheck,
+  _testsCreatorViewCode,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -64,6 +66,28 @@ export const Existing: Story = {
       subtab: 'mapper-code',
       'mapper-code': interfaces['mapper-code'][0].data['mapper-code'],
     },
+  },
+};
+
+export const ViewCode: Story = {
+  ...Existing,
+  play: async () => {
+    await _testsCreatorViewCode();
+  },
+};
+
+export const CodeCanBeDocked: Story = {
+  ...Existing,
+  play: async ({ canvasElement, rest }) => {
+    const canvas = within(canvasElement);
+    await ViewCode.play({ canvasElement, ...rest });
+
+    await waitFor(
+      () => expect(canvas.queryAllByText('Dock')[0]).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
+    await fireEvent.click(canvas.queryAllByText('Dock')[0]);
+    await sleep(200);
   },
 };
 
