@@ -14,7 +14,15 @@ import { transformTypeForFetch } from '../hooks/useFetchInterfaces';
 
 export type TQorusStorage = Record<string, any>;
 
-export const InterfacesProvider = ({ children }) => {
+export interface IInterfacesProviderProps {
+  _injectedStorage?: TQorusStorage;
+  children: React.ReactNode;
+}
+
+export const InterfacesProvider = ({
+  children,
+  _injectedStorage = {},
+}: IInterfacesProviderProps) => {
   const [categories, setCategories] = useState<TQorusInterfaceCount>(undefined);
   const [storage, setStorage] = useState<TQorusStorage>({});
 
@@ -25,7 +33,7 @@ export const InterfacesProvider = ({ children }) => {
 
   const { value, loading, error, retry } = useAsyncRetry(async () => {
     if (process.env.NODE_ENV === 'storybook') {
-      return {};
+      return _injectedStorage;
     }
 
     const data = await fetchData(

@@ -5,7 +5,7 @@ import timeago from 'epoch-timeago';
 import { size } from 'lodash';
 import { useContext, useMemo } from 'react';
 import { useContextSelector } from 'use-context-selector';
-import { IQorusInterfaceCountItem } from '.';
+import { IQorusInterfaceCountItem, IQorusListInterface } from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
@@ -43,8 +43,8 @@ export const InterfacesViewCollection = ({
     clone,
   }));
 
-  const { value, loading, onDeleteRemoteClick, onToggleEnabledClick, retry } =
-    useFetchInterfaces(type);
+  const { value, loading, onDeleteRemoteClick, retry } =
+    useFetchInterfaces<IQorusListInterface[]>(type);
 
   const onDeleteClick = async (type, id?) => {
     await deleteDraft(interfaceKindTransform[type], id, true, addNotification);
@@ -164,55 +164,46 @@ export const InterfacesViewCollection = ({
         },
       }}
       items={value.map(
-        ({
-          label,
-          data,
-          date,
-          draft,
-          hasDraft,
-          ...rest
-        }): IReqoreCollectionItemProps => ({
-          label: label || data?.display_name,
+        (item: IQorusListInterface): IReqoreCollectionItemProps => ({
+          label: item.label || item.data?.display_name,
           icon: interfaceIcons[type],
           metadata: {
-            date: date || data?.date,
-            running: data?.running,
-            last_executed: data?.last_executed
-              ? Date.parse(data?.last_executed)
-              : 0,
-            on_demand: data?.on_demand,
-            type: data?.type,
-            id: data?.id,
+            date: item.date || item.data?.date,
+            running: item.data?.running,
+            last_executed: item.data?.last_executed || 0,
+            on_demand: item.data?.on_demand,
+            type: item.data?.type,
+            id: item.data?.id,
           },
-          content: <InterfacesViewItem data={data} />,
+          content: <InterfacesViewItem data={item.data} />,
           contentEffect: {
             gradient: {
               direction: 'to right bottom',
               colors: {
                 50: 'main',
                 300:
-                  draft && !data
+                  item.draft && !item.data
                     ? 'success'
-                    : draft
+                    : item.draft
                     ? 'pending'
                     : 'main:lighten',
               },
             },
           },
-          tags: getTags({ label, data, draft, hasDraft, rest }),
+          tags: getTags(item),
           flat: true,
           showHeaderTooltip: true,
           responsiveTitle: false,
           responsiveActions: false,
           size: 'small',
           onClick: () => {
-            if (draft) {
+            if (item.draft) {
               changeDraft({
                 type,
-                id: rest.id,
+                id: item.id,
               });
             } else {
-              changeTab('CreateInterface', type, data?.id);
+              changeTab('CreateInterface', type, item.data?.id);
             }
           },
           actions: [
@@ -221,14 +212,14 @@ export const InterfacesViewCollection = ({
               effect: WarningColorEffect,
               tooltip: 'Delete draft',
               size: 'tiny',
-              show: draft ? 'hover' : false,
+              show: item.draft ? 'hover' : false,
               compact: true,
               onClick: () => {
                 confirmAction({
                   title: 'Delete draft',
                   description: 'Are you sure you want to delete this draft?',
                   onConfirm: () => {
-                    onDeleteClick(type, rest.id);
+                    onDeleteClick(type, item.id);
                   },
                 });
               },
@@ -243,13 +234,14 @@ export const InterfacesViewCollection = ({
               tooltip: 'Execute',
               size: 'tiny',
               show:
-                type === 'fsm' && (data?.on_demand || data?.type !== 'event')
+                type === 'fsm' &&
+                (item.data?.on_demand || item.data?.type !== 'event')
                   ? 'hover'
                   : false,
               onClick: () => {
                 addModal({
-                  label: `Execution of "${data?.display_name}"`,
-                  children: <QodexTestRunModal id={rest.id} liveRun />,
+                  label: `Execution of "${item.data?.display_name}"`,
+                  children: <QodexTestRunModal id={item.id} liveRun />,
                 });
               },
             },
@@ -259,22 +251,22 @@ export const InterfacesViewCollection = ({
               effect: SynthColorEffect,
               tooltip: 'Clone This Interface',
               size: 'tiny',
-              show: data ? 'hover' : false,
+              show: item.data ? 'hover' : false,
               onClick: () => {
-                clone(type, rest.id);
+                clone(type, item.id);
               },
             },
             {
               as: EnableToggle,
               props: {
-                enabled: data?.enabled,
+                enabled: item.data?.enabled,
                 type,
-                id: data?.id,
+                id: item.data?.id,
                 size: 'tiny',
                 label: '',
                 compact: true,
               },
-              show: data?.supports_enable ? true : false,
+              show: item.data?.supports_enable ? true : false,
             },
             {
               icon: 'DeleteBinLine',
@@ -282,14 +274,14 @@ export const InterfacesViewCollection = ({
               tooltip: 'Delete',
               compact: true,
               size: 'tiny',
-              show: !draft || data ? 'hover' : false,
+              show: !item.draft || item.data ? 'hover' : false,
               onClick: () => {
                 confirmAction({
                   title: 'Delete server interface',
                   description:
                     'Are you sure you want to delete this interface FROM THE ACTIVE INSTANCE?',
                   onConfirm: () => {
-                    onDeleteRemoteClick(data.id);
+                    onDeleteRemoteClick(item.data.id);
                   },
                 });
               },

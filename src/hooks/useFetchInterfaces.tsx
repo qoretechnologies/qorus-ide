@@ -23,7 +23,9 @@ export const transformTypeForFetch = (type: string) => {
   }
 };
 
-export const useFetchInterfaces = (type?: string) => {
+export function useFetchInterfaces<T = Record<string, IQorusListInterface[]>>(
+  type?: string
+) {
   const addNotification = useReqoreProperty('addNotification');
   const { toggleEnabled } = useContextSelector(
     InterfacesContext,
@@ -35,9 +37,7 @@ export const useFetchInterfaces = (type?: string) => {
     loading,
     retry,
     error,
-  } = useAsyncRetry<
-    IQorusListInterface[] | Record<string, IQorusListInterface[]>
-  >(async () => {
+  } = useAsyncRetry<T>(async () => {
     const data = await callBackendBasic(
       Messages.GET_ALL_INTERFACES,
       undefined,
@@ -87,4 +87,4 @@ export const useFetchInterfaces = (type?: string) => {
     retry,
     value,
   };
-};
+}

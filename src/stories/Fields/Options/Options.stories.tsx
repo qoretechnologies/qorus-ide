@@ -145,7 +145,7 @@ export const Basic: StoryObj<typeof meta> = {
     const [val, setValue] = useState(value);
 
     useEffect(() => {
-      onChange('options', val);
+      onChange?.('options', val);
     }, [val]);
 
     return <Options {...rest} value={val} onChange={(_n, v) => setValue(v)} />;

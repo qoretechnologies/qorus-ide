@@ -75,7 +75,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
       Messages.FIELDS_FETCHED,
       ({ fields }) => {
         setFields(fields);
-        setInterfaceId(connection?.iface_id || shortid.generate());
+        setInterfaceId(connection?.id || shortid.generate());
         applyDraft();
       },
       true

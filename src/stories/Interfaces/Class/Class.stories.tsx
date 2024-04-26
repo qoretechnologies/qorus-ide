@@ -77,6 +77,21 @@ export const ViewCode: Story = {
   },
 };
 
+export const CodeCanBeDocked: Story = {
+  ...Existing,
+  play: async ({ canvasElement, rest }) => {
+    const canvas = within(canvasElement);
+    await ViewCode.play({ canvasElement, ...rest });
+
+    await waitFor(
+      () => expect(canvas.queryAllByText('Dock')[0]).toBeInTheDocument(),
+      { timeout: 5000 }
+    );
+    await fireEvent.click(canvas.queryAllByText('Dock')[0]);
+    await sleep(200);
+  },
+};
+
 export const DraftIsSaved: Story = {
   ...New,
   parameters: {

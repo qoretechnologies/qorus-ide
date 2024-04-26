@@ -7,7 +7,7 @@ const meta = {
   component: Sidebar,
   title: 'Components/Sidebar',
   render: (props) => (
-    <InterfacesProvider>
+    <InterfacesProvider _injectedStorage={props.storage}>
       <Sidebar {...props} />
     </InterfacesProvider>
   ),
@@ -17,3 +17,21 @@ export default meta;
 export type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {};
+export const ActivePath: Story = {
+  args: {
+    _location: {
+      pathname: '/Interfaces/mapper',
+    },
+  },
+};
+
+export const WidthFromStorage: Story = {
+  args: {
+    _location: {
+      pathname: '/Interfaces/step',
+    },
+    storage: {
+      'sidebar-size': 330,
+    },
+  },
+};

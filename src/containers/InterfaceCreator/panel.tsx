@@ -5,6 +5,10 @@ import {
   ReqoreInput,
   ReqorePanel,
 } from '@qoretechnologies/reqore';
+import {
+  IReqoreDrawerProps,
+  ReqoreDrawer,
+} from '@qoretechnologies/reqore/dist/components/Drawer';
 import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/Dropdown';
 import { IReqoreDropdownItemProps } from '@qoretechnologies/reqore/dist/components/Dropdown/item';
 import { IReqoreEffect } from '@qoretechnologies/reqore/dist/components/Effect';
@@ -158,8 +162,11 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
 }) => {
   const isInitialMount = useRef(true);
   const [show, setShow] = useState<boolean>(false);
-  const [codeEditorVisible, setCodeEditorVisible] = useState<boolean>(false);
-  const [code, setCode] = useState<string>(data?.source);
+  const [codeEditor, setCodeEditor] = useState<{
+    open: boolean;
+    code?: string;
+    floating: boolean;
+  }>({ open: false, code: data?.source, floating: true });
   const [messageListener, setMessageListener] = useState(null);
   const [showConfigItemsManager, setShowConfigItemsManager] =
     useState<boolean>(false);
@@ -178,7 +185,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
 
   useEffect(() => {
     if (data?.source) {
-      setCode(data.source);
+      setCodeEditor({ ...codeEditor, code: data.source });
     }
   }, [data?.source]);
 
@@ -205,8 +212,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     currentIfaceId
   ) => {
     postMessage(Messages.GET_CONFIG_ITEMS, {
-      iface_id: currentIfaceId || interfaceId,
-      iface_kind: type,
+      id: currentIfaceId || interfaceId,
+      type,
       classes: type === 'workflow' ? undefined : getClasses(),
       steps:
         type === 'workflow' && size(steps)
@@ -409,16 +416,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
               transformedFields,
               (field: IField) => field.selected
             );
-            // Add original name field
-            if (isEditing) {
-              preselectedFields.push({
-                name: 'orig_name',
-                value: clonedData && clonedData.name,
-                isValid: true,
-                selected: true,
-                internal: true,
-              });
-            }
+
             setSelectedFields(
               type,
               preselectedFields,
@@ -444,7 +442,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           onDataFinishLoadingRecur(activeId);
         }
         const currentInterfaceId = data
-          ? clonedData.iface_id
+          ? clonedData.id
           : type === 'service-methods' ||
             type === 'mapper-methods' ||
             type === 'error'
@@ -511,7 +509,8 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     await deleteDraft(type, draftId, false);
     // Reset also config items
     postMessage(Messages.RESET_CONFIG_ITEMS, {
-      iface_id: interfaceId,
+      id: interfaceId,
+      type,
     });
     // Hide the fields until they are fetched
     setShow(false);
@@ -980,7 +979,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
               ...data,
               ...newData,
               'class-connections': classConnectionsData,
-              source: code,
+              source: codeEditor.code,
             },
             workflow,
             no_data_return: !!onSubmitSuccess,
@@ -1007,7 +1006,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
               ...newData,
               'class-connections': classConnectionsData,
               default_value_true_type: true_type,
-              source: code,
+              source: codeEditor.code,
               id: interfaceId,
             },
             no_data_return: !!onSubmitSuccess,
@@ -1337,6 +1336,95 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
     );
   };
 
+  const renderCodeEditor = () => {
+    if (codeEditor.open) {
+      const lang = requestFieldData('lang', 'value') || 'qore';
+      const Children = (
+        <Editor
+          theme='vs-dark'
+          defaultLanguage={lang}
+          language={lang}
+          defaultValue={data?.source}
+          height='100%'
+          options={{
+            fontSize: 13,
+            minimap: {
+              enabled: false,
+            },
+            suggest: {
+              showWords: false,
+            },
+            padding: {
+              top: 15,
+            },
+            scrollBeyondLastLine: false,
+            wordBasedSuggestions: false,
+            theme: 'vs-dark',
+          }}
+          value={codeEditor.code}
+          onChange={(val) => setCodeEditor({ ...codeEditor, code: val })}
+        />
+      );
+
+      const sharedProps: Omit<IReqoreDrawerProps, 'resizable' | 'size'> = {
+        flat: true,
+
+        padded: false,
+        onClose: () =>
+          setCodeEditor({ ...codeEditor, open: false, floating: true }),
+        label: 'Code Editor',
+        showHeaderTooltip: false,
+        actions: [
+          {
+            icon: codeEditor.floating ? 'SideBarLine' : 'ShareBoxLine',
+            label: codeEditor.floating ? 'Dock' : 'Float',
+            onClick: () =>
+              setCodeEditor({
+                ...codeEditor,
+                floating: !codeEditor.floating,
+              }),
+          },
+        ],
+      };
+
+      if (codeEditor.floating) {
+        return (
+          <ReqoreDrawer
+            size='95vw'
+            maxSize='95vw'
+            floating
+            position='right'
+            isOpen
+            resizable={true}
+            {...sharedProps}
+          >
+            {Children}
+          </ReqoreDrawer>
+        );
+      } else {
+        return (
+          <ReqorePanel
+            style={{ marginLeft: '10px', borderLeft: '1px dashed #444444' }}
+            resizable={{
+              enable: { left: true },
+              defaultSize: { width: '50%', height: '100%' },
+              minWidth: '300px',
+              maxWidth: '70%',
+            }}
+            size='small'
+            responsiveActions={false}
+            responsiveTitle={false}
+            {...sharedProps}
+          >
+            {Children}
+          </ReqorePanel>
+        );
+      }
+    }
+
+    return null;
+  };
+
   const renderGroups = (groups: Record<string, IField[]>) => {
     return map(groups, (fields, groupName) => {
       if (size(fields) > 1) {
@@ -1396,14 +1484,13 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
           {
             label: 'Edit code',
             icon: 'CodeView',
-            show:
-              !codeEditorVisible &&
-              categories[subTypeToType(type)]?.supports_code,
+            show: categories[subTypeToType(type)]?.supports_code
+              ? !codeEditor.open
+              : false,
             tooltip: 'Edit the code for this interface',
-            active: codeEditorVisible,
             effect: QorusColorEffect,
             onClick: () => {
-              setCodeEditorVisible(!codeEditorVisible);
+              setCodeEditor({ ...codeEditor, open: true });
             },
           },
           {
@@ -1514,46 +1601,7 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
         contentStyle={{ display: 'flex' }}
       >
         <ContentWrapper>{renderGroups(fieldsToRender)}</ContentWrapper>
-        {codeEditorVisible && (
-          <ReqorePanel
-            style={{ marginLeft: '10px', borderLeft: '1px dashed #444444' }}
-            flat
-            showHeaderTooltip={false}
-            size='small'
-            resizable={{
-              enable: { left: true },
-              defaultSize: { width: '30%', height: '100%' },
-            }}
-            label='Code Editor'
-            padded={false}
-            onClose={() => setCodeEditorVisible(false)}
-          >
-            <Editor
-              theme='vs-dark'
-              defaultLanguage={requestFieldData('language')}
-              language={requestFieldData('language')}
-              defaultValue={data?.source}
-              height='100%'
-              options={{
-                fontSize: 13,
-                minimap: {
-                  enabled: false,
-                },
-                suggest: {
-                  showWords: false,
-                },
-                padding: {
-                  top: 15,
-                },
-                scrollBeyondLastLine: false,
-                wordBasedSuggestions: false,
-                theme: 'vs-dark',
-              }}
-              value={code}
-              onChange={(val) => setCode(val || '')}
-            />
-          </ReqorePanel>
-        )}
+        {renderCodeEditor()}
       </Content>
       {showClassConnectionsManager &&
         hasClassConnections &&

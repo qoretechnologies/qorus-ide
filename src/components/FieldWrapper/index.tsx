@@ -100,7 +100,7 @@ export const FieldWrapper = ({
     tooltip: t('RemoveField'),
     onClick: () => {
       if (onClick) {
-        if (size(value)) {
+        if (size(value) || value === true) {
           initContext.confirmAction('ConfirmRemoveField', () => onClick(name));
         } else {
           onClick(name);
@@ -124,15 +124,10 @@ export const FieldWrapper = ({
           overflowX: 'hidden',
         }}
       >
-        <ReqoreControlGroup
-          fluid
-          verticalAlign='flex-start'
-          vertical={width < 400 || !inGroup}
-        >
+        <ReqoreControlGroup fluid verticalAlign='flex-start' vertical>
           {label || removable ? (
             <>
               <ReqoreTag
-                width={width < 400 || !inGroup ? undefined : '150px'}
                 wrap
                 fluid
                 label={label}

@@ -55,8 +55,8 @@ export default () =>
       useEffect(() => {
         if (size(steps) && size(stepsData)) {
           postMessage(Messages.GET_CONFIG_ITEMS, {
-            iface_kind: 'workflow',
-            iface_id: props.workflow?.iface_id || props.interfaceId.workflow,
+            type: 'workflow',
+            id: props.workflow?.id || props.interfaceId.workflow,
             steps: processSteps(steps, stepsData),
           });
         }
@@ -66,8 +66,8 @@ export default () =>
       useEffect(() => {
         if (size(initialSteps)) {
           postMessage(Messages.GET_CONFIG_ITEMS, {
-            iface_kind: 'workflow',
-            iface_id: props.workflow?.iface_id || props.interfaceId.workflow,
+            type: 'workflow',
+            id: props.workflow?.id || props.interfaceId.workflow,
             steps: processSteps(initialSteps, props.initialStepsData),
           });
           setSteps(initialSteps);

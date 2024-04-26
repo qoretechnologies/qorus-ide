@@ -11,7 +11,7 @@ import ReqoreMenu, {
 } from '@qoretechnologies/reqore/dist/components/Menu';
 import { map, reduce, size } from 'lodash';
 import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useContextSelector } from 'use-context-selector';
 import { InterfacesContext } from '../../context/interfaces';
 import { useQorusStorage } from '../../hooks/useQorusStorage';
@@ -20,10 +20,11 @@ import { TMenu, TMenuItem, buildMenu } from './menu';
 export interface ISidebar extends Partial<IReqoreMenuProps> {
   isOpen?: boolean;
   onHideClick?: () => void;
+  _location?: Partial<Location<any>>;
 }
 
 export const Sidebar = (props: ISidebar) => {
-  const location = useLocation();
+  const location = props._location || useLocation();
   const navigate = useNavigate();
   const categories = useContextSelector(
     InterfacesContext,
@@ -35,6 +36,10 @@ export const Sidebar = (props: ISidebar) => {
   const [isSidebarOpen, update] = useQorusStorage<boolean>(
     'sidebar-open',
     true
+  );
+  const [sidebarSize, updateSidebarSize] = useQorusStorage<number>(
+    'sidebar-size',
+    250
   );
 
   const renderMenuItem = (menuData: TMenuItem, menuId: number) => {
@@ -143,6 +148,18 @@ export const Sidebar = (props: ISidebar) => {
       width='250px'
       minimal
       position='left'
+      resizable={{
+        enable: { right: true },
+        minWidth: '250px',
+        maxWidth: '350px',
+        onResizeStop: (e, direction, ref, d) => {
+          updateSidebarSize(sidebarSize + d.width);
+        },
+        defaultSize: {
+          width: `${sidebarSize}px`,
+          height: '100%',
+        },
+      }}
       rounded={false}
       customTheme={{ main: '#181818' }}
     >

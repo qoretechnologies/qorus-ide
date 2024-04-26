@@ -1,8 +1,9 @@
 import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { fireEvent, waitFor } from '@storybook/testing-library';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
+import Panel from '../../../containers/InterfaceCreator/panel';
 import withFields from '../../../hocomponents/withFields';
 import withGlobalOptions from '../../../hocomponents/withGlobalOptions';
 import withInitialData from '../../../hocomponents/withInitialData';
@@ -15,14 +16,13 @@ import interfaces from '../../Data/interface_samples.json';
 import {
   _testsClickButton,
   _testsConfirmDialog,
-  _testsCreatorDraftSaveCheck,
-  _testsCreatorViewCode,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
-  _testsWaitForText,
   sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
+
+const classData = interfaces.class[0].data.class;
 
 const Creator = compose(
   withFields(),
@@ -35,84 +35,39 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
-  title: 'Interfaces Manager/Step',
-  render: (args) => {
+  title: 'Interfaces Manager/Config Item',
+  args: {
+    id: classData.id,
+  },
+  render: ({ id, data, onSubmit }) => {
     return (
       <InterfacesProvider>
         <Creator>
-          <CreateInterface {...args} />
+          <Panel
+            forceSubmit
+            parent='class'
+            type={'config-item'}
+            initialInterfaceId={id}
+            data={data}
+            onSubmitSuccess={onSubmit}
+            disabledFields={data && data.parent && ['name']}
+            isEditing={!!data}
+          />
         </Creator>
       </InterfacesProvider>
     );
   },
-} as StoryMeta<typeof CreateInterface>;
+} as StoryMeta<any>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const New: Story = {
-  args: {
-    data: { subtab: 'step' },
-  },
-};
+export const New: Story = {};
 
 export const Existing: Story = {
   args: {
-    data: { subtab: 'step', step: interfaces.step[0].data.step },
-  },
-};
-
-export const ViewCode: Story = {
-  ...Existing,
-  play: async () => {
-    await _testsCreatorViewCode();
-  },
-};
-
-export const CodeCanBeDocked: Story = {
-  ...Existing,
-  play: async ({ canvasElement, rest }) => {
-    const canvas = within(canvasElement);
-    await ViewCode.play({ canvasElement, ...rest });
-
-    await waitFor(
-      () => expect(canvas.queryAllByText('Dock')[0]).toBeInTheDocument(),
-      { timeout: 5000 }
-    );
-    await fireEvent.click(canvas.queryAllByText('Dock')[0]);
-    await sleep(200);
-  },
-};
-
-export const DraftIsSaved: Story = {
-  ...New,
-  parameters: {
-    chromatic: { disable: true },
-  },
-  play: async () => {
-    await _testsCreatorDraftSaveCheck();
-  },
-};
-
-export const FieldsAreFiltered: Story = {
-  ...Existing,
-  parameters: {
-    chromatic: { disable: true },
-  },
-  play: async () => {
-    await waitFor(
-      () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
-      {
-        timeout: 5000,
-      }
-    );
-
-    await fireEvent.change(document.querySelector('.reqore-input'), {
-      target: { value: 'desc' },
-    });
-
-    await _testsExpectFieldsCountToMatch(2);
+    data: classData['config-items'][0],
   },
 };
 
@@ -121,11 +76,11 @@ export const FieldCanBeRemoved: Story = {
   parameters: {
     chromatic: { disable: true },
   },
-  play: async () => {
-    await _testsExpectFieldsCountToMatch(12, true);
+  play: async ({ beforeCount, afterCount }) => {
+    await _testsExpectFieldsCountToMatch(beforeCount ?? 7, true);
     await _testsClickButton({ selector: '.creator-field-remove' });
     await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(11, true);
+    await _testsExpectFieldsCountToMatch(afterCount ?? 6, true);
   },
 };
 
@@ -138,16 +93,17 @@ export const FieldsCanBeAdded: Story = {
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
-      'name',
-      'Optional fields available (18)'
+      'strictly_local',
+      'Optional fields available (5)'
     )();
     await _testsExpectFieldsCountToMatch(5, true);
+    await sleep(300);
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (17)'
+      'Optional fields available (4)'
     )();
-    await _testsExpectFieldsCountToMatch(22, true);
+    await _testsExpectFieldsCountToMatch(9, true);
   },
 };
 
@@ -161,20 +117,12 @@ export const ChangesCanBeDiscarded: Story = {
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (18)'
+      'Optional fields available (5)'
     )();
-    await _testsExpectFieldsCountToMatch(22, true);
+    await _testsExpectFieldsCountToMatch(9, true);
     await _testsClickButton({ label: 'DiscardChangesButton' });
     await _testsConfirmDialog();
     await _testsExpectFieldsCountToMatch(4, true);
-  },
-};
-
-export const ConfigItemsAreLoaded: Story = {
-  ...New,
-  play: async () => {
-    await _testsClickButton({ label: 'Manage Configuration Items' });
-    await _testsWaitForText('Global Item 10');
   },
 };
 
@@ -187,13 +135,16 @@ export const SubmittedDataAreCorrect: Story = {
   },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });
-    await DraftIsSaved.play({ args, ...rest });
+    await fireEvent.change(
+      document.querySelector('.creator-field .reqore-input'),
+      { target: { value: 'Test' } }
+    );
     await _testsClickButton({ label: 'Submit' });
 
     await waitFor(
       () =>
         expect(args.onSubmit).toHaveBeenCalledWith(
-          expect.objectContaining({ display_name: 'Test' })
+          expect.objectContaining({ name: 'Test' })
         ),
       { timeout: 5000 }
     );
