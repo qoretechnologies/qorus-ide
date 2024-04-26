@@ -1316,6 +1316,22 @@
     "text": "Target directory"
   },
   {
+    "id": "field-label-short_desc",
+    "text": "Short Description"
+  },
+  {
+    "id": "field-label-units",
+    "text": "Units"
+  },
+  {
+    "id": "field-label-seconds",
+    "text": "Seconds"
+  },
+  {
+    "id": "field-label-other",
+    "text": "Other"
+  },
+  {
     "id": "field-label-api-manager",
     "text": "API Manager"
   },
@@ -1678,6 +1694,14 @@
   {
     "id": "field-label-step",
     "text": "Step"
+  },
+  {
+    "id": "field-label-steptype",
+    "text": "Step Type"
+  },
+  {
+    "id": "field-label-arraytype",
+    "text": "Array Type"
   },
   {
     "id": "field-desc-event",
