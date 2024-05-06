@@ -310,6 +310,7 @@ function AutoField<T = any>({
         );
       case 'bool':
       case 'softbool':
+      case 'boolean':
         return (
           <BooleanField
             fill
