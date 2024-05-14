@@ -92,6 +92,10 @@ export const interfaceIcons: Record<string, IReqoreIconName> = {
   sla: 'TimerLine',
 };
 
+export const interfaceImages: Record<string, string> = {
+  fsm: `${process.env.PUBLIC_URL}/qog.png`,
+};
+
 export const interfaceNameToKind = {
   Service: 'service',
   Step: 'step',

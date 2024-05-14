@@ -15,6 +15,7 @@ import {
 import Loader from '../../components/Loader';
 import {
   interfaceIcons,
+  interfaceImages,
   interfaceKindTransform,
 } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
@@ -143,6 +144,10 @@ export const InterfacesViewCollection = ({
         },
       ]}
       icon={interfaceIcons[type]}
+      iconProps={{
+        icon: interfaceIcons[type],
+        image: interfaceImages[type],
+      }}
       sortKeys={{
         running: 'Is Running',
         last_executed: 'Last Executed',
@@ -167,6 +172,10 @@ export const InterfacesViewCollection = ({
         (item: IQorusListInterface): IReqoreCollectionItemProps => ({
           label: item.label || item.data?.display_name,
           icon: interfaceIcons[type],
+          iconProps: {
+            icon: interfaceIcons[type],
+            image: interfaceImages[type],
+          },
           metadata: {
             date: item.date || item.data?.date,
             running: item.data?.running,

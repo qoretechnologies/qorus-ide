@@ -12,7 +12,7 @@ import { Suspense, useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { useContextSelector } from 'use-context-selector';
 import Loader from '../../components/Loader';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { InterfacesContext } from '../../context/interfaces';
@@ -250,6 +250,10 @@ export const Dashboard = () => {
                           {map(categories, (category, categoryName) => (
                             <ReqoreMenuItem
                               icon={interfaceIcons[categoryName]}
+                              leftIconProps={{
+                                icon: interfaceIcons[categoryName],
+                                image: interfaceImages[categoryName],
+                              }}
                               key={categoryName}
                               onClick={() =>
                                 changeTab('CreateInterface', categoryName)

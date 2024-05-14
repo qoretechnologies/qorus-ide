@@ -9,7 +9,7 @@ import timeago from 'epoch-timeago';
 import { reduce, size } from 'lodash';
 import { useContext } from 'react';
 import Loader from '../../components/Loader';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { IQorusListInterface } from '../../containers/InterfacesView';
 import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
@@ -94,6 +94,10 @@ export const DashboardDrafts = () => {
                 <ReqoreControlGroup stack key={item.id}>
                   <ReqoreButton
                     icon={interfaceIcons[item.type]}
+                    leftIconProps={{
+                      icon: interfaceIcons[item.type],
+                      image: interfaceImages[item.type],
+                    }}
                     label={`${item.label}`}
                     onClick={() =>
                       changeTab('CreateInterface', item.type, item.data.id)

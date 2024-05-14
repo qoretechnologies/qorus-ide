@@ -10,7 +10,7 @@ import { size } from 'lodash';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAsyncRetry, useDebounce } from 'react-use';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { IQorusListInterface } from '../../containers/InterfacesView';
 import { fetchData } from '../../helpers/functions';
 
@@ -73,7 +73,10 @@ export const GlobalSearch = () => {
               {finalValue.map((item) => (
                 <ReqoreMenuItem
                   key={`${item.type}-${item.id}`}
-                  icon={interfaceIcons[item.type]}
+                  leftIconProps={{
+                    icon: interfaceIcons[item.type],
+                    image: interfaceImages[item.type],
+                  }}
                   badge={[item.type]}
                   tooltip={item.data?.short_desc}
                   as={process.env.NODE_ENV === 'storybook' ? 'a' : Link}

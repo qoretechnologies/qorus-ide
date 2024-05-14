@@ -14,6 +14,7 @@ import { DraftsTable } from '../../components/DraftsTable';
 import { NegativeColorEffect } from '../../components/Field/multiPair';
 import {
   interfaceIcons,
+  interfaceImages,
   interfaceKindTransform,
 } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
@@ -525,6 +526,10 @@ const Tab: React.FC<ITabProps> = ({
             },
             {
               icon: interfaceIcons[type],
+              leftIconProps: {
+                icon: interfaceIcons[type],
+                image: interfaceImages[type],
+              },
               label: categories[type].display_name,
               badge: [categories[type].items],
               onClick: () => {

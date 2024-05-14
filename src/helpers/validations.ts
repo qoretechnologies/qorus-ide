@@ -283,9 +283,9 @@ export const validateField: (
     case 'rgbcolor': {
       return (
         isValidSixCharHex(value?.hex) ||
-        ((value?.rgb?.r || value?.rgb?.r === 0) &&
-          (value?.rgb?.g || value?.rgb?.g === 0) &&
-          (value?.rgb?.b || value?.rgb?.b === 0))
+        ((value?.r || value?.r === 0) &&
+          (value?.g || value?.g === 0) &&
+          (value?.b || value?.b === 0))
       );
     }
     case 'list':
