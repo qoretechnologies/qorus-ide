@@ -2,17 +2,12 @@ import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import QodexWithIfState from '../../Data/qodexWithIfState.json';
 import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
-import {
-  _testsAddNewState,
-  _testsCloseStateDetail,
-  _testsConfirmDialog,
-  sleep,
-} from '../utils';
+import { _testsAddNewState, _testsCloseStateDetail, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
@@ -143,8 +138,9 @@ export const NewTrueAndFalseTransitionsOnIfState: StoryFSM = {
       'false'
     );
 
+    await sleep(1000);
+
     await _testsCloseStateDetail();
-    await _testsConfirmDialog();
 
     await waitFor(
       () => {

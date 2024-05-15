@@ -50,7 +50,11 @@ export interface IFSMStateDetailProps {
   outputProvider?: any;
   activeTab?: string;
   onClose: () => void;
-  onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean) => void;
+  onSubmit: (
+    data: Partial<IFSMState>,
+    addNewStateOnSuccess?: boolean,
+    isValid?: boolean
+  ) => void;
   onDelete: (unfilled?: boolean) => void;
   onFavorite: (data: Partial<IFSMState>) => void;
   onCloneClick: () => void;
@@ -168,18 +172,7 @@ export const FSMStateDetail = memo(
         return;
       }
 
-      if (!hasSaved) {
-        confirmAction({
-          title: 'Unsaved changes',
-          intent: 'warning',
-          description:
-            'You have unsaved changes. Are you sure you want to close this action detail?',
-          onConfirm: onClose,
-        });
-
-        return;
-      }
-
+      handleSubmitClick();
       onClose();
     };
 
@@ -286,7 +279,11 @@ export const FSMStateDetail = memo(
           }
         }
 
-        onSubmit(modifiedData, addNewStateOnSuccess);
+        onSubmit(
+          modifiedData,
+          addNewStateOnSuccess,
+          isStateValid(dataToSubmit, metadata, optionsSchema)
+        );
 
         setIsLoading(false);
         setHasSaved(true);
@@ -396,12 +393,12 @@ export const FSMStateDetail = memo(
             label: isLoading
               ? undefined
               : !isDataValid()
-              ? 'Fix to save'
+              ? undefined
               : hasSaved
               ? undefined
               : t(`Save`),
             disabled: !isDataValid() || isLoading,
-            show: (isLoading || !isDataValid()) && !isCustomBlockFirstPage(),
+            show: isLoading && !isCustomBlockFirstPage(),
             className: 'state-submit-button',
             id: `state-${camelCase(dataToSubmit?.name)}-submit-button`,
             icon: isLoading

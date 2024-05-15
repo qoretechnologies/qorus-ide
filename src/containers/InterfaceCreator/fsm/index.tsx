@@ -1537,12 +1537,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const preUpdateStateData = useCallback(
-    async (id: string | number, data: Partial<IFSMState>) => {
+    async (
+      id: string | number,
+      data: Partial<IFSMState>,
+      isValid?: boolean
+    ) => {
       let fixedStates: IFSMStates = { ...states };
 
       fixedStates[id] = {
         ...fixedStates[id],
         ...data,
+        isValid:
+          isValid === false || isValid === true
+            ? isValid
+            : fixedStates[id].isValid,
       };
 
       // Delete `isNew` from the fixed state
@@ -1586,8 +1594,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const updateStateData = useCallback(
-    async (id: string | number, data: Partial<IFSMState>) => {
-      const fixedStates = await preUpdateStateData(id, data);
+    async (
+      id: string | number,
+      data: Partial<IFSMState>,
+      isValid?: boolean
+    ) => {
+      const fixedStates = await preUpdateStateData(id, data, isValid);
 
       updateHistory(fixedStates);
       setStates((cur) => ({ ...cur, ...fixedStates }));
@@ -2460,8 +2472,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         }}
         interfaceId={interfaceId}
         data={stateData}
-        onSubmit={(data, createNew?: boolean) => {
-          updateStateData(state, data);
+        onSubmit={(data, createNew?: boolean, isValid?: boolean) => {
+          updateStateData(state, data, isValid);
 
           if (createNew) {
             setIsAddingNewStateAt({ x: 0, y: 0, fromState: state });

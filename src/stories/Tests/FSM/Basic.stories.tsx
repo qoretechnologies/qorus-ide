@@ -2,6 +2,7 @@ import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
 import { fireEvent, waitFor, within } from '@storybook/testing-library';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import fsm from '../../Data/fsm.json';
 import qodex from '../../Data/qodex.json';
 import { NewState } from '../../Views/FSM.stories';
@@ -10,7 +11,6 @@ import {
   _testsClickState,
   _testsCloneState,
   _testsCloseStateDetail,
-  _testsConfirmDialog,
   _testsCreateSelectionBox,
   _testsDeleteMultipleStates,
   _testsDeleteState,
@@ -19,7 +19,6 @@ import {
   sleep,
 } from '../utils';
 import { AutoAlign } from './Alignment.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
@@ -254,10 +253,6 @@ export const StateIsNotRemovedIfUnfinished: StoryFSM = {
     await sleep(1000);
 
     await _testsCloseStateDetail();
-
-    await sleep(1000);
-
-    await _testsConfirmDialog();
 
     await sleep(200);
 
