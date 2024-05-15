@@ -6,6 +6,7 @@ import {
   ReqoreVerticalSpacer,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
+import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
 import { camelCase, isEqual, reduce, size } from 'lodash';
 import { memo, useCallback, useContext, useState } from 'react';
@@ -40,7 +41,8 @@ import FSMStateDialog, { TAction } from './stateDialog';
 import { FSMItemIconByType } from './toolbarItem';
 import FSMTransitionOrderDialog from './transitionOrderDialog';
 
-export interface IFSMStateDetailProps {
+export interface IFSMStateDetailProps
+  extends Omit<IReqorePanelProps, 'id' | 'onSubmit'> {
   id: string | number;
   interfaceId: string;
   data: IFSMState;
@@ -79,6 +81,7 @@ export const FSMStateDetail = memo(
     states,
     id,
     interfaceId,
+    resizable,
   }: IFSMStateDetailProps) => {
     const t = useContext(TextContext);
     const confirmAction = useReqoreProperty('confirmAction');
@@ -307,6 +310,7 @@ export const FSMStateDetail = memo(
             width: dataToSubmit.type === 'block' ? '85%' : '500px',
             height: '100%',
           },
+          ...resizable,
         }}
         icon={
           FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]

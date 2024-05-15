@@ -501,6 +501,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
+  const [paneWidth, setPaneWidth] = useState<number>(500);
   const theme = useReqoreTheme();
 
   const targetStatesTransitionIndexes = useRef<
@@ -2504,6 +2505,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         inputProvider={getStateDataForComparison(states[state], 'input')}
         outputProvider={getStateDataForComparison(states[state], 'output')}
         metadata={metadata}
+        resizable={{
+          defaultSize: {
+            width: `${paneWidth}px`,
+            height: '100%',
+          },
+          onResizeStop: (_e, _dir, _ref, delta) => {
+            setPaneWidth((cur) => cur + delta.width);
+          },
+        }}
       />
     );
   };

@@ -4,6 +4,7 @@ import {
   screen,
   userEvent,
   waitFor,
+  within,
 } from '@storybook/testing-library';
 
 const stateCategory = {
@@ -243,10 +244,13 @@ export function _testsSelectItemFromDropdown(
       }
     );
 
-    await waitFor(async () => await canvas.getAllByText(itemLabel)[0], {
+    const parent = within(document.querySelector('.reqore-menu'));
+
+    await waitFor(async () => await parent.getAllByText(itemLabel)[0], {
       timeout: 10000,
     });
-    await fireEvent.click(canvas.getAllByText(itemLabel)[0]);
+
+    await fireEvent.click(parent.queryAllByText(itemLabel)[0]);
   };
 }
 

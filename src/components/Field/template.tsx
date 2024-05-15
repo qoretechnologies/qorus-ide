@@ -16,7 +16,12 @@ import {
   IExpressionSchema,
 } from '../../components/ExpressionBuilder';
 import { TextContext } from '../../context/text';
-import { fetchData, filterTemplatesByType } from '../../helpers/functions';
+import {
+  fetchData,
+  filterTemplatesByType,
+  getExpressionArgumentType,
+} from '../../helpers/functions';
+import { useQorusTypes } from '../../hooks/useQorusTypes';
 import Auto from '../Field/auto';
 import BooleanField from '../Field/boolean';
 import DateField from '../Field/date';
@@ -142,6 +147,7 @@ export const TemplateField = ({
   isFunction,
   ...rest
 }: ITemplateFieldProps) => {
+  const qorusTypes = useQorusTypes();
   const type = rest.type || rest.defaultType;
 
   const functions = useAsyncRetry<IExpressionSchema[]>(async () => {
@@ -218,7 +224,7 @@ export const TemplateField = ({
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
 
-  if (isFunction && !size(rest.allowed_value)) {
+  if (isFunction && !size(rest.allowed_values)) {
     return (
       <>
         <ExpressionBuilder
@@ -349,7 +355,10 @@ export const TemplateField = ({
                 exp: func.name,
                 args: [
                   {
-                    type,
+                    type: getExpressionArgumentType(
+                      func.args[0],
+                      qorusTypes.value
+                    ),
                     value,
                   },
                 ],

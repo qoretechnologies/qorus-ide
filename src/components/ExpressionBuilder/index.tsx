@@ -166,7 +166,28 @@ export const Expression = ({
     );
   }
 
-  const updateType = (val: IQorusType) => {
+  const updateType = (val: IQorusType, conformsCurrentType?: boolean) => {
+    if (conformsCurrentType) {
+      onValueChange(
+        {
+          ...value,
+          value: {
+            ...value.value,
+            args: [
+              {
+                ...value.value.args[0],
+                type: val,
+              },
+              ...value.value.args.slice(1),
+            ],
+          },
+        },
+        path
+      );
+
+      return;
+    }
+
     onValueChange(
       {
         value: {
@@ -270,6 +291,7 @@ export const Expression = ({
   const selectedExpression = expressions.value?.find(
     (exp) => exp.name === value.value.exp
   );
+  const firstArgSchema = selectedExpression?.args[0];
   let restOfArgs = selectedExpression?.args.slice(1);
 
   if (selectedExpression?.varargs) {
@@ -355,16 +377,25 @@ export const Expression = ({
         )}
         <Select
           name='type'
-          defaultItems={types.value}
+          defaultItems={
+            firstArgSchema?.type?.types_accepted?.map((type) => ({
+              name: type,
+              display_name: types.value.find((t) => t.name === type)
+                ?.display_name,
+            })) || types.value
+          }
           value={firstArgument?.type || type || 'ctx'}
           onChange={(_name, value) => {
-            updateType(value === 'context' ? undefined : value);
+            const conformsType = firstArgSchema?.type?.types_accepted?.includes(
+              value as IQorusType
+            );
+
+            updateType(value === 'context' ? undefined : value, conformsType);
           }}
           minimal
           flat
           showDescription={false}
           customTheme={{ main: 'info:darken:1:0.1' }}
-          disabled={!!type}
         />
         {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
           <Select
@@ -385,7 +416,7 @@ export const Expression = ({
             onChange={(_name, value) => {
               updateExp(value);
             }}
-            showDescription={false}
+            showDescription='tooltip'
             size='normal'
           />
         ) : null}
