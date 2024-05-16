@@ -8,14 +8,13 @@ import {
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { size } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import {
   ExpressionBuilder,
   IExpression,
   IExpressionSchema,
 } from '../../components/ExpressionBuilder';
-import { TextContext } from '../../context/text';
 import {
   fetchData,
   filterTemplatesByType,
@@ -164,7 +163,6 @@ export const TemplateField = ({
     isValueTemplate(value) || !allowCustomValues
   );
   const [templateValue, setTemplateValue] = useState<string | null>(value);
-  const t = useContext(TextContext);
 
   useEffect(() => {
     if (isTemplate) {

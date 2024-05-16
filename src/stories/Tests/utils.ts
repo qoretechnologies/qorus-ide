@@ -244,7 +244,9 @@ export function _testsSelectItemFromDropdown(
       }
     );
 
-    const parent = within(document.querySelector('.reqore-menu'));
+    const parent = within(
+      document.querySelector('.reqore-popover-content .reqore-menu')
+    );
 
     await waitFor(async () => await parent.getAllByText(itemLabel)[0], {
       timeout: 10000,

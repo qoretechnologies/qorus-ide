@@ -662,7 +662,9 @@ export const filterTemplatesByType = (
       return (
         subItem.badge === fieldType ||
         (fieldType === 'string' &&
-          isTypeStringCompatible(subItem.badge as string))
+          isTypeStringCompatible(subItem.badge as string)) ||
+        (fieldType === 'number' &&
+          isTypeNumberCompatible(subItem.badge as string))
       );
     });
 
@@ -813,5 +815,13 @@ export const isTypeStringCompatible = (type: string) => {
     strongType === 'int' ||
     strongType === 'bool' ||
     strongType === 'float'
+  );
+};
+
+export const isTypeNumberCompatible = (type: string) => {
+  const strongType = type.replace('*', '').replace('soft', '');
+
+  return (
+    strongType === 'number' || strongType === 'int' || strongType === 'float'
   );
 };
