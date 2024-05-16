@@ -125,7 +125,6 @@ export const Expression = ({
   level,
   path,
   onValueChange,
-  returnType = 'bool',
   group,
 }: IExpressionProps) => {
   const types = useQorusTypes();
@@ -140,9 +139,7 @@ export const Expression = ({
     }
 
     const data = await fetchData(
-      `/system/expressions?return_type=${returnType}${
-        returnType === 'bool' ? `&first_arg_type=${firstParamType}` : ''
-      }`
+      `/system/expressions?first_arg_type=${firstParamType}`
     );
 
     return data.data;
@@ -302,6 +299,8 @@ export const Expression = ({
       })),
     ];
   }
+
+  const returnType = selectedExpression?.return_type;
 
   return (
     <StyledExpressionItem
