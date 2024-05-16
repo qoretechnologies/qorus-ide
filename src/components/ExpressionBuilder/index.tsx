@@ -132,7 +132,7 @@ export const Expression = ({
   const theme = useReqoreTheme();
   const [firstArgument, ...rest] = value.value.args;
 
-  const firstParamType = firstArgument?.type || type || 'string';
+  const firstParamType = firstArgument?.type || type || 'context';
 
   const expressions = useAsyncRetry<IExpressionSchema[]>(async () => {
     if (!firstParamType) {

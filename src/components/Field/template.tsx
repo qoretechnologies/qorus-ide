@@ -149,12 +149,14 @@ export const TemplateField = ({
   const qorusTypes = useQorusTypes();
   const type = rest.type || rest.defaultType;
 
+  console.log(type);
+
   const functions = useAsyncRetry<IExpressionSchema[]>(async () => {
     if (!allowFunctions) {
       return [];
     }
 
-    const data = await fetchData(`/system/expressions?return_type=${type}`);
+    const data = await fetchData(`/system/expressions?first_arg_type=${type}`);
 
     return data.data;
   }, [type]);
