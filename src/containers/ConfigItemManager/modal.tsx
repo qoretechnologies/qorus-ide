@@ -43,8 +43,7 @@ export const templatesList = [
   'qore-expr-value',
 ];
 
-@withTextContext()
-export default class ConfigItemsModal extends Component {
+class ConfigItemsModal extends Component {
   getTemplateType = (value) => {
     const [type] = value.replace(/'/g, '').split(':');
 
@@ -369,3 +368,5 @@ export default class ConfigItemsModal extends Component {
     );
   }
 }
+
+export default withTextContext()(ConfigItemsModal);

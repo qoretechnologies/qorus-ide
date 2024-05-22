@@ -8,7 +8,7 @@ import {
 import { IReqoreOptions } from '@qoretechnologies/reqore/dist/containers/UIProvider';
 import { ReqraftProvider } from '@qoretechnologies/reqraft';
 import { Preview } from '@storybook/react';
-import { useEffect } from 'react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -23,7 +23,7 @@ const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
 
   // @ts-ignore
-  useEffect(() => {
+  React.useEffect(() => {
     if (context.args.isFullIDE) {
       // @ts-ignore
       window._useWebsocketsInStorybook = true;

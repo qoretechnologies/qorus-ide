@@ -220,11 +220,6 @@
     "resetMocks": true,
     "testTimeout": 60000
   },
-  "babel": {
-    "presets": [
-      "react-app"
-    ]
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-react": "^7.24.1",
