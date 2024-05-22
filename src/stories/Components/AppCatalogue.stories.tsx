@@ -1,9 +1,10 @@
 import { StoryObj } from "@storybook/react";
-import { fireEvent, within } from "@storybook/test";
+import { fireEvent } from "@storybook/test";
 import { AppCatalogue, IApp } from "../../components/AppCatalogue";
 import { buildAppFromActionSets } from "../../hooks/useActionSets";
 import apps from "../Data/apps.json";
 import builtInApps from "../Data/builtInApps.json";
+import { _testsClickButton } from '../Tests/utils';
 import { StoryMeta } from "../types";
 
 const typedApps: IApp[] = apps as IApp[];
@@ -248,9 +249,7 @@ export const WithActionSets: StoryObj<typeof meta> = {
     apps: typedAppsWithActionSets,
   },
   play: async (args) => {
-    const canvas = within(args.canvasElement);
-
-    await fireEvent.click(canvas.queryAllByText("Saved Favorites")[0]);
+    await _testsClickButton({ label: 'Saved Favorites'  })
   },
 };
 
