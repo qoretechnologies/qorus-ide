@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { waitFor, within } from '@storybook/testing-library';
+import { waitFor, within } from '@storybook/test';
 import { InterfacesView } from '../../containers/InterfacesView';
 import { StoryMeta } from '../types';
 

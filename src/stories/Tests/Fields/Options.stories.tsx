@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 import Options from '../../../components/Field/systemOptions';
 import { Basic } from '../../Fields/Options/Options.stories';

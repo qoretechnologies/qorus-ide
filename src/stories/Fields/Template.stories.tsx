@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { expect, fireEvent } from "@storybook/test";
 import auto from '../../components/Field/auto';
 import LongStringField from '../../components/Field/longString';
 import Number from '../../components/Field/number';

@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withFields from '../../../hocomponents/withFields';
@@ -13,14 +12,14 @@ import { DraftsProvider } from '../../../providers/Drafts';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import interfaces from '../../Data/interface_samples.json';
 import {
-  _testsClickButton,
-  _testsConfirmDialog,
-  _testsCreatorDraftSaveCheck,
-  _testsCreatorViewCode,
-  _testsExpectFieldsCountToMatch,
-  _testsSelectItemFromDropdown,
-  _testsWaitForText,
-  sleep,
+    _testsClickButton,
+    _testsConfirmDialog,
+    _testsCreatorDraftSaveCheck,
+    _testsCreatorViewCode,
+    _testsExpectFieldsCountToMatch,
+    _testsSelectItemFromDropdown,
+    _testsWaitForText,
+    sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 

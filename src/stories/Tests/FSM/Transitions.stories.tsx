@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import QodexWithIfState from '../../Data/qodexWithIfState.json';

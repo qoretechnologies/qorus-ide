@@ -1,11 +1,11 @@
 import { StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { fireEvent } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import fsm from '../../Data/fsm.json';
 import { StoryMeta } from '../../types';
 import { _testsCreateSelectionBox, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,

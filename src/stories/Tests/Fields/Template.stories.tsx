@@ -1,6 +1,5 @@
-import { expect, jest } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, jest, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 import Number from '../../../components/Field/number';
 import { TemplateField } from '../../../components/Field/template';

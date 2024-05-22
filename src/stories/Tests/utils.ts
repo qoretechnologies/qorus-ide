@@ -1,11 +1,10 @@
-import { expect } from '@storybook/jest';
 import {
-  fireEvent,
-  screen,
-  userEvent,
-  waitFor,
-  within,
-} from '@storybook/testing-library';
+    expect, fireEvent,
+    screen,
+    userEvent,
+    waitFor,
+    within
+} from '@storybook/test';
 
 const stateCategory = {
   mapper: 'Interfaces',

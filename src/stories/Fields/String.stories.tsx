@@ -1,5 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
+import { expect } from "@storybook/test";
 import StringField from '../../components/Field/string';
 
 const meta = {

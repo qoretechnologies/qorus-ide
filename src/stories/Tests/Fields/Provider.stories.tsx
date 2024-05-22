@@ -1,11 +1,10 @@
-import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import connectors from '../../../components/Field/connectors';
 import {
-  ApiCall,
-  Message,
-  Type,
+    ApiCall,
+    Message,
+    Type,
 } from '../../Fields/DataProvider/Provider.stories';
 import { sleep } from '../utils';
 

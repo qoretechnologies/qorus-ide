@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { expect, fireEvent } from "@storybook/test";
 import { useState } from 'react';
 import SelectField from '../../components/Field/select';
 import { sleep } from '../Tests/utils';

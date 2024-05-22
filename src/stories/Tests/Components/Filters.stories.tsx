@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, within } from '@storybook/testing-library';
+import { expect, fireEvent, within } from '@storybook/test';
 import { ConfigItemsManagerFilters } from '../../../containers/ConfigItemManager/filters';
 import configItems from '../../Data/configItems';
 import { StoryMeta } from '../../types';

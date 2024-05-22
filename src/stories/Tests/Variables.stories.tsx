@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { FSMVariables } from '../../containers/InterfaceCreator/fsm/variables';
 import { StoryMeta } from '../types';
 import { _testsSelectItemFromDropdown, sleep } from './utils';

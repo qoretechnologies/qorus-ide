@@ -1,11 +1,10 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import QodexWithIfState from '../../Data/qodexWithIfState.json';
 import { StoryMeta } from '../../types';
 import { SwitchesToBuilder } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,

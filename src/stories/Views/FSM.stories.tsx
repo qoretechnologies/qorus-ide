@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import fsm from '../Data/fsm.json';
@@ -12,15 +11,15 @@ import transactionStateFsm from '../Data/transacitonStateFsm.json';
 import { AutoAlign } from '../Tests/FSM/Alignment.stories';
 import { SwitchesToBuilder } from '../Tests/FSM/Basic.stories';
 import {
-  _testsAddNewState,
-  _testsClickState,
-  _testsClickStateByLabel,
-  _testsCreateSelectionBox,
-  _testsDoubleClickState,
-  _testsOpenAppCatalogue,
-  _testsSelectAppOrAction,
-  _testsSelectState,
-  sleep,
+    _testsAddNewState,
+    _testsClickState,
+    _testsClickStateByLabel,
+    _testsCreateSelectionBox,
+    _testsDoubleClickState,
+    _testsOpenAppCatalogue,
+    _testsSelectAppOrAction,
+    _testsSelectState,
+    sleep,
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
 

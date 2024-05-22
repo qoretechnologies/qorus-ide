@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { size, upperFirst } from 'lodash';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
@@ -8,16 +7,16 @@ import { NewExpression } from '../../Components/ExpressionBuilder.stories';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
-  _testsAddNewState,
-  _testsAddNewVariableState,
-  _testsClickState,
-  _testsCloseStateDetail,
-  _testsGetStateByLabel,
-  _testsQodexCanBePublished,
-  _testsSelectItemFromCollection,
-  _testsSelectItemFromDropdown,
-  _testsSubmitFSMState,
-  sleep,
+    _testsAddNewState,
+    _testsAddNewVariableState,
+    _testsClickState,
+    _testsCloseStateDetail,
+    _testsGetStateByLabel,
+    _testsQodexCanBePublished,
+    _testsSelectItemFromCollection,
+    _testsSelectItemFromDropdown,
+    _testsSubmitFSMState,
+    sleep,
 } from '../utils';
 import { NewVariableState } from './Variables.stories';
 
