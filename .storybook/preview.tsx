@@ -6,6 +6,7 @@ import {
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqoreOptions } from '@qoretechnologies/reqore/dist/containers/UIProvider';
+import { ReqraftProvider } from '@qoretechnologies/reqraft';
 import { Preview } from '@storybook/react';
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -105,7 +106,13 @@ const preview: Preview = {
             },
           }}
         >
-          <RouterProvider router={router} />
+          <ReqraftProvider
+            appName='ide'
+            instance='https://hq.qoretechnologies.com:8092/'
+            instanceToken={process.env.REACT_APP_QORUS_TOKEN}
+          >
+            <RouterProvider router={router} />
+          </ReqraftProvider>
         </ReqoreUIProvider>
       );
     },

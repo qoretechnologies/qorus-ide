@@ -11,6 +11,7 @@
     "@previewjs/plugin-react": "^3.1.2",
     "@qoretechnologies/python-parser": "^0.4.10",
     "@qoretechnologies/reqore": "^0.41.0",
+    "@qoretechnologies/reqraft": "^0.2.3",
     "@sentry/browser": "^7.109.0",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/jest-dom": "^5.16.5",
