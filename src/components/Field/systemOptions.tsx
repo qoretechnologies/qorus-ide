@@ -1,4 +1,3 @@
-import { setupPreviews } from '@previewjs/plugin-react/setup';
 import {
   ReqoreButton,
   ReqoreCollection,
@@ -1017,31 +1016,5 @@ const Options = ({
     </>
   );
 };
-
-const PreviewOptions = (props: Omit<IOptionsProps, 'onChange'>) => {
-  const [value, setValue] = useState<IOptions>(props.value);
-
-  return (
-    <Options
-      value={value}
-      onChange={(_name, val) => setValue(val)}
-      {...props}
-    />
-  );
-};
-
-setupPreviews(PreviewOptions, () => ({
-  Default: {
-    name: 'options',
-    options: {
-      RequiredString: {
-        type: ['string'] as IQorusType[],
-        desc: 'A string',
-        required: true,
-        default_value: 'hello',
-      },
-    },
-  },
-}));
 
 export default Options;
