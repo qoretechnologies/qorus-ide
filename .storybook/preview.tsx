@@ -6,16 +6,16 @@ import {
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqoreOptions } from '@qoretechnologies/reqore/dist/containers/UIProvider';
-import { ReqraftProvider } from '@qoretechnologies/reqraft';
+import { initializeReqraft } from '@qoretechnologies/reqraft';
 import { Preview } from '@storybook/react';
 import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
-  Route,
-  RouterProvider,
   createMemoryRouter,
   createRoutesFromElements,
+  Route,
+  RouterProvider,
 } from 'react-router-dom';
 import { InitialContext } from '../src/context/init';
 
@@ -94,6 +94,11 @@ const preview: Preview = {
         )
       );
 
+      const Reqraft = initializeReqraft({
+        instance: 'https://hq.qoretechnologies.com:8092/',
+        instanceToken: process.env.REACT_APP_QORUS_TOKEN,
+      })
+
       return (
         <ReqoreUIProvider
           options={{ ...context.args.reqoreOptions }}
@@ -106,13 +111,12 @@ const preview: Preview = {
             },
           }}
         >
-          <ReqraftProvider
+          <Reqraft
             appName='ide'
-            instance='https://hq.qoretechnologies.com:8092/'
-            instanceToken={process.env.REACT_APP_QORUS_TOKEN}
+            waitForStorage={true}
           >
             <RouterProvider router={router} />
-          </ReqraftProvider>
+          </Reqraft>
         </ReqoreUIProvider>
       );
     },

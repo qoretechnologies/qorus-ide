@@ -14,6 +14,7 @@ import {
   StyledEffect,
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
+import { useReqraftStorage } from '@qoretechnologies/reqraft';
 import { drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
@@ -501,7 +502,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
-  const [paneWidth, setPaneWidth] = useState<number>(500);
+
+  const [paneWidth, setPaneWidth] = useReqraftStorage<number>('ide.qog-pane-size', 250)
+
   const theme = useReqoreTheme();
 
   const targetStatesTransitionIndexes = useRef<
@@ -2511,7 +2514,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             height: '100%',
           },
           onResizeStop: (_e, _dir, _ref, delta) => {
-            setPaneWidth((cur) => cur + delta.width);
+            setPaneWidth(paneWidth + delta.width);
           },
         }}
       />

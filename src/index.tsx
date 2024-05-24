@@ -1,5 +1,6 @@
 import { ReqoreColors, ReqoreUIProvider } from '@qoretechnologies/reqore';
 import { IReqoreUIProviderProps } from '@qoretechnologies/reqore/dist/containers/UIProvider';
+import { initializeReqraft } from '@qoretechnologies/reqraft';
 import * as Sentry from '@sentry/browser';
 import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
@@ -47,6 +48,11 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+const Reqraft = initializeReqraft({
+  instance: 'https://hq.qoretechnologies.com:8092/',
+  instanceToken: process.env.REACT_APP_QORUS_TOKEN,
+});
+
 export const ReqoreWrapper = ({
   reqoreOptions,
 }: {
@@ -74,7 +80,9 @@ export const ReqoreWrapper = ({
         ...reqoreOptions,
       }}
     >
-      <AppContainer theme={theme} setTheme={setTheme} />
+      <Reqraft appName="ide">
+        <AppContainer theme={theme} setTheme={setTheme} />
+      </Reqraft>
     </ReqoreUIProvider>
   );
 };
@@ -87,6 +95,8 @@ const router = createBrowserRouter(
     basename: process.env.NODE_ENV === 'production' ? '/ide' : undefined,
   }
 );
+
+
 
 root.render(
   <DndProvider backend={HTML5Backend}>
