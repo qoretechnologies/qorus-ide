@@ -97,7 +97,7 @@ const preview: Preview = {
       const Reqraft = initializeReqraft({
         instance: 'https://hq.qoretechnologies.com:8092/',
         instanceToken: process.env.REACT_APP_QORUS_TOKEN,
-      })
+      });
 
       return (
         <ReqoreUIProvider
@@ -111,10 +111,7 @@ const preview: Preview = {
             },
           }}
         >
-          <Reqraft
-            appName='ide'
-            waitForStorage={true}
-          >
+          <Reqraft appName='ide' waitForStorage={false}>
             <RouterProvider router={router} />
           </Reqraft>
         </ReqoreUIProvider>
