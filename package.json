@@ -10,7 +10,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@qoretechnologies/python-parser": "^0.4.10",
     "@qoretechnologies/reqore": "^0.46.1",
-    "@qoretechnologies/reqraft": "0.3.4-canary.20240528092837.0",
+    "@qoretechnologies/reqraft": "^0.3.4",
     "@sentry/browser": "^7.109.0",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/jest-dom": "^5.16.5",
