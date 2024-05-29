@@ -564,7 +564,7 @@ class GraphBuilder {
   }
 }
 
- class StepDiagram extends Component<IStepDiagramProps> {
+class StepDiagram extends Component<IStepDiagramProps> {
   state = {
     rows: null,
     highlightedSteps: this.props.highlightedGroupSteps || [],
@@ -953,7 +953,7 @@ class GraphBuilder {
   }
 }
 
-export default compose(withTextContext, withFieldsConsumer)(StepDiagram);
+export default compose(withTextContext(), withFieldsConsumer())(StepDiagram);
 
 const StepDialog = ({ step, onClose, onSubmit, title, stepName, onDelete }) => {
   const t = useContext(TextContext);

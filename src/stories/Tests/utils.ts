@@ -211,7 +211,7 @@ export async function _testsAddNewVariableState(
 }
 
 export function _testsSelectItemFromDropdown(
-  canvas = screen,
+  canvas: any = screen,
   itemLabel: string | number,
   dropdownLabel: string = 'PleaseSelect',
   className?: string

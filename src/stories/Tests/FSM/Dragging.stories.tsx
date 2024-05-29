@@ -5,10 +5,10 @@ import { InterfacesProvider } from '../../../providers/Interfaces';
 import fsm from '../../Data/fsm.json';
 import { StoryMeta } from '../../types';
 import {
-    _testsCreateSelectionBox,
-    _testsMoveState,
-    _testsSelectState,
-    sleep,
+  _testsCreateSelectionBox,
+  _testsMoveState,
+  _testsSelectState,
+  sleep,
 } from '../utils';
 import { SwitchesToBuilder, ZoomIn, ZoomOut } from './Basic.stories';
 
@@ -20,13 +20,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
   parameters: {
     chromatic: {
       disableSnapshot: true,

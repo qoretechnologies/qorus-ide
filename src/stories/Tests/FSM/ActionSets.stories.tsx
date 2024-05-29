@@ -5,14 +5,14 @@ import { InterfacesProvider } from '../../../providers/Interfaces';
 import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
-    _testsClickStateByLabel,
-    _testsCloseAppCatalogue,
-    _testsDeleteState,
-    _testsOpenAppCatalogue,
-    _testsSelectAppOrAction,
-    _testsSelectFromAppCatalogue,
-    _testsSelectStateByLabel,
-    sleep,
+  _testsClickStateByLabel,
+  _testsCloseAppCatalogue,
+  _testsDeleteState,
+  _testsOpenAppCatalogue,
+  _testsSelectAppOrAction,
+  _testsSelectFromAppCatalogue,
+  _testsSelectStateByLabel,
+  sleep,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
 
@@ -24,13 +24,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView, { stateType?: string }>;
 
 export default meta;
@@ -259,7 +252,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(29);
+    ).toBe(30);
 
     await _testsSelectAppOrAction(canvas, 'Saved Favorites');
 
@@ -269,7 +262,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(28);
+    ).toBe(29);
   },
 };
 

@@ -103,7 +103,13 @@ const preview: Preview = {
 
       return (
         <ReqoreUIProvider
-          options={{ ...defaultReqoreOptions, ...context.args.reqoreOptions }}
+          options={{
+            ...defaultReqoreOptions,
+            ...context.args.reqoreOptions,
+            tooltips: {
+              delay: 1,
+            },
+          }}
           theme={defaultReqoreTheme}
         >
           <Reqraft appName='ide' waitForStorage={false}>

@@ -1,22 +1,17 @@
 import { StoryObj } from '@storybook/react';
-import {
-    expect, fireEvent,
-    userEvent,
-    waitFor,
-    within
-} from '@storybook/test';
+import { expect, fireEvent, userEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import VariablesFSM from '../../Data/variablesFsm.json';
 import { StoryMeta } from '../../types';
 import { NewVariable } from '../Variables.stories';
 import {
-    _testsAddNewState,
-    _testsCloseAppCatalogue,
-    _testsOpenAppCatalogue,
-    _testsOpenAppCatalogueFromState,
-    _testsSelectAppOrAction,
-    sleep,
+  _testsAddNewState,
+  _testsCloseAppCatalogue,
+  _testsOpenAppCatalogue,
+  _testsOpenAppCatalogueFromState,
+  _testsSelectAppOrAction,
+  sleep,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
 
@@ -28,13 +23,7 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   parameters: {
     chromatic: {
       disableSnapshot: true,

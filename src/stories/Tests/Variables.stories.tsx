@@ -7,13 +7,6 @@ import { _testsSelectItemFromDropdown, sleep } from './utils';
 const meta = {
   component: FSMVariables,
   title: 'Tests/Variables',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMVariables, { stateType?: string }>;
 
 export default meta;
@@ -27,7 +20,9 @@ export const NewVariable: StoryFSM = {
     // Open the variables dialog
     await waitFor(
       async () => {
-        await expect(document.querySelector('#create-new-variable')).toBeInTheDocument();
+        await expect(
+          document.querySelector('#create-new-variable')
+        ).toBeInTheDocument();
       },
       {
         timeout: 10000,
@@ -37,12 +32,18 @@ export const NewVariable: StoryFSM = {
     await fireEvent.click(document.querySelector('#create-new-variable'));
     await expect(document.querySelector('#save-variable')).toBeDisabled();
 
-    await fireEvent.change(document.querySelectorAll('.variables-form .reqore-input')[0], {
-      target: { value: 'testVariable' },
-    });
-    await fireEvent.change(document.querySelectorAll('.variables-form .reqore-textarea')[0], {
-      target: { value: 'This is a test description' },
-    });
+    await fireEvent.change(
+      document.querySelectorAll('.variables-form .reqore-input')[0],
+      {
+        target: { value: 'testVariable' },
+      }
+    );
+    await fireEvent.change(
+      document.querySelectorAll('.variables-form .reqore-textarea')[0],
+      {
+        target: { value: 'This is a test description' },
+      }
+    );
 
     await _testsSelectItemFromDropdown(canvas, 'data-provider', 'string')();
 
@@ -62,9 +63,12 @@ export const NewVariable: StoryFSM = {
 
     await waitFor(
       async () => {
-        await fireEvent.change(document.querySelectorAll('.reqore-textarea')[1], {
-          target: { value: 'SELECT * FROM gl_record' },
-        });
+        await fireEvent.change(
+          document.querySelectorAll('.reqore-textarea')[1],
+          {
+            target: { value: 'SELECT * FROM gl_record' },
+          }
+        );
         await sleep(1000);
         await fireEvent.click(canvas.getAllByText('Apply search options')[0]);
       },

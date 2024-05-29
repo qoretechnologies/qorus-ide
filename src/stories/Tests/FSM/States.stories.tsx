@@ -7,16 +7,16 @@ import { NewExpression } from '../../Components/ExpressionBuilder.stories';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
-    _testsAddNewState,
-    _testsAddNewVariableState,
-    _testsClickState,
-    _testsCloseStateDetail,
-    _testsGetStateByLabel,
-    _testsQodexCanBePublished,
-    _testsSelectItemFromCollection,
-    _testsSelectItemFromDropdown,
-    _testsSubmitFSMState,
-    sleep,
+  _testsAddNewState,
+  _testsAddNewVariableState,
+  _testsClickState,
+  _testsCloseStateDetail,
+  _testsGetStateByLabel,
+  _testsQodexCanBePublished,
+  _testsSelectItemFromCollection,
+  _testsSelectItemFromDropdown,
+  _testsSubmitFSMState,
+  sleep,
 } from '../utils';
 import { NewVariableState } from './Variables.stories';
 
@@ -28,13 +28,7 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   parameters: {
     chromatic: {
       disableSnapshot: true,
@@ -520,6 +514,8 @@ export const NewApiCallState: StoryFSM = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
+    await sleep(500);
+
     await waitFor(
       async () => {
         await fireEvent.click(document.querySelector('.provider-selector'));
@@ -529,6 +525,8 @@ export const NewApiCallState: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    await sleep(500);
 
     await waitFor(
       async () => {
@@ -544,6 +542,8 @@ export const NewApiCallState: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    await sleep(500);
 
     await waitFor(
       async () => {

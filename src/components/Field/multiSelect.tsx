@@ -250,4 +250,4 @@ const MultiSelectField: FunctionComponent<
 export default compose(
   withTextContext(),
   withMapperConsumer()
-)(MultiSelectField) as FunctionComponent<IMultiSelectField & IField>;
+)(MultiSelectField) as any;

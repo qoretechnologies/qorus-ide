@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from '@storybook/test';
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withFields from '../../../hocomponents/withFields';
@@ -12,14 +12,14 @@ import { DraftsProvider } from '../../../providers/Drafts';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import interfaces from '../../Data/interface_samples.json';
 import {
-    _testsClickButton,
-    _testsConfirmDialog,
-    _testsCreatorDraftSaveCheck,
-    _testsCreatorViewCode,
-    _testsExpectFieldsCountToMatch,
-    _testsSelectItemFromDropdown,
-    _testsWaitForText,
-    sleep,
+  _testsClickButton,
+  _testsConfirmDialog,
+  _testsCreatorDraftSaveCheck,
+  _testsCreatorViewCode,
+  _testsExpectFieldsCountToMatch,
+  _testsSelectItemFromDropdown,
+  _testsWaitForText,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -34,6 +34,9 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
+  args: {
+    onSubmit: fn(),
+  },
   title: 'Interfaces Manager/Job',
   render: (args) => {
     return (

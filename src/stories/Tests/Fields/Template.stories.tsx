@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { expect, fireEvent, jest, waitFor, within } from '@storybook/test';
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
-import Number from '../../../components/Field/number';
 import { TemplateField } from '../../../components/Field/template';
 import { buildTemplates } from '../../../helpers/functions';
 import templates from '../../Data/templates.json';
@@ -13,6 +12,7 @@ const meta = {
   title: 'Tests/Fields/Template',
   args: {
     templates: buildTemplates(templates as any),
+    onChange: fn(),
   },
 } as Meta<typeof TemplateField>;
 
@@ -28,6 +28,8 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
     const canvas = within(canvasElement);
 
     await ShowsTemplatesListForString.play({ canvasElement, ...rest });
+
+    await sleep(500);
 
     await waitFor(
       () =>
@@ -55,6 +57,8 @@ export const TemplateCanBeSelected: StoryObj<typeof meta> = {
 
     await fireEvent.click(canvas.getAllByText('Interface ID')[0]);
 
+    await sleep(100);
+
     await expect(canvas.getByDisplayValue('$local:id')).toBeInTheDocument();
   },
 };
@@ -75,11 +79,9 @@ export const ValueIsResetWhenChangingToCustom: StoryObj<typeof meta> = {
     );
   },
   args: {
-    component: Number,
     type: 'number',
     value: '$config:something',
     name: 'Test Field',
-    onChange: jest.fn(),
   },
   play: async ({ canvasElement, ...rest }) => {
     await waitFor(

@@ -354,7 +354,7 @@ const Options = ({
         setLoading(true);
         // Fetch the options for this mapper type
         const data = await fetchData(getUrl());
-        if (data.error) {
+        if (!data.ok) {
           setLoading(false);
           setOptions({});
           return;
@@ -375,7 +375,7 @@ const Options = ({
         // Fetch the options for this mapper type
         const data = await fetchData(`/${operatorsUrl}`);
 
-        if (data.error) {
+        if (!data.ok) {
           setLoading(false);
           setOperators({});
           return;
@@ -397,7 +397,7 @@ const Options = ({
         // Fetch the options for this mapper type
         const data = await fetchData(getUrl());
 
-        if (data.error) {
+        if (!data.ok) {
           setLoading(false);
           setOptions({});
           return;
@@ -736,8 +736,8 @@ const Options = ({
       isOptionValid(name, type, value) && (operatorsUrl ? !!op : true)
         ? undefined
         : recordRequiresSearchOptions
-        ? 'info'
-        : 'danger';
+          ? 'info'
+          : 'danger';
 
     return intent || options[name].intent;
   };
