@@ -7,15 +7,15 @@ import qodex from '../../Data/qodex.json';
 import { NewState } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
-    _testsClickState,
-    _testsCloneState,
-    _testsCloseStateDetail,
-    _testsCreateSelectionBox,
-    _testsDeleteMultipleStates,
-    _testsDeleteState,
-    _testsDoubleClickState,
-    _testsSelectFromAppCatalogue,
-    sleep,
+  _testsClickState,
+  _testsCloneState,
+  _testsCloseStateDetail,
+  _testsCreateSelectionBox,
+  _testsDeleteMultipleStates,
+  _testsDeleteState,
+  _testsDoubleClickState,
+  _testsSelectFromAppCatalogue,
+  sleep,
 } from '../utils';
 import { AutoAlign } from './Alignment.stories';
 
@@ -27,13 +27,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView, { stateType?: string }>;
 
 export default meta;

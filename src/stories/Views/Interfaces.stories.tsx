@@ -6,13 +6,6 @@ import { StoryMeta } from '../types';
 const meta = {
   component: InterfacesView,
   title: 'Views/Interfaces',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof InterfacesView>;
 
 export default meta;

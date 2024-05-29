@@ -9,13 +9,7 @@ import { StoryMeta } from '../types';
 const meta = {
   component: QodexActionExec,
   title: 'Views/FSM/Action execution',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   render: (args) => {
     return (
       // @ts-ignore

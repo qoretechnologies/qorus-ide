@@ -11,15 +11,15 @@ import transactionStateFsm from '../Data/transacitonStateFsm.json';
 import { AutoAlign } from '../Tests/FSM/Alignment.stories';
 import { SwitchesToBuilder } from '../Tests/FSM/Basic.stories';
 import {
-    _testsAddNewState,
-    _testsClickState,
-    _testsClickStateByLabel,
-    _testsCreateSelectionBox,
-    _testsDoubleClickState,
-    _testsOpenAppCatalogue,
-    _testsSelectAppOrAction,
-    _testsSelectState,
-    sleep,
+  _testsAddNewState,
+  _testsClickState,
+  _testsClickStateByLabel,
+  _testsCreateSelectionBox,
+  _testsDoubleClickState,
+  _testsOpenAppCatalogue,
+  _testsSelectAppOrAction,
+  _testsSelectState,
+  sleep,
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
 
@@ -31,13 +31,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView>;
 
 export default meta;

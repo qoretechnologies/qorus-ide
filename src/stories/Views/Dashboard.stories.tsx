@@ -11,14 +11,6 @@ const meta = {
       <Dashboard {...args} />
     </InterfacesProvider>
   ),
-
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof Dashboard>;
 
 export default meta;
