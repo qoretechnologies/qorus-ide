@@ -1,9 +1,10 @@
 import {
-    expect, fireEvent,
-    screen,
-    userEvent,
-    waitFor,
-    within
+  expect,
+  fireEvent,
+  screen,
+  userEvent,
+  waitFor,
+  within,
 } from '@storybook/test';
 
 const stateCategory = {
@@ -497,9 +498,9 @@ export async function _testsOpenTemplates() {
     { timeout: 10000 }
   );
 
-  await sleep(300);
+  await sleep(500);
 
-  await fireEvent.click(document.querySelector('.template-selector'));
+  await _testsClickButton({ selector: '.template-selector', wait: 5000 });
 
   await waitFor(
     () =>

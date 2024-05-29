@@ -16,11 +16,11 @@ import {
   Route,
   RouterProvider,
 } from 'react-router-dom';
-import { InitialContext } from '../src/context/init';
 import {
   defaultReqoreOptions,
   defaultReqoreTheme,
 } from '../src/constants/util';
+import { InitialContext } from '../src/context/init';
 
 const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
@@ -64,7 +64,6 @@ const StorybookWrapper = ({ context, Story }: any) => {
 const preview: Preview = {
   parameters: {
     layout: 'fullscreen',
-    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,

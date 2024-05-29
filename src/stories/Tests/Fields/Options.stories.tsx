@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from '@storybook/test';
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 import Options from '../../../components/Field/systemOptions';
 import { Basic } from '../../Fields/Options/Options.stories';
@@ -7,6 +7,9 @@ import { Basic } from '../../Fields/Options/Options.stories';
 const meta = {
   component: Options,
   title: 'Tests/Fields/Options',
+  args: {
+    onChange: fn(),
+  },
   render: (args) => {
     const [value, setValue] = useState(args.value);
 

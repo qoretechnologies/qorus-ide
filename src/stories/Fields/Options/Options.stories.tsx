@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from "@storybook/test";
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { useEffect, useState } from 'react';
 import Options, {
   IOptionsSchema,
@@ -8,6 +8,9 @@ import Options, {
 const meta = {
   component: Options,
   title: 'Fields/Options',
+  args: {
+    onChange: fn(),
+  },
 } as Meta<typeof Options>;
 
 export default meta;

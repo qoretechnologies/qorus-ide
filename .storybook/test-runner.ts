@@ -1,7 +1,7 @@
 import type { TestRunnerConfig } from '@storybook/test-runner';
 
 const config: TestRunnerConfig = {
-  logLevel: 'error',
+  logLevel: 'verbose',
 };
 
 export default config;
