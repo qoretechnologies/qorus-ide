@@ -1,4 +1,4 @@
-import { ReqoreColors, ReqoreUIProvider } from '@qoretechnologies/reqore';
+import { ReqoreUIProvider } from '@qoretechnologies/reqore';
 import { IReqoreUIProviderProps } from '@qoretechnologies/reqore/dist/containers/UIProvider';
 import { initializeReqraft } from '@qoretechnologies/reqraft';
 import * as Sentry from '@sentry/browser';
@@ -17,6 +17,7 @@ import { createStore } from 'redux';
 import { createGlobalStyle } from 'styled-components';
 import AppContainer from './App';
 import reducer from './reducers';
+import { defaultReqoreTheme, defaultReqoreOptions } from './constants/util';
 
 Sentry.init({
   dsn: 'https://1228ced0a5ab4f4a9604bf4aa58f2fb9@app.glitchtip.com/6336',
@@ -62,25 +63,10 @@ export const ReqoreWrapper = ({
 
   return (
     <ReqoreUIProvider
-      theme={{
-        main: theme === 'light' ? '#ffffff' : '#222222',
-        sidebar: {
-          item: { activeBackground: ReqoreColors.BLUE, activeColor: '#ffffff' },
-        },
-        intents: { success: '#4a7110' },
-        header: theme === 'light' ? { main: '#333333' } : undefined,
-      }}
-      options={{
-        animations: { buttons: false },
-        withSidebar: true,
-        closePopoversOnEscPress: true,
-        tooltips: {
-          delay: 300,
-        },
-        ...reqoreOptions,
-      }}
+      theme={defaultReqoreTheme}
+      options={{ ...defaultReqoreOptions, ...reqoreOptions }}
     >
-      <Reqraft appName="ide">
+      <Reqraft appName='ide'>
         <AppContainer theme={theme} setTheme={setTheme} />
       </Reqraft>
     </ReqoreUIProvider>
@@ -95,8 +81,6 @@ const router = createBrowserRouter(
     basename: process.env.NODE_ENV === 'production' ? '/ide' : undefined,
   }
 );
-
-
 
 root.render(
   <DndProvider backend={HTML5Backend}>

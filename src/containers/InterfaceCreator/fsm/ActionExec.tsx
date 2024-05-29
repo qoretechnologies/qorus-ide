@@ -68,8 +68,7 @@ export const QodexActionExec = memo(
       if (response.ok) {
         setResponse(response.data);
       } else {
-        console.error(response.data, response);
-        setError('There was an error in the test call!');
+        setError(response.error);
       }
 
       setLoading(false);
@@ -185,7 +184,12 @@ export const QodexActionExec = memo(
             </>
           ) : null}
           {error && (
-            <ReqoreMessage intent='danger' opaque={false} margin='top'>
+            <ReqoreMessage
+              intent='danger'
+              opaque={false}
+              margin='top'
+              size='small'
+            >
               {error}
             </ReqoreMessage>
           )}

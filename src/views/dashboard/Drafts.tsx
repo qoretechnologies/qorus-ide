@@ -27,7 +27,7 @@ export interface IQogLogItem {
 }
 
 export const DashboardDrafts = () => {
-  const { changeTab } = useContext(InitialContext);
+  const { changeTab, changeDraft } = useContext(InitialContext);
   const addNotification = useReqoreProperty('addNotification');
   const { loading, value = {}, retry } = useFetchInterfaces();
 
@@ -99,9 +99,13 @@ export const DashboardDrafts = () => {
                       image: interfaceImages[item.type],
                     }}
                     label={`${item.label}`}
-                    onClick={() =>
-                      changeTab('CreateInterface', item.type, item.data.id)
-                    }
+                    onClick={() => {
+                      if (item.data) {
+                        changeTab('CreateInterface', item.type, item.data.id);
+                      } else {
+                        changeDraft({ type: item.type, id: item.id });
+                      }
+                    }}
                     customTheme={{ main: '#8e5930:darken:5:0.5' }}
                     badge={{
                       label: timeago(Math.floor(new Date(item.date).getTime())),

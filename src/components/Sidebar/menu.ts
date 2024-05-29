@@ -25,7 +25,7 @@ export const buildMenu = (
     icon: 'CodeBoxLine',
 
     to: '/',
-    activePaths: ['/', '/ide'],
+    activePaths: ['', '/ide'],
     id: 'ide',
     as: Link,
     submenu: map(

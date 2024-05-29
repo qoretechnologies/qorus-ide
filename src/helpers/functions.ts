@@ -531,7 +531,13 @@ export const fetchData: (
   method?: string,
   body?: { [key: string]: any },
   forceCache?: boolean
-) => Promise<any> = async (url, method = 'GET', body, forceCache = true) => {
+) => Promise<{
+  action: string;
+  data: any;
+  ok: boolean;
+  code?: number;
+  error?: string;
+}> = async (url, method = 'GET', body, forceCache = true) => {
   const cache = method === 'DELETE' || method === 'POST' ? false : forceCache;
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
@@ -560,12 +566,22 @@ export const fetchData: (
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
+      let error: string;
+
+      try {
+        const json = await requestData.json();
+
+        error = json.desc;
+      } catch (e) {
+        error = requestData.statusText;
+      }
+
       return {
         action: 'fetch-data-complete',
         data: null,
         ok: false,
         code: requestData.status,
-        error: requestData.statusText,
+        error,
       };
     }
 

@@ -1,11 +1,10 @@
-import {
-  IReqoreMenuProps,
-} from '@qoretechnologies/reqore/dist/components/Menu';
+import { IReqoreMenuProps } from '@qoretechnologies/reqore/dist/components/Menu';
 import { ReqraftMenu } from '@qoretechnologies/reqraft';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useContextSelector } from 'use-context-selector';
 import { InterfacesContext } from '../../context/interfaces';
 import { TMenu, buildMenu } from './menu';
+import { QorusPurpleIntent } from '../../constants/util';
 
 export interface ISidebar extends Partial<IReqoreMenuProps> {
   isOpen?: boolean;
@@ -26,7 +25,7 @@ export const Sidebar = (props: ISidebar) => {
     <ReqraftMenu
       menu={menu}
       path={location.pathname}
-
+      activeItemIntent={QorusPurpleIntent}
     />
-  )
+  );
 };

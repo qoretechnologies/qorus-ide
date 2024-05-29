@@ -135,9 +135,13 @@ export const InterfacesViewCollection = ({
       fill
       actions={[
         {
-          icon: 'AddCircleLine',
           label: `Create New ${singular_display_name}`,
           flat: false,
+          icon: interfaceIcons[type],
+          leftIconProps: {
+            icon: interfaceIcons[type],
+            image: interfaceImages[type],
+          },
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
           pill: true,
@@ -194,8 +198,8 @@ export const InterfacesViewCollection = ({
                   item.draft && !item.data
                     ? 'success'
                     : item.draft
-                    ? 'pending'
-                    : 'main:lighten',
+                      ? 'pending'
+                      : 'main:lighten',
               },
             },
           },

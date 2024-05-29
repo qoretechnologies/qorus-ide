@@ -1,5 +1,4 @@
 import {
-  ReqoreColors,
   ReqoreContent,
   ReqoreLayoutContent,
   ReqoreUIProvider,
@@ -18,6 +17,10 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import { InitialContext } from '../src/context/init';
+import {
+  defaultReqoreOptions,
+  defaultReqoreTheme,
+} from '../src/constants/util';
 
 const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
@@ -101,15 +104,8 @@ const preview: Preview = {
 
       return (
         <ReqoreUIProvider
-          options={{ ...context.args.reqoreOptions }}
-          theme={{
-            sidebar: {
-              item: {
-                activeBackground: ReqoreColors.BLUE,
-                activeColor: '#ffffff',
-              },
-            },
-          }}
+          options={{ ...defaultReqoreOptions, ...context.args.reqoreOptions }}
+          theme={defaultReqoreTheme}
         >
           <Reqraft appName='ide' waitForStorage={false}>
             <RouterProvider router={router} />

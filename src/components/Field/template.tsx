@@ -149,8 +149,6 @@ export const TemplateField = ({
   const qorusTypes = useQorusTypes();
   const type = rest.type || rest.defaultType;
 
-  console.log(type);
-
   const functions = useAsyncRetry<IExpressionSchema[]>(async () => {
     if (!allowFunctions) {
       return [];

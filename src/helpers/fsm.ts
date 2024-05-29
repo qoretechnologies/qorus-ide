@@ -1132,7 +1132,7 @@ export const buildMetadata = (
   context?: any
 ): IFSMMetadata => {
   const metadata: IFSMMetadata = {
-    display_name: 'Untitled Qodex',
+    display_name: 'Untitled Qog',
     autovar: data?.autovar || context?.autovar,
     globalvar: data?.globalvar,
     localvar: data?.localvar,
