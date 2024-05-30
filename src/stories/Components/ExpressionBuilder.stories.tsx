@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from "@storybook/test";
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 import {
   ExpressionBuilder,
@@ -391,9 +391,9 @@ export const NewExpression: Story = {
 
     await fireEvent.click(canvas.getAllByText(/Interface Name/)[0]);
 
-    await sleep(300);
+    await sleep(1500);
 
-    await _testsSelectItemFromCollection(canvas, 'ends with')();
+    await _testsSelectItemFromCollection(canvas, 'ends with', 'PleaseSelect')();
 
     await sleep(300);
 
