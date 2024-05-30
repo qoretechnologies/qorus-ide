@@ -18,7 +18,6 @@ export const apiToken =
     : process.env.REACT_APP_QORUS_TOKEN;
 
 if (!apiToken && process.env.NODE_ENV === 'production') {
-  console.log('No token found, redirecting to login', apiToken);
   window.location.href = '/login?next=/ide';
 }
 

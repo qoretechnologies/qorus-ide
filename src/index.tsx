@@ -16,8 +16,9 @@ import {
 import { createStore } from 'redux';
 import { createGlobalStyle } from 'styled-components';
 import AppContainer from './App';
+import { apiToken } from './common/vscode';
+import { defaultReqoreOptions, defaultReqoreTheme } from './constants/util';
 import reducer from './reducers';
-import { defaultReqoreTheme, defaultReqoreOptions } from './constants/util';
 
 Sentry.init({
   dsn: 'https://1228ced0a5ab4f4a9604bf4aa58f2fb9@app.glitchtip.com/6336',
@@ -49,10 +50,14 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
+console.log('INITIALIZING REQRAFT');
+
 const Reqraft = initializeReqraft({
   instance: 'https://hq.qoretechnologies.com:8092/',
-  instanceToken: process.env.REACT_APP_QORUS_TOKEN,
+  instanceToken: apiToken,
 });
+
+console.log('INITIALIZED REQRAFT');
 
 export const ReqoreWrapper = ({
   reqoreOptions,
