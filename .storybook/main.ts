@@ -6,7 +6,7 @@ const config = {
     '@storybook/addon-interactions',
     '@chromaui/addon-visual-tests',
     '@storybook/addon-webpack5-compiler-babel',
-    '@chromatic-com/storybook'
+    '@chromatic-com/storybook',
   ],
   framework: {
     name: '@storybook/react-webpack5',
@@ -37,6 +37,7 @@ const config = {
       url: 'https://reqore.qoretechnologies.com/',
     },
   },
+  staticDirs: ['../public'],
 };
 
 export default config;

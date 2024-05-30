@@ -73,6 +73,7 @@ export const GlobalSearch = () => {
               {finalValue.map((item) => (
                 <ReqoreMenuItem
                   key={`${item.type}-${item.id}`}
+                  icon={interfaceIcons[item.type]}
                   leftIconProps={{
                     icon: interfaceIcons[item.type],
                     image: interfaceImages[item.type],

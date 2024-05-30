@@ -225,7 +225,6 @@ const ServicesView: FunctionComponent<IServicesView> = ({
                   padding: '15px',
                 }}
               >
-                HALLO o/
                 <StepDiagram
                   steps={parsedSteps}
                   stepsData={stepsData}

@@ -1,9 +1,13 @@
 import { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 import { ProviderMessageData } from '../../../components/Field/connectors/MessageData';
 
 const meta = {
   component: ProviderMessageData,
   title: 'Fields/DataProvider/MessageData',
+  args: {
+    onChange: fn(),
+  },
 } as Meta<typeof ProviderMessageData>;
 
 export default meta;

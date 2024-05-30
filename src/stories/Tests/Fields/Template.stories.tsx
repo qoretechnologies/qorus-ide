@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
+import string from '../../../components/Field/string';
 import { TemplateField } from '../../../components/Field/template';
 import { buildTemplates } from '../../../helpers/functions';
 import templates from '../../Data/templates.json';
@@ -79,6 +80,7 @@ export const ValueIsResetWhenChangingToCustom: StoryObj<typeof meta> = {
     );
   },
   args: {
+    component: string,
     type: 'number',
     value: '$config:something',
     name: 'Test Field',
