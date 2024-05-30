@@ -234,6 +234,8 @@ export function _testsSelectItemFromDropdown(
       await sleep(100);
 
       await fireEvent.click(canvas.queryAllByText(dropdownLabel)[0]);
+
+      await sleep(300);
     }
 
     await waitFor(

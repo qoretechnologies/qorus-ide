@@ -83,6 +83,9 @@ const preview: Preview = {
       animations: {
         dialogs: false,
       },
+      tooltips: {
+        delay: 0,
+      },
     } as IReqoreOptions,
   },
   decorators: [
@@ -106,9 +109,6 @@ const preview: Preview = {
           options={{
             ...defaultReqoreOptions,
             ...context.args.reqoreOptions,
-            tooltips: {
-              delay: 1,
-            },
           }}
           theme={defaultReqoreTheme}
         >
