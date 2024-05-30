@@ -67,8 +67,8 @@ export const FSMVariables = ({
   const confirmAction = useReqoreProperty('confirmAction');
 
   const handleSubmitClick = useCallback(() => {
-    onClose();
-    onSubmit({ globalvar: _transient, localvar: _persistent, changes });
+    onClose?.();
+    onSubmit?.({ globalvar: _transient, localvar: _persistent, changes });
   }, [_transient, _persistent]);
 
   const handleCreateNewClick = () => {
@@ -121,8 +121,8 @@ export const FSMVariables = ({
         type === 'autovar'
           ? autovar
           : type === 'globalvar'
-          ? _transient
-          : _persistent;
+            ? _transient
+            : _persistent;
 
       return (
         <>
@@ -218,8 +218,8 @@ export const FSMVariables = ({
         selectedTab === 'autovar'
           ? autovar
           : selectedTab === 'globalvar'
-          ? _transient
-          : _persistent,
+            ? _transient
+            : _persistent,
         (_data, name) => name === _selectedVariable
       );
 

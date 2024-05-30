@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from '@storybook/test';
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { FSMVariables } from '../../containers/InterfaceCreator/fsm/variables';
 import { StoryMeta } from '../types';
 import { _testsSelectItemFromDropdown, sleep } from './utils';
@@ -7,6 +7,10 @@ import { _testsSelectItemFromDropdown, sleep } from './utils';
 const meta = {
   component: FSMVariables,
   title: 'Tests/Variables',
+  args: {
+    onSubmit: fn(),
+    onClose: fn(),
+  },
 } as StoryMeta<typeof FSMVariables, { stateType?: string }>;
 
 export default meta;

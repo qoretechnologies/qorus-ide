@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, fireEvent, within } from '@storybook/test';
+import { expect, fireEvent, fn, within } from '@storybook/test';
 import { ConfigItemsManagerFilters } from '../../../containers/ConfigItemManager/filters';
 import configItems from '../../Data/configItems';
 import { StoryMeta } from '../../types';
@@ -7,6 +7,10 @@ import { StoryMeta } from '../../types';
 const meta = {
   component: ConfigItemsManagerFilters,
   title: 'Tests/Components/Collection Filters',
+  args: {
+    onSubmit: fn(),
+    onClose: fn(),
+  },
 } as StoryMeta<typeof ConfigItemsManagerFilters>;
 
 export default meta;
