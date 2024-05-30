@@ -16,7 +16,7 @@ import {
 import { createStore } from 'redux';
 import { createGlobalStyle } from 'styled-components';
 import AppContainer from './App';
-import { apiToken } from './common/vscode';
+import { apiHost, apiToken } from './common/vscode';
 import { defaultReqoreOptions, defaultReqoreTheme } from './constants/util';
 import reducer from './reducers';
 
@@ -53,7 +53,7 @@ const GlobalStyle = createGlobalStyle`
 console.log('INITIALIZING REQRAFT');
 
 const Reqraft = initializeReqraft({
-  instance: 'https://hq.qoretechnologies.com:8092/',
+  instance: apiHost,
   instanceToken: apiToken,
 });
 
