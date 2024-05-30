@@ -64,7 +64,10 @@ export const createOrGetWebSocket = (
           // Check if Qorus is up
           const check = await fetchData('/system/pid');
 
+          console.log(check);
+
           if (check.status === 401) {
+            console.log('QORUS NEEDS TO BE RE-AUTHENTICATED IN WS');
             // Qorus is back up again but we need to re-authenticate
             // Get the current pathname and redirect to the login page
             const pathname = window.location.pathname;
