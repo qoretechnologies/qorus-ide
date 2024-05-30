@@ -110,7 +110,7 @@ const preview: Preview = {
             ...defaultReqoreOptions,
             ...context.args.reqoreOptions,
           }}
-          theme={defaultReqoreTheme}
+          theme={{ ...defaultReqoreTheme, main: '#333333' }}
         >
           <Reqraft appName='ide' waitForStorage={false}>
             <RouterProvider router={router} />
