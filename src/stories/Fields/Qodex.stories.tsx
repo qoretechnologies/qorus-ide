@@ -6,7 +6,7 @@ import { StoryMeta } from '../types';
 
 const meta = {
   component: QodexFields,
-  title: 'Fields/Qodex Fields',
+  title: 'Fields/Qog Fields',
   render: (args) => {
     const [val, setVal] = useState(args.value);
     const [settings, setSettings] = useState(args.settings);
@@ -33,7 +33,7 @@ export const Default: StoryObj<typeof meta> = {};
 export const WithValue: StoryObj<typeof meta> = {
   args: {
     value: {
-      display_name: 'Untitled Qodex',
+      display_name: 'Untitled Qog',
       desc: 'test',
       short_desc: 'short test',
     },

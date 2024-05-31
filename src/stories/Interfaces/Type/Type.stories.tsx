@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { expect, fireEvent, fn, waitFor } from '@storybook/test';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import withFields from '../../../hocomponents/withFields';
@@ -30,6 +29,9 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
+  args: {
+    onSubmit: fn(),
+  },
   title: 'Interfaces Manager/Type',
   render: (args) => {
     return (

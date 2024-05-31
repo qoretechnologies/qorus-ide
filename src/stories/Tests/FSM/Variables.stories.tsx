@@ -1,12 +1,7 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import {
-  fireEvent,
-  userEvent,
-  waitFor,
-  within,
-} from '@storybook/testing-library';
+import { expect, fireEvent, userEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import VariablesFSM from '../../Data/variablesFsm.json';
 import { StoryMeta } from '../../types';
 import { NewVariable } from '../Variables.stories';
@@ -19,7 +14,6 @@ import {
   sleep,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
@@ -29,13 +23,7 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   parameters: {
     chromatic: {
       disableSnapshot: true,

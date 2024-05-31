@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { userEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, userEvent, waitFor, within } from "@storybook/test";
 import { GlobalSearch } from '../../components/GlobalSearch';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import { sleep } from '../Tests/utils';

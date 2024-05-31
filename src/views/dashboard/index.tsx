@@ -8,11 +8,11 @@ import {
 } from '@qoretechnologies/reqore';
 import { IReqoreCustomTheme } from '@qoretechnologies/reqore/dist/constants/theme';
 import { map } from 'lodash';
-import { Suspense, useContext } from 'react';
+import { useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { useContextSelector } from 'use-context-selector';
 import Loader from '../../components/Loader';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { InitialContext } from '../../context/init';
 import { InterfacesContext } from '../../context/interfaces';
@@ -28,6 +28,7 @@ export const Dashboard = () => {
     InterfacesContext,
     ({ categories }) => ({ categories })
   );
+
   const draft = useAsyncRetry(async () => {
     const data = await callBackendBasic(
       Messages.GET_LATEST_DRAFT,
@@ -74,229 +75,227 @@ export const Dashboard = () => {
   }
 
   return (
-    <Suspense fallback={<Loader text='Loading dashboard...' />}>
-      <ReqorePanel
-        flat
-        fill
-        rounded={false}
-        contentEffect={{
-          gradient: {
-            type: 'radial',
-            colors: {
-              0: '#222222',
-              100: '#111111',
-            },
+    <ReqorePanel
+      flat
+      fill
+      rounded={false}
+      contentEffect={{
+        gradient: {
+          type: 'radial',
+          colors: {
+            0: '#222222',
+            100: '#111111',
           },
-        }}
-        contentStyle={{ maxWidth: '1280px', margin: '0 auto' }}
+        },
+      }}
+      contentStyle={{ maxWidth: '1280px', margin: '0 auto' }}
+    >
+      <ReqoreColumns
+        minColumnWidth='100%'
+        columnsGap='10px'
+        maxColumnWidth='1024px'
       >
+        <DashboardQogPanel />
+
+        <ReqoreColumns columnsGap='10px'>
+          <DashboardQogLog />
+          <DashboardDrafts />
+        </ReqoreColumns>
         <ReqoreColumns
           minColumnWidth='100%'
           columnsGap='10px'
           maxColumnWidth='1024px'
         >
-          <DashboardQogPanel />
-
-          <ReqoreColumns columnsGap='10px'>
-            <DashboardQogLog />
-            <DashboardDrafts />
-          </ReqoreColumns>
-          <ReqoreColumns
-            minColumnWidth='100%'
-            columnsGap='10px'
-            maxColumnWidth='1024px'
-          >
-            <ReqoreColumns columnsGap='10px' style={{ gridAutoRows: 'auto' }}>
+          <ReqoreColumns columnsGap='10px' style={{ gridAutoRows: 'auto' }}>
+            <ReqoreColumns
+              columnsGap='10px'
+              minColumnWidth='150px'
+              style={{ gridAutoRows: 'auto' }}
+            >
+              <ReqorePanel
+                minimal
+                customTheme={theme}
+                label='Tip of the day'
+                icon='LightbulbFill'
+                contentEffect={{
+                  gradient: {
+                    direction: 'to right bottom',
+                    colors: {
+                      0: 'main',
+                      100: '#031234',
+                    },
+                    animate: 'hover',
+                    animationSpeed: 5,
+                  },
+                }}
+                contentStyle={{
+                  display: 'flex',
+                  flexFlow: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ReqoreTextEffect
+                  effect={{
+                    opacity: 0.8,
+                    textAlign: 'center',
+                    textSize: '15px',
+                    gradient: {
+                      colors: {
+                        0: '#ffffff',
+                        100: '#8fbcff',
+                      },
+                      animationSpeed: 5,
+                      animate: 'always',
+                    },
+                  }}
+                >
+                  Did you know that you can clone an interface by clicking on
+                  the clone button{' '}
+                  <ReqoreIcon size='tiny' icon='FileCopyLine' color='#ffffff' />{' '}
+                  in the interface view?
+                </ReqoreTextEffect>
+              </ReqorePanel>
               <ReqoreColumns
                 columnsGap='10px'
-                minColumnWidth='150px'
+                minColumnWidth='100%'
                 style={{ gridAutoRows: 'auto' }}
               >
                 <ReqorePanel
-                  minimal
                   customTheme={theme}
-                  label='Tip of the day'
-                  icon='LightbulbFill'
-                  contentEffect={{
-                    gradient: {
-                      direction: 'to right bottom',
-                      colors: {
-                        0: 'main',
-                        100: '#031234',
-                      },
-                      animate: 'hover',
-                      animationSpeed: 5,
-                    },
-                  }}
                   contentStyle={{
                     display: 'flex',
                     flexFlow: 'column',
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}
+                  contentEffect={{
+                    gradient: {
+                      type: 'radial',
+                      shape: 'ellipse',
+                      //direction: 'to right bottom',
+                      colors: {
+                        100: 'main',
+                        0: '#2d1254',
+                      },
+                      animate: 'hover',
+                      animationSpeed: 5,
+                    },
+                  }}
+                  onClick={() => changeTab('Interfaces')}
                 >
                   <ReqoreTextEffect
                     effect={{
-                      opacity: 0.8,
                       textAlign: 'center',
-                      textSize: '15px',
-                      gradient: {
-                        colors: {
-                          0: '#ffffff',
-                          100: '#8fbcff',
-                        },
-                        animationSpeed: 5,
-                        animate: 'always',
-                      },
+                      textSize: '20px',
+                      weight: 'bold',
                     }}
                   >
-                    Did you know that you can clone an interface by clicking on
-                    the clone button{' '}
-                    <ReqoreIcon
-                      size='tiny'
-                      icon='FileCopyLine'
-                      color='#ffffff'
-                    />{' '}
-                    in the interface view?
+                    Browse All <br />{' '}
+                    <ReqoreTextEffect
+                      effect={{
+                        gradient: {
+                          colors: {
+                            0: '#1e4d9f',
+                            50: '#bb33ff',
+                            100: '#ff8c00',
+                          },
+                          animationSpeed: 5,
+                          animate: 'always',
+                        },
+                        textSize: '20px',
+                        weight: 'thick',
+                      }}
+                    >
+                      {interfacesCount.value.toString()}
+                    </ReqoreTextEffect>{' '}
+                    Objects
                   </ReqoreTextEffect>
                 </ReqorePanel>
-                <ReqoreColumns
-                  columnsGap='10px'
-                  minColumnWidth='100%'
-                  style={{ gridAutoRows: 'auto' }}
-                >
-                  <ReqorePanel
-                    customTheme={theme}
-                    contentStyle={{
-                      display: 'flex',
-                      flexFlow: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    contentEffect={{
-                      gradient: {
-                        type: 'radial',
-                        shape: 'ellipse',
-                        //direction: 'to right bottom',
-                        colors: {
-                          100: 'main',
-                          0: '#2d1254',
-                        },
-                        animate: 'hover',
-                        animationSpeed: 5,
-                      },
-                    }}
-                    onClick={() => changeTab('Interfaces')}
-                  >
-                    <ReqoreTextEffect
-                      effect={{
-                        textAlign: 'center',
-                        textSize: '20px',
-                        weight: 'bold',
-                      }}
-                    >
-                      Browse All <br />{' '}
-                      <ReqoreTextEffect
-                        effect={{
-                          gradient: {
-                            colors: {
-                              0: '#1e4d9f',
-                              50: '#bb33ff',
-                              100: '#ff8c00',
-                            },
-                            animationSpeed: 5,
-                            animate: 'always',
-                          },
-                          textSize: '20px',
-                          weight: 'thick',
-                        }}
-                      >
-                        {interfacesCount.value.toString()}
-                      </ReqoreTextEffect>{' '}
-                      Objects
-                    </ReqoreTextEffect>
-                  </ReqorePanel>
-                  <ReqorePanel
-                    customTheme={theme}
-                    fill
-                    contentStyle={{
-                      display: 'flex',
-                      flexFlow: 'column',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                    onClick={() => {}}
-                    contentEffect={{
-                      interactive: true,
-                      gradient: {
-                        direction: 'to right bottom',
-                        colors: {
-                          0: 'main',
+                <ReqorePanel
+                  customTheme={theme}
+                  fill
+                  contentStyle={{
+                    display: 'flex',
+                    flexFlow: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  onClick={() => {}}
+                  contentEffect={{
+                    interactive: true,
+                    gradient: {
+                      direction: 'to right bottom',
+                      colors: {
+                        0: 'main',
 
-                          200: '#66efd8',
-                        },
-                        animate: 'hover',
-                        animationSpeed: 5,
+                        200: '#66efd8',
                       },
-                    }}
-                    tooltip={{
-                      delay: 0.1,
-                      handler: 'click',
-                      noWrapper: true,
-                      useTargetWidth: true,
-                      noArrow: true,
-                      content: (
-                        <ReqoreMenu customTheme={{ main: '#0d476e' }} rounded>
-                          {map(categories, (category, categoryName) => (
-                            <ReqoreMenuItem
-                              icon={interfaceIcons[categoryName]}
-                              key={categoryName}
-                              onClick={() =>
-                                changeTab('CreateInterface', categoryName)
-                              }
-                            >
-                              {category.singular_display_name}
-                            </ReqoreMenuItem>
-                          ))}
-                        </ReqoreMenu>
-                      ),
+                      animate: 'hover',
+                      animationSpeed: 5,
+                    },
+                  }}
+                  tooltip={{
+                    delay: 0.1,
+                    handler: 'click',
+                    noWrapper: true,
+                    useTargetWidth: true,
+                    noArrow: true,
+                    content: (
+                      <ReqoreMenu customTheme={{ main: '#0d476e' }} rounded>
+                        {map(categories, (category, categoryName) => (
+                          <ReqoreMenuItem
+                            icon={interfaceIcons[categoryName]}
+                            leftIconProps={{
+                              icon: interfaceIcons[categoryName],
+                              image: interfaceImages[categoryName],
+                            }}
+                            key={categoryName}
+                            onClick={() =>
+                              changeTab('CreateInterface', categoryName)
+                            }
+                          >
+                            {category.singular_display_name}
+                          </ReqoreMenuItem>
+                        ))}
+                      </ReqoreMenu>
+                    ),
+                  }}
+                >
+                  <ReqoreTextEffect
+                    effect={{
+                      textAlign: 'center',
+                      textSize: '20px',
+                      weight: 'bold',
                     }}
                   >
+                    <ReqoreIcon icon='AddFill' margin='right' /> Create{' '}
                     <ReqoreTextEffect
                       effect={{
-                        textAlign: 'center',
+                        gradient: {
+                          colors: {
+                            0: '#38ee7e',
+                            50: '#66efd8',
+                            100: '#09d506',
+                          },
+                          animationSpeed: 5,
+                          animate: 'always',
+                        },
                         textSize: '20px',
-                        weight: 'bold',
+                        weight: 'thick',
                       }}
                     >
-                      <ReqoreIcon icon='AddFill' margin='right' /> Create{' '}
-                      <ReqoreTextEffect
-                        effect={{
-                          gradient: {
-                            colors: {
-                              0: '#38ee7e',
-                              50: '#66efd8',
-                              100: '#09d506',
-                            },
-                            animationSpeed: 5,
-                            animate: 'always',
-                          },
-                          textSize: '20px',
-                          weight: 'thick',
-                        }}
-                      >
-                        New
-                      </ReqoreTextEffect>
-                      <ReqoreIcon icon='ArrowDownSFill' margin='left' />
+                      New
                     </ReqoreTextEffect>
-                  </ReqorePanel>
-                </ReqoreColumns>
-                <DashboardStatus />
+                    <ReqoreIcon icon='ArrowDownSFill' margin='left' />
+                  </ReqoreTextEffect>
+                </ReqorePanel>
               </ReqoreColumns>
+              <DashboardStatus />
             </ReqoreColumns>
           </ReqoreColumns>
         </ReqoreColumns>
-      </ReqorePanel>
-    </Suspense>
+      </ReqoreColumns>
+    </ReqorePanel>
   );
 };

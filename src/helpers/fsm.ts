@@ -9,6 +9,7 @@ import {
   IFSMState,
   IFSMStates,
   IFSMTransition,
+  STATE_HEIGHT,
   STATE_WIDTH,
   TAppAndAction,
   TFSMClassConnectorAction,
@@ -1067,7 +1068,13 @@ export const isAnyStateAtPosition = (
   y: number
 ): boolean => {
   return some(states, (state) => {
-    return state.position.x === x && state.position.y === y;
+    // Check if any state is at the given x or y
+    return (
+      state.position.x <= x &&
+      state.position.x + STATE_WIDTH >= x &&
+      state.position.y <= y &&
+      state.position.y + STATE_HEIGHT >= y
+    );
   });
 };
 
@@ -1132,7 +1139,7 @@ export const buildMetadata = (
   context?: any
 ): IFSMMetadata => {
   const metadata: IFSMMetadata = {
-    display_name: 'Untitled Qodex',
+    display_name: 'Untitled Qog',
     autovar: data?.autovar || context?.autovar,
     globalvar: data?.globalvar,
     localvar: data?.localvar,

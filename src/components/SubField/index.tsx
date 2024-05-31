@@ -1,4 +1,3 @@
-import { setupPreviews } from '@previewjs/plugin-react/setup';
 import {
   ReqoreMessage,
   ReqorePanel,
@@ -6,7 +5,6 @@ import {
 } from '@qoretechnologies/reqore';
 import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
-import { noop } from 'lodash';
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
@@ -117,22 +115,5 @@ const SubField: React.FC<ISubFieldProps> = ({
     </>
   );
 };
-
-setupPreviews(SubField, () => ({
-  Basic: { title: 'SubField', children: <p> Hello </p> },
-  InValid: { title: 'SubField', children: <p> Hello </p>, isValid: false },
-  Subtle: { title: 'SubField', children: <p> Hello </p>, subtle: true },
-  WithDetail: {
-    title: 'SubField',
-    children: <p> Hello </p>,
-    detail: 'This is detail',
-  },
-  WithRemoveButton: {
-    title: 'SubField',
-    children: <p> Hello </p>,
-    detail: 'This is detail',
-    onRemove: noop,
-  },
-}));
 
 export default SubField;

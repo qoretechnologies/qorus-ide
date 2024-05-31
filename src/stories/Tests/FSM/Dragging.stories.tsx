@@ -1,6 +1,7 @@
 import { StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { fireEvent } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import fsm from '../../Data/fsm.json';
 import { StoryMeta } from '../../types';
 import {
@@ -10,7 +11,6 @@ import {
   sleep,
 } from '../utils';
 import { SwitchesToBuilder, ZoomIn, ZoomOut } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
@@ -20,13 +20,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
   parameters: {
     chromatic: {
       disableSnapshot: true,

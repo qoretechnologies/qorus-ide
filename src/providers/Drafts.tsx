@@ -1,5 +1,6 @@
 import { useReqoreProperty } from '@qoretechnologies/reqore';
 import { useContext, useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Messages } from '../constants/messages';
 import { DraftsContext, IDraftData } from '../context/drafts';
 import { ErrorsContext } from '../context/errors';
@@ -25,7 +26,8 @@ export const DraftsProvider = ({ children }: any) => {
   const { setFunctionsFromDraft } = useContext(FunctionsContext);
   const { setMapperFromDraft } = useContext(MapperContext);
   const { setErrorsFromDraft } = useContext(ErrorsContext);
-
+  const params = useParams();
+  const [draftId, setDraftId] = useSearchParams();
   const addNotification = useReqoreProperty('addNotification');
 
   const addDraft = (draftData: IDraftData) => {
@@ -38,7 +40,8 @@ export const DraftsProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
-    const { type, id } = draftData || {};
+    const type = params.subtab;
+    const id = draftId.get('draftId');
 
     if (type && id) {
       (async () => {
@@ -56,16 +59,11 @@ export const DraftsProvider = ({ children }: any) => {
 
         if (fetchedDraft.ok) {
           addDraft({ ...fetchedDraft.data });
-          changeTab(
-            'CreateInterface',
-            fetchedDraft.data.type,
-            typeof id === 'number' ? id : undefined
-          );
           setDraftData(null);
         }
       })();
     }
-  }, [draftData]);
+  }, [params.subtab, draftId.get('draftId')]);
 
   const maybeDeleteDraft = (interfaceKind: string, interfaceId: string) => {
     callBackendBasic(
@@ -168,11 +166,9 @@ export const DraftsProvider = ({ children }: any) => {
       if (classConnections) {
         applyClassConnectionsFunc?.(classConnections);
       }
-
-      // Remove the draft
-      removeDraft();
     }
 
+    removeDraft();
     onFinish?.();
   };
   return (

@@ -531,7 +531,13 @@ export const fetchData: (
   method?: string,
   body?: { [key: string]: any },
   forceCache?: boolean
-) => Promise<any> = async (url, method = 'GET', body, forceCache = true) => {
+) => Promise<{
+  action: string;
+  data: any;
+  ok: boolean;
+  code?: number;
+  error?: string;
+}> = async (url, method = 'GET', body, forceCache = true) => {
   const cache = method === 'DELETE' || method === 'POST' ? false : forceCache;
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
@@ -560,12 +566,22 @@ export const fetchData: (
     if (!requestData.ok) {
       delete fetchCache[cacheKey];
 
+      let error: string;
+
+      try {
+        const json = await requestData.json();
+
+        error = json.desc;
+      } catch (e) {
+        error = requestData.statusText;
+      }
+
       return {
         action: 'fetch-data-complete',
         data: null,
         ok: false,
         code: requestData.status,
-        error: requestData.statusText,
+        error,
       };
     }
 
@@ -662,7 +678,9 @@ export const filterTemplatesByType = (
       return (
         subItem.badge === fieldType ||
         (fieldType === 'string' &&
-          isTypeStringCompatible(subItem.badge as string))
+          isTypeStringCompatible(subItem.badge as string)) ||
+        (fieldType === 'number' &&
+          isTypeNumberCompatible(subItem.badge as string))
       );
     });
 
@@ -813,5 +831,13 @@ export const isTypeStringCompatible = (type: string) => {
     strongType === 'int' ||
     strongType === 'bool' ||
     strongType === 'float'
+  );
+};
+
+export const isTypeNumberCompatible = (type: string) => {
+  const strongType = type.replace('*', '').replace('soft', '');
+
+  return (
+    strongType === 'number' || strongType === 'int' || strongType === 'float'
   );
 };

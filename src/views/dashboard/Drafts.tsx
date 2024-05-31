@@ -9,7 +9,7 @@ import timeago from 'epoch-timeago';
 import { reduce, size } from 'lodash';
 import { useContext } from 'react';
 import Loader from '../../components/Loader';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { IQorusListInterface } from '../../containers/InterfacesView';
 import { InitialContext } from '../../context/init';
 import { deleteDraft } from '../../helpers/functions';
@@ -27,7 +27,7 @@ export interface IQogLogItem {
 }
 
 export const DashboardDrafts = () => {
-  const { changeTab } = useContext(InitialContext);
+  const { changeTab, changeDraft } = useContext(InitialContext);
   const addNotification = useReqoreProperty('addNotification');
   const { loading, value = {}, retry } = useFetchInterfaces();
 
@@ -94,10 +94,18 @@ export const DashboardDrafts = () => {
                 <ReqoreControlGroup stack key={item.id}>
                   <ReqoreButton
                     icon={interfaceIcons[item.type]}
+                    leftIconProps={{
+                      icon: interfaceIcons[item.type],
+                      image: interfaceImages[item.type],
+                    }}
                     label={`${item.label}`}
-                    onClick={() =>
-                      changeTab('CreateInterface', item.type, item.data.id)
-                    }
+                    onClick={() => {
+                      if (item.data) {
+                        changeTab('CreateInterface', item.type, item.data.id);
+                      } else {
+                        changeDraft({ type: item.type, id: item.id });
+                      }
+                    }}
                     customTheme={{ main: '#8e5930:darken:5:0.5' }}
                     badge={{
                       label: timeago(Math.floor(new Date(item.date).getTime())),

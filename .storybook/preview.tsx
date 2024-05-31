@@ -1,28 +1,32 @@
 import {
-  ReqoreColors,
   ReqoreContent,
   ReqoreLayoutContent,
   ReqoreUIProvider,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqoreOptions } from '@qoretechnologies/reqore/dist/containers/UIProvider';
+import { initializeReqraft } from '@qoretechnologies/reqraft';
 import { Preview } from '@storybook/react';
-import { useEffect } from 'react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
-  Route,
-  RouterProvider,
   createMemoryRouter,
   createRoutesFromElements,
+  Route,
+  RouterProvider,
 } from 'react-router-dom';
+import {
+  defaultReqoreOptions,
+  defaultReqoreTheme,
+} from '../src/constants/util';
 import { InitialContext } from '../src/context/init';
 
 const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
 
   // @ts-ignore
-  useEffect(() => {
+  React.useEffect(() => {
     if (context.args.isFullIDE) {
       // @ts-ignore
       window._useWebsocketsInStorybook = true;
@@ -60,7 +64,6 @@ const StorybookWrapper = ({ context, Story }: any) => {
 const preview: Preview = {
   parameters: {
     layout: 'fullscreen',
-    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,
@@ -80,6 +83,9 @@ const preview: Preview = {
       animations: {
         dialogs: false,
       },
+      tooltips: {
+        delay: 0,
+      },
     } as IReqoreOptions,
   },
   decorators: [
@@ -93,19 +99,22 @@ const preview: Preview = {
         )
       );
 
+      const Reqraft = initializeReqraft({
+        instance: 'https://hq.qoretechnologies.com:8092/',
+        instanceToken: process.env.REACT_APP_QORUS_TOKEN,
+      });
+
       return (
         <ReqoreUIProvider
-          options={{ ...context.args.reqoreOptions }}
-          theme={{
-            sidebar: {
-              item: {
-                activeBackground: ReqoreColors.BLUE,
-                activeColor: '#ffffff',
-              },
-            },
+          options={{
+            ...defaultReqoreOptions,
+            ...context.args.reqoreOptions,
           }}
+          theme={{ ...defaultReqoreTheme, main: '#333333' }}
         >
-          <RouterProvider router={router} />
+          <Reqraft appName='ide' waitForStorage={false}>
+            <RouterProvider router={router} />
+          </Reqraft>
         </ReqoreUIProvider>
       );
     },

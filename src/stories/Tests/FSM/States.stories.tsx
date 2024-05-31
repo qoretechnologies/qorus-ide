@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { size, upperFirst } from 'lodash';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
@@ -29,13 +28,7 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   parameters: {
     chromatic: {
       disableSnapshot: true,
@@ -521,6 +514,8 @@ export const NewApiCallState: StoryFSM = {
     await fireEvent.click(document.querySelector('.provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
+    await sleep(500);
+
     await waitFor(
       async () => {
         await fireEvent.click(document.querySelector('.provider-selector'));
@@ -530,6 +525,8 @@ export const NewApiCallState: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    await sleep(500);
 
     await waitFor(
       async () => {
@@ -545,6 +542,8 @@ export const NewApiCallState: StoryFSM = {
         timeout: 10000,
       }
     );
+
+    await sleep(500);
 
     await waitFor(
       async () => {

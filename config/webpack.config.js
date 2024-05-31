@@ -244,6 +244,7 @@ module.exports = function (webpackEnv) {
         ),
       },
     },
+    //cache: false,
     infrastructureLogging: {
       level: 'none',
     },

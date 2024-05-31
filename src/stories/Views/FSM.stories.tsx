@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import fsm from '../Data/fsm.json';
@@ -32,19 +31,25 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView>;
 
 export default meta;
 
 type StoryFSM = StoryObj<typeof meta>;
-export const New: StoryFSM = {};
+export const New: StoryFSM = {
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await waitFor(
+      () =>
+        expect(
+          canvas.queryAllByText(/What would you like to/)[0]
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+  },
+};
 export const Existing: StoryFSM = {
   args: {
     fsm: qodex,

@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { waitFor } from '@storybook/testing-library';
+import { expect, waitFor } from '@storybook/test';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import App from '../../App';

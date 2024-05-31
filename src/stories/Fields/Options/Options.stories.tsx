@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import { useEffect, useState } from 'react';
 import Options, {
   IOptionsSchema,
@@ -9,6 +8,9 @@ import Options, {
 const meta = {
   component: Options,
   title: 'Fields/Options',
+  args: {
+    onChange: fn(),
+  },
 } as Meta<typeof Options>;
 
 export default meta;

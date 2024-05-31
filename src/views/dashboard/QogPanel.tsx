@@ -10,6 +10,7 @@ import RelativeTime from '@yaireo/relative-time';
 import { size } from 'lodash';
 import { useContext, useState } from 'react';
 import Loader from '../../components/Loader';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { QodexTestRunModal } from '../../containers/InterfaceCreator/fsm/TestRunModal';
 import { InitialContext } from '../../context/init';
 import { useFetchInterfaces } from '../../hooks/useFetchInterfaces';
@@ -72,6 +73,12 @@ export const DashboardQogPanel = () => {
         alignItems: 'center',
       }}
       label='Automations'
+      icon={interfaceIcons.fsm}
+      iconProps={{
+        size: '40px',
+        icon: interfaceIcons.fsm,
+        image: interfaceImages.fsm,
+      }}
       headerEffect={{
         gradient: {
           colors: {

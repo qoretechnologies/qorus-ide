@@ -2,7 +2,7 @@ import { IReqoreMenuDividerProps } from '@qoretechnologies/reqore/dist/component
 import { IReqoreMenuItemProps } from '@qoretechnologies/reqore/dist/components/Menu/item';
 import { map } from 'lodash';
 import { Link } from 'react-router-dom';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { TQorusInterfaceCount } from '../../containers/InterfacesView';
 export interface IMenuItem extends IReqoreMenuItemProps {
   submenu?: TMenuItem[];
@@ -25,7 +25,7 @@ export const buildMenu = (
     icon: 'CodeBoxLine',
 
     to: '/',
-    activePaths: ['/', '/ide'],
+    activePaths: ['', '/ide'],
     id: 'ide',
     as: Link,
     submenu: map(
@@ -33,6 +33,10 @@ export const buildMenu = (
       (item, id): TMenuItem => ({
         label: item.display_name,
         icon: interfaceIcons[id],
+        leftIconProps: {
+          icon: interfaceIcons[id],
+          image: interfaceImages[id],
+        },
         minimal: false,
         to: `/Interfaces/${id}`,
         badge: [{ label: item.items + item.drafts, align: 'right' }],

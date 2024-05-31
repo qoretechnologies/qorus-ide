@@ -125,14 +125,13 @@ export const Expression = ({
   level,
   path,
   onValueChange,
-  returnType = 'bool',
   group,
 }: IExpressionProps) => {
   const types = useQorusTypes();
   const theme = useReqoreTheme();
   const [firstArgument, ...rest] = value.value.args;
 
-  const firstParamType = firstArgument?.type || type || 'string';
+  const firstParamType = firstArgument?.type || type || 'context';
 
   const expressions = useAsyncRetry<IExpressionSchema[]>(async () => {
     if (!firstParamType) {
@@ -140,9 +139,7 @@ export const Expression = ({
     }
 
     const data = await fetchData(
-      `/system/expressions?return_type=${returnType}${
-        returnType === 'bool' ? `&first_arg_type=${firstParamType}` : ''
-      }`
+      `/system/expressions?first_arg_type=${firstParamType}`
     );
 
     return data.data;
@@ -166,7 +163,28 @@ export const Expression = ({
     );
   }
 
-  const updateType = (val: IQorusType) => {
+  const updateType = (val: IQorusType, conformsCurrentType?: boolean) => {
+    if (conformsCurrentType) {
+      onValueChange(
+        {
+          ...value,
+          value: {
+            ...value.value,
+            args: [
+              {
+                ...value.value.args[0],
+                type: val,
+              },
+              ...value.value.args.slice(1),
+            ],
+          },
+        },
+        path
+      );
+
+      return;
+    }
+
     onValueChange(
       {
         value: {
@@ -270,6 +288,7 @@ export const Expression = ({
   const selectedExpression = expressions.value?.find(
     (exp) => exp.name === value.value.exp
   );
+  const firstArgSchema = selectedExpression?.args[0];
   let restOfArgs = selectedExpression?.args.slice(1);
 
   if (selectedExpression?.varargs) {
@@ -280,6 +299,8 @@ export const Expression = ({
       })),
     ];
   }
+
+  const returnType = selectedExpression?.return_type;
 
   return (
     <StyledExpressionItem
@@ -355,16 +376,25 @@ export const Expression = ({
         )}
         <Select
           name='type'
-          defaultItems={types.value}
+          defaultItems={
+            firstArgSchema?.type?.types_accepted?.map((type) => ({
+              name: type,
+              display_name: types.value.find((t) => t.name === type)
+                ?.display_name,
+            })) || types.value
+          }
           value={firstArgument?.type || type || 'ctx'}
           onChange={(_name, value) => {
-            updateType(value === 'context' ? undefined : value);
+            const conformsType = firstArgSchema?.type?.types_accepted?.includes(
+              value as IQorusType
+            );
+
+            updateType(value === 'context' ? undefined : value, conformsType);
           }}
           minimal
           flat
           showDescription={false}
           customTheme={{ main: 'info:darken:1:0.1' }}
-          disabled={!!type}
         />
         {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
           <Select
@@ -385,7 +415,7 @@ export const Expression = ({
             onChange={(_name, value) => {
               updateExp(value);
             }}
-            showDescription={false}
+            showDescription='tooltip'
             size='normal'
           />
         ) : null}
@@ -434,7 +464,7 @@ export const Expression = ({
                       firstParamType
                     )}
                     canBeNull={false}
-                    value={rest[index]?.value || arg.default_value}
+                    value={rest[index]?.value ?? arg.default_value}
                     templates={localTemplates}
                     allowTemplates
                     onChange={(_name, value, type, isFunction) => {

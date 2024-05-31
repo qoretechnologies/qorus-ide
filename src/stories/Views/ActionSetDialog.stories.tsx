@@ -7,13 +7,7 @@ import { StoryMeta } from '../types';
 const meta = {
   component: ActionSetDialog,
   title: 'Views/FSM/Action Set Dialog',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
+
   render: (args) => {
     return (
       // @ts-ignore

@@ -10,6 +10,7 @@ import classNames from 'classnames';
 import { size } from 'lodash';
 import { lighten } from 'polished';
 import { Component, useContext, useEffect, useState } from 'react';
+import compose from 'recompose/compose';
 import styled, { css } from 'styled-components';
 import { Messages } from '../../constants/messages';
 import { ContextMenuContext } from '../../context/contextMenu';
@@ -563,9 +564,7 @@ class GraphBuilder {
   }
 }
 
-@withTextContext()
-@withFieldsConsumer()
-export default class StepDiagram extends Component<IStepDiagramProps> {
+class StepDiagram extends Component<IStepDiagramProps> {
   state = {
     rows: null,
     highlightedSteps: this.props.highlightedGroupSteps || [],
@@ -953,6 +952,8 @@ export default class StepDiagram extends Component<IStepDiagramProps> {
     );
   }
 }
+
+export default compose(withTextContext(), withFieldsConsumer())(StepDiagram);
 
 const StepDialog = ({ step, onClose, onSubmit, title, stepName, onDelete }) => {
   const t = useContext(TextContext);

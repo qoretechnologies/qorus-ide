@@ -15,6 +15,7 @@ import {
 import Loader from '../../components/Loader';
 import {
   interfaceIcons,
+  interfaceImages,
   interfaceKindTransform,
 } from '../../constants/interfaces';
 import { InitialContext } from '../../context/init';
@@ -134,15 +135,23 @@ export const InterfacesViewCollection = ({
       fill
       actions={[
         {
-          icon: 'AddCircleLine',
           label: `Create New ${singular_display_name}`,
           flat: false,
+          icon: interfaceIcons[type],
+          leftIconProps: {
+            icon: interfaceIcons[type],
+            image: interfaceImages[type],
+          },
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
           pill: true,
         },
       ]}
       icon={interfaceIcons[type]}
+      iconProps={{
+        icon: interfaceIcons[type],
+        image: interfaceImages[type],
+      }}
       sortKeys={{
         running: 'Is Running',
         last_executed: 'Last Executed',
@@ -167,6 +176,10 @@ export const InterfacesViewCollection = ({
         (item: IQorusListInterface): IReqoreCollectionItemProps => ({
           label: item.label || item.data?.display_name,
           icon: interfaceIcons[type],
+          iconProps: {
+            icon: interfaceIcons[type],
+            image: interfaceImages[type],
+          },
           metadata: {
             date: item.date || item.data?.date,
             running: item.data?.running,
@@ -185,8 +198,8 @@ export const InterfacesViewCollection = ({
                   item.draft && !item.data
                     ? 'success'
                     : item.draft
-                    ? 'pending'
-                    : 'main:lighten',
+                      ? 'pending'
+                      : 'main:lighten',
               },
             },
           },
@@ -197,7 +210,7 @@ export const InterfacesViewCollection = ({
           responsiveActions: false,
           size: 'small',
           onClick: () => {
-            if (item.draft) {
+            if (!item.data) {
               changeDraft({
                 type,
                 id: item.id,

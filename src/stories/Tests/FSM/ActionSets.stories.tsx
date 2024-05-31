@@ -1,7 +1,7 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
+import { InterfacesProvider } from '../../../providers/Interfaces';
 import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
 import {
@@ -15,7 +15,6 @@ import {
   sleep,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
-import { InterfacesProvider } from '../../../providers/Interfaces';
 
 const meta = {
   component: FSMView,
@@ -25,13 +24,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView, { stateType?: string }>;
 
 export default meta;
@@ -260,7 +252,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(29);
+    ).toBe(30);
 
     await _testsSelectAppOrAction(canvas, 'Saved Favorites');
 
@@ -270,7 +262,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(28);
+    ).toBe(29);
   },
 };
 

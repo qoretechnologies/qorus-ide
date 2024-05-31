@@ -14,6 +14,7 @@ import {
   StyledEffect,
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
+import { useReqraftStorage } from '@qoretechnologies/reqraft';
 import { drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
@@ -251,7 +252,7 @@ export const STATE_ITEM_TYPE = 'state';
 export const DIAGRAM_SIZE = 4000;
 export const IF_STATE_SIZE = 80;
 export const STATE_WIDTH = 350;
-export const STATE_HEIGHT = 50;
+export const STATE_HEIGHT = 120;
 const DIAGRAM_DRAG_KEY = 'Shift';
 const DROP_ACCEPTS: string[] = [TOOLBAR_ITEM_TYPE, STATE_ITEM_TYPE];
 
@@ -403,6 +404,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
   const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   parentStateName = parentStateName?.replace(/ /g, '-');
 
   const fsm = rest?.fsm || init?.fsm;
@@ -439,11 +441,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     metadata = mt;
     setMetadata = setMt;
 
-    const [searchParams, setSearchParams] = useSearchParams();
     activeState = searchParams.get('state');
 
     setActiveState = (id) => {
-      setSearchParams({ state: id });
+      searchParams.set('state', id);
+      setSearchParams(searchParams);
     };
   } else {
     activeState = actState;
@@ -501,6 +503,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }>(undefined);
   const [isAddingActionSet, setIsAddingActionSet] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(1);
+
+  const [paneWidth, setPaneWidth] = useReqraftStorage<number>(
+    'qog.pane-size',
+    250
+  );
+
   const theme = useReqoreTheme();
 
   const targetStatesTransitionIndexes = useRef<
@@ -758,6 +766,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setInterfaceId(id);
         setMetadata(metadata);
         setStates(states);
+
+        console.log(states, metadata, id, params);
+
+        if (!params.id && size(states) === 0) {
+          setIsAddingNewStateAt({ x: 0, y: 0 });
+        }
       },
       undefined,
       () => {
@@ -774,11 +788,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     setZoom(zoom - 0.1 < 0.5 ? 0.5 : zoom - 0.1);
   };
 
-  useUpdateEffect(() => {
-    if (draft) {
+  useEffect(() => {
+    if (searchParams.get('draftId') || draft) {
       applyDraft();
+    } else {
+      if (!params.id && size(states) === 0) {
+        setIsAddingNewStateAt({ x: 0, y: 0 });
+      }
     }
-  }, [draft]);
+  }, [searchParams.get('draftId'), draft]);
 
   useMount(() => {
     if (!embedded) {
@@ -817,25 +835,24 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     }
   });
 
-  useEffect(() => {
-    if (isReady) {
-      if (!params?.id && size(states) === 0) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
-      }
-    }
-  }, [isReady]);
-
   useDebounce(
     async () => {
       if (!embedded) {
+        const fsmStates = fsm?.states || {};
+        const modifiedFsm = fsm || { display_name: 'Untitled Qog' };
         const draftId = getDraftId(fsm, interfaceId);
-        const hasChanged = fsm
+        const hasChanged = modifiedFsm
           ? some(metadata, (value, key) => {
-              return !value && !fsm[key]
+              return !value && !modifiedFsm[key]
                 ? false
-                : !isEqual(value, key === 'groups' ? fsm[key] || [] : fsm[key]);
-            }) || !isEqual(states, fsm.states)
+                : !isEqual(
+                    value,
+                    key === 'groups' ? modifiedFsm[key] || [] : modifiedFsm[key]
+                  );
+            }) || !isEqual(states, fsmStates)
           : true;
+
+        console.log(states, fsmStates, metadata, fsm);
 
         if (
           draftId &&
@@ -889,7 +906,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           })();
         }
 
-        // Check if the trigger state is missing (old Qodexes known as FSMs did not need them)
+        // Check if the trigger state is missing (old Qogs known as FSMs did not need them)
         if (
           !embedded &&
           !find(newStates, (state) => {
@@ -1537,12 +1554,20 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const preUpdateStateData = useCallback(
-    async (id: string | number, data: Partial<IFSMState>) => {
+    async (
+      id: string | number,
+      data: Partial<IFSMState>,
+      isValid?: boolean
+    ) => {
       let fixedStates: IFSMStates = { ...states };
 
       fixedStates[id] = {
         ...fixedStates[id],
         ...data,
+        isValid:
+          isValid === false || isValid === true
+            ? isValid
+            : fixedStates[id].isValid,
       };
 
       // Delete `isNew` from the fixed state
@@ -1586,8 +1611,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   );
 
   const updateStateData = useCallback(
-    async (id: string | number, data: Partial<IFSMState>) => {
-      const fixedStates = await preUpdateStateData(id, data);
+    async (
+      id: string | number,
+      data: Partial<IFSMState>,
+      isValid?: boolean
+    ) => {
+      const fixedStates = await preUpdateStateData(id, data, isValid);
 
       updateHistory(fixedStates);
       setStates((cur) => ({ ...cur, ...fixedStates }));
@@ -1732,7 +1761,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         title: 'Unsaved changes',
         intent: 'warning',
         description:
-          'You have unsaved changes. Are you sure you want to save your Qodex?',
+          'You have unsaved changes. Are you sure you want to save your Qog?',
         onConfirm: submit,
       });
     } else {
@@ -2460,8 +2489,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         }}
         interfaceId={interfaceId}
         data={stateData}
-        onSubmit={(data, createNew?: boolean) => {
-          updateStateData(state, data);
+        onSubmit={(data, createNew?: boolean, isValid?: boolean) => {
+          updateStateData(state, data, isValid);
 
           if (createNew) {
             setIsAddingNewStateAt({ x: 0, y: 0, fromState: state });
@@ -2492,6 +2521,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         inputProvider={getStateDataForComparison(states[state], 'input')}
         outputProvider={getStateDataForComparison(states[state], 'output')}
         metadata={metadata}
+        resizable={{
+          defaultSize: {
+            width: `${paneWidth}px`,
+            height: '100%',
+          },
+          onResizeStop: (_e, _dir, _ref, delta) => {
+            setPaneWidth(paneWidth + delta.width);
+          },
+        }}
       />
     );
   };
@@ -2611,6 +2649,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 icon: 'AlignTop',
                 className: 'align-top',
                 tooltip: 'Align vertically to top',
+                compact: true,
                 onClick: () => {
                   setStates({
                     ...states,
@@ -2628,6 +2667,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 icon: 'AlignVertically',
                 className: 'align-center',
                 tooltip: 'Align vertically to center',
+                compact: true,
                 onClick: () => {
                   setStates({
                     ...states,
@@ -2645,6 +2685,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 icon: 'AlignBottom',
                 className: 'align-bottom',
                 tooltip: 'Align vertically to bottom',
+                compact: true,
                 onClick: () => {
                   setStates({
                     ...states,
@@ -2668,6 +2709,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 leftIconProps: {
                   rotation: -90,
                 },
+                compact: true,
                 className: 'align-left',
                 tooltip: 'Align horizontally to left',
                 onClick: () => {
@@ -2688,6 +2730,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 leftIconProps: {
                   rotation: -90,
                 },
+                compact: true,
                 className: 'align-middle',
                 tooltip: 'Align horizontally to center',
                 onClick: () => {
@@ -2708,6 +2751,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 leftIconProps: {
                   rotation: 90,
                 },
+                compact: true,
                 className: 'align-right',
                 tooltip: 'Align horizontally to right',
                 onClick: () => {
@@ -2728,6 +2772,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           },
           {
             tooltip: 'Smart align',
+            compact: true,
             id: 'auto-align-states',
             icon: 'Apps2Line',
             show: isMetadataHidden,
@@ -2749,8 +2794,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               setStates(alignedStates);
             },
           },
+
           {
             tooltip: 'Save selected states as action set',
+            compact: true,
             id: 'save-action-set',
             icon: 'Save3Fill',
             show:
@@ -2772,6 +2819,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           },
           {
             tooltip: 'Delete selected',
+            compact: true,
             id: 'delete-multiple-states',
             icon: 'DeleteBin4Line',
             show: !!size(selectedStates),
@@ -2781,7 +2829,22 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
           },
           {
+            tooltip: 'Manage variables',
+            id: 'manage-variables',
+            label: '$vars',
+            badge:
+              size(metadata.autovar) +
+              size(metadata.globalvar) +
+              size(metadata.localvar),
+            compact: true,
+            textAlign: 'center',
+            onClick: () => {
+              setShowVariables({ show: true });
+            },
+          },
+          {
             show: isMetadataHidden,
+            compact: true,
             icon: 'More2Line',
             className: 'fsm-more-actions',
             actions: [
@@ -2829,6 +2892,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           },
           {
             tooltip: 'Test run',
+            compact: true,
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
             className: 'fsm-test-run',
@@ -2838,6 +2902,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           {
             group: [
               {
+                compact: true,
                 label:
                   !areMetadataValid() || !isFSMValid()
                     ? 'Fix to publish'
@@ -2855,7 +2920,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 show: !embedded,
                 className: 'qodex-publish',
                 tooltip: isFSMValid()
-                  ? 'Publish your Qodex'
+                  ? 'Publish your Qog'
                   : {
                       intent: 'warning',
                       content: (
@@ -2869,8 +2934,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                           {!areMetadataValid() && (
                             <ReqoreP>
                               - Metadata is not valid, please make sure the name
-                              of your Qodex is valid and that input & output
-                              types are compatible
+                              of your Qog is valid and that input & output types
+                              are compatible
                             </ReqoreP>
                           )}
                           {!areStatesValid(states) && (
@@ -2891,6 +2956,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                     },
               },
               {
+                compact: true,
                 effect:
                   !areMetadataValid() || !isFSMValid()
                     ? WarningColorEffect
@@ -2924,7 +2990,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       >
         {!isMetadataHidden && !embedded ? (
           <ReqoreModal
-            label='Qodex settings'
+            label='Qog settings'
             icon='SettingsLine'
             isOpen
             blur={3}
@@ -3309,8 +3375,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                                   isError
                                     ? '-error'
                                     : branch
-                                    ? `-${branch}`
-                                    : ''
+                                      ? `-${branch}`
+                                      : ''
                                 }`}
                                 id={`fsm-transition-${index}`}
                                 stroke={getTransitionColor(

@@ -66,7 +66,7 @@ export interface ISelectField extends IField {
   forceDropdown?: boolean;
   context?: any;
   className?: string;
-  showDescription?: boolean;
+  showDescription?: 'tooltip' | boolean;
   minimal?: boolean;
 }
 
@@ -314,7 +314,7 @@ const SelectField: React.FC<
     itemName: string,
     defaultDesc: string = ''
   ) => {
-    if (!showDescription) {
+    if (showDescription !== true) {
       return null;
     }
 
@@ -336,6 +336,18 @@ const SelectField: React.FC<
     const item = items.find((item) => item.name === itemName);
 
     return item?.desc || item?.short_desc;
+  };
+
+  const getItemDescriptionTooltip = (itemName) => {
+    if (showDescription !== 'tooltip') {
+      return undefined;
+    }
+
+    return {
+      delay: 300,
+      content: <ReactMarkdown>{getItemDescription(itemName)}</ReactMarkdown>,
+      maxWidth: '50vh',
+    };
   };
 
   const reqoreItems: IReqoreMenuItemProps[] = filteredItems.map((item) => ({
@@ -630,6 +642,7 @@ const SelectField: React.FC<
                   value,
                   'Select from available values'
                 )}
+                tooltip={getItemDescriptionTooltip(value)}
                 disabled={disabled}
                 effect={
                   !rest.minimal && {

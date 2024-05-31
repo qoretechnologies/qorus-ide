@@ -1,18 +1,11 @@
 import { StoryObj } from '@storybook/react';
-import { waitFor, within } from '@storybook/testing-library';
+import { waitFor, within } from '@storybook/test';
 import { InterfacesView } from '../../containers/InterfacesView';
 import { StoryMeta } from '../types';
 
 const meta = {
   component: InterfacesView,
   title: 'Views/Interfaces',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof InterfacesView>;
 
 export default meta;

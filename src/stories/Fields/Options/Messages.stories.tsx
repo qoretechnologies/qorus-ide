@@ -5,13 +5,6 @@ import { StoryMeta } from '../../types';
 const meta = {
   component: OptionFieldMessages,
   title: 'Fields/Options/Messages',
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof OptionFieldMessages>;
 
 export default meta;

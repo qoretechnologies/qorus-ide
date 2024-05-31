@@ -1,10 +1,11 @@
-import { expect } from '@storybook/jest';
 import {
+  expect,
   fireEvent,
   screen,
   userEvent,
   waitFor,
-} from '@storybook/testing-library';
+  within,
+} from '@storybook/test';
 
 const stateCategory = {
   mapper: 'Interfaces',
@@ -210,7 +211,7 @@ export async function _testsAddNewVariableState(
 }
 
 export function _testsSelectItemFromDropdown(
-  canvas = screen,
+  canvas: any = screen,
   itemLabel: string | number,
   dropdownLabel: string = 'PleaseSelect',
   className?: string
@@ -233,6 +234,8 @@ export function _testsSelectItemFromDropdown(
       await sleep(100);
 
       await fireEvent.click(canvas.queryAllByText(dropdownLabel)[0]);
+
+      await sleep(300);
     }
 
     await waitFor(
@@ -243,10 +246,15 @@ export function _testsSelectItemFromDropdown(
       }
     );
 
-    await waitFor(async () => await canvas.getAllByText(itemLabel)[0], {
+    const parent = within(
+      document.querySelector('.reqore-popover-content .reqore-menu')
+    );
+
+    await waitFor(async () => await parent.getAllByText(itemLabel)[0], {
       timeout: 10000,
     });
-    await fireEvent.click(canvas.getAllByText(itemLabel)[0]);
+
+    await fireEvent.click(parent.queryAllByText(itemLabel)[0]);
   };
 }
 
@@ -492,9 +500,9 @@ export async function _testsOpenTemplates() {
     { timeout: 10000 }
   );
 
-  await sleep(300);
+  await sleep(500);
 
-  await fireEvent.click(document.querySelector('.template-selector'));
+  await _testsClickButton({ selector: '.template-selector', wait: 5000 });
 
   await waitFor(
     () =>

@@ -8,15 +8,19 @@ import {
 } from '@qoretechnologies/reqore';
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { size } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import {
   ExpressionBuilder,
   IExpression,
   IExpressionSchema,
 } from '../../components/ExpressionBuilder';
-import { TextContext } from '../../context/text';
-import { fetchData, filterTemplatesByType } from '../../helpers/functions';
+import {
+  fetchData,
+  filterTemplatesByType,
+  getExpressionArgumentType,
+} from '../../helpers/functions';
+import { useQorusTypes } from '../../hooks/useQorusTypes';
 import Auto from '../Field/auto';
 import BooleanField from '../Field/boolean';
 import DateField from '../Field/date';
@@ -142,6 +146,7 @@ export const TemplateField = ({
   isFunction,
   ...rest
 }: ITemplateFieldProps) => {
+  const qorusTypes = useQorusTypes();
   const type = rest.type || rest.defaultType;
 
   const functions = useAsyncRetry<IExpressionSchema[]>(async () => {
@@ -149,7 +154,7 @@ export const TemplateField = ({
       return [];
     }
 
-    const data = await fetchData(`/system/expressions?return_type=${type}`);
+    const data = await fetchData(`/system/expressions?first_arg_type=${type}`);
 
     return data.data;
   }, [type]);
@@ -158,7 +163,6 @@ export const TemplateField = ({
     isValueTemplate(value) || !allowCustomValues
   );
   const [templateValue, setTemplateValue] = useState<string | null>(value);
-  const t = useContext(TextContext);
 
   useEffect(() => {
     if (isTemplate) {
@@ -218,7 +222,7 @@ export const TemplateField = ({
     return <Comp value={value} onChange={onChange} name={name} {...rest} />;
   }
 
-  if (isFunction && !size(rest.allowed_value)) {
+  if (isFunction && !size(rest.allowed_values)) {
     return (
       <>
         <ExpressionBuilder
@@ -349,7 +353,10 @@ export const TemplateField = ({
                 exp: func.name,
                 args: [
                   {
-                    type,
+                    type: getExpressionArgumentType(
+                      func.args[0],
+                      qorusTypes.value
+                    ),
                     value,
                   },
                 ],

@@ -6,6 +6,7 @@ import {
   ReqoreVerticalSpacer,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
+import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
 import { camelCase, isEqual, reduce, size } from 'lodash';
 import { memo, useCallback, useContext, useState } from 'react';
@@ -40,7 +41,8 @@ import FSMStateDialog, { TAction } from './stateDialog';
 import { FSMItemIconByType } from './toolbarItem';
 import FSMTransitionOrderDialog from './transitionOrderDialog';
 
-export interface IFSMStateDetailProps {
+export interface IFSMStateDetailProps
+  extends Omit<IReqorePanelProps, 'id' | 'onSubmit'> {
   id: string | number;
   interfaceId: string;
   data: IFSMState;
@@ -50,7 +52,11 @@ export interface IFSMStateDetailProps {
   outputProvider?: any;
   activeTab?: string;
   onClose: () => void;
-  onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean) => void;
+  onSubmit: (
+    data: Partial<IFSMState>,
+    addNewStateOnSuccess?: boolean,
+    isValid?: boolean
+  ) => void;
   onDelete: (unfilled?: boolean) => void;
   onFavorite: (data: Partial<IFSMState>) => void;
   onCloneClick: () => void;
@@ -75,6 +81,7 @@ export const FSMStateDetail = memo(
     states,
     id,
     interfaceId,
+    resizable,
   }: IFSMStateDetailProps) => {
     const t = useContext(TextContext);
     const confirmAction = useReqoreProperty('confirmAction');
@@ -168,18 +175,7 @@ export const FSMStateDetail = memo(
         return;
       }
 
-      if (!hasSaved) {
-        confirmAction({
-          title: 'Unsaved changes',
-          intent: 'warning',
-          description:
-            'You have unsaved changes. Are you sure you want to close this action detail?',
-          onConfirm: onClose,
-        });
-
-        return;
-      }
-
+      handleSubmitClick();
       onClose();
     };
 
@@ -286,7 +282,11 @@ export const FSMStateDetail = memo(
           }
         }
 
-        onSubmit(modifiedData, addNewStateOnSuccess);
+        onSubmit(
+          modifiedData,
+          addNewStateOnSuccess,
+          isStateValid(dataToSubmit, metadata, optionsSchema)
+        );
 
         setIsLoading(false);
         setHasSaved(true);
@@ -310,6 +310,7 @@ export const FSMStateDetail = memo(
             width: dataToSubmit.type === 'block' ? '85%' : '500px',
             height: '100%',
           },
+          ...resizable,
         }}
         icon={
           FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]
@@ -396,12 +397,12 @@ export const FSMStateDetail = memo(
             label: isLoading
               ? undefined
               : !isDataValid()
-              ? 'Fix to save'
+              ? undefined
               : hasSaved
               ? undefined
               : t(`Save`),
             disabled: !isDataValid() || isLoading,
-            show: (isLoading || !isDataValid()) && !isCustomBlockFirstPage(),
+            show: isLoading && !isCustomBlockFirstPage(),
             className: 'state-submit-button',
             id: `state-${camelCase(dataToSubmit?.name)}-submit-button`,
             icon: isLoading

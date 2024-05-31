@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
 import {
   ExpressionBuilder,
@@ -9,6 +8,7 @@ import {
 import {
   _testsOpenTemplates,
   _testsSelectItemFromCollection,
+  _testsSelectItemFromDropdown,
   sleep,
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
@@ -391,9 +391,9 @@ export const NewExpression: Story = {
 
     await fireEvent.click(canvas.getAllByText(/Interface Name/)[0]);
 
-    await sleep(300);
+    await sleep(1500);
 
-    await _testsSelectItemFromCollection(canvas, 'ends with')();
+    await _testsSelectItemFromCollection(canvas, 'ends with', 'PleaseSelect')();
 
     await sleep(300);
 
@@ -525,6 +525,57 @@ export const FunctionsInsideExpression: Story = {
 
     await fireEvent.change(document.querySelectorAll('.reqore-input')[0], {
       target: { value: 10 },
+    });
+  },
+};
+
+export const FunctionFirstArgTypeCanBeChanged: Story = {
+  args: {
+    returnType: 'string',
+    value: {
+      value: {
+        exp: 'FORMAT-NUMBER',
+        args: [
+          {
+            type: 'number',
+            value: 1,
+            is_expression: false,
+            required: true,
+          },
+          null,
+          {
+            type: 'string',
+            is_expression: false,
+            required: true,
+          },
+          {
+            type: 'int',
+            is_expression: false,
+            required: true,
+          },
+        ],
+      },
+      type: 'string',
+      is_expression: true,
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await waitFor(
+      () =>
+        expect(
+          canvas.queryAllByText(/format number with/)[0]
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+
+    await _testsSelectItemFromDropdown(undefined, 'int', 'num')();
+
+    await waitFor(() => expect(canvas.queryAllByText(/int/)).toHaveLength(2), {
+      timeout: 10000,
     });
   },
 };

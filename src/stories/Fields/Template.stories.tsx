@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { Meta, StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { expect, fireEvent, fn } from '@storybook/test';
 import auto from '../../components/Field/auto';
 import LongStringField from '../../components/Field/longString';
 import Number from '../../components/Field/number';
@@ -14,6 +13,7 @@ const meta = {
   title: 'Fields/Template',
   args: {
     templates: buildTemplates(templates as any),
+    onChange: fn(),
   },
 } as Meta<typeof TemplateField>;
 

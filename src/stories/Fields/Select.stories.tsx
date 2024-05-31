@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent } from '@storybook/testing-library';
+import { expect, fireEvent } from '@storybook/test';
 import { useState } from 'react';
 import SelectField from '../../components/Field/select';
 import { sleep } from '../Tests/utils';
@@ -41,7 +40,9 @@ export const ItemsWithDescription: StoryObj<typeof SelectField> = {
     await fireEvent.click(document.querySelector('.reqore-button')!);
 
     await expect(document.querySelector('.reqore-modal')).toBeInTheDocument();
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(2);
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(2);
   },
 };
 
@@ -78,13 +79,17 @@ export const ItemsWithDescriptionAndMessages: StoryObj<typeof SelectField> = {
   },
 };
 
-export const OpenedItemsWithDescriptionAndMessages: StoryObj<typeof SelectField> = {
+export const OpenedItemsWithDescriptionAndMessages: StoryObj<
+  typeof SelectField
+> = {
   ...ItemsWithDescriptionAndMessages,
   play: async () => {
     await fireEvent.click(document.querySelector('.reqore-button')!);
 
     await expect(document.querySelector('.reqore-modal')).toBeInTheDocument();
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(2);
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(2);
   },
 };
 
@@ -115,12 +120,16 @@ export const DisabledItemsWithIntent: StoryObj<typeof SelectField> = {
   play: async () => {
     await sleep(500);
     await fireEvent.click(document.querySelector('.reqore-button')!);
-
-    await expect(document.querySelectorAll('.reqore-popover-content').length).toBe(1);
+    await sleep(500);
+    await expect(
+      document.querySelectorAll('.reqore-popover-content').length
+    ).toBe(1);
   },
 };
 
-export const DisabledItemsWithIntentAndDescriptions: StoryObj<typeof SelectField> = {
+export const DisabledItemsWithIntentAndDescriptions: StoryObj<
+  typeof SelectField
+> = {
   args: {
     defaultItems: [
       {
@@ -153,7 +162,9 @@ export const DisabledItemsWithIntentAndDescriptions: StoryObj<typeof SelectField
     await fireEvent.click(document.querySelector('.reqore-button')!);
 
     await expect(document.querySelector('.reqore-modal')).toBeInTheDocument();
-    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(5);
+    await expect(
+      document.querySelectorAll('.reqore-collection-item').length
+    ).toBe(5);
   },
 };
 
@@ -172,8 +183,10 @@ export const WithValue: StoryObj<typeof SelectField> = {
   play: async () => {
     await sleep(300);
     await fireEvent.click(document.querySelector('.reqore-button')!);
-
-    await expect(document.querySelectorAll('.reqore-popover-content').length).toBe(1);
+    await sleep(500);
+    await expect(
+      document.querySelectorAll('.reqore-popover-content').length
+    ).toBe(1);
   },
 };
 

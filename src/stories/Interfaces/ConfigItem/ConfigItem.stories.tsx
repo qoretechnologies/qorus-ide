@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/testing-library';
+import { expect, fireEvent, fn, waitFor } from '@storybook/test';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
 import Panel from '../../../containers/InterfaceCreator/panel';
@@ -38,6 +37,7 @@ const meta = {
   title: 'Interfaces Manager/Config Item',
   args: {
     id: classData.id,
+    onSubmit: fn(),
   },
   render: ({ id, data, onSubmit }) => {
     return (

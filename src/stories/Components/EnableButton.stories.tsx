@@ -1,6 +1,5 @@
-import { expect } from '@storybook/jest';
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor, within } from '@storybook/testing-library';
+import { expect, fireEvent, waitFor, within } from "@storybook/test";
 import { EnableToggle } from '../../handlers/EnableToggle';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import { StoryMeta } from '../types';

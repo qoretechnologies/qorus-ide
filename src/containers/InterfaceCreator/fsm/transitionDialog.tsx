@@ -117,6 +117,7 @@ export const renderConditionField: (
           value={transitionData?.condition}
           onChange={(value) => onChange('condition', value)}
           localTemplates={localTemplates}
+          returnType='bool'
         />
       );
     }

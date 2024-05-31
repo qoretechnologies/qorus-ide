@@ -6,7 +6,7 @@ import {
 } from '@qoretechnologies/reqore';
 import timeago from 'epoch-timeago';
 import { useContext, useEffect, useState } from 'react';
-import { interfaceIcons } from '../../constants/interfaces';
+import { interfaceIcons, interfaceImages } from '../../constants/interfaces';
 import { IQorusListInterface } from '../../containers/InterfacesView';
 import { InitialContext } from '../../context/init';
 import { addMessageListener } from '../../hocomponents/withMessageHandler';
@@ -101,6 +101,10 @@ export const DashboardStatus = () => {
         <ReqoreButton
           compact
           icon={interfaceIcons[latestWithError.type]}
+          leftIconProps={{
+            icon: interfaceIcons[latestWithError.type],
+            image: interfaceImages[latestWithError.type],
+          }}
           description={`"${latestWithError.data.last_error}"`}
           customTheme={{ main: '#c33e3e:darken:3:0.1' }}
           badge={{

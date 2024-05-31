@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
-import { StoryMeta } from '../../types';
 import { InterfacesProvider } from '../../../providers/Interfaces';
+import { StoryMeta } from '../../types';
 
 const meta = {
   component: FSMView,
@@ -11,13 +11,6 @@ const meta = {
       <FSMView {...args} />
     </InterfacesProvider>
   ),
-  args: {
-    reqoreOptions: {
-      animations: {
-        dialogs: false,
-      },
-    },
-  },
 } as StoryMeta<typeof FSMView, { stateType?: string }>;
 
 export default meta;
