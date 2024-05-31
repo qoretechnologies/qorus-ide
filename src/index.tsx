@@ -50,14 +50,10 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-console.log('INITIALIZING REQRAFT');
-
 const Reqraft = initializeReqraft({
   instance: apiHost,
   instanceToken: apiToken,
 });
-
-console.log('INITIALIZED REQRAFT');
 
 export const ReqoreWrapper = ({
   reqoreOptions,

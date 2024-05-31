@@ -444,7 +444,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     activeState = searchParams.get('state');
 
     setActiveState = (id) => {
-      setSearchParams({ state: id });
+      searchParams.append('state', id);
+      setSearchParams(searchParams);
     };
   } else {
     activeState = actState;

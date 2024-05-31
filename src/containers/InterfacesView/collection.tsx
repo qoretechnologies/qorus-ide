@@ -210,7 +210,7 @@ export const InterfacesViewCollection = ({
           responsiveActions: false,
           size: 'small',
           onClick: () => {
-            if (item.draft) {
+            if (!item.data) {
               changeDraft({
                 type,
                 id: item.id,

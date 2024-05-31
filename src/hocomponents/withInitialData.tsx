@@ -3,7 +3,12 @@ import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
 import { find } from 'lodash';
 import set from 'lodash/set';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { createSearchParams, useNavigate, useParams } from 'react-router-dom';
+import {
+  createSearchParams,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 import { useEffectOnce } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import shortid from 'shortid';
@@ -27,6 +32,7 @@ export default () =>
       const routerData = useParams();
       const navigate = useNavigate();
 
+      const [searchParams, setSearchParams] = useSearchParams();
       const [isReady, setIsReady] = useState(true);
       const [initialData, setInitialData] = useState<any>({
         tab: routerData.tab || 'Dashboard',
@@ -478,15 +484,18 @@ export default () =>
           true
         );
 
+        if (!searchParams.get('draftId')) {
+          searchParams.append('draftId', id);
+          setSearchParams(searchParams);
+        }
+
         setIsSavingDraft(false);
       };
 
       const changeDraft = (draftData) => {
-        setInitialData({
-          is_hosted_instance: initialData.is_hosted_instance,
-          qorus_instance: initialData.qorus_instance,
+        changeTab('CreateInterface', draftData.type, undefined, {
+          draftId: draftData.id,
         });
-        setDraftData(draftData);
       };
 
       if (!initialData) {

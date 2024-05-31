@@ -464,7 +464,7 @@ export const Expression = ({
                       firstParamType
                     )}
                     canBeNull={false}
-                    value={rest[index]?.value || arg.default_value}
+                    value={rest[index]?.value ?? arg.default_value}
                     templates={localTemplates}
                     allowTemplates
                     onChange={(_name, value, type, isFunction) => {
