@@ -444,7 +444,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     activeState = searchParams.get('state');
 
     setActiveState = (id) => {
-      searchParams.append('state', id);
+      searchParams.set('state', id);
       setSearchParams(searchParams);
     };
   } else {
@@ -766,6 +766,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setInterfaceId(id);
         setMetadata(metadata);
         setStates(states);
+
+        if (!params.id && size(states) === 0) {
+          setIsAddingNewStateAt({ x: 0, y: 0 });
+        }
       },
       undefined,
       () => {
@@ -824,14 +828,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       setSettings(storageSettings[defaultInterfaceId] || {});
     }
   });
-
-  useEffect(() => {
-    if (isReady) {
-      if (!params?.id && size(states) === 0) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
-      }
-    }
-  }, [isReady]);
 
   useDebounce(
     async () => {
