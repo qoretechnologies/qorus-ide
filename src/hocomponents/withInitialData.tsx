@@ -485,7 +485,7 @@ export default () =>
         );
 
         if (!searchParams.get('draftId')) {
-          searchParams.append('draftId', id);
+          searchParams.set('draftId', id);
           setSearchParams(searchParams);
         }
 
