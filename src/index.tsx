@@ -20,12 +20,14 @@ import { apiHost, apiToken } from './common/vscode';
 import { defaultReqoreOptions, defaultReqoreTheme } from './constants/util';
 import reducer from './reducers';
 
-Sentry.init({
-  dsn: 'https://1228ced0a5ab4f4a9604bf4aa58f2fb9@app.glitchtip.com/6336',
-  _experiments: {
-    showReportDialog: true,
-  },
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: 'https://1228ced0a5ab4f4a9604bf4aa58f2fb9@app.glitchtip.com/6336',
+    _experiments: {
+      showReportDialog: true,
+    },
+  });
+}
 
 require('./fonts/NeoLight.ttf');
 

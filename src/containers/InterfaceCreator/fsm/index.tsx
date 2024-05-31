@@ -252,7 +252,7 @@ export const STATE_ITEM_TYPE = 'state';
 export const DIAGRAM_SIZE = 4000;
 export const IF_STATE_SIZE = 80;
 export const STATE_WIDTH = 350;
-export const STATE_HEIGHT = 50;
+export const STATE_HEIGHT = 120;
 const DIAGRAM_DRAG_KEY = 'Shift';
 const DROP_ACCEPTS: string[] = [TOOLBAR_ITEM_TYPE, STATE_ITEM_TYPE];
 
@@ -404,6 +404,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
   const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   parentStateName = parentStateName?.replace(/ /g, '-');
 
   const fsm = rest?.fsm || init?.fsm;
@@ -440,7 +441,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     metadata = mt;
     setMetadata = setMt;
 
-    const [searchParams, setSearchParams] = useSearchParams();
     activeState = searchParams.get('state');
 
     setActiveState = (id) => {
@@ -767,6 +767,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setMetadata(metadata);
         setStates(states);
 
+        console.log(states, metadata, id, params);
+
         if (!params.id && size(states) === 0) {
           setIsAddingNewStateAt({ x: 0, y: 0 });
         }
@@ -786,11 +788,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     setZoom(zoom - 0.1 < 0.5 ? 0.5 : zoom - 0.1);
   };
 
-  useUpdateEffect(() => {
-    if (draft) {
+  useEffect(() => {
+    if (searchParams.get('draftId') || draft) {
       applyDraft();
+    } else {
+      if (!params.id && size(states) === 0) {
+        setIsAddingNewStateAt({ x: 0, y: 0 });
+      }
     }
-  }, [draft]);
+  }, [searchParams.get('draftId'), draft]);
 
   useMount(() => {
     if (!embedded) {
@@ -832,14 +838,21 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   useDebounce(
     async () => {
       if (!embedded) {
+        const fsmStates = fsm?.states || {};
+        const modifiedFsm = fsm || { display_name: 'Untitled Qog' };
         const draftId = getDraftId(fsm, interfaceId);
-        const hasChanged = fsm
+        const hasChanged = modifiedFsm
           ? some(metadata, (value, key) => {
-              return !value && !fsm[key]
+              return !value && !modifiedFsm[key]
                 ? false
-                : !isEqual(value, key === 'groups' ? fsm[key] || [] : fsm[key]);
-            }) || !isEqual(states, fsm.states)
+                : !isEqual(
+                    value,
+                    key === 'groups' ? modifiedFsm[key] || [] : modifiedFsm[key]
+                  );
+            }) || !isEqual(states, fsmStates)
           : true;
+
+        console.log(states, fsmStates, metadata, fsm);
 
         if (
           draftId &&
