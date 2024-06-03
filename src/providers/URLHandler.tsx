@@ -13,7 +13,7 @@ export const URLHandler = () => {
         Messages.GET_INTERFACE_DATA,
         {
           type: params?.subtab,
-          id: params?.id,
+          id: parseInt(params.id, 10),
           include_tabs: true,
           metadata: {
             searchParams: {

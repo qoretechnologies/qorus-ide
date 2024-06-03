@@ -128,3 +128,7 @@ export const interfaceKindToName = keys(interfaceNameToKind).reduce(
   },
   {}
 );
+
+export const supportsAICreation = {
+  fsm: true,
+};

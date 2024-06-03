@@ -3742,10 +3742,10 @@
   dependencies:
     lodash "^4.17.15"
 
-"@qoretechnologies/reqore@^0.46.1":
-  version "0.46.1"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.46.1.tgz#7e44be2e7600b8fe27249ebb8f71a434ebead272"
-  integrity sha512-MoQhXqKgw59cvcVdelHnq87n4C9fv7qPPTWRjhDWlGqeLK04vBPKP1FJXAjPJnA/T+NAd0hnLDmeAk9YCYclBg==
+"@qoretechnologies/reqore@^0.46.3":
+  version "0.46.3"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.46.3.tgz#83f7daa35be54b0f3f9d33d54ff8b610b7b55876"
+  integrity sha512-qzpBctnDIeQg9oJFhZ6bbJeqFZkEubAh7CX4GY8uZ0eCqJkDcq3jYLzAKg45XBtX2rxYEbfZK0hpIhG9zK5YIw==
   dependencies:
     "@internationalized/date" "^3.5.3"
     "@popperjs/core" "^2.11.6"
@@ -17553,11 +17553,16 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
-"prettier-fallback@npm:prettier@^3", prettier@^3.1.1, prettier@^3.2.5:
+"prettier-fallback@npm:prettier@^3", prettier@^3.1.1:
   name prettier-fallback
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
   integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==
+
+prettier@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.0.tgz#d173ea0524a691d4c0b1181752f2b46724328cdf"
+  integrity sha512-J9odKxERhCQ10OC2yb93583f6UnYutOeiV5i0zEDS7UGTdUt0u+y8erxl3lBKvwo/JHyyoEdXjwp4dke9oyZ/g==
 
 pretty-bytes@^5.3.0, pretty-bytes@^5.4.1:
   version "5.6.0"

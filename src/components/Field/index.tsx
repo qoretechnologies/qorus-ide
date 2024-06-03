@@ -86,7 +86,9 @@ const Field = ({ type, interfaceId, interfaceKind, ...rest }: IFieldProps) => {
       {(!type || type === 'string') && <StringField {...rest} type={type} />}
       {type === 'long-string' && <LongStringField fill {...rest} type={type} />}
       {type === 'method-name' && <MethodNameField {...rest} type={type} />}
-      {type === 'boolean' && <BooleanField {...rest} type={type} />}
+      {type === 'boolean' || type === 'bool' ? (
+        <BooleanField {...rest} type={type} />
+      ) : null}
       {type === 'array-of-pairs' && <MultiPairField {...rest} type={type} />}
       {type === 'select-string' && <SelectField {...rest} type={type} fill />}
       {type === 'select-array' && <MultiSelect {...rest} type={type} />}

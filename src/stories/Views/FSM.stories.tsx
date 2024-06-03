@@ -1,6 +1,15 @@
 import { StoryObj } from '@storybook/react';
 import { expect, fireEvent, waitFor, within } from '@storybook/test';
+import { compose } from 'recompose';
+import { CreateInterface } from '../../containers/InterfaceCreator';
 import FSMView from '../../containers/InterfaceCreator/fsm';
+import withFields from '../../hocomponents/withFields';
+import withGlobalOptions from '../../hocomponents/withGlobalOptions';
+import withInitialData from '../../hocomponents/withInitialData';
+import withMapper from '../../hocomponents/withMapper';
+import withMethods from '../../hocomponents/withMethods';
+import withSteps from '../../hocomponents/withSteps';
+import { DraftsProvider } from '../../providers/Drafts';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import fsm from '../Data/fsm.json';
 import fsmWithoutInitialState from '../Data/fsmWithoutInitialState.json';
@@ -23,6 +32,15 @@ import {
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
 
+const Creator = compose(
+  withFields(),
+  withInitialData(),
+  withMethods(),
+  withSteps(),
+  withGlobalOptions(),
+  withMapper()
+)(DraftsProvider);
+
 const meta = {
   component: FSMView,
   title: 'Views/FSM',
@@ -36,6 +54,7 @@ const meta = {
 export default meta;
 
 type StoryFSM = StoryObj<typeof meta>;
+
 export const New: StoryFSM = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
@@ -50,6 +69,32 @@ export const New: StoryFSM = {
     );
   },
 };
+
+export const NewWithAIModal: StoryMeta<typeof CreateInterface> = {
+  args: {
+    data: { subtab: 'fsm' },
+  },
+  render: (args) => (
+    <InterfacesProvider>
+      <Creator>
+        <CreateInterface {...args} />
+      </Creator>
+    </InterfacesProvider>
+  ),
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await waitFor(
+      () =>
+        expect(
+          canvas.queryAllByText(/Unleash the power of AI/)[0]
+        ).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
+  },
+};
+
 export const Existing: StoryFSM = {
   args: {
     fsm: qodex,
