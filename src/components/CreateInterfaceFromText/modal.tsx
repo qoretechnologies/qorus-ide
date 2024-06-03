@@ -33,7 +33,7 @@ export const CreateInterfaceFromTextModal = ({
   useEffect(() => {
     if (data && !error) {
       onClose();
-      navigate(`/${type}/${(data as any).draftId}`);
+      navigate(`/CreateInterface/${type}?draftId=${(data as any).draft_id}`);
     }
   }, [data, error]);
 

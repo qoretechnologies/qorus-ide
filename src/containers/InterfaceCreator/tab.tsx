@@ -277,12 +277,12 @@ const Tab: React.FC<ITabProps> = ({
   );
   const [searchParams] = useSearchParams();
   const [isCreateFromTextOpen, setIsCreateFromTextOpen] = useState<boolean>(
-    !searchParams.has('draftId') && supportsAICreation[type]
+    !searchParams.has('draftId') && supportsAICreation[type] && !isEditing()
   );
 
   useEffect(() => {
     setIsCreateFromTextOpen(
-      !searchParams.has('draftId') && supportsAICreation[type]
+      !searchParams.has('draftId') && supportsAICreation[type] && !isEditing()
     );
   }, [type]);
 
