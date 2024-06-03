@@ -32,7 +32,7 @@ export const CreateInterfaceFromTextModal = ({
 
   useEffect(() => {
     if (data && !error) {
-      removeModal('create-interface-from-text');
+      onClose();
       navigate(`/${type}/${(data as any).draftId}`);
     }
   }, [data, error]);
