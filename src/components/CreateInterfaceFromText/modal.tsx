@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 
 import { IReqoreModalProps } from '@qoretechnologies/reqore/dist/components/Modal';
 import { useFetch } from '@qoretechnologies/reqraft';
+import { debounce } from 'lodash';
 import { useNavigate } from 'react-router-dom';
 import { interfaceToPlural } from '../../constants/interfaces';
 import { QorusColorEffect, SynthColorEffect } from '../Field/multiPair';
@@ -44,6 +45,7 @@ export const CreateInterfaceFromTextModal = ({
   return (
     <ReqoreModal
       isOpen
+      loading={loading}
       onClose={onClose}
       {...{
         icon: 'MagicFill',
@@ -59,22 +61,23 @@ export const CreateInterfaceFromTextModal = ({
             animate: 'always',
           },
         },
-        disabled: loading,
         bottomActions: [
           {
             label: 'Create manually',
             compact: true,
             icon: 'CloseLine',
             onClick: onClose,
+            disabled: loading,
           },
           {
-            label: 'Create automagically',
+            label: loading ? 'Generating...' : 'Create automagically',
             icon: 'MagicLine',
             compact: true,
             position: 'right',
             effect: QorusColorEffect,
             disabled: !text,
             onClick: handleCreateClick,
+            loading: loading,
           },
         ],
         customZIndex: 99999,
@@ -90,18 +93,23 @@ export const CreateInterfaceFromTextModal = ({
           to supercharge your development process!
         </ReqoreP>
         {error && (
-          <ReqoreMessage opaque={false} size='small'>
-            {error.message}
+          <ReqoreMessage opaque={false} size='small' intent='danger' fluid>
+            The prompt lacks specific details for creating an automated
+            workflow. Please provide specific actions or scenarios you would
+            like to automate. For example, 'Send an email when a new file is
+            added to a directory' or 'React to a new message in a Discord
+            channel and send a notification.
           </ReqoreMessage>
         )}
         <ReqoreTextarea
           placeholder='What would you like to create?'
           fluid
+          disabled={loading}
           scaleWithContent
           style={{ minHeight: '100px' }}
           effect={SynthColorEffect}
           value={text}
-          onChange={(e: any) => setText(e.target.value)}
+          onChange={debounce((e: any) => setText(e.target.value), 300)}
           transparent
         />
         <ReqoreVerticalSpacer height={1} />

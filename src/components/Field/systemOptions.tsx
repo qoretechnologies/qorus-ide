@@ -164,7 +164,8 @@ export type IQorusType =
   | 'number'
   | 'nothing'
   | 'null'
-  | 'rgbcolor';
+  | 'rgbcolor'
+  | 'data';
 
 export type TOperatorValue = string | string[] | undefined | null;
 

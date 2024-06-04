@@ -33,7 +33,7 @@ import React, {
   useState,
 } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebounce, useUpdateEffect } from 'react-use';
+import { useDebounce, useUnmount, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import shortid from 'shortid';
@@ -767,8 +767,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setMetadata(metadata);
         setStates(states);
 
-        console.log(states, metadata, id, params);
-
         if (!params.id && size(states) === 0) {
           setIsAddingNewStateAt({ x: 0, y: 0 });
         }
@@ -797,6 +795,15 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       }
     }
   }, [searchParams.get('draftId'), draft]);
+
+  // We need to hide the modal if the draft is applied
+  // For example when switching from one draft to another or from
+  // a new Qog to a draft
+  useEffect(() => {
+    if (searchParams.get('draftId')) {
+      setIsAddingNewStateAt(undefined);
+    }
+  }, [searchParams.get('draftId')]);
 
   useMount(() => {
     if (!embedded) {
@@ -835,6 +842,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     }
   });
 
+  useUnmount(() => {
+    setIsAddingNewStateAt(undefined);
+  });
+
   useDebounce(
     async () => {
       if (!embedded) {
@@ -851,8 +862,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   );
             }) || !isEqual(states, fsmStates)
           : true;
-
-        console.log(states, fsmStates, metadata, fsm);
 
         if (
           draftId &&
@@ -2230,7 +2239,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setActiveState(id);
       }
     },
-    [hasUnsavedState]
+    [hasUnsavedState, searchParams]
   );
 
   const getStatesFromSelectedStates = (): IFSMStates => {
