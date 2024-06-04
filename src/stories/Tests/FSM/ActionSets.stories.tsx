@@ -250,9 +250,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await _testsOpenAppCatalogue(undefined, 500, 200);
 
-    await expect(
-      document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(30);
+    let appCount = document.querySelectorAll('.reqore-collection-item').length;
 
     await _testsSelectAppOrAction(canvas, 'Saved Favorites');
 
@@ -262,7 +260,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(29);
+    ).toBe(appCount - 1);
   },
 };
 

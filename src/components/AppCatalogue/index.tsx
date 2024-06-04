@@ -215,6 +215,7 @@ export const AppCatalogue = ({
         onQueryChange={(q) => setQuery(q)}
         inputInTitle={false}
         responsiveTitle={false}
+        responsiveActions={false}
         inputProps={{ fluid: true }}
         defaultZoom={0.5}
         breadcrumbs={breadcrumbs}
