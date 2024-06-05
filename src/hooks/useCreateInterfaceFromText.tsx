@@ -30,7 +30,6 @@ export const CreateInterfaceFromTextModal = () => {
 
   const handleCreateClick = async () => {
     const draftData = await load({ body: { input: text } });
-    console.log(draftData);
   };
 
   return (

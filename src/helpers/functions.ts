@@ -541,7 +541,7 @@ export const fetchData: (
   const cache = method === 'DELETE' || method === 'POST' ? false : forceCache;
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
-  if (fetchCache[cacheKey]?.data) {
+  if (cache && fetchCache[cacheKey]?.data) {
     return {
       action: 'fetch-data-complete',
       data: fetchCache[cacheKey].data,
