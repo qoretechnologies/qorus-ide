@@ -1,5 +1,6 @@
 import { ReqoreButton, ReqorePanel } from '@qoretechnologies/reqore';
 import { IReqorePanelAction } from '@qoretechnologies/reqore/dist/components/Panel';
+import { useReqraftStorage } from '@qoretechnologies/reqraft';
 import timeago from 'epoch-timeago';
 import { capitalize, forEach, size } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ import { CreateInterfaceFromTextModal } from '../../components/CreateInterfaceFr
 import CustomDialog from '../../components/CustomDialog';
 import { DraftsTable } from '../../components/DraftsTable';
 import { NegativeColorEffect } from '../../components/Field/multiPair';
+import { TOption } from '../../components/Field/systemOptions';
 import {
   interfaceIcons,
   interfaceImages,
@@ -276,14 +278,20 @@ const Tab: React.FC<ITabProps> = ({
     })
   );
   const [searchParams] = useSearchParams();
-  const [isCreateFromTextOpen, setIsCreateFromTextOpen] = useState<boolean>(
-    !searchParams.has('draftId') && supportsAICreation[type] && !isEditing()
+  const [isAiDialogAllowed] = useReqraftStorage<TOption>(
+    'config.allowAiCreateDialog',
+    { type: 'boolean', value: true }
   );
+  const allowAiCreateDialog =
+    !searchParams.has('draftId') &&
+    supportsAICreation[type] &&
+    !isEditing() &&
+    isAiDialogAllowed.value === true;
+  const [isCreateFromTextOpen, setIsCreateFromTextOpen] =
+    useState<boolean>(allowAiCreateDialog);
 
   useEffect(() => {
-    setIsCreateFromTextOpen(
-      !searchParams.has('draftId') && supportsAICreation[type] && !isEditing()
-    );
+    setIsCreateFromTextOpen(allowAiCreateDialog);
   }, [type]);
 
   useEffect(() => {

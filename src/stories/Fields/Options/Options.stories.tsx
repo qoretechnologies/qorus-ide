@@ -37,6 +37,12 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     display_name: 'I am hidden',
     short_desc: 'I am hidden because I am not preselected or required',
   },
+  preselectedOption: {
+    type: 'string',
+    display_name: 'I am preselected',
+    short_desc: 'I am visible without any value because I am preselected',
+    preselected: true,
+  },
   optionWithValue: {
     type: 'string',
     display_name: 'Option with value',
@@ -179,7 +185,7 @@ export const Basic: StoryObj<typeof meta> = {
         expect(
           document.querySelectorAll('.reqore-collection-item.system-option')
             .length
-        ).toBe(14),
+        ).toBe(15),
       {
         timeout: 10000,
       }

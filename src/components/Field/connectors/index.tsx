@@ -12,7 +12,10 @@ import { useDebounce } from 'react-use';
 import compose from 'recompose/compose';
 import { TTranslator } from '../../../App';
 import Provider, { providers } from '../../../containers/Mapper/provider';
-import { fetchData, insertUrlPartBeforeQuery } from '../../../helpers/functions';
+import {
+  fetchData,
+  insertUrlPartBeforeQuery,
+} from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import withInitialDataConsumer from '../../../hocomponents/withInitialDataConsumer';
 import withTextContext from '../../../hocomponents/withTextContext';
@@ -27,7 +30,12 @@ import { ProviderMessageSelector } from './MessageSelector';
 import { DataProviderFavorites } from './favorites';
 import { RecordQueryArgs } from './searchArgs';
 
-export type TRecordType = 'search' | 'search-single' | 'create' | 'update' | 'delete';
+export type TRecordType =
+  | 'search'
+  | 'search-single'
+  | 'create'
+  | 'update'
+  | 'delete';
 export type TRealRecordType = 'read' | 'create' | 'update' | 'delete';
 
 export interface IConnectorFieldProps {
@@ -70,7 +78,9 @@ export type TProviderTypeArgs = {
   [key in `${TRecordType}_args`]?: IOptions | IOptions[];
 };
 
-export interface IProviderType extends TProviderTypeSupports, TProviderTypeArgs {
+export interface IProviderType
+  extends TProviderTypeSupports,
+    TProviderTypeArgs {
   type: string;
   name: string;
   path?: string;
@@ -114,7 +124,9 @@ const supportsArguments = {
 };
 
 const getRealRecordType = (recordType: TRecordType): TRealRecordType => {
-  return recordType.startsWith('search') ? 'read' : (recordType as TRealRecordType);
+  return recordType.startsWith('search')
+    ? 'read'
+    : (recordType as TRealRecordType);
 };
 
 const shouldShowSearchArguments = (
@@ -324,7 +336,9 @@ const buildChildren = (provider: IProviderType) => {
 
   if (provider.path) {
     // Remove the last / from the path
-    const path = provider.path.endsWith('/') ? provider.path.slice(0, -1) : provider.path;
+    const path = provider.path.endsWith('/')
+      ? provider.path.slice(0, -1)
+      : provider.path;
 
     pathToChildren = [
       ...pathToChildren,
@@ -376,9 +390,13 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
   );
 
   const [nodes, setChildren] = useState(
-    optionProvider && providers[optionProvider?.type] ? buildChildren(optionProvider) : []
+    optionProvider && providers[optionProvider?.type]
+      ? buildChildren(optionProvider)
+      : []
   );
-  const [provider, setProvider] = useState<string | null | undefined>(optionProvider?.type);
+  const [provider, setProvider] = useState<string | null | undefined>(
+    optionProvider?.type
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [availableOptions, setAvailableOptions] = useState(undefined);
@@ -426,7 +444,11 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
         const keys = Object.keys(val);
 
         for (const key of keys) {
-          if (val[key] === undefined || val[key] === null || val[key] === false) {
+          if (
+            val[key] === undefined ||
+            val[key] === null ||
+            val[key] === false
+          ) {
             delete val[key];
           }
         }
@@ -453,7 +475,10 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
 
             const value = newNodes.map((node) => node.value).join('/');
 
-            onChange?.(name, `${type}/${value}${val.optionsChanged ? `?options_changed` : ''}`);
+            onChange?.(
+              name,
+              `${type}/${value}${val.optionsChanged ? `?options_changed` : ''}`
+            );
           } else {
             const value = nodes.map((node) => node.value).join('/');
             onChange?.(name, `${type}/${value}`);
@@ -468,7 +493,11 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
   );
 
   if (!initialData.qorus_instance) {
-    return <ReqoreMessage intent="warning">{t('ActiveInstanceProvidersConnectors')}</ReqoreMessage>;
+    return (
+      <ReqoreMessage intent='warning'>
+        {t('ActiveInstanceProvidersConnectors')}
+      </ReqoreMessage>
+    );
   }
 
   return (
@@ -483,7 +512,9 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
             label: 'Preview Data',
             icon: 'Dashboard3Line',
             effect: SelectorColorEffect,
-            disabled: !validateField('api-call', optionProvider, { isVariable }),
+            disabled: !validateField('api-call', optionProvider, {
+              isVariable,
+            }),
             onClick: async () => {
               addModal(
                 {
@@ -493,7 +524,11 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
                 'preview-data'
               );
 
-              const data = await fetchData('/dataprovider/callApiFromUi', 'POST', optionProvider);
+              const data = await fetchData(
+                '/dataprovider/callApiFromUi',
+                'POST',
+                optionProvider
+              );
 
               addModal(
                 {
@@ -593,7 +628,7 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
                 return result;
               });
             }}
-            name="options"
+            name='options'
             value={optionProvider.options}
             customUrl={`${getUrlFromProvider(optionProvider, true)}`}
           />
@@ -619,7 +654,10 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
             />
           </SubField>
           {optionProvider?.message_id && (
-            <SubField title={t('MessageData')} className="provider-message-data">
+            <SubField
+              title={t('MessageData')}
+              className='provider-message-data'
+            >
               <ProviderMessageData
                 readOnly={disableMessageOptions}
                 value={optionProvider?.message?.value}
@@ -645,9 +683,12 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
       {/* This means that we are working with an API Call provider */}
       {requiresRequest && optionProvider?.supports_request ? (
         <>
-          <SubField title={t('AllowAPIArguments')} desc={t('AllowAPIArgumentsDesc')}>
+          <SubField
+            title={t('AllowAPIArguments')}
+            desc={t('AllowAPIArgumentsDesc')}
+          >
             <BooleanField
-              name="useArgs"
+              name='useArgs'
               value={optionProvider?.use_args ?? true}
               onChange={(_nm, val) => {
                 setOptionProvider((cur) => ({
@@ -680,10 +721,12 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
         </>
       ) : null}
       {/* This means that we are working with a record search */}
-      {recordType && optionProvider && shouldShowSearchArguments(recordType, optionProvider) ? (
+      {recordType &&
+      optionProvider &&
+      shouldShowSearchArguments(recordType, optionProvider) ? (
         <SubField title={t('searchArguments')}>
           <RecordQueryArgs
-            type="search"
+            type='search'
             url={getUrlFromProvider(optionProvider, false, true, true)}
             value={optionProvider?.search_args as IOptions}
             onChange={(_nm, val) => {
@@ -700,7 +743,9 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
         </SubField>
       ) : null}
       {optionProvider?.record_requires_search_options ||
-      (recordType && optionProvider && shouldShowSearchArguments(recordType, optionProvider)) ? (
+      (recordType &&
+        optionProvider &&
+        shouldShowSearchArguments(recordType, optionProvider)) ? (
         <SubField title={t('SearchOptions')}>
           <Options
             readOnly={readOnly && disableSearchOptions}
@@ -718,16 +763,16 @@ const ConnectorField: React.FC<IConnectorFieldProps> = ({
 
                 if (!isEqual(optionProvider?.search_options, val)) {
                   result.searchOptionsChanged = true;
-                } else {
-                  result.searchOptionsChanged = false;
                 }
 
                 return result;
               });
             }}
-            name="search_options"
+            name='search_options'
             value={optionProvider?.search_options}
-            recordRequiresSearchOptions={optionProvider?.record_requires_search_options}
+            recordRequiresSearchOptions={
+              optionProvider?.record_requires_search_options
+            }
             customUrl={insertUrlPartBeforeQuery(
               getUrlFromProvider(optionProvider, false, true),
               '/search_options'

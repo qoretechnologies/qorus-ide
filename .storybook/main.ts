@@ -7,6 +7,7 @@ const config = {
     '@chromaui/addon-visual-tests',
     '@storybook/addon-webpack5-compiler-babel',
     '@chromatic-com/storybook',
+    'storybook-addon-mock',
   ],
   framework: {
     name: '@storybook/react-webpack5',
