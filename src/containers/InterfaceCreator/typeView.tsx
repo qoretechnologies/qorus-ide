@@ -365,20 +365,6 @@ const TypeView = ({ initialData, t, setTypeReset, onSubmitSuccess }) => {
     <Content
       bottomActions={[
         {
-          label: t('Reset'),
-          icon: 'HistoryLine',
-          onClick: () => {
-            initialData.confirmAction(
-              'ResetFieldsConfirm',
-              () => {
-                reset(true);
-              },
-              'Confirm',
-              'warning'
-            );
-          },
-        },
-        {
           label: t('Submit'),
           onClick: handleSubmitClick,
           disabled: !(size(fields) && validateField('string', val)),

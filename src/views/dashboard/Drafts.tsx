@@ -83,6 +83,16 @@ export const DashboardDrafts = () => {
           animate: 'hover',
         },
       }}
+      actions={[
+        {
+          icon: 'RefreshLine',
+          onClick: retry,
+          minimal: true,
+          iconColor: '#c3893e',
+          flat: true,
+          loading,
+        },
+      ]}
     >
       {loading ? (
         <Loader text='Loading...' />

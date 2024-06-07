@@ -44,12 +44,7 @@ import { validateField } from '../../../helpers/validations';
 import withGlobalOptionsConsumer from '../../../hocomponents/withGlobalOptionsConsumer';
 import { postMessage } from '../../../hocomponents/withMessageHandler';
 import TinyGrid from '../../../images/graphy-dark.png';
-import {
-  backControl,
-  nextControl,
-  resetControl,
-  submitControl,
-} from '../controls';
+import { backControl, nextControl, submitControl } from '../controls';
 import { StyledCompatibilityLoader } from '../fsm';
 import PipelineElementDialog from './elementDialog';
 
@@ -134,29 +129,29 @@ const NodeLabel = ({
           nodeData.type === 'start'
             ? 'success'
             : nodeData.type === 'queue'
-            ? 'info'
-            : undefined
+              ? 'info'
+              : undefined
         }
         icon={
           nodeData.type === 'start'
             ? 'PlayLine'
             : nodeData.type === 'queue'
-            ? 'ListCheck'
-            : undefined
+              ? 'ListCheck'
+              : undefined
         }
         rightIcon={
           nodeData.type === 'start'
             ? 'PlayLine'
             : nodeData.type === 'queue'
-            ? 'ListCheck'
-            : undefined
+              ? 'ListCheck'
+              : undefined
         }
         description={
           nodeData.type === 'start'
             ? 'Beginning of the pipeline'
             : nodeData.type === 'queue'
-            ? 'Queue of elements'
-            : undefined
+              ? 'Queue of elements'
+              : undefined
         }
         labelEffect={
           nodeData.type === 'start' || nodeData.type === 'queue'
@@ -210,8 +205,8 @@ const NodeLabel = ({
               nodeData.type === 'start'
                 ? 'success'
                 : nodeData.type === 'queue'
-                ? 'info'
-                : 'main'
+                  ? 'info'
+                  : 'main'
             }:lighten`,
           }}
         >
@@ -739,16 +734,6 @@ const PipelineView: React.FC<IPipelineViewProps> = ({
       )}
       <Content
         bottomActions={[
-          resetControl(() => {
-            confirmAction(
-              'ResetFieldsConfirm',
-              () => {
-                reset();
-              },
-              'Confirm',
-              'warning'
-            );
-          }),
           backControl(handleBackClick, { show: !!isDiagramShown }),
           nextControl(handleSubmitClick, {
             show: !isDiagramShown,

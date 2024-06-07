@@ -255,22 +255,6 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
         title={'Fill in the details'}
         bottomActions={[
           {
-            label: t('Reset'),
-            icon: 'HistoryLine',
-            tooltip: t('ResetTooltip'),
-            onClick: () => {
-              confirmAction(
-                'ResetFieldsConfirm',
-                () => {
-                  reset();
-                },
-                'Confirm',
-                'warning'
-              );
-            },
-            position: 'left',
-          },
-          {
             label: t('Submit'),
             disabled: !isDataValid(),
             icon: 'CheckLine',

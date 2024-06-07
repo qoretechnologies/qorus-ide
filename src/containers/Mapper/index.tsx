@@ -94,8 +94,8 @@ export const StyledMapperFieldWrapper = styled(ReqoreControlGroup)`
     isMapperChild
       ? `${isTypeView ? 600 : 300 - level * 15}px`
       : isTypeView
-      ? '600px'
-      : '300px'} !important;
+        ? '600px'
+        : '300px'} !important;
   position: relative;
 
   ${({ input, isMapperChild, level }) =>
@@ -406,8 +406,8 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
                 usesContext
                   ? ['context']
                   : isInputHash
-                  ? ['use_input_record']
-                  : ['name']
+                    ? ['use_input_record']
+                    : ['name']
               ),
             };
           }
@@ -892,19 +892,6 @@ const MapperCreator: React.FC<IMapperCreatorProps> = ({
           flexFlow: 'column',
         }}
         bottomActions={[
-          {
-            label: t('Reset'),
-            icon: 'HistoryLine',
-            disabled: inputsLoading || outputsLoading,
-            onClick: () => {
-              initialData.confirmAction(
-                'ResetFieldsConfirm',
-                reset,
-                'Reset',
-                'warning'
-              );
-            },
-          },
           {
             label: t('Back'),
             icon: 'ArrowLeftLine',

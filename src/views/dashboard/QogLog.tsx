@@ -26,7 +26,7 @@ export interface IQogLogItem {
 export const DashboardQogLog = () => {
   const { changeTab } = useContext(InitialContext);
   const [log, setLog] = useState<IQogLogItem[]>([]);
-  const { loading, value = [] } = useFetchInterfaces('fsm');
+  const { loading, value = [], retry } = useFetchInterfaces('fsm');
 
   useEffect(() => {
     if (!loading) {
@@ -117,6 +117,16 @@ export const DashboardQogLog = () => {
           animate: 'hover',
         },
       }}
+      actions={[
+        {
+          icon: 'RefreshLine',
+          onClick: retry,
+          minimal: true,
+          iconColor: '#00a0c0',
+          flat: true,
+          loading,
+        },
+      ]}
     >
       {loading ? (
         <Loader text='Loading...' />
