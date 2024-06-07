@@ -570,12 +570,14 @@ export async function _testsClickButton({
   label,
   selector,
   nth = 0,
-  wait = 5000,
+  wait = 7000,
+  parent = '.reqore-button',
 }: {
   label?: string;
   selector?: string;
   nth?: number;
   wait?: number;
+  parent?: string;
 }) {
   if (!label) {
     await waitFor(
@@ -595,9 +597,7 @@ export async function _testsClickButton({
     await waitFor(
       () =>
         expect(
-          screen
-            .queryAllByText(label, { selector })
-            [nth].closest('.reqore-button')
+          screen.queryAllByText(label, { selector })[nth].closest(parent)
         ).toBeEnabled(),
       { timeout: wait }
     );

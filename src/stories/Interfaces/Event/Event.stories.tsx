@@ -146,6 +146,10 @@ export const ChangesCanBeDiscarded: Story = {
       'Optional fields available (2)'
     )();
     await _testsExpectFieldsCountToMatch(4, true);
+    await fireEvent.change(
+      document.querySelector('.creator-field .reqore-input'),
+      { target: { value: 'Test' } }
+    );
     await _testsClickButton({ label: 'Reset' });
     await _testsConfirmDialog();
     await _testsExpectFieldsCountToMatch(2, true);

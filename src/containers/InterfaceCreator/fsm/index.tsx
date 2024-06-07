@@ -849,7 +849,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   useUnmount(() => {
     setIsAddingNewStateAt(undefined);
     removeModal('qog-error');
-    changeInitialData('fsmMetadata', undefined);
+    changeInitialData?.('fsmMetadata', undefined);
   });
 
   useDebounce(
