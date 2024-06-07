@@ -400,6 +400,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     callBackend,
     qorus_instance,
     saveDraft,
+    changeInitialData,
     ...init
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
@@ -408,7 +409,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   parentStateName = parentStateName?.replace(/ /g, '-');
 
   const fsm = rest?.fsm || init?.fsm;
-  const { addNotification, addModal } = useReqore();
+  const { addNotification, addModal, removeModal } = useReqore();
   const { resetAllInterfaceData }: any = useContext(GlobalContext);
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const [interfaceId, setInterfaceId] = useState(null);
@@ -818,23 +819,26 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       // Check if this FSM has ended in error the last time it ran
       if (init.fsmMetadata?.lastError) {
-        addModal({
-          minimal: true,
-          blur: 4,
-          flat: true,
-          maxSize: '700px',
-          label: 'Qog Finished In Error',
-          children: (
-            <ReqoreMessage
-              intent='danger'
-              style={{ fontFamily: 'monospace' }}
-              size='small'
-              title='This Qog Finished In An Error The Last Time It Ran'
-            >
-              "{init.fsmMetadata.lastError}"
-            </ReqoreMessage>
-          ),
-        });
+        addModal(
+          {
+            minimal: true,
+            blur: 4,
+            flat: true,
+            maxSize: '700px',
+            label: 'Qog Finished In Error',
+            children: (
+              <ReqoreMessage
+                intent='danger'
+                style={{ fontFamily: 'monospace' }}
+                size='small'
+                title='This Qog Finished In An Error The Last Time It Ran'
+              >
+                "{init.fsmMetadata.lastError}"
+              </ReqoreMessage>
+            ),
+          },
+          'qog-error'
+        );
       }
     } else {
       setInterfaceId(defaultInterfaceId);
@@ -844,6 +848,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   useUnmount(() => {
     setIsAddingNewStateAt(undefined);
+    removeModal('qog-error');
+    changeInitialData('fsmMetadata', undefined);
   });
 
   useDebounce(
@@ -2542,14 +2548,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       />
     );
   };
-
-  if (!qorus_instance) {
-    return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
-        {t('NoInstance')}
-      </ReqoreMessage>
-    );
-  }
 
   if (!isReady || apps.loading) {
     return <Loader centered text={t('Loading...')} />;

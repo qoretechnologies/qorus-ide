@@ -592,6 +592,15 @@ export async function _testsClickButton({
         ).toBeInTheDocument(),
       { timeout: wait }
     );
+    await waitFor(
+      () =>
+        expect(
+          screen
+            .queryAllByText(label, { selector })
+            [nth].closest('.reqore-button')
+        ).toBeEnabled(),
+      { timeout: wait }
+    );
     await fireEvent.click(screen.queryAllByText(label, { selector })[nth]);
   }
 }

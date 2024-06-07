@@ -216,7 +216,12 @@ export const InterfacesViewCollection = ({
                 id: item.id,
               });
             } else {
-              changeTab('CreateInterface', type, item.data?.id);
+              changeTab(
+                'CreateInterface',
+                type,
+                item.data?.id,
+                item.draft ? { draftId: item.data?.id } : undefined
+              );
             }
           },
           actions: [

@@ -205,8 +205,8 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
           field.markdown
             ? t('MarkdownSupported')
             : field.mandatory === false
-            ? t('Optional')
-            : undefined
+              ? t('Optional')
+              : undefined
         }
         isValid={
           field.mandatory !== false || data[field.name]
@@ -255,7 +255,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
         title={'Fill in the details'}
         bottomActions={[
           {
-            label: t('DiscardChangesButton'),
+            label: t('Reset'),
             icon: 'HistoryLine',
             tooltip: t('ResetTooltip'),
             onClick: () => {

@@ -28,7 +28,7 @@ import { InterfacesContext } from '../../context/interfaces';
 import { MethodsContext } from '../../context/methods';
 import { TextContext } from '../../context/text';
 import { EnableToggle } from '../../handlers/EnableToggle';
-import { callBackendBasic } from '../../helpers/functions';
+import { callBackendBasic, deleteDraft } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
 import { postMessage } from '../../hocomponents/withMessageHandler';
@@ -461,6 +461,49 @@ const Tab: React.FC<ITabProps> = ({
         },
       });
     }
+
+    actions.push({
+      id: 'button-discard',
+      icon: 'HistoryLine',
+      compact: true,
+      label: 'Reset',
+      tooltip: 'Discard unsaved changes and delete the draft',
+      disabled: !searchParams.has('draftId'),
+      onClick: () => {
+        data.confirmAction(
+          'ResetFieldsConfirm',
+          () => {
+            if (searchParams.has('draftId')) {
+              deleteDraft(type, searchParams.get('draftId'));
+            }
+
+            resetAllInterfaceData(type);
+
+            changeTab(`proxy`, undefined, undefined, {
+              to: `/CreateInterface/${type}${id ? `/${id}` : ''}`,
+            });
+          },
+          'Confirm',
+          'warning'
+        );
+      },
+    });
+
+    actions.push({
+      id: 'button-cancel',
+      icon: 'CloseLine',
+      label: 'Cancel',
+      compact: true,
+      tooltip: 'Cancel you work, delete a draft and go back',
+      onClick: () => {
+        if (searchParams.has('draftId')) {
+          deleteDraft(type, searchParams.get('draftId'));
+        }
+
+        resetAllInterfaceData(type);
+        changeTab('Interfaces', type);
+      },
+    });
 
     if (isEditing()) {
       actions.push({

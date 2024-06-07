@@ -23,7 +23,7 @@ import {
 import { InitialContext } from '../src/context/init';
 import { storiesStorageMockEmpty } from '../src/stories/Data/storage';
 
-const StorybookWrapper = ({ context, Story }: any) => {
+const StorybookWrapper = ({ context, Story, ...rest }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
 
   // @ts-ignore

@@ -176,7 +176,7 @@ export const ChangesCanBeDiscarded: Story = {
       'Optional fields available (28)'
     )();
     await _testsExpectFieldsCountToMatch(24, true, 'service');
-    await _testsClickButton({ label: 'DiscardChangesButton' });
+    await _testsClickButton({ label: 'Reset' });
     await _testsConfirmDialog();
     await _testsExpectFieldsCountToMatch(4, true, 'service');
   },
