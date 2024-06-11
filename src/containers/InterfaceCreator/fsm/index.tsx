@@ -1,6 +1,7 @@
 import {
   ReqoreControlGroup,
   ReqoreH1,
+  ReqoreHorizontalSpacer,
   ReqoreMessage,
   ReqoreModal,
   ReqoreP,
@@ -15,7 +16,7 @@ import {
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
 import { useReqraftStorage } from '@qoretechnologies/reqraft';
-import { drop, every, find, findKey, omit, some } from 'lodash';
+import { debounce, drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import forEach from 'lodash/forEach';
@@ -427,8 +428,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const currentXPan = useRef<number>();
   const currentYPan = useRef<number>();
   const diagramRef = useRef(null);
-  const changeHistory = useRef<string[]>([]);
-  const currentHistoryPosition = useRef<number>(-1);
+
   const stateRefs = useRef<Record<string | number, HTMLDivElement>>({}); // Refs for each state
   const timeSinceDiagramMouseDown = useRef<number>(0);
 
@@ -452,6 +452,17 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     activeState = actState;
     setActiveState = setActState;
   }
+
+  const changeHistory = useRef<
+    { metadata: string; states: string; key: string }[]
+  >([
+    {
+      metadata: JSON.stringify(metadata || {}),
+      states: JSON.stringify(states || {}),
+      key: 'init',
+    },
+  ]);
+  const currentHistoryPosition = useRef<number>(0);
 
   const [isMovingStates, setIsMovingStates] = useState<boolean>(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -585,7 +596,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         newY = newPosition.y;
       }
 
-      return {
+      const result = {
         ...newStates,
         [id]: {
           position: {
@@ -622,6 +633,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           transitions: item.transitions,
         },
       };
+
+      updateHistory(result, metadata, 'add new state');
+
+      return result;
     });
 
     onSuccess?.(id);
@@ -637,7 +652,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     states,
     stateRefs.current,
     (data) => {
-      updateMultipleStatePositions(data);
+      const fixedStates = updateMultipleStatePositions(data);
+      debouncedStateMoveHistoryUpdate(fixedStates);
     },
     () => {
       setIsMovingStates(true);
@@ -767,6 +783,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setInterfaceId(id);
         setMetadata(metadata);
         setStates(states);
+
+        changeHistory.current[0] = {
+          metadata: JSON.stringify(metadata || {}),
+          states: JSON.stringify(states || {}),
+          key: 'init from draft',
+        };
 
         if (!params.id && size(states) === 0) {
           setIsAddingNewStateAt({ x: 0, y: 0 });
@@ -987,8 +1009,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           });
         }
 
-        updateHistory(newStates);
-        setStates((cur) => ({ ...cur, ...newStates }));
+        if (!isEqual(newStates, states)) {
+          updateHistory(newStates, metadata, 'first change');
+          setStates((cur) => ({ ...cur, ...newStates }));
+        }
       }
 
       setCompatibilityChecked(true);
@@ -1419,7 +1443,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   },
                 ];
 
-                updateHistory(newBoxes);
+                updateHistory(newBoxes, metadata, 'handleStateClick');
 
                 return newBoxes;
               });
@@ -1441,7 +1465,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
           ];
 
-          updateHistory(newBoxes);
+          updateHistory(
+            newBoxes,
+            metadata,
+            'handleStateClick unselected state'
+          );
 
           return newBoxes;
         });
@@ -1508,11 +1536,19 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     [stateRefs]
   );
 
-  const updateHistory = (data: IFSMStates) => {
+  const updateHistory = (
+    data: IFSMStates,
+    metadata: Partial<IFSMMetadata>,
+    key: string
+  ) => {
     if (currentHistoryPosition.current >= 0) {
       changeHistory.current.length = currentHistoryPosition.current + 1;
     }
-    changeHistory.current.push(JSON.stringify(data));
+    changeHistory.current.push({
+      states: JSON.stringify(data),
+      metadata: JSON.stringify(metadata),
+      key,
+    });
 
     if (changeHistory.current.length > 10) {
       changeHistory.current.shift();
@@ -1633,11 +1669,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     ) => {
       const fixedStates = await preUpdateStateData(id, data, isValid);
 
-      updateHistory(fixedStates);
+      if (!isEqual(fixedStates, states)) {
+        updateHistory(fixedStates, metadata, 'updateStateData');
+      }
+
       setStates((cur) => ({ ...cur, ...fixedStates }));
     },
     [states, areStatesCompatible, fixIncomptibleStates]
   );
+
+  const debouncedStateMoveHistoryUpdate = debounce((data: IFSMStates) => {
+    updateHistory(data, metadata, 'move states');
+  }, 200);
 
   const updateMultipleStatePositions = useCallback(
     (data: Record<string, Partial<IFSMState>>) => {
@@ -1651,6 +1694,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       });
 
       setStates((cur) => ({ ...cur, ...fixedStates }));
+
+      return fixedStates;
     },
     [preUpdateStateData]
   );
@@ -1719,7 +1764,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       }
     }
 
-    updateHistory(fixedStates);
+    updateHistory(fixedStates, metadata, 'updateMultipleTransitionData');
     setStates((cur) => ({ ...cur, ...fixedStates }));
   };
 
@@ -1853,7 +1898,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               (newStates) => {
                 // If this state was deleted because of unfilled data, do not
                 // save history
-                updateHistory(newStates);
+                updateHistory(
+                  newStates,
+                  metadata,
+                  'handleMultipleStateDeleteClick'
+                );
               }
             );
 
@@ -1883,7 +1932,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 // If this state was deleted because of unfilled data, do not
                 // save history
                 if (!unfilled) {
-                  updateHistory(newStates);
+                  updateHistory(newStates, metadata, 'handleStateDeleteClick');
                 }
               }
             );
@@ -2653,155 +2702,70 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           {
             group: [
               {
-                icon: 'AlignTop',
-                className: 'align-top',
-                tooltip: 'Align vertically to top',
+                icon: 'ArrowGoBackLine',
+                className: 'qog-undo',
+                tooltip: 'Undo',
                 compact: true,
+                disabled: currentHistoryPosition.current === 0,
                 onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'top',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
+                  if (currentHistoryPosition.current > 0) {
+                    currentHistoryPosition.current -= 1;
+                    setStates(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .states
+                      )
+                    );
+                    setMetadata(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .metadata
+                      )
+                    );
+                  }
                 },
               },
               {
-                icon: 'AlignVertically',
-                className: 'align-center',
-                tooltip: 'Align vertically to center',
+                icon: 'ArrowGoForwardLine',
+                className: 'qog-redo',
+                tooltip: 'Redo',
                 compact: true,
+                disabled:
+                  currentHistoryPosition.current ===
+                    changeHistory.current.length - 1 ||
+                  changeHistory.current.length === 1,
                 onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'center',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignBottom',
-                className: 'align-bottom',
-                tooltip: 'Align vertically to bottom',
-                compact: true,
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'bottom',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-            ],
-            show: size(selectedStates) > 1,
-          },
-          {
-            group: [
-              {
-                icon: 'AlignTop',
-                leftIconProps: {
-                  rotation: -90,
-                },
-                compact: true,
-                className: 'align-left',
-                tooltip: 'Align horizontally to left',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'top',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignVertically',
-                leftIconProps: {
-                  rotation: -90,
-                },
-                compact: true,
-                className: 'align-middle',
-                tooltip: 'Align horizontally to center',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'center',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignTop',
-                leftIconProps: {
-                  rotation: 90,
-                },
-                compact: true,
-                className: 'align-right',
-                tooltip: 'Align horizontally to right',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'bottom',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-            ],
-            show: size(selectedStates) > 1,
-          },
-          {
-            tooltip: 'Smart align',
-            compact: true,
-            id: 'auto-align-states',
-            icon: 'Apps2Line',
-            show: isMetadataHidden,
-            flat: !checkOverlap(states),
-            effect: checkOverlap(states)
-              ? {
-                  gradient: {
-                    colors: {
-                      0: '#5865f2',
-                      100: '#6e1977',
-                    },
-                    animate: 'always',
-                  },
-                }
-              : undefined,
-            onClick: () => {
-              const { alignedStates } = autoAlign(states);
+                  if (
+                    currentHistoryPosition.current <
+                    changeHistory.current.length - 1
+                  ) {
+                    currentHistoryPosition.current += 1;
 
-              setStates(alignedStates);
+                    setStates(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .states
+                      )
+                    );
+
+                    setMetadata(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .metadata
+                      )
+                    );
+                  }
+                },
+              },
+            ],
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
             },
           },
-
           {
             tooltip: 'Save selected states as action set',
             compact: true,
@@ -2833,6 +2797,189 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             effect: NegativeColorEffect,
             onClick: () => {
               handleMultipleStateDeleteClick(selectedStates);
+            },
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
+            },
+            show:
+              (selectedStates &&
+                size(selectedStates) > 1 &&
+                areStatesAConnectedGroup(getStatesFromSelectedStates())) ||
+              !!size(selectedStates),
+          },
+          {
+            group: [
+              {
+                icon: 'AlignTop',
+                className: 'align-top',
+                tooltip: 'Align vertically to top',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-top');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignVertically',
+                className: 'align-center',
+                tooltip: 'Align vertically to center',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-center');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignBottom',
+                className: 'align-bottom',
+                tooltip: 'Align vertically to bottom',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-bottom');
+                  setSelectedStates({});
+                },
+              },
+            ],
+            show: size(selectedStates) > 1,
+          },
+          {
+            group: [
+              {
+                icon: 'AlignTop',
+                leftIconProps: {
+                  rotation: -90,
+                },
+                compact: true,
+                className: 'align-left',
+                tooltip: 'Align horizontally to left',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-left');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignVertically',
+                leftIconProps: {
+                  rotation: -90,
+                },
+                compact: true,
+                className: 'align-middle',
+                tooltip: 'Align horizontally to center',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  updateHistory(alignedStates, metadata, 'align-middle');
+                  setStates(alignedStates);
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignTop',
+                leftIconProps: {
+                  rotation: 90,
+                },
+                compact: true,
+                className: 'align-right',
+                tooltip: 'Align horizontally to right',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  updateHistory(alignedStates, metadata, 'align-right');
+                  setStates(alignedStates);
+                  setSelectedStates({});
+                },
+              },
+            ],
+            show: size(selectedStates) > 1,
+          },
+          {
+            tooltip: 'Smart align',
+            compact: true,
+            id: 'auto-align-states',
+            icon: 'Apps2Line',
+            show: isMetadataHidden,
+            flat: !checkOverlap(states),
+            effect: checkOverlap(states)
+              ? {
+                  gradient: {
+                    colors: {
+                      0: '#5865f2',
+                      100: '#6e1977',
+                    },
+                    animate: 'always',
+                  },
+                }
+              : undefined,
+            onClick: () => {
+              const { alignedStates } = autoAlign(states);
+
+              updateHistory(alignedStates, metadata, 'auto-align-states');
+              setStates(alignedStates);
+            },
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
             },
           },
           {
@@ -2896,6 +3043,13 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 intent: showStateIds ? 'info' : undefined,
               },
             ],
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
+            },
           },
           {
             tooltip: 'Test run',
@@ -3022,6 +3176,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 'localvar',
               ])}
               onChange={(fields) => {
+                updateHistory(states, fields, 'metadata');
                 setMetadata(fields);
               }}
             />
@@ -3038,7 +3193,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   result[keyId] = stateData;
                 });
 
-                updateHistory(result);
+                updateHistory(result, metadata, 'initial-order');
 
                 return result;
               })

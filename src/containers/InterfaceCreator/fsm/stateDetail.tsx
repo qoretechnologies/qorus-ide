@@ -117,6 +117,12 @@ export const FSMStateDetail = memo(
 
     useUpdateEffect(() => {
       if (!isEqual(data, dataToSubmit)) {
+        setDataToSubmit(data);
+      }
+    }, [data]);
+
+    useUpdateEffect(() => {
+      if (!isEqual(data, dataToSubmit)) {
         load();
         setHasSaved(false);
       }
@@ -397,10 +403,10 @@ export const FSMStateDetail = memo(
             label: isLoading
               ? undefined
               : !isDataValid()
-              ? undefined
-              : hasSaved
-              ? undefined
-              : t(`Save`),
+                ? undefined
+                : hasSaved
+                  ? undefined
+                  : t(`Save`),
             disabled: !isDataValid() || isLoading,
             show: isLoading && !isCustomBlockFirstPage(),
             className: 'state-submit-button',
@@ -408,21 +414,21 @@ export const FSMStateDetail = memo(
             icon: isLoading
               ? 'Loader5Line'
               : !isDataValid()
-              ? 'ErrorWarningLine'
-              : undefined,
+                ? 'ErrorWarningLine'
+                : undefined,
             leftIconProps: {
               animation: isLoading
                 ? 'spin'
                 : isDataValid()
-                ? 'heartbeat'
-                : undefined,
+                  ? 'heartbeat'
+                  : undefined,
             },
             customTheme: { main: 'transparent' },
             effect: isLoading
               ? undefined
               : !isDataValid()
-              ? WarningColorEffect
-              : undefined,
+                ? WarningColorEffect
+                : undefined,
             position: 'right',
             responsive: false,
           },

@@ -604,3 +604,18 @@ export async function _testsClickButton({
     await fireEvent.click(screen.queryAllByText(label, { selector })[nth]);
   }
 }
+
+export async function _testsQogExpectStateCount(count: number) {
+  await waitFor(
+    () => expect(document.querySelectorAll('.fsm-state')).toHaveLength(count),
+    { timeout: 10000 }
+  );
+}
+
+export async function _testsQogUndo() {
+  await _testsClickButton({ selector: '.qog-undo' });
+}
+
+export async function _testsQogRedo() {
+  await _testsClickButton({ selector: '.qog-redo' });
+}

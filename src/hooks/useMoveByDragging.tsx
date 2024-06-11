@@ -2,7 +2,11 @@ import EventEmitter from 'events';
 import { find, forEach, reduce, size } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { calculateValueWithZoom } from '../components/PanElement';
-import { DIAGRAM_SIZE, IFSMStates, TFSMSelectedStates } from '../containers/InterfaceCreator/fsm';
+import {
+  DIAGRAM_SIZE,
+  IFSMStates,
+  TFSMSelectedStates,
+} from '../containers/InterfaceCreator/fsm';
 import { getStateBoundingRect } from '../helpers/diagram';
 
 export const Emitter = new EventEmitter();
@@ -12,13 +16,16 @@ export const useMoveByDragging = (
   selectedStates: TFSMSelectedStates,
   states: IFSMStates,
   refs: Record<string, HTMLDivElement>,
-  onUpdate: (updatedPositions: Record<string, { position: { x: number; y: number } }>) => void,
+  onUpdate: (
+    updatedPositions: Record<string, { position: { x: number; y: number } }>
+  ) => void,
   onStart?: () => void,
   onFinish?: (deselect?: boolean) => void,
   zoom?: number
 ) => {
   const staticPositions = useRef<Record<string, { x: number; y: number }>>({});
   const movedFor = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const positionedStates = useRef;
 
   const moveEntities = (x: number, y: number) => {
     forEach(selectedStates, (_stateData, id) => {
@@ -156,23 +163,26 @@ export const useMoveByDragging = (
         };
       });
 
-      Emitter.on('drag-area-move', ({ scrollLeft, scrollTop, scrollRight, scrollBottom }) => {
-        if (scrollLeft) {
-          moveEntities(-10, 0);
-        }
+      Emitter.on(
+        'drag-area-move',
+        ({ scrollLeft, scrollTop, scrollRight, scrollBottom }) => {
+          if (scrollLeft) {
+            moveEntities(-10, 0);
+          }
 
-        if (scrollTop) {
-          moveEntities(0, -10);
-        }
+          if (scrollTop) {
+            moveEntities(0, -10);
+          }
 
-        if (scrollRight) {
-          moveEntities(10, 0);
-        }
+          if (scrollRight) {
+            moveEntities(10, 0);
+          }
 
-        if (scrollBottom) {
-          moveEntities(0, 10);
+          if (scrollBottom) {
+            moveEntities(0, 10);
+          }
         }
-      });
+      );
 
       forEach(selectedStates, (state, id) => {
         // Check if this state already had a mousedown
