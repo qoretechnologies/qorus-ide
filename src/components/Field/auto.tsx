@@ -8,6 +8,7 @@ import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Pane
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
+import { apiHost } from '../../common/vscode';
 import {
   getTypeFromValue,
   getValueOrDefaultValue,
@@ -244,8 +245,7 @@ function AutoField<T = any>({
               selectedConnection: item,
               //onChange: (value) => handleChange(name, value),
               allowedValues: rest.allowed_values,
-              // TODO: Change this to dynamic URL
-              redirectUri: 'https://hq.qoretechnologies.com:8092/grant',
+              redirectUri: `${apiHost}/grant`,
               app: rest.app,
               action: rest.action,
               compact: true,
@@ -694,8 +694,7 @@ function AutoField<T = any>({
             selectedConnection={value}
             onChange={(value) => handleChange(name, value)}
             allowedValues={rest.allowed_values}
-            // TODO: Change this to dynamic URL
-            redirectUri='https://hq.qoretechnologies.com:8092/grant'
+            redirectUri={`${apiHost}/grant`}
             app={rest.app}
             action={rest.action}
           />
