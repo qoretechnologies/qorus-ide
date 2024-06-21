@@ -18,7 +18,7 @@ import { useCallback, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { IFSMVariable, TFSMAutoVariables, TFSMVariables } from '..';
 import { PositiveColorEffect } from '../../../../components/Field/multiPair';
-import { validateField } from '../../../../helpers/validations';
+import { areVariablesValid, isVariableValid } from '../../../../helpers/fsm';
 import { submitControl } from '../../controls';
 import { VariableForm } from './form';
 
@@ -111,26 +111,6 @@ export const FSMVariables = ({
       }));
       setSelectedVariable(`variable_${size(_persistent)}`);
     }
-  };
-
-  const isVariableValid = (data: IFSMVariable) => {
-    return (
-      validateField('string', data.type) &&
-      validateField(data.type, data.value, { isVariable: true })
-    );
-  };
-
-  const areVariablesValid = () => {
-    return (
-      (!_transient ||
-        Object.keys(_transient).every((name) =>
-          isVariableValid(_transient[name])
-        )) &&
-      (!_persistent ||
-        Object.keys(_persistent).every((name) =>
-          isVariableValid(_persistent[name])
-        ))
-    );
   };
 
   const renderVariableList = useCallback(
@@ -370,7 +350,10 @@ export const FSMVariables = ({
       height='90vh'
       bottomActions={[
         submitControl(handleSubmitClick, {
-          disabled: !areVariablesValid(),
+          disabled: !areVariablesValid({
+            transient: _transient,
+            persistent: _persistent,
+          }),
           id: 'submit-variables',
         }),
       ]}

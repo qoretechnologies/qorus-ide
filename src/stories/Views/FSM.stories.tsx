@@ -21,6 +21,7 @@ import { AutoAlign } from '../Tests/FSM/Alignment.stories';
 import { SwitchesToBuilder } from '../Tests/FSM/Basic.stories';
 import {
   _testsAddNewState,
+  _testsClickButton,
   _testsClickState,
   _testsClickStateByLabel,
   _testsCreateSelectionBox,
@@ -28,6 +29,7 @@ import {
   _testsOpenAppCatalogue,
   _testsSelectAppOrAction,
   _testsSelectState,
+  _testsWaitForText,
   sleep,
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
@@ -112,6 +114,44 @@ export const ExistingFSMWithoutInitialState: StoryFSM = {
   },
 };
 
+export const SettingsTab: StoryFSM = {
+  args: {
+    fsm,
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await SwitchesToBuilder.play({ canvasElement, ...rest });
+
+    await _testsClickButton({ label: 'Settings' });
+
+    await waitFor(
+      () => expect(canvas.queryByText('Qog Metadata')).toBeVisible(),
+      { timeout: 10000 }
+    );
+
+    await _testsWaitForText('Qog Metadata');
+  },
+};
+
+export const VariablesTab: StoryFSM = {
+  args: {
+    fsm,
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+    await SwitchesToBuilder.play({ canvasElement, ...rest });
+
+    await _testsClickButton({ label: 'Variables' });
+
+    await waitFor(
+      () => expect(canvas.queryByText('No variables created')).toBeVisible(),
+      { timeout: 10000 }
+    );
+
+    await _testsWaitForText('No variables created');
+  },
+};
+
 export const ExportData: StoryFSM = {
   args: {
     fsm: qodexWithMultipleAppsAndActions,
@@ -121,7 +161,8 @@ export const ExportData: StoryFSM = {
 
     await sleep(1000);
 
-    await fireEvent.click(document.querySelector(`.fsm-publish-more`));
+    await fireEvent.click(document.querySelector('.fsm-more-actions'));
+
     await waitFor(
       () =>
         expect(document.querySelector('.fsm-export-data')).toBeInTheDocument(),

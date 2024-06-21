@@ -17,7 +17,7 @@ import {
   StyledEffect,
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
-import { useReqraftStorage } from '@qoretechnologies/reqraft';
+import { ReqraftLog, useReqraftStorage } from '@qoretechnologies/reqraft';
 import { debounce, drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
@@ -70,6 +70,7 @@ import {
   IStateCorners,
   alignStates,
   areStatesAConnectedGroup,
+  areVariablesValid,
   autoAlign,
   buildMetadata,
   checkOverlap,
@@ -759,18 +760,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       isTypeCompatible('input') &&
       isTypeCompatible('output') &&
       size(states) > 1 &&
+      areVariablesValid({
+        transient: metadata.globalvar,
+        persistent: metadata.localvar,
+      }) &&
       hasEventTriggerState()
     );
-  };
-
-  const handleMetadataChange: (name: string, value: any) => void = (
-    name,
-    value
-  ) => {
-    setMetadata((cur) => ({
-      ...cur,
-      [name]: value,
-    }));
   };
 
   const applyDraft = () => {
@@ -813,14 +808,16 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   useEffect(() => {
-    if (searchParams.get('draftId') || draft) {
-      applyDraft();
-    } else {
-      if (!params.id && size(states) === 0) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
+    if (!embedded) {
+      if (searchParams.get('draftId') || draft) {
+        applyDraft();
+      } else {
+        if (!params.id && size(states) === 0) {
+          setIsAddingNewStateAt({ x: 0, y: 0 });
+        }
       }
     }
-  }, [searchParams.get('draftId'), draft]);
+  }, [searchParams.get('draftId'), draft, embedded]);
 
   // We need to hide the modal if the draft is applied
   // For example when switching from one draft to another or from
@@ -2692,19 +2689,17 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         contentStyle={{ display: 'flex' }}
         padded={!embedded}
         transparent={embedded}
-        badge={{
-          onClick: () => {
-            if (embedded) {
-              onHideMetadataClick((cur) => !cur);
-              setSelectedStates({});
-            } else {
-              setIsMetadataHidden((cur) => !cur);
-            }
-          },
-          effect:
-            !areMetadataValid() && !embedded ? WarningColorEffect : undefined,
-          icon: embedded ? 'ArrowLeftLine' : 'SettingsLine',
-        }}
+        badge={
+          embedded
+            ? {
+                onClick: () => {
+                  onHideMetadataClick((cur) => !cur);
+                  setSelectedStates({});
+                },
+                icon: 'ArrowLeftLine',
+              }
+            : undefined
+        }
         responsiveActions={false}
         actions={[
           {
@@ -2991,20 +2986,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
           },
           {
-            tooltip: 'Manage variables',
-            id: 'manage-variables',
-            label: '$vars',
-            badge:
-              size(metadata.autovar) +
-              size(metadata.globalvar) +
-              size(metadata.localvar),
-            compact: true,
-            textAlign: 'center',
-            onClick: () => {
-              setShowVariables({ show: true });
-            },
-          },
-          {
             show: isMetadataHidden,
             compact: true,
             icon: 'More2Line',
@@ -3043,6 +3024,21 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 size: 'tiny',
               },
               {
+                className: 'fsm-export-data',
+                label: 'Export Raw Data',
+                icon: 'DownloadLine',
+                onClick: () => {
+                  addModal(
+                    <ReqoreExportModal
+                      data={{
+                        ...metadata,
+                        states,
+                      }}
+                    />
+                  );
+                },
+              },
+              {
                 icon: 'PriceTag2Line',
                 label: 'Show state & path IDs',
                 id: 'show-state-ids',
@@ -3058,109 +3054,95 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               width: 5,
               lineSize: 'tiny',
             },
+            show: !embedded,
           },
           {
             tooltip: 'Test run',
+            label: 'Test',
             compact: true,
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
             className: 'fsm-test-run',
             icon: 'PlayLine',
             effect: PositiveColorEffect,
+            show: !embedded,
           },
           {
-            group: [
-              {
-                compact: true,
-                label:
-                  !areMetadataValid() || !isFSMValid()
-                    ? 'Fix to publish'
-                    : t('Publish'),
-                onClick: () => handleSubmitClick(false, true),
-                readOnly: !areMetadataValid() || !isFSMValid(),
-                icon:
-                  !areMetadataValid() || !isFSMValid()
-                    ? 'ErrorWarningLine'
-                    : 'UploadCloud2Line',
-                effect:
-                  !areMetadataValid() || !isFSMValid()
-                    ? WarningColorEffect
-                    : SaveColorEffect,
-                show: !embedded,
-                className: 'qodex-publish',
-                tooltip: isFSMValid()
-                  ? 'Publish your Qog'
-                  : {
-                      intent: 'warning',
-                      content: (
-                        <>
-                          {size(states) < 2 && (
-                            <ReqoreP>
-                              - At least 1 trigger and 1 normal states are
-                              required
-                            </ReqoreP>
-                          )}
-                          {!areMetadataValid() && (
-                            <ReqoreP>
-                              - Metadata is not valid, please make sure the name
-                              of your Qog is valid and that input & output types
-                              are compatible
-                            </ReqoreP>
-                          )}
-                          {!areStatesValid(states) && (
-                            <ReqoreP>
-                              - All states need to be valid (invalid states have
-                              red border) and connected (isolated states have
-                              red warning icon)
-                            </ReqoreP>
-                          )}
-                          {!hasEventTriggerState() && (
-                            <ReqoreP>
-                              - You need to have at least 1 trigger state (state
-                              with event trigger)
-                            </ReqoreP>
-                          )}
-                        </>
-                      ),
-                    },
-              },
-              {
-                compact: true,
-                effect:
-                  !areMetadataValid() || !isFSMValid()
-                    ? WarningColorEffect
-                    : SaveColorEffect,
-                className: 'fsm-publish-more',
-                actions: [
-                  {
-                    label: 'Export data',
-                    effect:
-                      !areMetadataValid() || !isFSMValid()
-                        ? WarningColorEffect
-                        : SaveColorEffect,
-                    className: 'fsm-export-data',
-                    icon: 'Save3Fill',
-                    onClick: () => {
-                      addModal(
-                        <ReqoreExportModal
-                          data={{
-                            ...metadata,
-                            states,
-                          }}
-                        />
-                      );
-                    },
-                  },
-                ],
-              },
-            ],
+            compact: true,
+            label:
+              !areMetadataValid() || !isFSMValid()
+                ? 'Fix to publish'
+                : t('Publish'),
+            onClick: () => handleSubmitClick(false, true),
+            readOnly: !areMetadataValid() || !isFSMValid(),
+            icon:
+              !areMetadataValid() || !isFSMValid()
+                ? 'ErrorWarningLine'
+                : 'UploadCloud2Line',
+            effect:
+              !areMetadataValid() || !isFSMValid()
+                ? WarningColorEffect
+                : SaveColorEffect,
+            show: !embedded,
+            className: 'qodex-publish',
+            tooltip: isFSMValid()
+              ? 'Publish your Qog'
+              : {
+                  intent: 'warning',
+                  content: (
+                    <>
+                      {size(states) < 2 && (
+                        <ReqoreP>
+                          - At least 1 trigger and 1 normal states are required
+                        </ReqoreP>
+                      )}
+                      {!areMetadataValid() && (
+                        <ReqoreP>
+                          - Metadata is not valid, please make sure the name of
+                          your Qog is valid and that input & output types are
+                          compatible
+                        </ReqoreP>
+                      )}
+                      {!areStatesValid(states) && (
+                        <ReqoreP>
+                          - All states need to be valid (invalid states have red
+                          border) and connected (isolated states have red
+                          warning icon)
+                        </ReqoreP>
+                      )}
+                      {!hasEventTriggerState() && (
+                        <ReqoreP>
+                          - You need to have at least 1 trigger state (state
+                          with event trigger)
+                        </ReqoreP>
+                      )}
+                      {!areVariablesValid({
+                        transient: metadata.globalvar,
+                        persistent: metadata.localvar,
+                      }) && (
+                        <ReqoreP>
+                          - Variables implementation is invalid, please check
+                          the "Variables" tab
+                        </ReqoreP>
+                      )}
+                    </>
+                  ),
+                },
           },
         ]}
       >
         <ReqoreTabs
           unMountOnTabChange={false}
+          flat={false}
           tabs={[
             { label: 'Flow', icon: interfaceIcons.fsm, id: 'flow' },
+            {
+              label: 'Settings',
+              icon: 'SettingsLine',
+              id: 'settings',
+              intent: areMetadataValid() ? undefined : 'danger',
+              show: !embedded,
+            },
             {
               label: 'Variables',
               badge:
@@ -3169,18 +3151,25 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 size(metadata.localvar),
               icon: 'MoneyDollarBoxLine',
               id: 'vars',
+              intent: areVariablesValid({
+                transient: metadata.globalvar,
+                persistent: metadata.localvar,
+              })
+                ? undefined
+                : 'danger',
             },
             {
               label: 'Log',
               icon: 'ListSettingsLine',
               id: 'log',
               disabled: !init.supports_enable,
+              show: !embedded,
             },
           ]}
           fill
           tabsPadding='top'
         >
-          <ReqoreTabsContent tabId='flow'>
+          <ReqoreTabsContent tabId='flow' style={{ flexFlow: 'row' }}>
             {!isMetadataHidden && !embedded ? (
               <ReqoreModal
                 label='Qog settings'
@@ -3196,23 +3185,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                     position: 'right',
                   },
                 ]}
-              >
-                <QodexFields
-                  id={interfaceId}
-                  settings={settings}
-                  onSettingsChange={setSettings}
-                  value={omit(metadata, [
-                    'target_dir',
-                    'autovar',
-                    'globalvar',
-                    'localvar',
-                  ])}
-                  onChange={(fields) => {
-                    updateHistory(states, fields, 'metadata');
-                    setMetadata(fields);
-                  }}
-                />
-              </ReqoreModal>
+              ></ReqoreModal>
             ) : null}
             {editingInitialOrder && (
               <FSMInitialOrderDialog
@@ -3656,16 +3629,50 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             </>
             {renderStateDetail()}
           </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='settings' style={{ overflowY: 'auto' }}>
+            <QodexFields
+              id={interfaceId}
+              settings={settings}
+              onSettingsChange={setSettings}
+              value={omit(metadata, [
+                'target_dir',
+                'autovar',
+                'globalvar',
+                'localvar',
+              ])}
+              onChange={(fields) => {
+                updateHistory(states, fields, 'metadata');
+                setMetadata(fields);
+              }}
+            />
+          </ReqoreTabsContent>
           <ReqoreTabsContent tabId='vars'>
             {renderVariables(true)}
           </ReqoreTabsContent>
-          <ReqoreTabsContent tabId='log'></ReqoreTabsContent>
+          <ReqoreTabsContent tabId='log'>
+            <ReqraftLog
+              label='Qog Log Viewer'
+              url={`log/fsms/${fsm?.id}`}
+              socketOptions={{
+                reconnect: true,
+                openOnMount: true,
+              }}
+              messageFormatter={(message) => ({
+                ...message,
+                intent: message.message.includes('[ERROR]')
+                  ? 'danger'
+                  : undefined,
+              })}
+              filterable
+              fill
+              autoScroll
+              showTimestamps
+            />
+          </ReqoreTabsContent>
         </ReqoreTabs>
       </Content>
     </AppsContext.Provider>
   );
-
-  console.log(init);
 
   if (embedded) {
     return renderFSM();
