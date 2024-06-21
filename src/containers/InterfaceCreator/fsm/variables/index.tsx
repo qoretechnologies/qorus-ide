@@ -15,6 +15,7 @@ import {
 } from '@qoretechnologies/reqore';
 import { find, keys, omit, size } from 'lodash';
 import { useCallback, useState } from 'react';
+import { useDebounce } from 'react-use';
 import { IFSMVariable, TFSMAutoVariables, TFSMVariables } from '..';
 import { PositiveColorEffect } from '../../../../components/Field/multiPair';
 import { validateField } from '../../../../helpers/validations';
@@ -22,6 +23,7 @@ import { submitControl } from '../../controls';
 import { VariableForm } from './form';
 
 export interface IFSMVariablesProps {
+  autoSave?: boolean;
   globalvar?: TFSMVariables;
   localvar?: TFSMVariables;
   autovar?: TFSMAutoVariables;
@@ -48,6 +50,7 @@ export const FSMVariables = ({
   onClose,
   onSubmit,
   selectedVariable,
+  autoSave,
 }: IFSMVariablesProps) => {
   const [_transient, setTransient] = useState<TFSMVariables>(globalvar);
   const [_persistent, setPersistent] = useState<TFSMVariables>(localvar);
@@ -65,6 +68,21 @@ export const FSMVariables = ({
     }[]
   >([]);
   const confirmAction = useReqoreProperty('confirmAction');
+
+  useDebounce(
+    () => {
+      if (autoSave) {
+        onSubmit?.({ globalvar: _transient, localvar: _persistent, changes });
+      }
+    },
+    300,
+    [
+      JSON.stringify(_transient),
+      JSON.stringify(_persistent),
+      JSON.stringify(changes),
+      autoSave,
+    ]
+  );
 
   const handleSubmitClick = useCallback(() => {
     onClose?.();
@@ -279,20 +297,8 @@ export const FSMVariables = ({
     [_selectedVariable, _transient, _persistent, autovar, selectedTab]
   );
 
-  return (
-    <ReqoreModal
-      label='FSM Variables'
-      onClose={onClose}
-      isOpen
-      width='90vw'
-      height='90vh'
-      bottomActions={[
-        submitControl(handleSubmitClick, {
-          disabled: !areVariablesValid(),
-          id: 'submit-variables',
-        }),
-      ]}
-    >
+  const renderTabs = () => {
+    return (
       <ReqoreTabs
         padded={false}
         tabs={[
@@ -348,6 +354,28 @@ export const FSMVariables = ({
           {renderVariableForm('autovar')}
         </ReqoreTabsContent>
       </ReqoreTabs>
+    );
+  };
+
+  if (autoSave) {
+    return renderTabs();
+  }
+
+  return (
+    <ReqoreModal
+      label='FSM Variables'
+      onClose={onClose}
+      isOpen
+      width='90vw'
+      height='90vh'
+      bottomActions={[
+        submitControl(handleSubmitClick, {
+          disabled: !areVariablesValid(),
+          id: 'submit-variables',
+        }),
+      ]}
+    >
+      {renderTabs()}
     </ReqoreModal>
   );
 };

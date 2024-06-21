@@ -3742,10 +3742,10 @@
   dependencies:
     lodash "^4.17.15"
 
-"@qoretechnologies/reqore@^0.46.5":
-  version "0.46.5"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.46.5.tgz#8c9e3732606e5fc0718771e7cb722c38bd026188"
-  integrity sha512-6JTTw3Oj0kvzIkFoKjHU3KUs9rFKdp0TsyV3KWC6gp1SfHb8OFjwFUWtsJvKn81v2BOhS6/7OUU6tJewDcf/fg==
+"@qoretechnologies/reqore@^0.46.7":
+  version "0.46.7"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.46.7.tgz#425ffa34adaf0f52c08eafa8fd1aa677dd54baee"
+  integrity sha512-E2QnH5lzDe+30jOFpNc9Sd/iOVFWOmcaACHS+EvJ+tdZ9PElW8oeMdgcpAKLSKtnb9lA0BBjpjqFhvsEsLEgBw==
   dependencies:
     "@internationalized/date" "^3.5.3"
     "@popperjs/core" "^2.11.6"
@@ -3771,10 +3771,10 @@
     use-context-selector "^1.4.1"
     yaml "^2.3.1"
 
-"@qoretechnologies/reqraft@^0.3.4":
-  version "0.3.4"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.3.4.tgz#e5b5589ea1facf27649b43e0f15b5ba1154d3f29"
-  integrity sha512-ClWFMCtENLPUizAypf7HuaO2uqly9gX/hsOIcMF69JDbf/hOfekV4GZVl8wTmp48VC3h1aDu5/2I0lCDneiQgw==
+"@qoretechnologies/reqraft@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.5.1.tgz#13bcd27074c032c5e7d34bd2ebe7a2794cf345eb"
+  integrity sha512-MwntPsm+MDkJnK0Ld4SRgUJfgFbUD0DtTGQEKLFUTfD63rrKEX6xqtSZ36zjktNyZhciaZPE0HZEjj+wQMe/Fg==
   dependencies:
     "@tanstack/react-query" "4"
     classnames "^2.2.6"

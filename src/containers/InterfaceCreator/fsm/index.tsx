@@ -5,6 +5,8 @@ import {
   ReqoreMessage,
   ReqoreModal,
   ReqoreP,
+  ReqoreTabs,
+  ReqoreTabsContent,
   ReqoreVerticalSpacer,
   useReqore,
   useReqoreProperty,
@@ -56,6 +58,7 @@ import {
 } from '../../../components/Field/systemOptions';
 import Loader from '../../../components/Loader';
 import { calculateValueWithZoom } from '../../../components/PanElement';
+import { interfaceIcons } from '../../../constants/interfaces';
 import { Messages } from '../../../constants/messages';
 import { AppsContext } from '../../../context/apps';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
@@ -2612,6 +2615,32 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     showTransitionsToaster.current = 0;
   }
 
+  const renderVariables = (autoSave?: boolean) => {
+    return (
+      <FSMVariables
+        autoSave={autoSave}
+        onClose={autoSave ? undefined : () => setShowVariables(undefined)}
+        onSubmit={({ globalvar, localvar, changes }) => {
+          setMetadata({
+            ...metadata,
+            globalvar,
+            localvar,
+          });
+          // For each change, remove the state using this variable
+          changes.forEach(({ name, type }) => {
+            setStates(
+              removeAllStatesWithVariable(name, type, states, interfaceId)
+            );
+          });
+        }}
+        globalvar={metadata?.globalvar}
+        localvar={metadata?.localvar}
+        autovar={metadata?.autovar}
+        selectedVariable={showVariables?.selected}
+      />
+    );
+  };
+
   const renderFSM = () => (
     <AppsContext.Provider value={apps}>
       {!compatibilityChecked && (
@@ -2645,28 +2674,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           }}
         />
       )}
-      {showVariables?.show && (
-        <FSMVariables
-          onClose={() => setShowVariables(undefined)}
-          onSubmit={({ globalvar, localvar, changes }) => {
-            setMetadata({
-              ...metadata,
-              globalvar,
-              localvar,
-            });
-            // For each change, remove the state using this variable
-            changes.forEach(({ name, type }) => {
-              setStates(
-                removeAllStatesWithVariable(name, type, states, interfaceId)
-              );
-            });
-          }}
-          globalvar={metadata?.globalvar}
-          localvar={metadata?.localvar}
-          autovar={metadata?.autovar}
-          selectedVariable={showVariables?.selected}
-        />
-      )}
+      {showVariables?.show && renderVariables()}
 
       {renderAppCatalogue()}
 
@@ -3149,476 +3157,515 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           },
         ]}
       >
-        {!isMetadataHidden && !embedded ? (
-          <ReqoreModal
-            label='Qog settings'
-            icon='SettingsLine'
-            isOpen
-            blur={3}
-            onClose={() => setIsMetadataHidden(true)}
-            bottomActions={[
-              {
-                label: 'Done',
-                icon: 'CheckLine',
-                onClick: () => setIsMetadataHidden(true),
-                position: 'right',
-              },
-            ]}
-          >
-            <QodexFields
-              id={interfaceId}
-              settings={settings}
-              onSettingsChange={setSettings}
-              value={omit(metadata, [
-                'target_dir',
-                'autovar',
-                'globalvar',
-                'localvar',
-              ])}
-              onChange={(fields) => {
-                updateHistory(states, fields, 'metadata');
-                setMetadata(fields);
-              }}
-            />
-          </ReqoreModal>
-        ) : null}
-        {editingInitialOrder && (
-          <FSMInitialOrderDialog
-            onClose={() => setEditingInitialOrder(null)}
-            onSubmit={(data) =>
-              setStates((cur) => {
-                const result = { ...cur };
-
-                forEach(data, (stateData, keyId) => {
-                  result[keyId] = stateData;
-                });
-
-                updateHistory(result, metadata, 'initial-order');
-
-                return result;
-              })
-            }
-            allStates={states}
-            states={reduce(
-              states,
-              (initialStates, state, stateId) => {
-                if (state.initial) {
-                  return { ...initialStates, [stateId]: state };
-                }
-
-                return initialStates;
-              },
-              {}
-            )}
-            fsmName={metadata.name}
-            interfaceId={interfaceId}
-          />
-        )}
-        {size(editingTransition) ? (
-          <FSMTransitionDialog
-            onSubmit={async (newData) => {
-              await updateMultipleTransitionData(newData);
-            }}
-            onClose={() => setEditingTransition([])}
-            states={states}
-            editingData={editingTransition}
-          />
-        ) : null}
-
-        <>
-          <div style={{ display: 'flex', overflow: 'hidden' }}>
-            <div
-              style={{
-                flex: 1,
-                overflow: 'hidden',
-                minHeight: 100,
-                userSelect: 'none',
-              }}
-            >
-              <StyledDiagramWrapper
-                as='div'
-                theme={theme}
-                ref={wrapperRef}
-                id={`${
-                  parentStateName ? `${parentStateName}-` : ''
-                }fsm-diagram`}
+        <ReqoreTabs
+          unMountOnTabChange={false}
+          tabs={[
+            { label: 'Flow', icon: interfaceIcons.fsm, id: 'flow' },
+            {
+              label: 'Variables',
+              badge:
+                size(metadata.autovar) +
+                size(metadata.globalvar) +
+                size(metadata.localvar),
+              icon: 'MoneyDollarBoxLine',
+              id: 'vars',
+            },
+            {
+              label: 'Log',
+              icon: 'ListSettingsLine',
+              id: 'log',
+              disabled: !init.supports_enable,
+            },
+          ]}
+          fill
+          tabsPadding='top'
+        >
+          <ReqoreTabsContent tabId='flow'>
+            {!isMetadataHidden && !embedded ? (
+              <ReqoreModal
+                label='Qog settings'
+                icon='SettingsLine'
+                isOpen
+                blur={3}
+                onClose={() => setIsMetadataHidden(true)}
+                bottomActions={[
+                  {
+                    label: 'Done',
+                    icon: 'CheckLine',
+                    onClick: () => setIsMetadataHidden(true),
+                    position: 'right',
+                  },
+                ]}
               >
-                {wrapperRef.current && (
-                  <DragSelectArea
-                    element={wrapperRef.current}
-                    onFinish={({ startX, startY, endX, endY }) => {
-                      const left = calculateValueWithZoom(
-                        Math.min(startX, endX) + currentXPan.current,
-                        zoom
-                      );
-                      const top = calculateValueWithZoom(
-                        Math.min(startY, endY) + currentYPan.current,
-                        zoom
-                      );
-                      const right = calculateValueWithZoom(
-                        Math.max(startX, endX) + currentXPan.current,
-                        zoom
-                      );
-                      const bottom = calculateValueWithZoom(
-                        Math.max(startY, endY) + currentYPan.current,
-                        zoom
-                      );
-
-                      const selectedStates = reduce(
-                        states,
-                        (newStates, state, id) => {
-                          const {
-                            position: { x, y },
-                          } = state;
-                          const { width, height } = getStateBoundingRect(id);
-
-                          if (
-                            x >= left &&
-                            x + width <= right &&
-                            y >= top &&
-                            y + height <= bottom
-                          ) {
-                            return {
-                              ...newStates,
-                              [id]: { fromMouseDown: false },
-                            };
-                          }
-
-                          return newStates;
-                        },
-                        {}
-                      );
-
-                      setSelectedStates((cur) => {
-                        return { ...cur, ...selectedStates };
-                      });
-                    }}
-                  />
-                )}
-                <FSMDiagramWrapper
-                  wrapperDimensions={wrapperDimensions}
-                  setPan={setWrapperPan}
-                  setShowStateIds={setShowStateIds}
-                  showStateIds={showStateIds}
-                  zoom={zoom}
-                  onDoubleClick={handleDiagramDblClick}
-                  zoomIn={zoomIn}
-                  zoomOut={zoomOut}
-                  enableEdgeMovement={isMovingStates}
-                  wrapperSize={{
-                    width:
-                      wrapperRef.current?.getBoundingClientRect()?.width || 0,
-                    height:
-                      wrapperRef.current?.getBoundingClientRect()?.height || 0,
+                <QodexFields
+                  id={interfaceId}
+                  settings={settings}
+                  onSettingsChange={setSettings}
+                  value={omit(metadata, [
+                    'target_dir',
+                    'autovar',
+                    'globalvar',
+                    'localvar',
+                  ])}
+                  onChange={(fields) => {
+                    updateHistory(states, fields, 'metadata');
+                    setMetadata(fields);
                   }}
-                  id={`${
-                    parentStateName ? `${parentStateName}-` : ''
-                  }fsm-diagram`}
-                  items={map(states, (state, id) => ({
-                    x: state.position.x,
-                    y: state.position.y,
-                    type: getStateType(state),
-                    id,
-                  }))}
+                />
+              </ReqoreModal>
+            ) : null}
+            {editingInitialOrder && (
+              <FSMInitialOrderDialog
+                onClose={() => setEditingInitialOrder(null)}
+                onSubmit={(data) =>
+                  setStates((cur) => {
+                    const result = { ...cur };
+
+                    forEach(data, (stateData, keyId) => {
+                      result[keyId] = stateData;
+                    });
+
+                    updateHistory(result, metadata, 'initial-order');
+
+                    return result;
+                  })
+                }
+                allStates={states}
+                states={reduce(
+                  states,
+                  (initialStates, state, stateId) => {
+                    if (state.initial) {
+                      return { ...initialStates, [stateId]: state };
+                    }
+
+                    return initialStates;
+                  },
+                  {}
+                )}
+                fsmName={metadata.name}
+                interfaceId={interfaceId}
+              />
+            )}
+            {size(editingTransition) ? (
+              <FSMTransitionDialog
+                onSubmit={async (newData) => {
+                  await updateMultipleTransitionData(newData);
+                }}
+                onClose={() => setEditingTransition([])}
+                states={states}
+                editingData={editingTransition}
+              />
+            ) : null}
+
+            <>
+              <div style={{ display: 'flex', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    minHeight: 100,
+                    userSelect: 'none',
+                  }}
                 >
-                  <StyledDiagram
+                  <StyledDiagramWrapper
                     as='div'
-                    id='fsm-states-wrapper'
-                    key={JSON.stringify(wrapperDimensions)}
-                    ref={(r) => {
-                      drop(r);
-                      diagramRef.current = r;
-                    }}
-                    path={image_path}
-                    onMouseDown={() => {
-                      timeSinceDiagramMouseDown.current = Date.now();
-                    }}
-                    onMouseUp={() => {
-                      if (
-                        Date.now() - timeSinceDiagramMouseDown.current <
-                        200
-                      ) {
-                        if (size(selectedStates) > 0) {
-                          setSelectedStates({});
-                        }
-
-                        setSelectedState(null);
-                        timeSinceDiagramMouseDown.current = 0;
-                      }
-                    }}
-                    bgColor={theme.main}
                     theme={theme}
-                    style={{
-                      zoom,
-                    }}
+                    ref={wrapperRef}
+                    id={`${
+                      parentStateName ? `${parentStateName}-` : ''
+                    }fsm-diagram`}
                   >
-                    {map(states, (state, id) => (
-                      <FSMState
-                        key={id}
-                        {...state}
-                        id={id}
-                        selected={selectedState === id}
-                        onDblClick={handleStateClick}
-                        onClick={handleStateClick}
-                        onSelect={handleSelectState}
-                        onUpdate={updateStateData}
-                        onDeleteClick={handleStateDeleteClick}
-                        onCloneClick={handleStateCloneClick}
-                        onMouseEnter={setHoveredState}
-                        onMouseLeave={setHoveredState}
-                        onNewStateClick={handleNewStateClick}
-                        hasTransitionToItself={hasTransitionToItself(id)}
-                        variableDescription={
-                          getVariable(
-                            state.action?.value?.var_name,
-                            state.action?.value?.var_type,
-                            metadata
-                          )?.desc
-                        }
-                        showStateIds={showStateIds}
-                        selectedState={selectedState}
-                        isInSelectedList={!!selectedStates[id]}
-                        isBeingDragged={
-                          selectedStates[id] &&
-                          selectedStates[id].fromMouseDown &&
-                          size(selectedStates) === 1
-                        }
-                        isActive={activeState === id}
-                        hoveredState={hoveredState}
-                        isConnectedToHoveredState={
-                          !!getStatesConnectedtoState(id, states)[hoveredState]
-                        }
-                        isAvailableForTransition={isAvailableForTransition}
-                        onTransitionOrderClick={handleTransitionOrderClick}
-                        onExecutionOrderClick={handleExecutionOrderClick}
-                        isIsolated={isStateIsolated(id, states)}
-                        getStateDataForComparison={getStateDataForComparison}
-                        activateState={handleActivateStateClick}
-                        zoom={zoom}
-                        passRef={handlePassStateRef}
-                        isValid={
-                          'isValid' in state
-                            ? state.isValid
-                            : isStateValid(state, metadata)
-                        }
+                    {wrapperRef.current && (
+                      <DragSelectArea
+                        element={wrapperRef.current}
+                        onFinish={({ startX, startY, endX, endY }) => {
+                          const left = calculateValueWithZoom(
+                            Math.min(startX, endX) + currentXPan.current,
+                            zoom
+                          );
+                          const top = calculateValueWithZoom(
+                            Math.min(startY, endY) + currentYPan.current,
+                            zoom
+                          );
+                          const right = calculateValueWithZoom(
+                            Math.max(startX, endX) + currentXPan.current,
+                            zoom
+                          );
+                          const bottom = calculateValueWithZoom(
+                            Math.max(startY, endY) + currentYPan.current,
+                            zoom
+                          );
+
+                          const selectedStates = reduce(
+                            states,
+                            (newStates, state, id) => {
+                              const {
+                                position: { x, y },
+                              } = state;
+                              const { width, height } =
+                                getStateBoundingRect(id);
+
+                              if (
+                                x >= left &&
+                                x + width <= right &&
+                                y >= top &&
+                                y + height <= bottom
+                              ) {
+                                return {
+                                  ...newStates,
+                                  [id]: { fromMouseDown: false },
+                                };
+                              }
+
+                              return newStates;
+                            },
+                            {}
+                          );
+
+                          setSelectedStates((cur) => {
+                            return { ...cur, ...selectedStates };
+                          });
+                        }}
                       />
-                    ))}
-                    <svg
-                      height='100%'
-                      width='100%'
-                      style={{
-                        position: 'absolute',
-                        boxShadow: 'inset 0 0 50px 2px #00000080',
-                        zIndex: hoveredState ? 20 : undefined,
-                        pointerEvents: hoveredState ? 'none' : undefined,
+                    )}
+                    <FSMDiagramWrapper
+                      wrapperDimensions={wrapperDimensions}
+                      setPan={setWrapperPan}
+                      setShowStateIds={setShowStateIds}
+                      showStateIds={showStateIds}
+                      zoom={zoom}
+                      onDoubleClick={handleDiagramDblClick}
+                      zoomIn={zoomIn}
+                      zoomOut={zoomOut}
+                      enableEdgeMovement={isMovingStates}
+                      wrapperSize={{
+                        width:
+                          wrapperRef.current?.getBoundingClientRect()?.width ||
+                          0,
+                        height:
+                          wrapperRef.current?.getBoundingClientRect()?.height ||
+                          0,
                       }}
+                      id={`${
+                        parentStateName ? `${parentStateName}-` : ''
+                      }fsm-diagram`}
+                      items={map(states, (state, id) => ({
+                        x: state.position.x,
+                        y: state.position.y,
+                        type: getStateType(state),
+                        id,
+                      }))}
                     >
-                      <defs>
-                        <marker
-                          id='arrowhead'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, null)}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheaderror'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'false')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadtrue'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'true')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadfalse'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'false')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadfake'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(
-                              undefined,
-                              undefined,
-                              true
-                            )}
-                          />
-                        </marker>
-                      </defs>
-                      {getTransitions().map(
-                        (
-                          {
-                            state,
-                            fake,
-                            targetState,
-                            isError,
-                            branch,
-                            transitionIndex,
-                            path,
-                            side,
-                            endSide,
-                            transitionIndexPerSide,
-                            transitionEndIndexPerSide,
-                            ...rest
-                          },
-                          index
-                        ) =>
-                          !isTransitionToSelf(state, targetState) ? (
-                            <>
-                              <StyledFSMLine
-                                className='fsm-transition'
-                                onClick={() => {
-                                  setEditingTransition((cur) => {
-                                    const result = [...cur];
+                      <StyledDiagram
+                        as='div'
+                        id='fsm-states-wrapper'
+                        key={JSON.stringify(wrapperDimensions)}
+                        ref={(r) => {
+                          drop(r);
+                          diagramRef.current = r;
+                        }}
+                        path={image_path}
+                        onMouseDown={() => {
+                          timeSinceDiagramMouseDown.current = Date.now();
+                        }}
+                        onMouseUp={() => {
+                          if (
+                            Date.now() - timeSinceDiagramMouseDown.current <
+                            200
+                          ) {
+                            if (size(selectedStates) > 0) {
+                              setSelectedStates({});
+                            }
 
-                                    result.push({
-                                      stateId: state,
-                                      index: transitionIndex,
-                                    });
-
-                                    const hasBothWay = hasBothWayTransition(
-                                      state,
-                                      targetState
-                                    );
-
-                                    if (hasBothWay) {
-                                      result.push(hasBothWay);
-                                    }
-
-                                    return result;
-                                  });
-                                }}
-                                key={Date.now()}
-                                name={`fsm-transition${
-                                  isError
-                                    ? '-error'
-                                    : branch
-                                      ? `-${branch}`
-                                      : ''
-                                }`}
-                                id={`fsm-transition-${index}`}
-                                stroke={getTransitionColor(
-                                  isError,
-                                  branch,
-                                  fake
-                                )}
-                                strokeWidth={1}
-                                markerEnd={`url(#arrowhead${getTransitionEndMarker(
-                                  isError,
-                                  branch,
-                                  fake
-                                )})`}
-                                d={getTransitionPath(
-                                  {
-                                    side,
-                                    endSide,
-                                    ...rest,
-                                    state,
-                                    targetState,
-                                  },
-                                  getTransitionIndex(
-                                    transitionIndexPerSide,
-                                    transitionIndexes.current[state][side]
-                                  ),
-                                  getTransitionIndex(
-                                    transitionEndIndexPerSide,
-                                    transitionIndexes.current[targetState][
-                                      endSide
-                                    ]
-                                  ),
-                                  transitionIndexes.current[state][side],
-                                  transitionIndexes.current[targetState][
-                                    endSide
-                                  ]
-                                )}
-                                deselected={
-                                  hoveredState && hoveredState !== state
-                                }
-                                selected={hoveredState === state}
-                                fake={fake}
+                            setSelectedState(null);
+                            timeSinceDiagramMouseDown.current = 0;
+                          }
+                        }}
+                        bgColor={theme.main}
+                        theme={theme}
+                        style={{
+                          zoom,
+                        }}
+                      >
+                        {map(states, (state, id) => (
+                          <FSMState
+                            key={id}
+                            {...state}
+                            id={id}
+                            selected={selectedState === id}
+                            onDblClick={handleStateClick}
+                            onClick={handleStateClick}
+                            onSelect={handleSelectState}
+                            onUpdate={updateStateData}
+                            onDeleteClick={handleStateDeleteClick}
+                            onCloneClick={handleStateCloneClick}
+                            onMouseEnter={setHoveredState}
+                            onMouseLeave={setHoveredState}
+                            onNewStateClick={handleNewStateClick}
+                            hasTransitionToItself={hasTransitionToItself(id)}
+                            variableDescription={
+                              getVariable(
+                                state.action?.value?.var_name,
+                                state.action?.value?.var_type,
+                                metadata
+                              )?.desc
+                            }
+                            showStateIds={showStateIds}
+                            selectedState={selectedState}
+                            isInSelectedList={!!selectedStates[id]}
+                            isBeingDragged={
+                              selectedStates[id] &&
+                              selectedStates[id].fromMouseDown &&
+                              size(selectedStates) === 1
+                            }
+                            isActive={activeState === id}
+                            hoveredState={hoveredState}
+                            isConnectedToHoveredState={
+                              !!getStatesConnectedtoState(id, states)[
+                                hoveredState
+                              ]
+                            }
+                            isAvailableForTransition={isAvailableForTransition}
+                            onTransitionOrderClick={handleTransitionOrderClick}
+                            onExecutionOrderClick={handleExecutionOrderClick}
+                            isIsolated={isStateIsolated(id, states)}
+                            getStateDataForComparison={
+                              getStateDataForComparison
+                            }
+                            activateState={handleActivateStateClick}
+                            zoom={zoom}
+                            passRef={handlePassStateRef}
+                            isValid={
+                              'isValid' in state
+                                ? state.isValid
+                                : isStateValid(state, metadata)
+                            }
+                          />
+                        ))}
+                        <svg
+                          height='100%'
+                          width='100%'
+                          style={{
+                            position: 'absolute',
+                            boxShadow: 'inset 0 0 50px 2px #00000080',
+                            zIndex: hoveredState ? 20 : undefined,
+                            pointerEvents: hoveredState ? 'none' : undefined,
+                          }}
+                        >
+                          <defs>
+                            <marker
+                              id='arrowhead'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, null)}
                               />
-                              {showStateIds && (
-                                <StyledLineText
-                                  style={{
-                                    transform: `rotate(${calculateTextRotation(
-                                      side
-                                    )}deg) translateY(${calculateTextTranslation(
-                                      side
-                                    )}px)`,
-                                    transformBox: 'fill-box',
-                                    transformOrigin: 'center',
-                                  }}
-                                  deselected={
-                                    hoveredState && hoveredState !== state
-                                  }
-                                >
-                                  <textPath
-                                    href={`#fsm-transition-${index}`}
-                                    startOffset='10px'
-                                    fill='#ffffff'
-                                  >
-                                    {targetState}
-                                  </textPath>
-                                </StyledLineText>
-                              )}
-                            </>
-                          ) : null
-                      )}
-                    </svg>
-                  </StyledDiagram>
-                </FSMDiagramWrapper>
-              </StyledDiagramWrapper>
-            </div>
-          </div>
-        </>
-        {renderStateDetail()}
+                            </marker>
+                            <marker
+                              id='arrowheaderror'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'false')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadtrue'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'true')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadfalse'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'false')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadfake'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(
+                                  undefined,
+                                  undefined,
+                                  true
+                                )}
+                              />
+                            </marker>
+                          </defs>
+                          {getTransitions().map(
+                            (
+                              {
+                                state,
+                                fake,
+                                targetState,
+                                isError,
+                                branch,
+                                transitionIndex,
+                                path,
+                                side,
+                                endSide,
+                                transitionIndexPerSide,
+                                transitionEndIndexPerSide,
+                                ...rest
+                              },
+                              index
+                            ) =>
+                              !isTransitionToSelf(state, targetState) ? (
+                                <>
+                                  <StyledFSMLine
+                                    className='fsm-transition'
+                                    onClick={() => {
+                                      setEditingTransition((cur) => {
+                                        const result = [...cur];
+
+                                        result.push({
+                                          stateId: state,
+                                          index: transitionIndex,
+                                        });
+
+                                        const hasBothWay = hasBothWayTransition(
+                                          state,
+                                          targetState
+                                        );
+
+                                        if (hasBothWay) {
+                                          result.push(hasBothWay);
+                                        }
+
+                                        return result;
+                                      });
+                                    }}
+                                    key={Date.now()}
+                                    name={`fsm-transition${
+                                      isError
+                                        ? '-error'
+                                        : branch
+                                          ? `-${branch}`
+                                          : ''
+                                    }`}
+                                    id={`fsm-transition-${index}`}
+                                    stroke={getTransitionColor(
+                                      isError,
+                                      branch,
+                                      fake
+                                    )}
+                                    strokeWidth={1}
+                                    markerEnd={`url(#arrowhead${getTransitionEndMarker(
+                                      isError,
+                                      branch,
+                                      fake
+                                    )})`}
+                                    d={getTransitionPath(
+                                      {
+                                        side,
+                                        endSide,
+                                        ...rest,
+                                        state,
+                                        targetState,
+                                      },
+                                      getTransitionIndex(
+                                        transitionIndexPerSide,
+                                        transitionIndexes.current[state][side]
+                                      ),
+                                      getTransitionIndex(
+                                        transitionEndIndexPerSide,
+                                        transitionIndexes.current[targetState][
+                                          endSide
+                                        ]
+                                      ),
+                                      transitionIndexes.current[state][side],
+                                      transitionIndexes.current[targetState][
+                                        endSide
+                                      ]
+                                    )}
+                                    deselected={
+                                      hoveredState && hoveredState !== state
+                                    }
+                                    selected={hoveredState === state}
+                                    fake={fake}
+                                  />
+                                  {showStateIds && (
+                                    <StyledLineText
+                                      style={{
+                                        transform: `rotate(${calculateTextRotation(
+                                          side
+                                        )}deg) translateY(${calculateTextTranslation(
+                                          side
+                                        )}px)`,
+                                        transformBox: 'fill-box',
+                                        transformOrigin: 'center',
+                                      }}
+                                      deselected={
+                                        hoveredState && hoveredState !== state
+                                      }
+                                    >
+                                      <textPath
+                                        href={`#fsm-transition-${index}`}
+                                        startOffset='10px'
+                                        fill='#ffffff'
+                                      >
+                                        {targetState}
+                                      </textPath>
+                                    </StyledLineText>
+                                  )}
+                                </>
+                              ) : null
+                          )}
+                        </svg>
+                      </StyledDiagram>
+                    </FSMDiagramWrapper>
+                  </StyledDiagramWrapper>
+                </div>
+              </div>
+            </>
+            {renderStateDetail()}
+          </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='vars'>
+            {renderVariables(true)}
+          </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='log'></ReqoreTabsContent>
+        </ReqoreTabs>
       </Content>
     </AppsContext.Provider>
   );
+
+  console.log(init);
 
   if (embedded) {
     return renderFSM();
