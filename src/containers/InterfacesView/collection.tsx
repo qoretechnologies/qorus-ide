@@ -277,6 +277,7 @@ export const InterfacesViewCollection = ({
             {
               as: EnableToggle,
               props: {
+                key: item.data?.id,
                 enabled: item.data?.enabled,
                 type,
                 id: item.data?.id,

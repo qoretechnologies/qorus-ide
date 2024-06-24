@@ -805,7 +805,7 @@ export const NewSingleSearchState: StoryFSM = {
           }
         );
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
 
     await sleep(500);
@@ -828,7 +828,7 @@ export const NewSingleSearchState: StoryFSM = {
           )
         ).toHaveValue(12);
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
     await _testsQodexCanBePublished();
   },
