@@ -48,7 +48,9 @@ export const CreateNewSet: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll('.system-option.reqore-textarea')[0],
+      document.querySelectorAll(
+        '.fsm-action-set-dialog .system-option.reqore-textarea'
+      )[0],
       {
         target: { value: 'Test action set' },
       }
@@ -92,7 +94,9 @@ export const CreateNewSetWithEventTrigger: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll('.system-option.reqore-textarea')[0],
+      document.querySelectorAll(
+        '.fsm-action-set-dialog .system-option.reqore-textarea'
+      )[0],
       {
         target: { value: 'With Event Trigger' },
       }

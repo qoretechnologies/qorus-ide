@@ -334,9 +334,9 @@ export const NewTransactionState: StoryFSM = {
     // The submit button needs to be disabled
     await waitFor(
       async () => {
-        await expect(document.querySelectorAll('.system-option').length).toBe(
-          1
-        );
+        await expect(
+          document.querySelectorAll('.fsm-state-detail .system-option').length
+        ).toBe(1);
       },
       {
         timeout: 10000,
@@ -345,13 +345,16 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(200);
 
-    await fireEvent.click(document.querySelector('.provider-type-selector'));
+    await fireEvent.click(
+      document.querySelector('.fsm-state-detail .provider-type-selector')
+    );
     await fireEvent.click(canvas.getByText('factory'));
 
     await waitFor(
       async () => {
         await expect(
-          document.querySelectorAll('.provider-selector').length
+          document.querySelectorAll('.fsm-state-detail .provider-selector')
+            .length
         ).toBe(1);
       },
       {
@@ -359,20 +362,26 @@ export const NewTransactionState: StoryFSM = {
       }
     );
 
-    await fireEvent.click(document.querySelector('.provider-selector'));
+    await fireEvent.click(
+      document.querySelector('.fsm-state-detail .provider-selector')
+    );
     await fireEvent.click(canvas.getAllByText('db')[0]);
 
     await waitFor(
       () =>
         expect(
-          document.querySelector('.system-option .reqore-textarea')
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-textarea'
+          )
         ).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
     await fireEvent.change(
-      document.querySelector('.system-option .reqore-textarea'),
+      document.querySelector(
+        '.fsm-state-detail .system-option .reqore-textarea'
+      ),
       {
         target: {
           value: 'omquser',
@@ -391,7 +400,8 @@ export const NewTransactionState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelectorAll('.provider-selector').length
+          document.querySelectorAll('.fsm-state-detail .provider-selector')
+            .length
         ).toBe(2);
       },
       {
@@ -401,7 +411,9 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(1500);
 
-    await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
+    await fireEvent.click(
+      document.querySelectorAll('.fsm-state-detail .provider-selector')[1]
+    );
     const withinSelectDialog = within(
       document.querySelector('.q-select-dialog')
     );
@@ -409,7 +421,9 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(1500);
 
-    await fireEvent.click(document.querySelector('.state-next-button'));
+    await fireEvent.click(
+      document.querySelector('.fsm-state-detail .state-next-button')
+    );
 
     await _testsAddNewVariableState('trans', canvas, 'Transaction');
 
@@ -559,11 +573,14 @@ export const NewApiCallState: StoryFSM = {
 
     await waitFor(
       () =>
-        fireEvent.change(document.querySelector('.system-option textarea'), {
-          target: {
-            value: 'logging some stuff',
-          },
-        }),
+        fireEvent.change(
+          document.querySelector('.fsm-state-detail .system-option textarea'),
+          {
+            target: {
+              value: 'logging some stuff',
+            },
+          }
+        ),
       { timeout: 10000 }
     );
 
@@ -585,9 +602,9 @@ export const NewApiCallState: StoryFSM = {
     await waitFor(() => canvas.findByDisplayValue('logging some stuff'), {
       timeout: 10000,
     });
-    await expect(document.querySelector('.system-option textarea')).toHaveValue(
-      'logging some stuff'
-    );
+    await expect(
+      document.querySelector('.fsm-state-detail .system-option textarea')
+    ).toHaveValue('logging some stuff');
     await _testsQodexCanBePublished();
   },
 };
@@ -597,34 +614,43 @@ export const NewMessageState: StoryFSM = {
     const canvas = within(canvasElement);
     await NewState.play({ canvasElement, ...rest, stateType: 'send-message' });
 
-    await fireEvent.click(document.querySelector('.provider-type-selector'));
+    await fireEvent.click(
+      document.querySelector('.fsm-state-detail .provider-type-selector')
+    );
     await fireEvent.click(canvas.getByText('factory'));
 
     await waitFor(
       () =>
         expect(
-          document.querySelector('.provider-selector')
+          document.querySelector('.fsm-state-detail .provider-selector')
         ).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
 
-    await fireEvent.click(document.querySelector('.provider-selector'));
+    await fireEvent.click(
+      document.querySelector('.fsm-state-detail .provider-selector')
+    );
     await fireEvent.click(canvas.getAllByText('wsclient')[0]);
 
     await waitFor(
       () =>
-        expect(document.querySelector('.system-option')).toBeInTheDocument(),
+        expect(
+          document.querySelector('.fsm-state-detail .system-option')
+        ).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
-    await fireEvent.change(document.querySelector('.system-option textarea'), {
-      target: {
-        value: 'wss://sandbox:sandbox@sandbox.qoretechnologies.com/apievents',
-      },
-    });
+    await fireEvent.change(
+      document.querySelector('.fsm-state-detail .system-option textarea'),
+      {
+        target: {
+          value: 'wss://sandbox:sandbox@sandbox.qoretechnologies.com/apievents',
+        },
+      }
+    );
 
     await waitFor(
       async () => {
@@ -637,10 +663,10 @@ export const NewMessageState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('.provider-message-selector')
+          document.querySelector('.fsm-state-detail .provider-message-selector')
         ).toBeInTheDocument();
         await fireEvent.click(
-          document.querySelector('.provider-message-selector')
+          document.querySelector('.fsm-state-detail .provider-message-selector')
         );
       },
       { timeout: 10000 }
@@ -658,10 +684,14 @@ export const NewMessageState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('.provider-message-data textarea')
+          document.querySelector(
+            '.fsm-state-detail .provider-message-data textarea'
+          )
         ).toBeInTheDocument();
         await fireEvent.change(
-          document.querySelector('.provider-message-data textarea'),
+          document.querySelector(
+            '.fsm-state-detail .provider-message-data textarea'
+          ),
           {
             target: { value: 'Hello World' },
           }
@@ -754,7 +784,9 @@ export const NewSingleSearchState: StoryFSM = {
     await waitFor(
       async () =>
         await fireEvent.click(
-          document.querySelectorAll('.operators .reqore-button')[1]
+          document.querySelectorAll(
+            '.fsm-state-detail .operators .reqore-button'
+          )[1]
         )
     );
     await _testsSelectItemFromCollection(canvas, 'like')();
@@ -763,7 +795,9 @@ export const NewSingleSearchState: StoryFSM = {
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector('.system-option .reqore-input'),
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-input'
+          ),
           {
             target: {
               value: 12,
@@ -789,7 +823,9 @@ export const NewSingleSearchState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('.system-option .reqore-input')
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-input'
+          )
         ).toHaveValue(12);
       },
       { timeout: 5000 }
@@ -867,7 +903,9 @@ export const NewUpdateState: StoryFSM = {
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector('.system-option .reqore-textarea'),
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-textarea'
+          ),
           {
             target: {
               value: 'Some description',
@@ -893,7 +931,9 @@ export const NewUpdateState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('.system-option .reqore-textarea')
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-textarea'
+          )
         ).toHaveValue('Some description');
       },
       { timeout: 5000 }
@@ -959,7 +999,9 @@ export const NewCreateFromFormState: StoryFSM = {
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector('.system-option .reqore-textarea'),
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-textarea'
+          ),
           {
             target: {
               value: 'Some description',
@@ -985,7 +1027,9 @@ export const NewCreateFromFormState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('.system-option .reqore-textarea')
+          document.querySelector(
+            '.fsm-state-detail .system-option .reqore-textarea'
+          )
         ).toHaveValue('Some description');
       },
       { timeout: 5000 }
