@@ -100,6 +100,7 @@ export const UndoOptionsAndStateData: StoryFSM = {
     await sleep(1500);
 
     await _testsQogUndo();
+    await sleep(500);
     await _testsWaitForText('PleaseSelect');
   },
 };
