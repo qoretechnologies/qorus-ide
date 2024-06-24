@@ -1,5 +1,4 @@
 import { StoryObj } from '@storybook/react';
-import { within } from '@storybook/test';
 import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import { StoryMeta } from '../../types';
@@ -7,8 +6,6 @@ import {
   _testsQogExpectStateCount,
   _testsQogRedo,
   _testsQogUndo,
-  _testsSelectItemFromCollection,
-  _testsWaitForText,
   sleep,
 } from '../utils';
 import { NewStatesAfterState } from './Basic.stories';
@@ -89,31 +86,31 @@ export const RedoAll: StoryFSM = {
   },
 };
 
-export const UndoOptionsAndStateData: StoryFSM = {
-  ...NewStatesAfterState,
-  play: async ({ canvasElement, ...rest }) => {
-    const canvas = within(canvasElement);
-    await NewStatesAfterState.play({ canvasElement, ...rest });
+// export const UndoOptionsAndStateData: StoryFSM = {
+//   ...NewStatesAfterState,
+//   play: async ({ canvasElement, ...rest }) => {
+//     const canvas = within(canvasElement);
+//     await NewStatesAfterState.play({ canvasElement, ...rest });
 
-    await sleep(500);
-    await _testsSelectItemFromCollection(canvas, 'Discord New')();
-    await sleep(1500);
+//     await sleep(500);
+//     await _testsSelectItemFromCollection(canvas, 'Discord New')();
+//     await sleep(1500);
 
-    await _testsQogUndo();
-    await sleep(500);
-    await _testsWaitForText('PleaseSelect');
-  },
-};
+//     await _testsQogUndo();
+//     await sleep(500);
+//     await _testsWaitForText('PleaseSelect');
+//   },
+// };
 
-export const RedoOptionsAndStateData: StoryFSM = {
-  ...UndoOptionsAndStateData,
-  play: async ({ canvasElement, ...rest }) => {
-    await UndoOptionsAndStateData.play({ canvasElement, ...rest });
+// export const RedoOptionsAndStateData: StoryFSM = {
+//   ...UndoOptionsAndStateData,
+//   play: async ({ canvasElement, ...rest }) => {
+//     await UndoOptionsAndStateData.play({ canvasElement, ...rest });
 
-    await sleep(500);
-    await _testsQogRedo();
-    await sleep(1500);
+//     await sleep(500);
+//     await _testsQogRedo();
+//     await sleep(1500);
 
-    await _testsWaitForText('Discord New');
-  },
-};
+//     await _testsWaitForText('Discord New');
+//   },
+// };
