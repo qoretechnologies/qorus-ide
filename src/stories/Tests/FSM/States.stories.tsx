@@ -791,6 +791,8 @@ export const NewSingleSearchState: StoryFSM = {
     );
     await _testsSelectItemFromCollection(canvas, 'like')();
 
+    await sleep(500);
+
     // Add the search criteria value
     await waitFor(
       async () => {
@@ -820,6 +822,9 @@ export const NewSingleSearchState: StoryFSM = {
 
     // Check that state data were saved
     await _testsClickState(stateName);
+
+    await sleep(500);
+
     await waitFor(
       async () => {
         await expect(
