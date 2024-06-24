@@ -50,6 +50,10 @@ export const UndoAll: StoryFSM = {
     await sleep(300);
     await _testsQogUndo();
     await sleep(300);
+    await _testsQogUndo();
+    await sleep(300);
+    await _testsQogUndo();
+    await sleep(300);
     await _testsQogExpectStateCount(0);
   },
 };
@@ -69,6 +73,10 @@ export const RedoAll: StoryFSM = {
   play: async ({ canvasElement, ...rest }) => {
     await UndoAll.play({ canvasElement, ...rest });
 
+    await _testsQogRedo();
+    await sleep(300);
+    await _testsQogRedo();
+    await sleep(300);
     await _testsQogRedo();
     await sleep(300);
     await _testsQogRedo();

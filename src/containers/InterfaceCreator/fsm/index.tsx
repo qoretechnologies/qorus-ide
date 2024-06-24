@@ -3142,9 +3142,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               id: 'settings',
               intent: areMetadataValid() ? undefined : 'danger',
               show: !embedded,
+              fixed: true,
             },
             {
               label: 'Variables',
+              fixed: true,
               badge:
                 size(metadata.autovar) +
                 size(metadata.globalvar) +
@@ -3160,6 +3162,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
             {
               label: 'Log',
+              fixed: true,
               icon: 'ListSettingsLine',
               id: 'log',
               disabled: !init.supports_enable,
