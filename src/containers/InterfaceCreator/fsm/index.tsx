@@ -3662,7 +3662,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               url={`log/fsms/${fsm?.id}`}
               socketOptions={{
                 reconnect: true,
-                openOnMount: init.supports_enable,
+                openOnMount: fsm?.id && init.supports_enable,
               }}
               messageFormatter={(message) => ({
                 ...message,
