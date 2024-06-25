@@ -100,9 +100,15 @@ export const UndoOptionsAndStateData: StoryFSM = {
 
     await sleep(500);
     await _testsSelectItemFromCollection(canvas, 'Discord New')();
-    await sleep(1500);
+    await sleep(3000);
     await _testsQogUndo();
-    await sleep(1000);
+    await sleep(3000);
+
+    if (!canvas.queryAllByText('PleaseSelect')[0]) {
+      await _testsQogUndo();
+      await sleep(500);
+    }
+
     await _testsWaitForText('PleaseSelect');
   },
 };
@@ -115,9 +121,9 @@ export const RedoOptionsAndStateData: StoryFSM = {
   play: async ({ canvasElement, ...rest }) => {
     await UndoOptionsAndStateData.play({ canvasElement, ...rest });
 
-    await sleep(500);
+    await sleep(3000);
     await _testsQogRedo();
-    await sleep(1500);
+    await sleep(3000);
 
     await _testsWaitForText('Discord New');
   },

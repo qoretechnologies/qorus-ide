@@ -1,7 +1,7 @@
 import type { TestRunnerConfig } from '@storybook/test-runner';
 
 const config: TestRunnerConfig = {
-  logLevel: 'info',
+  logLevel: 'none',
   async preVisit(page) {
     if (await page.evaluate(() => !('takeScreenshot' in window))) {
       await page.exposeBinding('takeScreenshot', async ({ page }) => {
