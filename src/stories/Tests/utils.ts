@@ -514,6 +514,7 @@ export async function _testsOpenTemplates() {
 }
 
 export async function _testsWaitForText(text: string, selector?: string) {
+  console.log('Waiting for text:', text, selector);
   await waitFor(
     () =>
       expect(screen.queryAllByText(text, { selector })[0]).toBeInTheDocument(),
@@ -579,6 +580,7 @@ export async function _testsClickButton({
   wait?: number;
   parent?: string;
 }) {
+  console.log('Clicking button:', label, selector, nth, wait);
   if (!label) {
     await waitFor(
       () =>

@@ -98,9 +98,8 @@ export const UndoOptionsAndStateData: StoryFSM = {
     await sleep(500);
     await _testsSelectItemFromCollection(canvas, 'Discord New')();
     await sleep(1500);
-
     await _testsQogUndo();
-    await sleep(500);
+    await sleep(1000);
     await _testsWaitForText('PleaseSelect');
   },
 };
