@@ -3134,6 +3134,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         <ReqoreTabs
           unMountOnTabChange={false}
           flat={false}
+          useReactTransition={
+            process.env.NODE_ENV === 'development' ||
+            process.env.NODE_ENV === 'production'
+          }
           tabs={[
             { label: 'Flow', icon: interfaceIcons.fsm, id: 'flow' },
             {

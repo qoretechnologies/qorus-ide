@@ -198,11 +198,6 @@ export const StatesCanBeConnected: StoryFSM = {
   args: {
     fsm,
   },
-  parameters: {
-    chromatic: {
-      disable: true,
-    },
-  },
   play: async ({ canvasElement, ...rest }) => {
     await StateIsDeleted.play({ canvasElement, ...rest });
 
