@@ -212,7 +212,7 @@ export const StatesCanBeConnected: StoryFSM = {
 
     await _testsClickState('Update Ticket Info');
 
-    await sleep(1000);
+    await sleep(2000);
 
     await waitFor(
       () => expect(document.querySelectorAll('.fsm-transition').length).toBe(6),
