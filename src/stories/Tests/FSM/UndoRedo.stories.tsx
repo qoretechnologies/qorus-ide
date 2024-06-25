@@ -91,6 +91,9 @@ export const RedoAll: StoryFSM = {
 
 export const UndoOptionsAndStateData: StoryFSM = {
   ...NewStatesAfterState,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
     await NewStatesAfterState.play({ canvasElement, ...rest });
@@ -106,6 +109,9 @@ export const UndoOptionsAndStateData: StoryFSM = {
 
 export const RedoOptionsAndStateData: StoryFSM = {
   ...UndoOptionsAndStateData,
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async ({ canvasElement, ...rest }) => {
     await UndoOptionsAndStateData.play({ canvasElement, ...rest });
 

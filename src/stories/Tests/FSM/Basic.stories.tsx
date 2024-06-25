@@ -208,11 +208,11 @@ export const StatesCanBeConnected: StoryFSM = {
     // Fake double click lol
     await _testsDoubleClickState('Save Intent Info');
 
-    await sleep(2000);
+    await sleep(1000);
 
     await _testsClickState('Update Ticket Info');
 
-    await sleep(2000);
+    await sleep(1000);
 
     await waitFor(
       () => expect(document.querySelectorAll('.fsm-transition').length).toBe(6),
