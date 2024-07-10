@@ -206,7 +206,7 @@ function AutoField<T = any>({
     value,
     type
   ) => {
-    const returnType: IQorusType = currentInternalType || currentType || type;
+    const returnType: IQorusType = type || currentInternalType || currentType;
     // Run the onchange
     if (onChange && returnType) {
       onChange(name, value, returnType, _canBeNull(returnType));

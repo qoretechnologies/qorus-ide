@@ -72,7 +72,7 @@ test('Renders default <Auto /> field type determined from value', () => {
     </ReqoreUIProvider>
   );
 
-  expect(document.querySelectorAll('.reqore-textarea').length).toBe(1);
+  expect(document.querySelectorAll('.reqore-tree').length).toBe(1);
 
   expect(onChange).toHaveBeenLastCalledWith(
     'test',
@@ -161,7 +161,7 @@ test('Renders default <Auto /> field with outside defined type', () => {
     </ReqoreUIProvider>
   );
 
-  expect(document.querySelectorAll('.reqore-textarea').length).toBe(1);
+  expect(document.querySelectorAll('.reqore-tree').length).toBe(1);
 
   expect(onChange).toHaveBeenLastCalledWith('test', [1, 2, 3], 'list', true);
 });
