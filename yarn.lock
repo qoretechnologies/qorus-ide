@@ -3742,10 +3742,10 @@
   dependencies:
     lodash "^4.17.15"
 
-"@qoretechnologies/reqore@^0.46.9":
-  version "0.46.9"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.46.9.tgz#1f92dcaa162c61e1f68180d6c867fad065bf3a86"
-  integrity sha512-L/D4cLJHnl1gf3wbEJJAvfX4LK48I2exwdDXb7DzL9auivbNgx3sQCTs/7PVYEcaDcpwqTBSuhBYh3j959GbAw==
+"@qoretechnologies/reqore@^0.47.2":
+  version "0.47.2"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.47.2.tgz#5ae8f9eba5d7ef2a85f3844b073a0a4757b9a395"
+  integrity sha512-RYdyZr6ggjH2o1xvLnqszaUWLuv10iQjh1ia3Trxv3B/glbpq9ACcra/olD4/sdmi7NLY/FthOiDqMjKz7f5nw==
   dependencies:
     "@internationalized/date" "^3.5.3"
     "@popperjs/core" "^2.11.6"
@@ -3771,15 +3771,16 @@
     use-context-selector "^1.4.1"
     yaml "^2.3.1"
 
-"@qoretechnologies/reqraft@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.5.1.tgz#13bcd27074c032c5e7d34bd2ebe7a2794cf345eb"
-  integrity sha512-MwntPsm+MDkJnK0Ld4SRgUJfgFbUD0DtTGQEKLFUTfD63rrKEX6xqtSZ36zjktNyZhciaZPE0HZEjj+wQMe/Fg==
+"@qoretechnologies/reqraft@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.6.1.tgz#7f06bcb76d3f73247e76f84209796ab596b6ddc0"
+  integrity sha512-2ThglDz9m5innEfvvEZcu8S3jRSVCoFH16d3ynry8kOvykud+qM9Ax+WqNoEZ2H+moI93AbKLSl5GMnuRvX3xw==
   dependencies:
     "@tanstack/react-query" "4"
     classnames "^2.2.6"
     cronstrue "^2.50.0"
     epoch-timeago "^1.1.9"
+    js-yaml "^4.1.0"
     lodash "^4.17.21"
     polished "^4.2.2"
     react-color "^2.19.3"

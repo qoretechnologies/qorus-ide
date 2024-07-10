@@ -5,6 +5,7 @@ import {
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
+import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
@@ -418,15 +419,12 @@ function AutoField<T = any>({
         }
 
         return (
-          <LongStringField
-            {...rest}
-            name={name}
-            onChange={handleChange}
+          <ReqraftObjectFormField
             value={value}
-            fill
-            type={currentType}
-            noWrap
-            placeholder={'Yaml'}
+            onChange={(data) => handleChange(name, data)}
+            dataType='yaml'
+            resultDataType='yaml'
+            type='object'
           />
         );
       }
@@ -435,15 +433,12 @@ function AutoField<T = any>({
       case 'softlist':
       case 'list<auto>':
         return (
-          <LongStringField
-            {...rest}
-            name={name}
-            onChange={handleChange}
+          <ReqraftObjectFormField
             value={value}
-            fill
-            type={currentType}
-            noWrap
-            placeholder={'Yaml'}
+            onChange={(data) => handleChange(name, data)}
+            dataType='yaml'
+            resultDataType='yaml'
+            type='array'
           />
         );
       case 'int':

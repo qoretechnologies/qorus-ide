@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
+import jsyaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import Options, {
   IOptionsSchema,
@@ -104,6 +105,13 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     type: 'hash',
     supports_templates: true,
     display_name: 'Selected option',
+    value: jsyaml.dump({
+      option1: 'value1',
+      option2: {
+        option3: 'value3',
+        option4: ['value4', 'value5'],
+      },
+    }),
   },
   optionWithDependents: {
     supports_templates: true,
