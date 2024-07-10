@@ -209,7 +209,16 @@ export const Basic: StoryObj<typeof meta> = {
         optionWithValue: { type: 'string', value: '123' },
         optionWithInvalidValue: { type: 'string', value: 123 },
         templateOption: { type: 'string', value: '$local:test' },
-        selectedOption: { type: 'hash', value: undefined },
+        selectedOption: {
+          type: 'hash',
+          value: jsyaml.dump({
+            option1: 'value1',
+            option2: {
+              option3: 'value3',
+              option4: ['value4', 'value5'],
+            },
+          }),
+        },
       })
     );
   },
@@ -250,7 +259,16 @@ export const OptionalWithValues: StoryObj<typeof meta> = {
       optionWithValue: { type: 'string', value: '123' },
       optionWithInvalidValue: { type: 'string', value: 123 },
       templateOption: { type: 'string', value: '$local:test' },
-      selectedOption: { type: 'hash', value: undefined },
+      selectedOption: {
+        type: 'hash',
+        value: jsyaml.dump({
+          option1: 'value1',
+          option2: {
+            option3: 'value3',
+            option4: ['value4', 'value5'],
+          },
+        }),
+      },
     },
   },
 };
