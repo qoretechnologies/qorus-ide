@@ -1,5 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
+import jsyaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import Options, {
   IOptionsSchema,
@@ -36,6 +37,12 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     type: 'string',
     display_name: 'I am hidden',
     short_desc: 'I am hidden because I am not preselected or required',
+  },
+  preselectedOption: {
+    type: 'string',
+    display_name: 'I am preselected',
+    short_desc: 'I am visible without any value because I am preselected',
+    preselected: true,
   },
   optionWithValue: {
     type: 'string',
@@ -98,6 +105,13 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     type: 'hash',
     supports_templates: true,
     display_name: 'Selected option',
+    value: jsyaml.dump({
+      option1: 'value1',
+      option2: {
+        option3: 'value3',
+        option4: ['value4', 'value5'],
+      },
+    }),
   },
   optionWithDependents: {
     supports_templates: true,
@@ -179,7 +193,7 @@ export const Basic: StoryObj<typeof meta> = {
         expect(
           document.querySelectorAll('.reqore-collection-item.system-option')
             .length
-        ).toBe(14),
+        ).toBe(15),
       {
         timeout: 10000,
       }
@@ -195,7 +209,16 @@ export const Basic: StoryObj<typeof meta> = {
         optionWithValue: { type: 'string', value: '123' },
         optionWithInvalidValue: { type: 'string', value: 123 },
         templateOption: { type: 'string', value: '$local:test' },
-        selectedOption: { type: 'hash', value: undefined },
+        selectedOption: {
+          type: 'hash',
+          value: jsyaml.dump({
+            option1: 'value1',
+            option2: {
+              option3: 'value3',
+              option4: ['value4', 'value5'],
+            },
+          }),
+        },
       })
     );
   },
@@ -236,7 +259,16 @@ export const OptionalWithValues: StoryObj<typeof meta> = {
       optionWithValue: { type: 'string', value: '123' },
       optionWithInvalidValue: { type: 'string', value: 123 },
       templateOption: { type: 'string', value: '$local:test' },
-      selectedOption: { type: 'hash', value: undefined },
+      selectedOption: {
+        type: 'hash',
+        value: jsyaml.dump({
+          option1: 'value1',
+          option2: {
+            option3: 'value3',
+            option4: ['value4', 'value5'],
+          },
+        }),
+      },
     },
   },
 };

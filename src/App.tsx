@@ -422,7 +422,9 @@ const App: FunctionComponent<IApp> = ({
                         )}
                         {tab == 'Dashboard' && <Dashboard />}
                         {tab == 'Login' && <LoginContainer />}
-                        {tab == 'Loading' && <Loader text={t('Loading')} />}
+                        {tab == 'Loading' || tab === 'proxy' ? (
+                          <Loader text={t('Loading')} />
+                        ) : null}
                         {tab == 'ProjectConfig' && <ProjectConfig />}
                         {tab == 'SourceDirs' && <SourceDirectories flat />}
                         {tab == 'ReleasePackage' && <ReleasePackage />}

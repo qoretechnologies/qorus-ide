@@ -1,4 +1,8 @@
-import { ReqoreMessage, ReqoreModal, ReqoreSpinner } from '@qoretechnologies/reqore';
+import {
+  ReqoreMessage,
+  ReqoreModal,
+  ReqoreSpinner,
+} from '@qoretechnologies/reqore';
 import { memo, useMemo, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { fetchData } from '../../helpers/functions';
@@ -21,38 +25,48 @@ export interface IConnectionManagementModalProps {
 }
 
 export const ConnectionManagementModal = memo(
-  ({ appName, onClose, onSubmit, selectedConnection }: IConnectionManagementModalProps) => {
+  ({
+    appName,
+    onClose,
+    onSubmit,
+    selectedConnection,
+  }: IConnectionManagementModalProps) => {
     const [options, setOptions] = useState<IOptions>(undefined);
     const [isCreating, setIsCreating] = useState(false);
     const [creationError, setCreationError] = useState(undefined);
     const app = useGetAppActionData(appName);
 
-    const { loading, value, error } = useAsyncRetry<IOptionsSchema>(async () => {
-      const result = await fetchData(
-        `/dataprovider/apps/${appName}/getCreateConnectionOptions?context=ui`,
-        'PUT',
-        {
-          options: {
-            name: {
-              type: 'string',
-              value: selectedConnection,
+    const { loading, value, error } = useAsyncRetry<IOptionsSchema>(
+      async () => {
+        const result = await fetchData(
+          `/dataprovider/apps/${appName}/getCreateConnectionOptions?context=ui`,
+          'PUT',
+          {
+            options: {
+              name: {
+                type: 'string',
+                value: selectedConnection,
+              },
             },
           },
+          false
+        );
+
+        const { data, ok } = result;
+
+        if (ok) {
+          setOptions(fixOptions({}, data.options));
+
+          return data.options;
+        } else {
+          return undefined;
         }
-      );
-
-      const { data, ok } = result;
-
-      if (ok) {
-        setOptions(fixOptions({}, data.options));
-
-        return data.options;
-      } else {
-        return undefined;
       }
-    });
+    );
 
-    const handleCreateOrUpdateConnection = async (authorize?: boolean): Promise<any> => {
+    const handleCreateOrUpdateConnection = async (
+      authorize?: boolean
+    ): Promise<any> => {
       setIsCreating(true);
 
       const additionalOptions = selectedConnection
@@ -93,8 +107,14 @@ export const ConnectionManagementModal = memo(
       }
     }, [canBeCreatedAutomatically]);
 
-    const isLoading = useMemo(() => loading || isCreating, [loading, isCreating]);
-    const hasError = useMemo(() => error || creationError, [error, creationError]);
+    const isLoading = useMemo(
+      () => loading || isCreating,
+      [loading, isCreating]
+    );
+    const hasError = useMemo(
+      () => error || creationError,
+      [error, creationError]
+    );
 
     return (
       <ReqoreModal
@@ -103,7 +123,11 @@ export const ConnectionManagementModal = memo(
         blur={3}
         onClose={onClose}
         minimal
-        label={selectedConnection ? 'Edit connection' : `New ${app.display_name} connection`}
+        label={
+          selectedConnection
+            ? 'Edit connection'
+            : `New ${app.display_name} connection`
+        }
         iconImage={app.logo}
         iconProps={{ rounded: true, size: '35px' }}
         actions={[
@@ -112,7 +136,9 @@ export const ConnectionManagementModal = memo(
             icon: 'CheckLine',
             effect: SaveColorEffect,
             onClick: handleCreateOrUpdateConnection,
-            disabled: isLoading || !validateField('options', options, { optionSchema: value }),
+            disabled:
+              isLoading ||
+              !validateField('options', options, { optionSchema: value }),
             show: !canBeCreatedAutomatically,
           },
           {
@@ -120,26 +146,28 @@ export const ConnectionManagementModal = memo(
             icon: 'CheckDoubleLine',
             effect: PositiveColorEffect,
             onClick: () => handleCreateOrUpdateConnection(true),
-            disabled: isLoading || !validateField('options', options, { optionSchema: value }),
+            disabled:
+              isLoading ||
+              !validateField('options', options, { optionSchema: value }),
             show: !!selectedConnection,
           },
         ]}
       >
         {hasError && (
-          <ReqoreMessage opaque={false} intent="danger" margin="bottom">
+          <ReqoreMessage opaque={false} intent='danger' margin='bottom'>
             {hasError}
           </ReqoreMessage>
         )}
         {isLoading || canBeCreatedAutomatically ? (
-          <ReqoreSpinner centered iconColor="info" type={5}>
+          <ReqoreSpinner centered iconColor='info' type={5}>
             Loading...
           </ReqoreSpinner>
         ) : (
           <>
             {!selectedConnection && (
-              <ReqoreMessage intent="info" opaque={false}>
-                {app.display_name} connection requires some options to be set before it can be
-                created and authorized
+              <ReqoreMessage intent='info' opaque={false}>
+                {app.display_name} connection requires some options to be set
+                before it can be created and authorized
               </ReqoreMessage>
             )}
             <Options
@@ -150,7 +178,7 @@ export const ConnectionManagementModal = memo(
               allowTemplates={false}
               options={value}
               value={options}
-              name="options"
+              name='options'
               onChange={(_n, value) => setOptions(value)}
             />
           </>

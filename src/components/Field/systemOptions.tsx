@@ -98,8 +98,8 @@ export const fixOptions = (
         value:
           (typeof fixedValue[name] === 'object'
             ? fixedValue[name]?.value
-            : fixedValue[name]) ||
-          option.value ||
+            : fixedValue[name]) ??
+          option.value ??
           option.default_value,
       };
     }
@@ -164,7 +164,8 @@ export type IQorusType =
   | 'number'
   | 'nothing'
   | 'null'
-  | 'rgbcolor';
+  | 'rgbcolor'
+  | 'data';
 
 export type TOperatorValue = string | string[] | undefined | null;
 
@@ -267,11 +268,12 @@ export interface IOptionsProps
   customUrl?: string;
   value?: IOptions | TFlatOptions;
   options?: IOptionsSchema;
-  onChange: (
+  onChange?: (
     name: string,
     value?: IOptions,
     meta?: IOptionsOnChangeMeta
   ) => void;
+  onSingleOptionsChange?: (name: string, value: TOption) => void;
   onDependableOptionChange?: (
     name: string,
     value: TOption,
@@ -321,6 +323,7 @@ const Options = ({
   name,
   value = {},
   onChange,
+  onSingleOptionsChange,
   onDependableOptionChange,
   url,
   customUrl,
@@ -359,7 +362,7 @@ const Options = ({
           setOptions({});
           return;
         }
-        onChange(name, fixOptions(value, data.data));
+        onChange?.(name, fixOptions(value, data.data));
         // Save the new options
         if (!operatorsUrl) {
           setLoading(false);
@@ -408,7 +411,7 @@ const Options = ({
         }
         setOptions(data.data);
         onOptionsLoaded?.(data.data);
-        onChange(name, fixOptions({}, data.data));
+        onChange?.(name, fixOptions({}, data.data));
       })();
     }
   }, [url, customUrl]);
@@ -419,8 +422,8 @@ const Options = ({
 
   useEffect(() => {
     // Fix the value accorditong to the new options
-    onChange(name, fixOptions(value, options));
-  }, [JSON.stringify(options)]);
+    onChange?.(name, fixOptions(value, options));
+  }, [JSON.stringify(options), JSON.stringify(value)]);
 
   useUpdateEffect(() => {
     if (operatorsUrl) {
@@ -467,7 +470,7 @@ const Options = ({
       );
       // If there are default operators, add them to the value
       if (defaultOperators?.length) {
-        onChange(name, {
+        onChange?.(name, {
           ...currentValue,
           [optionName]: {
             type,
@@ -519,7 +522,8 @@ const Options = ({
       meta.events = options[optionName].on_change;
     }
 
-    onChange(name, updatedValue, meta);
+    onSingleOptionsChange?.(optionName, updatedValue[optionName]);
+    onChange?.(name, updatedValue, meta);
   };
 
   const handleOperatorChange = (
@@ -528,7 +532,7 @@ const Options = ({
     operator: string,
     index: number
   ) => {
-    onChange(name, {
+    onChange?.(name, {
       ...currentValue,
       [optionName]: {
         ...currentValue[optionName],
@@ -548,7 +552,7 @@ const Options = ({
     currentValue: IOptions,
     index: number
   ) => {
-    onChange(name, {
+    onChange?.(name, {
       ...currentValue,
       [optionName]: {
         ...currentValue[optionName],
@@ -566,7 +570,7 @@ const Options = ({
     currentValue: IOptions,
     index: number
   ) => {
-    onChange(name, {
+    onChange?.(name, {
       ...currentValue,
       [optionName]: {
         ...currentValue[optionName],
@@ -578,7 +582,7 @@ const Options = ({
   };
 
   const removeValue = () => {
-    onChange(name, undefined);
+    onChange?.(name, undefined);
   };
 
   const buildBadges = useCallback(
@@ -654,7 +658,7 @@ const Options = ({
 
     delete newValue?.[optionName];
 
-    onChange(name, newValue);
+    onChange?.(name, newValue);
   };
 
   const addSelectedOption = (optionName: string) => {

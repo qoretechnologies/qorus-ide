@@ -1,9 +1,12 @@
 import {
   ReqoreControlGroup,
   ReqoreH1,
+  ReqoreHorizontalSpacer,
   ReqoreMessage,
   ReqoreModal,
   ReqoreP,
+  ReqoreTabs,
+  ReqoreTabsContent,
   ReqoreVerticalSpacer,
   useReqore,
   useReqoreProperty,
@@ -14,8 +17,8 @@ import {
   StyledEffect,
 } from '@qoretechnologies/reqore/dist/components/Effect';
 import { ReqoreExportModal } from '@qoretechnologies/reqore/dist/components/ExportModal';
-import { useReqraftStorage } from '@qoretechnologies/reqraft';
-import { drop, every, find, findKey, omit, some } from 'lodash';
+import { ReqraftLog, useReqraftStorage } from '@qoretechnologies/reqraft';
+import { debounce, drop, every, find, findKey, omit, some } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import forEach from 'lodash/forEach';
@@ -33,7 +36,7 @@ import React, {
   useState,
 } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useDebounce, useUpdateEffect } from 'react-use';
+import { useDebounce, useUnmount, useUpdateEffect } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import shortid from 'shortid';
@@ -55,6 +58,7 @@ import {
 } from '../../../components/Field/systemOptions';
 import Loader from '../../../components/Loader';
 import { calculateValueWithZoom } from '../../../components/PanElement';
+import { interfaceIcons } from '../../../constants/interfaces';
 import { Messages } from '../../../constants/messages';
 import { AppsContext } from '../../../context/apps';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
@@ -66,6 +70,7 @@ import {
   IStateCorners,
   alignStates,
   areStatesAConnectedGroup,
+  areVariablesValid,
   autoAlign,
   buildMetadata,
   checkOverlap,
@@ -400,6 +405,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     callBackend,
     qorus_instance,
     saveDraft,
+    changeInitialData,
     ...init
   }: any = useContext(InitialContext);
   const confirmAction = useReqoreProperty('confirmAction');
@@ -408,7 +414,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   parentStateName = parentStateName?.replace(/ /g, '-');
 
   const fsm = rest?.fsm || init?.fsm;
-  const { addNotification, addModal } = useReqore();
+  const { addNotification, addModal, removeModal } = useReqore();
   const { resetAllInterfaceData }: any = useContext(GlobalContext);
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
   const [interfaceId, setInterfaceId] = useState(null);
@@ -426,8 +432,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   const currentXPan = useRef<number>();
   const currentYPan = useRef<number>();
   const diagramRef = useRef(null);
-  const changeHistory = useRef<string[]>([]);
-  const currentHistoryPosition = useRef<number>(-1);
+
   const stateRefs = useRef<Record<string | number, HTMLDivElement>>({}); // Refs for each state
   const timeSinceDiagramMouseDown = useRef<number>(0);
 
@@ -451,6 +456,17 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     activeState = actState;
     setActiveState = setActState;
   }
+
+  const changeHistory = useRef<
+    { metadata: string; states: string; key: string }[]
+  >([
+    {
+      metadata: JSON.stringify(metadata || {}),
+      states: JSON.stringify(states || {}),
+      key: 'init',
+    },
+  ]);
+  const currentHistoryPosition = useRef<number>(0);
 
   const [isMovingStates, setIsMovingStates] = useState<boolean>(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -584,7 +600,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         newY = newPosition.y;
       }
 
-      return {
+      const result = {
         ...newStates,
         [id]: {
           position: {
@@ -621,6 +637,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           transitions: item.transitions,
         },
       };
+
+      updateHistory(result, metadata, 'add new state');
+
+      return result;
     });
 
     onSuccess?.(id);
@@ -636,7 +656,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     states,
     stateRefs.current,
     (data) => {
-      updateMultipleStatePositions(data);
+      const fixedStates = updateMultipleStatePositions(data);
+      debouncedStateMoveHistoryUpdate(fixedStates);
     },
     () => {
       setIsMovingStates(true);
@@ -739,18 +760,12 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       isTypeCompatible('input') &&
       isTypeCompatible('output') &&
       size(states) > 1 &&
+      areVariablesValid({
+        transient: metadata.globalvar,
+        persistent: metadata.localvar,
+      }) &&
       hasEventTriggerState()
     );
-  };
-
-  const handleMetadataChange: (name: string, value: any) => void = (
-    name,
-    value
-  ) => {
-    setMetadata((cur) => ({
-      ...cur,
-      [name]: value,
-    }));
   };
 
   const applyDraft = () => {
@@ -767,7 +782,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setMetadata(metadata);
         setStates(states);
 
-        console.log(states, metadata, id, params);
+        changeHistory.current[0] = {
+          metadata: JSON.stringify(metadata || {}),
+          states: JSON.stringify(states || {}),
+          key: 'init from draft',
+        };
 
         if (!params.id && size(states) === 0) {
           setIsAddingNewStateAt({ x: 0, y: 0 });
@@ -789,14 +808,25 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   };
 
   useEffect(() => {
-    if (searchParams.get('draftId') || draft) {
-      applyDraft();
-    } else {
-      if (!params.id && size(states) === 0) {
-        setIsAddingNewStateAt({ x: 0, y: 0 });
+    if (!embedded) {
+      if (searchParams.get('draftId') || draft) {
+        applyDraft();
+      } else {
+        if (!params.id && size(states) === 0) {
+          setIsAddingNewStateAt({ x: 0, y: 0 });
+        }
       }
     }
-  }, [searchParams.get('draftId'), draft]);
+  }, [searchParams.get('draftId'), draft, embedded]);
+
+  // We need to hide the modal if the draft is applied
+  // For example when switching from one draft to another or from
+  // a new Qog to a draft
+  useEffect(() => {
+    if (searchParams.get('draftId')) {
+      setIsAddingNewStateAt(undefined);
+    }
+  }, [searchParams.get('draftId')]);
 
   useMount(() => {
     if (!embedded) {
@@ -811,28 +841,37 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
       // Check if this FSM has ended in error the last time it ran
       if (init.fsmMetadata?.lastError) {
-        addModal({
-          minimal: true,
-          blur: 4,
-          flat: true,
-          maxSize: '700px',
-          label: 'Qog Finished In Error',
-          children: (
-            <ReqoreMessage
-              intent='danger'
-              style={{ fontFamily: 'monospace' }}
-              size='small'
-              title='This Qog Finished In An Error The Last Time It Ran'
-            >
-              "{init.fsmMetadata.lastError}"
-            </ReqoreMessage>
-          ),
-        });
+        addModal(
+          {
+            minimal: true,
+            blur: 4,
+            flat: true,
+            maxSize: '700px',
+            label: 'Qog Finished In Error',
+            children: (
+              <ReqoreMessage
+                intent='danger'
+                style={{ fontFamily: 'monospace' }}
+                size='small'
+                title='This Qog Finished In An Error The Last Time It Ran'
+              >
+                "{init.fsmMetadata.lastError}"
+              </ReqoreMessage>
+            ),
+          },
+          'qog-error'
+        );
       }
     } else {
       setInterfaceId(defaultInterfaceId);
       setSettings(storageSettings[defaultInterfaceId] || {});
     }
+  });
+
+  useUnmount(() => {
+    setIsAddingNewStateAt(undefined);
+    removeModal('qog-error');
+    changeInitialData?.('fsmMetadata', undefined);
   });
 
   useDebounce(
@@ -851,8 +890,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   );
             }) || !isEqual(states, fsmStates)
           : true;
-
-        console.log(states, fsmStates, metadata, fsm);
 
         if (
           draftId &&
@@ -972,8 +1009,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           });
         }
 
-        updateHistory(newStates);
-        setStates((cur) => ({ ...cur, ...newStates }));
+        if (!isEqual(newStates, states)) {
+          updateHistory(newStates, metadata, 'first change');
+          setStates((cur) => ({ ...cur, ...newStates }));
+        }
       }
 
       setCompatibilityChecked(true);
@@ -1404,7 +1443,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                   },
                 ];
 
-                updateHistory(newBoxes);
+                updateHistory(newBoxes, metadata, 'handleStateClick');
 
                 return newBoxes;
               });
@@ -1426,7 +1465,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
           ];
 
-          updateHistory(newBoxes);
+          updateHistory(
+            newBoxes,
+            metadata,
+            'handleStateClick unselected state'
+          );
 
           return newBoxes;
         });
@@ -1493,11 +1536,19 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     [stateRefs]
   );
 
-  const updateHistory = (data: IFSMStates) => {
+  const updateHistory = (
+    data: IFSMStates,
+    metadata: Partial<IFSMMetadata>,
+    key: string
+  ) => {
     if (currentHistoryPosition.current >= 0) {
       changeHistory.current.length = currentHistoryPosition.current + 1;
     }
-    changeHistory.current.push(JSON.stringify(data));
+    changeHistory.current.push({
+      states: JSON.stringify(data),
+      metadata: JSON.stringify(metadata),
+      key,
+    });
 
     if (changeHistory.current.length > 10) {
       changeHistory.current.shift();
@@ -1618,11 +1669,18 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     ) => {
       const fixedStates = await preUpdateStateData(id, data, isValid);
 
-      updateHistory(fixedStates);
+      if (!isEqual(fixedStates, states)) {
+        updateHistory(fixedStates, metadata, 'updateStateData');
+      }
+
       setStates((cur) => ({ ...cur, ...fixedStates }));
     },
     [states, areStatesCompatible, fixIncomptibleStates]
   );
+
+  const debouncedStateMoveHistoryUpdate = debounce((data: IFSMStates) => {
+    updateHistory(data, metadata, 'move states');
+  }, 200);
 
   const updateMultipleStatePositions = useCallback(
     (data: Record<string, Partial<IFSMState>>) => {
@@ -1636,6 +1694,8 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       });
 
       setStates((cur) => ({ ...cur, ...fixedStates }));
+
+      return fixedStates;
     },
     [preUpdateStateData]
   );
@@ -1704,7 +1764,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
       }
     }
 
-    updateHistory(fixedStates);
+    updateHistory(fixedStates, metadata, 'updateMultipleTransitionData');
     setStates((cur) => ({ ...cur, ...fixedStates }));
   };
 
@@ -1838,7 +1898,11 @@ export const FSMView: React.FC<IFSMViewProps> = ({
               (newStates) => {
                 // If this state was deleted because of unfilled data, do not
                 // save history
-                updateHistory(newStates);
+                updateHistory(
+                  newStates,
+                  metadata,
+                  'handleMultipleStateDeleteClick'
+                );
               }
             );
 
@@ -1868,7 +1932,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 // If this state was deleted because of unfilled data, do not
                 // save history
                 if (!unfilled) {
-                  updateHistory(newStates);
+                  updateHistory(newStates, metadata, 'handleStateDeleteClick');
                 }
               }
             );
@@ -2230,7 +2294,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         setActiveState(id);
       }
     },
-    [hasUnsavedState]
+    [hasUnsavedState, searchParams]
   );
 
   const getStatesFromSelectedStates = (): IFSMStates => {
@@ -2534,14 +2598,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     );
   };
 
-  if (!qorus_instance) {
-    return (
-      <ReqoreMessage title={t('NoInstanceTitle')} intent='warning'>
-        {t('NoInstance')}
-      </ReqoreMessage>
-    );
-  }
-
   if (!isReady || apps.loading) {
     return <Loader centered text={t('Loading...')} />;
   }
@@ -2555,6 +2611,32 @@ export const FSMView: React.FC<IFSMViewProps> = ({
     });
     showTransitionsToaster.current = 0;
   }
+
+  const renderVariables = (autoSave?: boolean) => {
+    return (
+      <FSMVariables
+        autoSave={autoSave}
+        onClose={autoSave ? undefined : () => setShowVariables(undefined)}
+        onSubmit={({ globalvar, localvar, changes }) => {
+          setMetadata({
+            ...metadata,
+            globalvar,
+            localvar,
+          });
+          // For each change, remove the state using this variable
+          changes.forEach(({ name, type }) => {
+            setStates(
+              removeAllStatesWithVariable(name, type, states, interfaceId)
+            );
+          });
+        }}
+        globalvar={metadata?.globalvar}
+        localvar={metadata?.localvar}
+        autovar={metadata?.autovar}
+        selectedVariable={showVariables?.selected}
+      />
+    );
+  };
 
   const renderFSM = () => (
     <AppsContext.Provider value={apps}>
@@ -2589,28 +2671,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
           }}
         />
       )}
-      {showVariables?.show && (
-        <FSMVariables
-          onClose={() => setShowVariables(undefined)}
-          onSubmit={({ globalvar, localvar, changes }) => {
-            setMetadata({
-              ...metadata,
-              globalvar,
-              localvar,
-            });
-            // For each change, remove the state using this variable
-            changes.forEach(({ name, type }) => {
-              setStates(
-                removeAllStatesWithVariable(name, type, states, interfaceId)
-              );
-            });
-          }}
-          globalvar={metadata?.globalvar}
-          localvar={metadata?.localvar}
-          autovar={metadata?.autovar}
-          selectedVariable={showVariables?.selected}
-        />
-      )}
+      {showVariables?.show && renderVariables()}
 
       {renderAppCatalogue()}
 
@@ -2628,173 +2689,86 @@ export const FSMView: React.FC<IFSMViewProps> = ({
         contentStyle={{ display: 'flex' }}
         padded={!embedded}
         transparent={embedded}
-        badge={{
-          onClick: () => {
-            if (embedded) {
-              onHideMetadataClick((cur) => !cur);
-              setSelectedStates({});
-            } else {
-              setIsMetadataHidden((cur) => !cur);
-            }
-          },
-          effect:
-            !areMetadataValid() && !embedded ? WarningColorEffect : undefined,
-          icon: embedded ? 'ArrowLeftLine' : 'SettingsLine',
-        }}
+        badge={
+          embedded
+            ? {
+                onClick: () => {
+                  onHideMetadataClick((cur) => !cur);
+                  setSelectedStates({});
+                },
+                icon: 'ArrowLeftLine',
+              }
+            : undefined
+        }
         responsiveActions={false}
         actions={[
           {
             group: [
               {
-                icon: 'AlignTop',
-                className: 'align-top',
-                tooltip: 'Align vertically to top',
+                icon: 'ArrowGoBackLine',
+                className: 'qog-undo',
+                tooltip: 'Undo',
                 compact: true,
+                disabled: currentHistoryPosition.current === 0,
                 onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'top',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
+                  if (currentHistoryPosition.current > 0) {
+                    currentHistoryPosition.current -= 1;
+                    setStates(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .states
+                      )
+                    );
+                    setMetadata(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .metadata
+                      )
+                    );
+                  }
                 },
               },
               {
-                icon: 'AlignVertically',
-                className: 'align-center',
-                tooltip: 'Align vertically to center',
+                icon: 'ArrowGoForwardLine',
+                className: 'qog-redo',
+                tooltip: 'Redo',
                 compact: true,
+                disabled:
+                  currentHistoryPosition.current ===
+                    changeHistory.current.length - 1 ||
+                  changeHistory.current.length === 1,
                 onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'center',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignBottom',
-                className: 'align-bottom',
-                tooltip: 'Align vertically to bottom',
-                compact: true,
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'vertical',
-                      'bottom',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-            ],
-            show: size(selectedStates) > 1,
-          },
-          {
-            group: [
-              {
-                icon: 'AlignTop',
-                leftIconProps: {
-                  rotation: -90,
-                },
-                compact: true,
-                className: 'align-left',
-                tooltip: 'Align horizontally to left',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'top',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignVertically',
-                leftIconProps: {
-                  rotation: -90,
-                },
-                compact: true,
-                className: 'align-middle',
-                tooltip: 'Align horizontally to center',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'center',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-              {
-                icon: 'AlignTop',
-                leftIconProps: {
-                  rotation: 90,
-                },
-                compact: true,
-                className: 'align-right',
-                tooltip: 'Align horizontally to right',
-                onClick: () => {
-                  setStates({
-                    ...states,
-                    ...alignStates(
-                      'horizontal',
-                      'bottom',
-                      getStatesFromSelectedStates(),
-                      zoom
-                    ),
-                  });
-                  setSelectedStates({});
-                },
-              },
-            ],
-            show: size(selectedStates) > 1,
-          },
-          {
-            tooltip: 'Smart align',
-            compact: true,
-            id: 'auto-align-states',
-            icon: 'Apps2Line',
-            show: isMetadataHidden,
-            flat: !checkOverlap(states),
-            effect: checkOverlap(states)
-              ? {
-                  gradient: {
-                    colors: {
-                      0: '#5865f2',
-                      100: '#6e1977',
-                    },
-                    animate: 'always',
-                  },
-                }
-              : undefined,
-            onClick: () => {
-              const { alignedStates } = autoAlign(states);
+                  if (
+                    currentHistoryPosition.current <
+                    changeHistory.current.length - 1
+                  ) {
+                    currentHistoryPosition.current += 1;
 
-              setStates(alignedStates);
+                    setStates(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .states
+                      )
+                    );
+
+                    setMetadata(
+                      JSON.parse(
+                        changeHistory.current[currentHistoryPosition.current]
+                          .metadata
+                      )
+                    );
+                  }
+                },
+              },
+            ],
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
             },
           },
-
           {
             tooltip: 'Save selected states as action set',
             compact: true,
@@ -2829,17 +2803,186 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             },
           },
           {
-            tooltip: 'Manage variables',
-            id: 'manage-variables',
-            label: '$vars',
-            badge:
-              size(metadata.autovar) +
-              size(metadata.globalvar) +
-              size(metadata.localvar),
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
+            },
+            show:
+              (selectedStates &&
+                size(selectedStates) > 1 &&
+                areStatesAConnectedGroup(getStatesFromSelectedStates())) ||
+              !!size(selectedStates),
+          },
+          {
+            group: [
+              {
+                icon: 'AlignTop',
+                className: 'align-top',
+                tooltip: 'Align vertically to top',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-top');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignVertically',
+                className: 'align-center',
+                tooltip: 'Align vertically to center',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-center');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignBottom',
+                className: 'align-bottom',
+                tooltip: 'Align vertically to bottom',
+                compact: true,
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'vertical',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-bottom');
+                  setSelectedStates({});
+                },
+              },
+            ],
+            show: size(selectedStates) > 1,
+          },
+          {
+            group: [
+              {
+                icon: 'AlignTop',
+                leftIconProps: {
+                  rotation: -90,
+                },
+                compact: true,
+                className: 'align-left',
+                tooltip: 'Align horizontally to left',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'top',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  setStates(alignedStates);
+                  updateHistory(alignedStates, metadata, 'align-left');
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignVertically',
+                leftIconProps: {
+                  rotation: -90,
+                },
+                compact: true,
+                className: 'align-middle',
+                tooltip: 'Align horizontally to center',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'center',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  updateHistory(alignedStates, metadata, 'align-middle');
+                  setStates(alignedStates);
+                  setSelectedStates({});
+                },
+              },
+              {
+                icon: 'AlignTop',
+                leftIconProps: {
+                  rotation: 90,
+                },
+                compact: true,
+                className: 'align-right',
+                tooltip: 'Align horizontally to right',
+                onClick: () => {
+                  const alignedStates = {
+                    ...states,
+                    ...alignStates(
+                      'horizontal',
+                      'bottom',
+                      getStatesFromSelectedStates(),
+                      zoom
+                    ),
+                  };
+                  updateHistory(alignedStates, metadata, 'align-right');
+                  setStates(alignedStates);
+                  setSelectedStates({});
+                },
+              },
+            ],
+            show: size(selectedStates) > 1,
+          },
+          {
+            tooltip: 'Smart align',
             compact: true,
-            textAlign: 'center',
+            id: 'auto-align-states',
+            icon: 'Apps2Line',
+            show: isMetadataHidden,
+            flat: !checkOverlap(states),
+            effect: checkOverlap(states)
+              ? {
+                  gradient: {
+                    colors: {
+                      0: '#5865f2',
+                      100: '#6e1977',
+                    },
+                    animate: 'always',
+                  },
+                }
+              : undefined,
             onClick: () => {
-              setShowVariables({ show: true });
+              const { alignedStates } = autoAlign(states);
+
+              updateHistory(alignedStates, metadata, 'auto-align-states');
+              setStates(alignedStates);
+            },
+          },
+          {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
             },
           },
           {
@@ -2881,6 +3024,21 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 size: 'tiny',
               },
               {
+                className: 'fsm-export-data',
+                label: 'Export Raw Data',
+                icon: 'DownloadLine',
+                onClick: () => {
+                  addModal(
+                    <ReqoreExportModal
+                      data={{
+                        ...metadata,
+                        states,
+                      }}
+                    />
+                  );
+                },
+              },
+              {
                 icon: 'PriceTag2Line',
                 label: 'Show state & path IDs',
                 id: 'show-state-ids',
@@ -2891,119 +3049,594 @@ export const FSMView: React.FC<IFSMViewProps> = ({
             ],
           },
           {
+            as: ReqoreHorizontalSpacer,
+            props: {
+              width: 5,
+              lineSize: 'tiny',
+            },
+            show: !embedded,
+          },
+          {
             tooltip: 'Test run',
+            label: 'Test',
             compact: true,
             onClick: () => handleSubmitClick(true),
             disabled: !isFSMValid(),
             className: 'fsm-test-run',
             icon: 'PlayLine',
             effect: PositiveColorEffect,
+            show: !embedded,
           },
           {
-            group: [
-              {
-                compact: true,
-                label:
-                  !areMetadataValid() || !isFSMValid()
-                    ? 'Fix to publish'
-                    : t('Publish'),
-                onClick: () => handleSubmitClick(false, true),
-                readOnly: !areMetadataValid() || !isFSMValid(),
-                icon:
-                  !areMetadataValid() || !isFSMValid()
-                    ? 'ErrorWarningLine'
-                    : 'UploadCloud2Line',
-                effect:
-                  !areMetadataValid() || !isFSMValid()
-                    ? WarningColorEffect
-                    : SaveColorEffect,
-                show: !embedded,
-                className: 'qodex-publish',
-                tooltip: isFSMValid()
-                  ? 'Publish your Qog'
-                  : {
-                      intent: 'warning',
-                      content: (
-                        <>
-                          {size(states) < 2 && (
-                            <ReqoreP>
-                              - At least 1 trigger and 1 normal states are
-                              required
-                            </ReqoreP>
-                          )}
-                          {!areMetadataValid() && (
-                            <ReqoreP>
-                              - Metadata is not valid, please make sure the name
-                              of your Qog is valid and that input & output types
-                              are compatible
-                            </ReqoreP>
-                          )}
-                          {!areStatesValid(states) && (
-                            <ReqoreP>
-                              - All states need to be valid (invalid states have
-                              red border) and connected (isolated states have
-                              red warning icon)
-                            </ReqoreP>
-                          )}
-                          {!hasEventTriggerState() && (
-                            <ReqoreP>
-                              - You need to have at least 1 trigger state (state
-                              with event trigger)
-                            </ReqoreP>
-                          )}
-                        </>
-                      ),
-                    },
-              },
-              {
-                compact: true,
-                effect:
-                  !areMetadataValid() || !isFSMValid()
-                    ? WarningColorEffect
-                    : SaveColorEffect,
-                className: 'fsm-publish-more',
-                actions: [
-                  {
-                    label: 'Export data',
-                    effect:
-                      !areMetadataValid() || !isFSMValid()
-                        ? WarningColorEffect
-                        : SaveColorEffect,
-                    className: 'fsm-export-data',
-                    icon: 'Save3Fill',
-                    onClick: () => {
-                      addModal(
-                        <ReqoreExportModal
-                          data={{
-                            ...metadata,
-                            states,
-                          }}
-                        />
-                      );
-                    },
-                  },
-                ],
-              },
-            ],
+            compact: true,
+            label:
+              !areMetadataValid() || !isFSMValid()
+                ? 'Fix to publish'
+                : t('Publish'),
+            onClick: () => handleSubmitClick(false, true),
+            readOnly: !areMetadataValid() || !isFSMValid(),
+            icon:
+              !areMetadataValid() || !isFSMValid()
+                ? 'ErrorWarningLine'
+                : 'UploadCloud2Line',
+            effect:
+              !areMetadataValid() || !isFSMValid()
+                ? WarningColorEffect
+                : SaveColorEffect,
+            show: !embedded,
+            className: 'qodex-publish',
+            tooltip: isFSMValid()
+              ? 'Publish your Qog'
+              : {
+                  intent: 'warning',
+                  content: (
+                    <>
+                      {size(states) < 2 && (
+                        <ReqoreP>
+                          - At least 1 trigger and 1 normal states are required
+                        </ReqoreP>
+                      )}
+                      {!areMetadataValid() && (
+                        <ReqoreP>
+                          - Metadata is not valid, please make sure the name of
+                          your Qog is valid and that input & output types are
+                          compatible
+                        </ReqoreP>
+                      )}
+                      {!areStatesValid(states) && (
+                        <ReqoreP>
+                          - All states need to be valid (invalid states have red
+                          border) and connected (isolated states have red
+                          warning icon)
+                        </ReqoreP>
+                      )}
+                      {!hasEventTriggerState() && (
+                        <ReqoreP>
+                          - You need to have at least 1 trigger state (state
+                          with event trigger)
+                        </ReqoreP>
+                      )}
+                      {!areVariablesValid({
+                        transient: metadata.globalvar,
+                        persistent: metadata.localvar,
+                      }) && (
+                        <ReqoreP>
+                          - Variables implementation is invalid, please check
+                          the "Variables" tab
+                        </ReqoreP>
+                      )}
+                    </>
+                  ),
+                },
           },
         ]}
       >
-        {!isMetadataHidden && !embedded ? (
-          <ReqoreModal
-            label='Qog settings'
-            icon='SettingsLine'
-            isOpen
-            blur={3}
-            onClose={() => setIsMetadataHidden(true)}
-            bottomActions={[
-              {
-                label: 'Done',
-                icon: 'CheckLine',
-                onClick: () => setIsMetadataHidden(true),
-                position: 'right',
-              },
-            ]}
-          >
+        <ReqoreTabs
+          unMountOnTabChange={false}
+          flat={false}
+          useReactTransition={
+            process.env.NODE_ENV === 'development' ||
+            process.env.NODE_ENV === 'production'
+          }
+          tabs={[
+            { label: 'Flow', icon: interfaceIcons.fsm, id: 'flow' },
+            {
+              label: 'Settings',
+              icon: 'SettingsLine',
+              id: 'settings',
+              intent: areMetadataValid() ? undefined : 'danger',
+              show: !embedded,
+              fixed: true,
+            },
+            {
+              label: 'Variables',
+              fixed: true,
+              badge:
+                size(metadata.autovar) +
+                size(metadata.globalvar) +
+                size(metadata.localvar),
+              icon: 'MoneyDollarBoxLine',
+              id: 'vars',
+              intent: areVariablesValid({
+                transient: metadata.globalvar,
+                persistent: metadata.localvar,
+              })
+                ? undefined
+                : 'danger',
+            },
+            {
+              label: 'Log',
+              fixed: true,
+              icon: 'ListSettingsLine',
+              id: 'log',
+              disabled: !init.supports_enable,
+              show: !embedded,
+            },
+          ]}
+          fill
+          tabsPadding='top'
+        >
+          <ReqoreTabsContent tabId='flow' style={{ flexFlow: 'row' }}>
+            {!isMetadataHidden && !embedded ? (
+              <ReqoreModal
+                label='Qog settings'
+                icon='SettingsLine'
+                isOpen
+                blur={3}
+                onClose={() => setIsMetadataHidden(true)}
+                bottomActions={[
+                  {
+                    label: 'Done',
+                    icon: 'CheckLine',
+                    onClick: () => setIsMetadataHidden(true),
+                    position: 'right',
+                  },
+                ]}
+              ></ReqoreModal>
+            ) : null}
+            {editingInitialOrder && (
+              <FSMInitialOrderDialog
+                onClose={() => setEditingInitialOrder(null)}
+                onSubmit={(data) =>
+                  setStates((cur) => {
+                    const result = { ...cur };
+
+                    forEach(data, (stateData, keyId) => {
+                      result[keyId] = stateData;
+                    });
+
+                    updateHistory(result, metadata, 'initial-order');
+
+                    return result;
+                  })
+                }
+                allStates={states}
+                states={reduce(
+                  states,
+                  (initialStates, state, stateId) => {
+                    if (state.initial) {
+                      return { ...initialStates, [stateId]: state };
+                    }
+
+                    return initialStates;
+                  },
+                  {}
+                )}
+                fsmName={metadata.name}
+                interfaceId={interfaceId}
+              />
+            )}
+            {size(editingTransition) ? (
+              <FSMTransitionDialog
+                onSubmit={async (newData) => {
+                  await updateMultipleTransitionData(newData);
+                }}
+                onClose={() => setEditingTransition([])}
+                states={states}
+                editingData={editingTransition}
+              />
+            ) : null}
+
+            <>
+              <div style={{ display: 'flex', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    minHeight: 100,
+                    userSelect: 'none',
+                  }}
+                >
+                  <StyledDiagramWrapper
+                    as='div'
+                    theme={theme}
+                    ref={wrapperRef}
+                    id={`${
+                      parentStateName ? `${parentStateName}-` : ''
+                    }fsm-diagram`}
+                  >
+                    {wrapperRef.current && (
+                      <DragSelectArea
+                        element={wrapperRef.current}
+                        onFinish={({ startX, startY, endX, endY }) => {
+                          const left = calculateValueWithZoom(
+                            Math.min(startX, endX) + currentXPan.current,
+                            zoom
+                          );
+                          const top = calculateValueWithZoom(
+                            Math.min(startY, endY) + currentYPan.current,
+                            zoom
+                          );
+                          const right = calculateValueWithZoom(
+                            Math.max(startX, endX) + currentXPan.current,
+                            zoom
+                          );
+                          const bottom = calculateValueWithZoom(
+                            Math.max(startY, endY) + currentYPan.current,
+                            zoom
+                          );
+
+                          const selectedStates = reduce(
+                            states,
+                            (newStates, state, id) => {
+                              const {
+                                position: { x, y },
+                              } = state;
+                              const { width, height } =
+                                getStateBoundingRect(id);
+
+                              if (
+                                x >= left &&
+                                x + width <= right &&
+                                y >= top &&
+                                y + height <= bottom
+                              ) {
+                                return {
+                                  ...newStates,
+                                  [id]: { fromMouseDown: false },
+                                };
+                              }
+
+                              return newStates;
+                            },
+                            {}
+                          );
+
+                          setSelectedStates((cur) => {
+                            return { ...cur, ...selectedStates };
+                          });
+                        }}
+                      />
+                    )}
+                    <FSMDiagramWrapper
+                      wrapperDimensions={wrapperDimensions}
+                      setPan={setWrapperPan}
+                      setShowStateIds={setShowStateIds}
+                      showStateIds={showStateIds}
+                      zoom={zoom}
+                      onDoubleClick={handleDiagramDblClick}
+                      zoomIn={zoomIn}
+                      zoomOut={zoomOut}
+                      enableEdgeMovement={isMovingStates}
+                      wrapperSize={{
+                        width:
+                          wrapperRef.current?.getBoundingClientRect()?.width ||
+                          0,
+                        height:
+                          wrapperRef.current?.getBoundingClientRect()?.height ||
+                          0,
+                      }}
+                      id={`${
+                        parentStateName ? `${parentStateName}-` : ''
+                      }fsm-diagram`}
+                      items={map(states, (state, id) => ({
+                        x: state.position.x,
+                        y: state.position.y,
+                        type: getStateType(state),
+                        id,
+                      }))}
+                    >
+                      <StyledDiagram
+                        as='div'
+                        id='fsm-states-wrapper'
+                        key={JSON.stringify(wrapperDimensions)}
+                        ref={(r) => {
+                          drop(r);
+                          diagramRef.current = r;
+                        }}
+                        path={image_path}
+                        onMouseDown={() => {
+                          timeSinceDiagramMouseDown.current = Date.now();
+                        }}
+                        onMouseUp={() => {
+                          if (
+                            Date.now() - timeSinceDiagramMouseDown.current <
+                            200
+                          ) {
+                            if (size(selectedStates) > 0) {
+                              setSelectedStates({});
+                            }
+
+                            setSelectedState(null);
+                            timeSinceDiagramMouseDown.current = 0;
+                          }
+                        }}
+                        bgColor={theme.main}
+                        theme={theme}
+                        style={{
+                          zoom,
+                        }}
+                      >
+                        {map(states, (state, id) => (
+                          <FSMState
+                            key={id}
+                            {...state}
+                            id={id}
+                            selected={selectedState === id}
+                            onDblClick={handleStateClick}
+                            onClick={handleStateClick}
+                            onSelect={handleSelectState}
+                            onUpdate={updateStateData}
+                            onDeleteClick={handleStateDeleteClick}
+                            onCloneClick={handleStateCloneClick}
+                            onMouseEnter={setHoveredState}
+                            onMouseLeave={setHoveredState}
+                            onNewStateClick={handleNewStateClick}
+                            hasTransitionToItself={hasTransitionToItself(id)}
+                            variableDescription={
+                              getVariable(
+                                state.action?.value?.var_name,
+                                state.action?.value?.var_type,
+                                metadata
+                              )?.desc
+                            }
+                            showStateIds={showStateIds}
+                            selectedState={selectedState}
+                            isInSelectedList={!!selectedStates[id]}
+                            isBeingDragged={
+                              selectedStates[id] &&
+                              selectedStates[id].fromMouseDown &&
+                              size(selectedStates) === 1
+                            }
+                            isActive={activeState === id}
+                            hoveredState={hoveredState}
+                            isConnectedToHoveredState={
+                              !!getStatesConnectedtoState(id, states)[
+                                hoveredState
+                              ]
+                            }
+                            isAvailableForTransition={isAvailableForTransition}
+                            onTransitionOrderClick={handleTransitionOrderClick}
+                            onExecutionOrderClick={handleExecutionOrderClick}
+                            isIsolated={isStateIsolated(id, states)}
+                            getStateDataForComparison={
+                              getStateDataForComparison
+                            }
+                            activateState={handleActivateStateClick}
+                            zoom={zoom}
+                            passRef={handlePassStateRef}
+                            isValid={
+                              'isValid' in state
+                                ? state.isValid
+                                : isStateValid(state, metadata)
+                            }
+                          />
+                        ))}
+                        <svg
+                          height='100%'
+                          width='100%'
+                          style={{
+                            position: 'absolute',
+                            boxShadow: 'inset 0 0 50px 2px #00000080',
+                            zIndex: hoveredState ? 20 : undefined,
+                            pointerEvents: hoveredState ? 'none' : undefined,
+                          }}
+                        >
+                          <defs>
+                            <marker
+                              id='arrowhead'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, null)}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheaderror'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'false')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadtrue'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'true')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadfalse'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(null, 'false')}
+                              />
+                            </marker>
+                            <marker
+                              id='arrowheadfake'
+                              markerUnits='userSpaceOnUse'
+                              markerWidth='30'
+                              markerHeight='30'
+                              refX='20'
+                              refY='10'
+                              orient='auto'
+                            >
+                              <path
+                                d='M2,2 L2,20 L20,10 L2,2'
+                                fill={getTransitionColor(
+                                  undefined,
+                                  undefined,
+                                  true
+                                )}
+                              />
+                            </marker>
+                          </defs>
+                          {getTransitions().map(
+                            (
+                              {
+                                state,
+                                fake,
+                                targetState,
+                                isError,
+                                branch,
+                                transitionIndex,
+                                path,
+                                side,
+                                endSide,
+                                transitionIndexPerSide,
+                                transitionEndIndexPerSide,
+                                ...rest
+                              },
+                              index
+                            ) =>
+                              !isTransitionToSelf(state, targetState) ? (
+                                <>
+                                  <StyledFSMLine
+                                    className='fsm-transition'
+                                    onClick={() => {
+                                      setEditingTransition((cur) => {
+                                        const result = [...cur];
+
+                                        result.push({
+                                          stateId: state,
+                                          index: transitionIndex,
+                                        });
+
+                                        const hasBothWay = hasBothWayTransition(
+                                          state,
+                                          targetState
+                                        );
+
+                                        if (hasBothWay) {
+                                          result.push(hasBothWay);
+                                        }
+
+                                        return result;
+                                      });
+                                    }}
+                                    key={Date.now()}
+                                    name={`fsm-transition${
+                                      isError
+                                        ? '-error'
+                                        : branch
+                                          ? `-${branch}`
+                                          : ''
+                                    }`}
+                                    id={`fsm-transition-${index}`}
+                                    stroke={getTransitionColor(
+                                      isError,
+                                      branch,
+                                      fake
+                                    )}
+                                    strokeWidth={1}
+                                    markerEnd={`url(#arrowhead${getTransitionEndMarker(
+                                      isError,
+                                      branch,
+                                      fake
+                                    )})`}
+                                    d={getTransitionPath(
+                                      {
+                                        side,
+                                        endSide,
+                                        ...rest,
+                                        state,
+                                        targetState,
+                                      },
+                                      getTransitionIndex(
+                                        transitionIndexPerSide,
+                                        transitionIndexes.current[state][side]
+                                      ),
+                                      getTransitionIndex(
+                                        transitionEndIndexPerSide,
+                                        transitionIndexes.current[targetState][
+                                          endSide
+                                        ]
+                                      ),
+                                      transitionIndexes.current[state][side],
+                                      transitionIndexes.current[targetState][
+                                        endSide
+                                      ]
+                                    )}
+                                    deselected={
+                                      hoveredState && hoveredState !== state
+                                    }
+                                    selected={hoveredState === state}
+                                    fake={fake}
+                                  />
+                                  {showStateIds && (
+                                    <StyledLineText
+                                      style={{
+                                        transform: `rotate(${calculateTextRotation(
+                                          side
+                                        )}deg) translateY(${calculateTextTranslation(
+                                          side
+                                        )}px)`,
+                                        transformBox: 'fill-box',
+                                        transformOrigin: 'center',
+                                      }}
+                                      deselected={
+                                        hoveredState && hoveredState !== state
+                                      }
+                                    >
+                                      <textPath
+                                        href={`#fsm-transition-${index}`}
+                                        startOffset='10px'
+                                        fill='#ffffff'
+                                      >
+                                        {targetState}
+                                      </textPath>
+                                    </StyledLineText>
+                                  )}
+                                </>
+                              ) : null
+                          )}
+                        </svg>
+                      </StyledDiagram>
+                    </FSMDiagramWrapper>
+                  </StyledDiagramWrapper>
+                </div>
+              </div>
+            </>
+            {renderStateDetail()}
+          </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='settings' style={{ overflowY: 'auto' }}>
             <QodexFields
               id={interfaceId}
               settings={settings}
@@ -3015,445 +3648,35 @@ export const FSMView: React.FC<IFSMViewProps> = ({
                 'localvar',
               ])}
               onChange={(fields) => {
+                updateHistory(states, fields, 'metadata');
                 setMetadata(fields);
               }}
             />
-          </ReqoreModal>
-        ) : null}
-        {editingInitialOrder && (
-          <FSMInitialOrderDialog
-            onClose={() => setEditingInitialOrder(null)}
-            onSubmit={(data) =>
-              setStates((cur) => {
-                const result = { ...cur };
-
-                forEach(data, (stateData, keyId) => {
-                  result[keyId] = stateData;
-                });
-
-                updateHistory(result);
-
-                return result;
-              })
-            }
-            allStates={states}
-            states={reduce(
-              states,
-              (initialStates, state, stateId) => {
-                if (state.initial) {
-                  return { ...initialStates, [stateId]: state };
-                }
-
-                return initialStates;
-              },
-              {}
-            )}
-            fsmName={metadata.name}
-            interfaceId={interfaceId}
-          />
-        )}
-        {size(editingTransition) ? (
-          <FSMTransitionDialog
-            onSubmit={async (newData) => {
-              await updateMultipleTransitionData(newData);
-            }}
-            onClose={() => setEditingTransition([])}
-            states={states}
-            editingData={editingTransition}
-          />
-        ) : null}
-
-        <>
-          <div style={{ display: 'flex', overflow: 'hidden' }}>
-            <div
-              style={{
-                flex: 1,
-                overflow: 'hidden',
-                minHeight: 100,
-                userSelect: 'none',
+          </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='vars'>
+            {renderVariables(true)}
+          </ReqoreTabsContent>
+          <ReqoreTabsContent tabId='log'>
+            <ReqraftLog
+              label='Qog Log Viewer'
+              url={`log/fsms/${fsm?.id}`}
+              socketOptions={{
+                reconnect: true,
+                openOnMount: fsm?.id && init.supports_enable,
               }}
-            >
-              <StyledDiagramWrapper
-                as='div'
-                theme={theme}
-                ref={wrapperRef}
-                id={`${
-                  parentStateName ? `${parentStateName}-` : ''
-                }fsm-diagram`}
-              >
-                {wrapperRef.current && (
-                  <DragSelectArea
-                    element={wrapperRef.current}
-                    onFinish={({ startX, startY, endX, endY }) => {
-                      const left = calculateValueWithZoom(
-                        Math.min(startX, endX) + currentXPan.current,
-                        zoom
-                      );
-                      const top = calculateValueWithZoom(
-                        Math.min(startY, endY) + currentYPan.current,
-                        zoom
-                      );
-                      const right = calculateValueWithZoom(
-                        Math.max(startX, endX) + currentXPan.current,
-                        zoom
-                      );
-                      const bottom = calculateValueWithZoom(
-                        Math.max(startY, endY) + currentYPan.current,
-                        zoom
-                      );
-
-                      const selectedStates = reduce(
-                        states,
-                        (newStates, state, id) => {
-                          const {
-                            position: { x, y },
-                          } = state;
-                          const { width, height } = getStateBoundingRect(id);
-
-                          if (
-                            x >= left &&
-                            x + width <= right &&
-                            y >= top &&
-                            y + height <= bottom
-                          ) {
-                            return {
-                              ...newStates,
-                              [id]: { fromMouseDown: false },
-                            };
-                          }
-
-                          return newStates;
-                        },
-                        {}
-                      );
-
-                      setSelectedStates((cur) => {
-                        return { ...cur, ...selectedStates };
-                      });
-                    }}
-                  />
-                )}
-                <FSMDiagramWrapper
-                  wrapperDimensions={wrapperDimensions}
-                  setPan={setWrapperPan}
-                  setShowStateIds={setShowStateIds}
-                  showStateIds={showStateIds}
-                  zoom={zoom}
-                  onDoubleClick={handleDiagramDblClick}
-                  zoomIn={zoomIn}
-                  zoomOut={zoomOut}
-                  enableEdgeMovement={isMovingStates}
-                  wrapperSize={{
-                    width:
-                      wrapperRef.current?.getBoundingClientRect()?.width || 0,
-                    height:
-                      wrapperRef.current?.getBoundingClientRect()?.height || 0,
-                  }}
-                  id={`${
-                    parentStateName ? `${parentStateName}-` : ''
-                  }fsm-diagram`}
-                  items={map(states, (state, id) => ({
-                    x: state.position.x,
-                    y: state.position.y,
-                    type: getStateType(state),
-                    id,
-                  }))}
-                >
-                  <StyledDiagram
-                    as='div'
-                    id='fsm-states-wrapper'
-                    key={JSON.stringify(wrapperDimensions)}
-                    ref={(r) => {
-                      drop(r);
-                      diagramRef.current = r;
-                    }}
-                    path={image_path}
-                    onMouseDown={() => {
-                      timeSinceDiagramMouseDown.current = Date.now();
-                    }}
-                    onMouseUp={() => {
-                      if (
-                        Date.now() - timeSinceDiagramMouseDown.current <
-                        200
-                      ) {
-                        if (size(selectedStates) > 0) {
-                          setSelectedStates({});
-                        }
-
-                        setSelectedState(null);
-                        timeSinceDiagramMouseDown.current = 0;
-                      }
-                    }}
-                    bgColor={theme.main}
-                    theme={theme}
-                    style={{
-                      zoom,
-                    }}
-                  >
-                    {map(states, (state, id) => (
-                      <FSMState
-                        key={id}
-                        {...state}
-                        id={id}
-                        selected={selectedState === id}
-                        onDblClick={handleStateClick}
-                        onClick={handleStateClick}
-                        onSelect={handleSelectState}
-                        onUpdate={updateStateData}
-                        onDeleteClick={handleStateDeleteClick}
-                        onCloneClick={handleStateCloneClick}
-                        onMouseEnter={setHoveredState}
-                        onMouseLeave={setHoveredState}
-                        onNewStateClick={handleNewStateClick}
-                        hasTransitionToItself={hasTransitionToItself(id)}
-                        variableDescription={
-                          getVariable(
-                            state.action?.value?.var_name,
-                            state.action?.value?.var_type,
-                            metadata
-                          )?.desc
-                        }
-                        showStateIds={showStateIds}
-                        selectedState={selectedState}
-                        isInSelectedList={!!selectedStates[id]}
-                        isBeingDragged={
-                          selectedStates[id] &&
-                          selectedStates[id].fromMouseDown &&
-                          size(selectedStates) === 1
-                        }
-                        isActive={activeState === id}
-                        hoveredState={hoveredState}
-                        isConnectedToHoveredState={
-                          !!getStatesConnectedtoState(id, states)[hoveredState]
-                        }
-                        isAvailableForTransition={isAvailableForTransition}
-                        onTransitionOrderClick={handleTransitionOrderClick}
-                        onExecutionOrderClick={handleExecutionOrderClick}
-                        isIsolated={isStateIsolated(id, states)}
-                        getStateDataForComparison={getStateDataForComparison}
-                        activateState={handleActivateStateClick}
-                        zoom={zoom}
-                        passRef={handlePassStateRef}
-                        isValid={
-                          'isValid' in state
-                            ? state.isValid
-                            : isStateValid(state, metadata)
-                        }
-                      />
-                    ))}
-                    <svg
-                      height='100%'
-                      width='100%'
-                      style={{
-                        position: 'absolute',
-                        boxShadow: 'inset 0 0 50px 2px #00000080',
-                        zIndex: hoveredState ? 20 : undefined,
-                        pointerEvents: hoveredState ? 'none' : undefined,
-                      }}
-                    >
-                      <defs>
-                        <marker
-                          id='arrowhead'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, null)}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheaderror'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'false')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadtrue'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'true')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadfalse'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(null, 'false')}
-                          />
-                        </marker>
-                        <marker
-                          id='arrowheadfake'
-                          markerUnits='userSpaceOnUse'
-                          markerWidth='30'
-                          markerHeight='30'
-                          refX='20'
-                          refY='10'
-                          orient='auto'
-                        >
-                          <path
-                            d='M2,2 L2,20 L20,10 L2,2'
-                            fill={getTransitionColor(
-                              undefined,
-                              undefined,
-                              true
-                            )}
-                          />
-                        </marker>
-                      </defs>
-                      {getTransitions().map(
-                        (
-                          {
-                            state,
-                            fake,
-                            targetState,
-                            isError,
-                            branch,
-                            transitionIndex,
-                            path,
-                            side,
-                            endSide,
-                            transitionIndexPerSide,
-                            transitionEndIndexPerSide,
-                            ...rest
-                          },
-                          index
-                        ) =>
-                          !isTransitionToSelf(state, targetState) ? (
-                            <>
-                              <StyledFSMLine
-                                className='fsm-transition'
-                                onClick={() => {
-                                  setEditingTransition((cur) => {
-                                    const result = [...cur];
-
-                                    result.push({
-                                      stateId: state,
-                                      index: transitionIndex,
-                                    });
-
-                                    const hasBothWay = hasBothWayTransition(
-                                      state,
-                                      targetState
-                                    );
-
-                                    if (hasBothWay) {
-                                      result.push(hasBothWay);
-                                    }
-
-                                    return result;
-                                  });
-                                }}
-                                key={Date.now()}
-                                name={`fsm-transition${
-                                  isError
-                                    ? '-error'
-                                    : branch
-                                      ? `-${branch}`
-                                      : ''
-                                }`}
-                                id={`fsm-transition-${index}`}
-                                stroke={getTransitionColor(
-                                  isError,
-                                  branch,
-                                  fake
-                                )}
-                                strokeWidth={1}
-                                markerEnd={`url(#arrowhead${getTransitionEndMarker(
-                                  isError,
-                                  branch,
-                                  fake
-                                )})`}
-                                d={getTransitionPath(
-                                  {
-                                    side,
-                                    endSide,
-                                    ...rest,
-                                    state,
-                                    targetState,
-                                  },
-                                  getTransitionIndex(
-                                    transitionIndexPerSide,
-                                    transitionIndexes.current[state][side]
-                                  ),
-                                  getTransitionIndex(
-                                    transitionEndIndexPerSide,
-                                    transitionIndexes.current[targetState][
-                                      endSide
-                                    ]
-                                  ),
-                                  transitionIndexes.current[state][side],
-                                  transitionIndexes.current[targetState][
-                                    endSide
-                                  ]
-                                )}
-                                deselected={
-                                  hoveredState && hoveredState !== state
-                                }
-                                selected={hoveredState === state}
-                                fake={fake}
-                              />
-                              {showStateIds && (
-                                <StyledLineText
-                                  style={{
-                                    transform: `rotate(${calculateTextRotation(
-                                      side
-                                    )}deg) translateY(${calculateTextTranslation(
-                                      side
-                                    )}px)`,
-                                    transformBox: 'fill-box',
-                                    transformOrigin: 'center',
-                                  }}
-                                  deselected={
-                                    hoveredState && hoveredState !== state
-                                  }
-                                >
-                                  <textPath
-                                    href={`#fsm-transition-${index}`}
-                                    startOffset='10px'
-                                    fill='#ffffff'
-                                  >
-                                    {targetState}
-                                  </textPath>
-                                </StyledLineText>
-                              )}
-                            </>
-                          ) : null
-                      )}
-                    </svg>
-                  </StyledDiagram>
-                </FSMDiagramWrapper>
-              </StyledDiagramWrapper>
-            </div>
-          </div>
-        </>
-        {renderStateDetail()}
+              messageFormatter={(message) => ({
+                ...message,
+                intent: message.message.includes('[ERROR]')
+                  ? 'danger'
+                  : undefined,
+              })}
+              filterable
+              fill
+              autoScroll
+              showTimestamps
+            />
+          </ReqoreTabsContent>
+        </ReqoreTabs>
       </Content>
     </AppsContext.Provider>
   );

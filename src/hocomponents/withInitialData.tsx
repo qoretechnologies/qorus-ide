@@ -1,5 +1,6 @@
 import { useReqore, useReqoreProperty } from '@qoretechnologies/reqore';
 import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
+import { useReqraftStorage } from '@qoretechnologies/reqraft';
 import { find } from 'lodash';
 import set from 'lodash/set';
 import { FunctionComponent, useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ import { useEffectOnce } from 'react-use';
 import useMount from 'react-use/lib/useMount';
 import shortid from 'shortid';
 import { apiHost } from '../common/vscode';
+import { TOption } from '../components/Field/systemOptions';
 import Loader from '../components/Loader';
 import { interfaceKindTransform } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
@@ -67,6 +69,10 @@ export default () =>
         }[]
       >([]);
       const { addNotification } = useReqore();
+      const [isAutoDraftEnabled] = useReqraftStorage<TOption>(
+        'config.autoSaveDraft',
+        { type: 'boolean', value: true }
+      );
 
       const changeTab: (
         tab: string,
@@ -457,6 +463,10 @@ export default () =>
       };
 
       const saveDraft = async (type, id, data: IDraftData, label?: string) => {
+        if (isAutoDraftEnabled.value === false) {
+          return;
+        }
+
         setIsSavingDraft(true);
 
         const draftLabel =

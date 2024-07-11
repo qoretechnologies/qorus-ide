@@ -9,10 +9,12 @@ import {
   IFSMState,
   IFSMStates,
   IFSMTransition,
+  IFSMVariable,
   STATE_HEIGHT,
   STATE_WIDTH,
   TAppAndAction,
   TFSMClassConnectorAction,
+  TFSMVariables,
   TVariableActionValue,
 } from '../containers/InterfaceCreator/fsm';
 import { TQodexStatesForTemplates } from '../containers/InterfaceCreator/fsm/AppActionOptions';
@@ -1176,4 +1178,30 @@ export const buildMetadata = (
   }
 
   return metadata;
+};
+
+export const isVariableValid = (data: IFSMVariable) => {
+  return (
+    validateField('string', data.type) &&
+    validateField(data.type, data.value, { isVariable: true })
+  );
+};
+
+export const areVariablesValid = ({
+  transient,
+  persistent,
+}: {
+  transient: TFSMVariables;
+  persistent: TFSMVariables;
+}) => {
+  return (
+    (!transient ||
+      Object.keys(transient).every((name) =>
+        isVariableValid(transient[name])
+      )) &&
+    (!persistent ||
+      Object.keys(persistent).every((name) =>
+        isVariableValid(persistent[name])
+      ))
+  );
 };

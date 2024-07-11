@@ -1,215 +1,215 @@
-import { StoryObj } from "@storybook/react";
-import { fireEvent } from "@storybook/test";
-import { AppCatalogue, IApp } from "../../components/AppCatalogue";
-import { buildAppFromActionSets } from "../../hooks/useActionSets";
-import apps from "../Data/apps.json";
-import builtInApps from "../Data/builtInApps.json";
+import { StoryObj } from '@storybook/react';
+import { fireEvent } from '@storybook/test';
+import { AppCatalogue, IApp } from '../../components/AppCatalogue';
+import { buildAppFromActionSets } from '../../hooks/useActionSets';
+import apps from '../Data/apps.json';
+import builtInApps from '../Data/builtInApps.json';
 import { _testsClickButton } from '../Tests/utils';
-import { StoryMeta } from "../types";
+import { StoryMeta } from '../types';
 
 const typedApps: IApp[] = apps as IApp[];
 const typedBuiltInApps: IApp[] = builtInApps as IApp[];
 const typedAppsWithActionSets: IApp[] = apps as IApp[];
 const actionSetsApp = buildAppFromActionSets([
   {
-    id: "1",
+    id: '1',
     options: {
       name: {
-        type: "string",
-        value: "Another test",
+        type: 'string',
+        value: 'Another test',
       },
       shortDescription: {
-        type: "string",
-        value: "This is a second action set",
+        type: 'string',
+        value: 'This is a second action set',
       },
     },
     states: {
-      "1": {
+      '1': {
         position: {
           x: 47,
           y: 42,
         },
         initial: true,
-        name: "Save Intent Info",
-        display_name: "Qorus Built-In Action",
-        desc: "",
-        type: "state",
-        id: "djsGWd6mm",
+        name: 'Save Intent Info',
+        display_name: 'Qorus Built-In Action',
+        desc: '',
+        type: 'state',
+        id: 'djsGWd6mm',
         action: {
-          type: "connector",
+          type: 'connector',
           value: {
-            class: "BBM_OutputData",
-            connector: "writeOutputData",
+            class: 'BBM_OutputData',
+            connector: 'writeOutputData',
           },
         },
         execution_order: 1,
         transitions: [
           {
-            state: "2",
-            language: "qore",
+            state: '2',
+            language: 'qore',
           },
         ],
       },
-      "2": {
+      '2': {
         position: {
           x: 49.99999999999999,
           y: 528.3333333333333,
         },
         initial: false,
-        name: "Send Discord Message",
-        display_name: "Send Discord Message",
-        desc: "Send a message to a Discord channel",
-        type: "state",
-        id: "1qSA-sVVn",
+        name: 'Send Discord Message',
+        display_name: 'Send Discord Message',
+        desc: 'Send a message to a Discord channel',
+        type: 'state',
+        id: '1qSA-sVVn',
         action: {
-          type: "appaction",
+          type: 'appaction',
           value: {
-            app: "Discord",
-            action: "send-message",
+            app: 'Discord',
+            action: 'send-message',
             options: {
               qorus_app_connection: {
-                type: "connection",
-                value: "discord",
+                type: 'connection',
+                value: 'discord',
               },
               guild: {
-                type: "string",
-                value: "Qore Technologies",
+                type: 'string',
+                value: 'Qore Technologies',
               },
               channel: {
-                type: "string",
-                value: "api",
+                type: 'string',
+                value: 'api',
               },
               content: {
-                type: "string",
+                type: 'string',
                 value:
-                  "This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}",
+                  'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
               },
             },
           },
         },
         transitions: [],
       },
-      "3": {
+      '3': {
         position: {
           x: 50,
           y: 300,
         },
         initial: false,
         is_event_trigger: false,
-        name: "Get User Info",
-        display_name: "Get User Info",
-        desc: "Get info about the current user",
-        type: "state",
-        id: "ZO2l-u06b",
+        name: 'Get User Info',
+        display_name: 'Get User Info',
+        desc: 'Get info about the current user',
+        type: 'state',
+        id: 'ZO2l-u06b',
         action: {
-          type: "appaction",
+          type: 'appaction',
           value: {
-            app: "Discord",
-            action: "user-info",
+            app: 'Discord',
+            action: 'user-info',
             options: {
               qorus_app_connection: {
-                type: "connection",
-                value: "discord",
+                type: 'connection',
+                value: 'discord',
               },
             },
           },
         },
         transitions: [
           {
-            state: "2",
-            language: "qore",
+            state: '2',
+            language: 'qore',
           },
           {
-            state: "4",
+            state: '4',
           },
         ],
       },
     },
   },
   {
-    id: "2",
+    id: '2',
     options: {
       name: {
-        type: "string",
-        value: "test",
+        type: 'string',
+        value: 'test',
       },
       shortDescription: {
-        type: "string",
-        value: "test",
+        type: 'string',
+        value: 'test',
       },
     },
     states: {
-      "2": {
+      '2': {
         position: {
           x: 49.99999999999999,
           y: 528.3333333333333,
         },
         initial: false,
-        name: "Send Discord Message",
-        display_name: "Send Discord Message",
-        desc: "Send a message to a Discord channel",
-        type: "state",
-        id: "1qSA-sVVn",
+        name: 'Send Discord Message',
+        display_name: 'Send Discord Message',
+        desc: 'Send a message to a Discord channel',
+        type: 'state',
+        id: '1qSA-sVVn',
         action: {
-          type: "appaction",
+          type: 'appaction',
           value: {
-            app: "Discord",
-            action: "send-message",
+            app: 'Discord',
+            action: 'send-message',
             options: {
               qorus_app_connection: {
-                type: "connection",
-                value: "discord",
+                type: 'connection',
+                value: 'discord',
               },
               guild: {
-                type: "string",
-                value: "Qore Technologies",
+                type: 'string',
+                value: 'Qore Technologies',
               },
               channel: {
-                type: "string",
-                value: "api",
+                type: 'string',
+                value: 'api',
               },
               content: {
-                type: "string",
+                type: 'string',
                 value:
-                  "This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}",
+                  'This Qodex was ran at $data:{1.trigger_time} by $data:{3.discriminator}',
               },
             },
           },
         },
         transitions: [],
       },
-      "3": {
+      '3': {
         position: {
           x: 50,
           y: 300,
         },
         initial: false,
         is_event_trigger: false,
-        name: "Get User Info",
-        display_name: "Get User Info",
-        desc: "Get info about the current user",
-        type: "state",
-        id: "ZO2l-u06b",
+        name: 'Get User Info',
+        display_name: 'Get User Info',
+        desc: 'Get info about the current user',
+        type: 'state',
+        id: 'ZO2l-u06b',
         action: {
-          type: "appaction",
+          type: 'appaction',
           value: {
-            app: "Discord",
-            action: "user-info",
+            app: 'Discord',
+            action: 'user-info',
             options: {
               qorus_app_connection: {
-                type: "connection",
-                value: "discord",
+                type: 'connection',
+                value: 'discord',
               },
             },
           },
         },
         transitions: [
           {
-            state: "2",
-            language: "qore",
+            state: '2',
+            language: 'qore',
           },
           {
-            state: "4",
+            state: '4',
           },
         ],
       },
@@ -221,7 +221,7 @@ typedAppsWithActionSets.push(actionSetsApp);
 
 const meta = {
   component: AppCatalogue,
-  title: "Components/App Catalogue",
+  title: 'Components/App Catalogue',
 } as StoryMeta<typeof AppCatalogue>;
 
 export default meta;
@@ -229,18 +229,18 @@ export default meta;
 export const Basic: StoryObj<typeof meta> = {
   args: {
     apps: typedApps,
-    icon: "Apps2Fill",
-    label: "Apps",
+    icon: 'Apps2Fill',
+    label: 'Apps',
   },
 };
 
 export const Builtin: StoryObj<typeof meta> = {
   args: {
     apps: typedBuiltInApps,
-    icon: "AppsLine",
+    icon: 'AppsLine',
     image:
-      "https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg",
-    label: "Built in modules",
+      'https://hq.qoretechnologies.com:8092/api/public/apps/Qorus/qorus-logo.svg',
+    label: 'Built in modules',
   },
 };
 
@@ -249,7 +249,10 @@ export const WithActionSets: StoryObj<typeof meta> = {
     apps: typedAppsWithActionSets,
   },
   play: async (args) => {
-    await _testsClickButton({ label: 'Saved Favorites'  })
+    await _testsClickButton({
+      label: 'Saved Favorites',
+      parent: '.reqore-panel',
+    });
   },
 };
 
@@ -257,7 +260,7 @@ export const AppSelected: StoryObj<typeof meta> = {
   ...Basic,
   play: async () => {
     await fireEvent.click(
-      document.querySelectorAll(".reqore-collection-item")[5],
+      document.querySelectorAll('.reqore-collection-item')[5]
     );
   },
 };
@@ -265,11 +268,11 @@ export const AppSelected: StoryObj<typeof meta> = {
 export const DefaultQuery: StoryObj<typeof meta> = {
   args: {
     ...Basic.args,
-    defaultQuery: "get file",
+    defaultQuery: 'get file',
   },
   play: async () => {
     await fireEvent.click(
-      document.querySelectorAll(".reqore-collection-item")[0],
+      document.querySelectorAll('.reqore-collection-item')[0]
     );
   },
 };
@@ -277,6 +280,6 @@ export const DefaultQuery: StoryObj<typeof meta> = {
 export const Favorites: StoryObj<typeof meta> = {
   args: {
     ...Basic.args,
-    favorites: ["Trello", "YouTube"],
+    favorites: ['Trello', 'YouTube'],
   },
 };

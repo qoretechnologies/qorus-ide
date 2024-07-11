@@ -444,10 +444,10 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
         const currentInterfaceId = data
           ? clonedData.id
           : type === 'service-methods' ||
-            type === 'mapper-methods' ||
-            type === 'error'
-          ? interfaceId
-          : shortid.generate();
+              type === 'mapper-methods' ||
+              type === 'error'
+            ? interfaceId
+            : shortid.generate();
         // Check if the interface id exists, which means user
         // has already been on this view
         if (!interfaceId) {
@@ -1570,22 +1570,6 @@ const InterfaceCreatorPanel: FunctionComponent<IInterfaceCreatorPanel> = ({
               fetchCall: fetchConfigItems,
             },
             show: !!hasConfigManager,
-          },
-          {
-            label: t('DiscardChangesButton'),
-            icon: 'HistoryLine',
-            tooltip: t('ResetTooltip'),
-            onClick: () => {
-              initialData.confirmAction(
-                'ResetFieldsConfirm',
-                () => {
-                  resetLocalFields(activeId);
-                },
-                'Confirm',
-                'warning'
-              );
-            },
-            position: 'right',
           },
           {
             label: t(submitLabel),

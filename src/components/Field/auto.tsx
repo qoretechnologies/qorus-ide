@@ -2,10 +2,14 @@ import {
   ReqoreButton,
   ReqoreControlGroup,
   ReqoreTag,
+  useReqoreProperty,
 } from '@qoretechnologies/reqore';
+import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
+import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
+import { apiHost } from '../../common/vscode';
 import {
   getTypeFromValue,
   getValueOrDefaultValue,
@@ -92,6 +96,7 @@ function AutoField<T = any>({
     defaultInternalType || 'any'
   );
   const [isSetToNull, setIsSetToNull] = useState<boolean>(false);
+  const addModal = useReqoreProperty('addModal');
 
   useMount(() => {
     let defType: IQorusType =
@@ -169,8 +174,8 @@ function AutoField<T = any>({
             value === null
               ? null
               : typeValue === typeFromValue
-              ? value
-              : undefined,
+                ? value
+                : undefined,
             typeValue
           );
         }
@@ -201,7 +206,7 @@ function AutoField<T = any>({
     value,
     type
   ) => {
-    const returnType: IQorusType = currentInternalType || currentType || type;
+    const returnType: IQorusType = type || currentInternalType || currentType;
     // Run the onchange
     if (onChange && returnType) {
       onChange(name, value, returnType, _canBeNull(returnType));
@@ -228,7 +233,34 @@ function AutoField<T = any>({
     handleChange(name, isSetToNull ? undefined : null);
   };
 
-  const renderField = (currentType: string) => {
+  const getAllowedItemActionsByType = (
+    type: IQorusType,
+    item: string
+  ): IReqorePanelProps['actions'] => {
+    switch (type) {
+      case 'connection': {
+        return [
+          {
+            as: ConnectionManagement,
+            props: {
+              selectedConnection: item,
+              //onChange: (value) => handleChange(name, value),
+              allowedValues: rest.allowed_values,
+              redirectUri: `${apiHost}/grant`,
+              app: rest.app,
+              action: rest.action,
+              compact: true,
+            },
+          },
+        ];
+      }
+      default: {
+        return [];
+      }
+    }
+  };
+
+  const renderField = (currentType: IQorusType) => {
     // If this field is set to null
     if (isSetToNull) {
       // Render a readonly field with null
@@ -250,7 +282,7 @@ function AutoField<T = any>({
 
     if (pos > 0) {
       // Get the type from start to the position of the `<`
-      currentType = currentType.slice(0, pos);
+      currentType = currentType.slice(0, pos) as IQorusType;
     }
 
     if (rest.allowed_values && currentType !== 'enum') {
@@ -274,6 +306,7 @@ function AutoField<T = any>({
         <SelectField
           defaultItems={rest.allowed_values.map(({ value, name, ...rest }) => ({
             name: name || value,
+            actions: getAllowedItemActionsByType(currentType, name || value),
             ...rest,
           }))}
           value={value}
@@ -386,15 +419,12 @@ function AutoField<T = any>({
         }
 
         return (
-          <LongStringField
-            {...rest}
-            name={name}
-            onChange={handleChange}
+          <ReqraftObjectFormField
             value={value}
-            fill
-            type={currentType}
-            noWrap
-            placeholder={'Yaml'}
+            onChange={(data) => handleChange(name, data)}
+            dataType='yaml'
+            resultDataType='yaml'
+            type='object'
           />
         );
       }
@@ -403,15 +433,12 @@ function AutoField<T = any>({
       case 'softlist':
       case 'list<auto>':
         return (
-          <LongStringField
-            {...rest}
-            name={name}
-            onChange={handleChange}
+          <ReqraftObjectFormField
             value={value}
-            fill
-            type={currentType}
-            noWrap
-            placeholder={'Yaml'}
+            onChange={(data) => handleChange(name, data)}
+            dataType='yaml'
+            resultDataType='yaml'
+            type='array'
           />
         );
       case 'int':
@@ -486,7 +513,17 @@ function AutoField<T = any>({
       case 'workflow':
       case 'service':
       case 'job':
-      case 'value-map':
+      case 'value-map': {
+        return (
+          <InterfaceSelector
+            {...rest}
+            type={currentType}
+            name={name}
+            value={value}
+            onChange={handleChange}
+          />
+        );
+      }
       case 'connection': {
         return (
           <InterfaceSelector
@@ -652,8 +689,7 @@ function AutoField<T = any>({
             selectedConnection={value}
             onChange={(value) => handleChange(name, value)}
             allowedValues={rest.allowed_values}
-            // TODO: Change this to dynamic URL
-            redirectUri='https://hq.qoretechnologies.com:8092/grant'
+            redirectUri={`${apiHost}/grant`}
             app={rest.app}
             action={rest.action}
           />

@@ -89,6 +89,15 @@ export const QodexAppActionOptions = memo(
       setValue(outsideValue);
     }, [JSON.stringify(outsideValue)]);
 
+    const { load, loading } = useFetchActionOptions({
+      loadOnMount: true,
+      action,
+      options: value,
+      onSuccess: (options) => {
+        setOptions(options);
+      },
+    });
+
     useEffect(() => {
       const listener = addMessageListener(
         'SUBSCRIPTION-EVENT',
@@ -114,15 +123,6 @@ export const QodexAppActionOptions = memo(
         { args: { matchEvents: ['CONNECTION_UPDATED', 'CONNECTION_CREATED'] } },
         true
       );
-    });
-
-    const { load, loading } = useFetchActionOptions({
-      loadOnMount: true,
-      action,
-      options: value,
-      onSuccess: (options) => {
-        setOptions(options);
-      },
     });
 
     useDebounce(

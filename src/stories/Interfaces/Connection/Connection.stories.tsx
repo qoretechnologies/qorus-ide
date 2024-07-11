@@ -86,7 +86,7 @@ export const ChangesCanBeDiscarded: Story = {
   play: async (args) => {
     await DraftIsSaved.play(args);
     await _testsExpectFieldsCountToMatch(6, true);
-    await _testsClickButton({ label: 'DiscardChangesButton' });
+    await _testsClickButton({ label: 'Reset' });
     await _testsConfirmDialog();
   },
 };

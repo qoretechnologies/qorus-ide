@@ -1,10 +1,10 @@
 import { IReqoreMenuProps } from '@qoretechnologies/reqore/dist/components/Menu';
-import { ReqraftMenu } from '@qoretechnologies/reqraft';
+import { ReqraftMenu, useReqraftStorage } from '@qoretechnologies/reqraft';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useContextSelector } from 'use-context-selector';
+import { QorusPurpleIntent } from '../../constants/util';
 import { InterfacesContext } from '../../context/interfaces';
 import { TMenu, buildMenu } from './menu';
-import { QorusPurpleIntent } from '../../constants/util';
 
 export interface ISidebar extends Partial<IReqoreMenuProps> {
   isOpen?: boolean;
@@ -20,6 +20,11 @@ export const Sidebar = (props: ISidebar) => {
     (value) => value.categories
   );
   const menu: TMenu = buildMenu(categories, navigate);
+  const [isOpen] = useReqraftStorage('sidebar-open', true, false);
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <ReqraftMenu

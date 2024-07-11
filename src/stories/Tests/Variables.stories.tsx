@@ -25,7 +25,7 @@ export const NewVariable: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector('#create-new-variable')
+          document.querySelector('.reqore-modal #create-new-variable')
         ).toBeInTheDocument();
       },
       {
@@ -33,17 +33,25 @@ export const NewVariable: StoryFSM = {
       }
     );
 
-    await fireEvent.click(document.querySelector('#create-new-variable'));
-    await expect(document.querySelector('#save-variable')).toBeDisabled();
+    await fireEvent.click(
+      document.querySelector('.reqore-modal #create-new-variable')
+    );
+    await expect(
+      document.querySelector('.reqore-modal #save-variable')
+    ).toBeDisabled();
 
     await fireEvent.change(
-      document.querySelectorAll('.variables-form .reqore-input')[0],
+      document.querySelectorAll(
+        '.reqore-modal .variables-form .reqore-input'
+      )[0],
       {
         target: { value: 'testVariable' },
       }
     );
     await fireEvent.change(
-      document.querySelectorAll('.variables-form .reqore-textarea')[0],
+      document.querySelectorAll(
+        '.reqore-modal .variables-form .reqore-textarea'
+      )[0],
       {
         target: { value: 'This is a test description' },
       }
@@ -51,11 +59,15 @@ export const NewVariable: StoryFSM = {
 
     await _testsSelectItemFromDropdown(canvas, 'data-provider', 'string')();
 
-    await fireEvent.click(document.querySelector('.provider-type-selector'));
+    await fireEvent.click(
+      document.querySelector('.reqore-modal .provider-type-selector')
+    );
     await fireEvent.click(canvas.getByText('datasource'));
     await waitFor(
       async () => {
-        await fireEvent.click(document.querySelector('.provider-selector'));
+        await fireEvent.click(
+          document.querySelector('.reqore-modal .provider-selector')
+        );
         await fireEvent.click(canvas.getAllByText('Omquser')[0]);
       },
       {
@@ -68,7 +80,7 @@ export const NewVariable: StoryFSM = {
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelectorAll('.reqore-textarea')[1],
+          document.querySelectorAll('.reqore-modal .reqore-textarea')[1],
           {
             target: { value: 'SELECT * FROM gl_record' },
           }
@@ -85,9 +97,15 @@ export const NewVariable: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(document.querySelector('#save-variable')).toBeEnabled();
-        await fireEvent.click(document.querySelector('#save-variable'));
-        await fireEvent.click(document.querySelector('#submit-variables'));
+        await expect(
+          document.querySelector('.reqore-modal #save-variable')
+        ).toBeEnabled();
+        await fireEvent.click(
+          document.querySelector('.reqore-modal #save-variable')
+        );
+        await fireEvent.click(
+          document.querySelector('.reqore-modal #submit-variables')
+        );
       },
       {
         timeout: 5000,

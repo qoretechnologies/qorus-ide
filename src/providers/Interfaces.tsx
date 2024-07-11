@@ -78,26 +78,12 @@ export const InterfacesProvider = ({
   ) => {
     const fetchType = transformTypeForFetch(interfaceToPlural[type]);
 
-    addNotification({
-      intent: 'pending',
-      content: `Working...`,
-      duration: 10000,
-      id: 'toggle-interface',
-    });
-
     await fetchData(
       `${fetchType}/${id}/${enable ? 'enable' : 'disable'}`,
       'PUT',
       undefined,
       false
     );
-
-    addNotification({
-      intent: 'success',
-      content: `Successfully ${enable ? 'enabled' : 'disabled'}...`,
-      duration: 3000,
-      id: 'toggle-interface',
-    });
   };
 
   const clone = async (type: string, id: string | number) => {

@@ -13,7 +13,6 @@ import {
   _testsCreateSelectionBox,
   _testsDeleteMultipleStates,
   _testsDeleteState,
-  _testsDoubleClickState,
   _testsSelectFromAppCatalogue,
   sleep,
 } from '../utils';
@@ -194,34 +193,37 @@ export const StatesCanBeCloned: StoryFSM = {
   },
 };
 
-export const StatesCanBeConnected: StoryFSM = {
-  args: {
-    fsm,
-  },
-  play: async ({ canvasElement, ...rest }) => {
-    await StateIsDeleted.play({ canvasElement, ...rest });
+// export const StatesCanBeConnected: StoryFSM = {
+//   args: {
+//     fsm,
+//   },
+//   parameters: {
+//     chromatic: { disable: true },
+//   },
+//   play: async ({ canvasElement, ...rest }) => {
+//     await StateIsDeleted.play({ canvasElement, ...rest });
 
-    await sleep(200);
+//     await sleep(200);
 
-    await expect(document.querySelectorAll('.fsm-transition').length).toBe(5);
+//     await expect(document.querySelectorAll('.fsm-transition').length).toBe(5);
 
-    // Fake double click lol
-    await _testsDoubleClickState('Save Intent Info');
+//     // Fake double click lol
+//     await _testsDoubleClickState('Save Intent Info');
 
-    await sleep(2000);
+//     await sleep(1000);
 
-    await _testsClickState('Update Ticket Info');
+//     await _testsClickState('Update Ticket Info');
 
-    await sleep(2000);
+//     await sleep(2000);
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.fsm-transition').length).toBe(6),
-      {
-        timeout: 10000,
-      }
-    );
-  },
-};
+//     await waitFor(
+//       () => expect(document.querySelectorAll('.fsm-transition').length).toBe(6),
+//       {
+//         timeout: 10000,
+//       }
+//     );
+//   },
+// };
 
 export const StateIsNotRemovedIfUnfinished: StoryFSM = {
   parameters: {

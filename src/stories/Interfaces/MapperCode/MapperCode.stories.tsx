@@ -179,7 +179,11 @@ export const ChangesCanBeDiscarded: Story = {
       'Optional fields available (3)'
     )();
     await _testsExpectFieldsCountToMatch(7, true, 'mapper-code');
-    await _testsClickButton({ label: 'DiscardChangesButton' });
+    await fireEvent.change(
+      document.querySelector('.creator-field .reqore-input'),
+      { target: { value: 'Test' } }
+    );
+    await _testsClickButton({ label: 'Reset' });
     await _testsConfirmDialog();
     await _testsExpectFieldsCountToMatch(4, true, 'mapper-code');
   },

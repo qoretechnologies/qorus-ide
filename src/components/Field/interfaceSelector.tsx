@@ -4,6 +4,7 @@ import {
   ReqoreSpinner,
   ReqoreVerticalSpacer,
 } from '@qoretechnologies/reqore';
+import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { FunctionComponent, useContext } from 'react';
 import { useAsyncRetry } from 'react-use';
 import { TTranslator } from '../../App';
@@ -24,11 +25,12 @@ export interface IInterfaceSelector {
     | 'connections'
     | 'mappers'
     | 'value-maps';
+  itemsActions?: (item: string) => IReqorePanelProps['actions'];
 }
 
 export const InterfaceSelector: FunctionComponent<
-  ILongStringField & IField & IFieldChange
-> = ({ name, onChange, value, default_value, type, ...rest }) => {
+  ILongStringField & IField & IFieldChange & IInterfaceSelector
+> = ({ name, onChange, value, default_value, type, itemsActions, ...rest }) => {
   // Get the qorus instance
   const { qorus_instance } = useContext<{ qorus_instance?: string }>(
     InitialContext
@@ -81,7 +83,10 @@ export const InterfaceSelector: FunctionComponent<
   return (
     <SelectField
       {...rest}
-      defaultItems={interfaces.data.map((i) => ({ name: i }))}
+      defaultItems={interfaces.data.map((i) => ({
+        name: i,
+        actions: itemsActions?.(i),
+      }))}
       value={value || default_value}
       name={name}
       onChange={onChange}

@@ -23,7 +23,7 @@ export const DashboardQogPanel = () => {
     id: string | number;
     label: string;
   }>(undefined);
-  const { loading, value = [] } = useFetchInterfaces('fsm');
+  const { loading, value = [], retry } = useFetchInterfaces('fsm');
 
   const latest = value
     .sort((a, b) => {
@@ -92,6 +92,14 @@ export const DashboardQogPanel = () => {
         textSize: '40px',
       }}
       actions={[
+        {
+          icon: 'RefreshLine',
+          onClick: retry,
+          minimal: true,
+          iconColor: '#bd2ff6',
+          flat: true,
+          loading,
+        },
         {
           label: 'Create New',
           icon: 'AddLine',

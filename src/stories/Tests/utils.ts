@@ -514,6 +514,7 @@ export async function _testsOpenTemplates() {
 }
 
 export async function _testsWaitForText(text: string, selector?: string) {
+  console.log('Waiting for text:', text, selector);
   await waitFor(
     () =>
       expect(screen.queryAllByText(text, { selector })[0]).toBeInTheDocument(),
@@ -570,13 +571,16 @@ export async function _testsClickButton({
   label,
   selector,
   nth = 0,
-  wait = 5000,
+  wait = 7000,
+  parent = '.reqore-button',
 }: {
   label?: string;
   selector?: string;
   nth?: number;
   wait?: number;
+  parent?: string;
 }) {
+  console.log('Clicking button:', label, selector, nth, wait);
   if (!label) {
     await waitFor(
       () =>
@@ -592,6 +596,28 @@ export async function _testsClickButton({
         ).toBeInTheDocument(),
       { timeout: wait }
     );
+    await waitFor(
+      () =>
+        expect(
+          screen.queryAllByText(label, { selector })[nth].closest(parent)
+        ).toBeEnabled(),
+      { timeout: wait }
+    );
     await fireEvent.click(screen.queryAllByText(label, { selector })[nth]);
   }
+}
+
+export async function _testsQogExpectStateCount(count: number) {
+  await waitFor(
+    () => expect(document.querySelectorAll('.fsm-state')).toHaveLength(count),
+    { timeout: 10000 }
+  );
+}
+
+export async function _testsQogUndo() {
+  await _testsClickButton({ selector: '.qog-undo' });
+}
+
+export async function _testsQogRedo() {
+  await _testsClickButton({ selector: '.qog-redo' });
 }

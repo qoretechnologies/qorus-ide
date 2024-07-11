@@ -21,6 +21,7 @@ import {
   defaultReqoreTheme,
 } from '../src/constants/util';
 import { InitialContext } from '../src/context/init';
+import { storiesStorageMockEmpty } from '../src/stories/Data/storage';
 
 const StorybookWrapper = ({ context, Story }: any) => {
   const confirmAction = useReqoreProperty('confirmAction');
@@ -74,6 +75,7 @@ const preview: Preview = {
       viewports: [1440],
       pauseAnimationAtEnd: true,
     },
+    mockData: [...storiesStorageMockEmpty],
   },
   args: {
     qorus_instance: {
@@ -112,7 +114,11 @@ const preview: Preview = {
           }}
           theme={{ ...defaultReqoreTheme, main: '#333333' }}
         >
-          <Reqraft appName='ide' waitForStorage={false}>
+          <Reqraft
+            appName='ide'
+            waitForStorage={false}
+            {...context.args.reqraftOptions}
+          >
             <RouterProvider router={router} />
           </Reqraft>
         </ReqoreUIProvider>

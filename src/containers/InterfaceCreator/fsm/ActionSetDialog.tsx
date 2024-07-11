@@ -94,6 +94,7 @@ export const ActionSetDialog = ({
     <ReqoreModal
       label='Save Action Set'
       isOpen
+      className='fsm-action-set-dialog'
       bottomActions={[
         submitControl(handleSubmitClick, {
           disabled: !areOptionsValid(),

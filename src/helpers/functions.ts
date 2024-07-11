@@ -541,7 +541,7 @@ export const fetchData: (
   const cache = method === 'DELETE' || method === 'POST' ? false : forceCache;
   const cacheKey = `${url}:${method}:${JSON.stringify(body || {})}`;
 
-  if (fetchCache[cacheKey]?.data) {
+  if (cache && fetchCache[cacheKey]?.data) {
     return {
       action: 'fetch-data-complete',
       data: fetchCache[cacheKey].data,
@@ -680,7 +680,8 @@ export const filterTemplatesByType = (
         (fieldType === 'string' &&
           isTypeStringCompatible(subItem.badge as string)) ||
         (fieldType === 'number' &&
-          isTypeNumberCompatible(subItem.badge as string))
+          isTypeNumberCompatible(subItem.badge as string)) ||
+        (fieldType === 'data' && isTypeDataCompatible(subItem.badge as string))
       );
     });
 
@@ -820,11 +821,16 @@ export const getExpressionArgumentType = (
   return arg.type.base_type;
 };
 
+export const getStrongType = (type: string): string => {
+  return type.replace('*', '').replace('soft', '');
+};
+
 export const isTypeStringCompatible = (type: string) => {
-  const strongType = type.replace('*', '').replace('soft', '');
+  const strongType = getStrongType(type);
 
   return (
     strongType === 'string' ||
+    strongType === 'binary' ||
     strongType === 'number' ||
     strongType === 'boolean' ||
     strongType === 'date' ||
@@ -835,9 +841,15 @@ export const isTypeStringCompatible = (type: string) => {
 };
 
 export const isTypeNumberCompatible = (type: string) => {
-  const strongType = type.replace('*', '').replace('soft', '');
+  const strongType = getStrongType(type);
 
   return (
     strongType === 'number' || strongType === 'int' || strongType === 'float'
   );
+};
+
+export const isTypeDataCompatible = (type: string) => {
+  const strongType = getStrongType(type);
+
+  return strongType === 'string' || strongType === 'binary';
 };

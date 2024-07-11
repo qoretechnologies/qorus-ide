@@ -15,13 +15,15 @@ import {
 } from '@qoretechnologies/reqore';
 import { find, keys, omit, size } from 'lodash';
 import { useCallback, useState } from 'react';
+import { useDebounce } from 'react-use';
 import { IFSMVariable, TFSMAutoVariables, TFSMVariables } from '..';
 import { PositiveColorEffect } from '../../../../components/Field/multiPair';
-import { validateField } from '../../../../helpers/validations';
+import { areVariablesValid, isVariableValid } from '../../../../helpers/fsm';
 import { submitControl } from '../../controls';
 import { VariableForm } from './form';
 
 export interface IFSMVariablesProps {
+  autoSave?: boolean;
   globalvar?: TFSMVariables;
   localvar?: TFSMVariables;
   autovar?: TFSMAutoVariables;
@@ -48,6 +50,7 @@ export const FSMVariables = ({
   onClose,
   onSubmit,
   selectedVariable,
+  autoSave,
 }: IFSMVariablesProps) => {
   const [_transient, setTransient] = useState<TFSMVariables>(globalvar);
   const [_persistent, setPersistent] = useState<TFSMVariables>(localvar);
@@ -65,6 +68,21 @@ export const FSMVariables = ({
     }[]
   >([]);
   const confirmAction = useReqoreProperty('confirmAction');
+
+  useDebounce(
+    () => {
+      if (autoSave) {
+        onSubmit?.({ globalvar: _transient, localvar: _persistent, changes });
+      }
+    },
+    300,
+    [
+      JSON.stringify(_transient),
+      JSON.stringify(_persistent),
+      JSON.stringify(changes),
+      autoSave,
+    ]
+  );
 
   const handleSubmitClick = useCallback(() => {
     onClose?.();
@@ -93,26 +111,6 @@ export const FSMVariables = ({
       }));
       setSelectedVariable(`variable_${size(_persistent)}`);
     }
-  };
-
-  const isVariableValid = (data: IFSMVariable) => {
-    return (
-      validateField('string', data.type) &&
-      validateField(data.type, data.value, { isVariable: true })
-    );
-  };
-
-  const areVariablesValid = () => {
-    return (
-      (!_transient ||
-        Object.keys(_transient).every((name) =>
-          isVariableValid(_transient[name])
-        )) &&
-      (!_persistent ||
-        Object.keys(_persistent).every((name) =>
-          isVariableValid(_persistent[name])
-        ))
-    );
   };
 
   const renderVariableList = useCallback(
@@ -279,20 +277,8 @@ export const FSMVariables = ({
     [_selectedVariable, _transient, _persistent, autovar, selectedTab]
   );
 
-  return (
-    <ReqoreModal
-      label='FSM Variables'
-      onClose={onClose}
-      isOpen
-      width='90vw'
-      height='90vh'
-      bottomActions={[
-        submitControl(handleSubmitClick, {
-          disabled: !areVariablesValid(),
-          id: 'submit-variables',
-        }),
-      ]}
-    >
+  const renderTabs = () => {
+    return (
       <ReqoreTabs
         padded={false}
         tabs={[
@@ -348,6 +334,31 @@ export const FSMVariables = ({
           {renderVariableForm('autovar')}
         </ReqoreTabsContent>
       </ReqoreTabs>
+    );
+  };
+
+  if (autoSave) {
+    return renderTabs();
+  }
+
+  return (
+    <ReqoreModal
+      label='FSM Variables'
+      onClose={onClose}
+      isOpen
+      width='90vw'
+      height='90vh'
+      bottomActions={[
+        submitControl(handleSubmitClick, {
+          disabled: !areVariablesValid({
+            transient: _transient,
+            persistent: _persistent,
+          }),
+          id: 'submit-variables',
+        }),
+      ]}
+    >
+      {renderTabs()}
     </ReqoreModal>
   );
 };

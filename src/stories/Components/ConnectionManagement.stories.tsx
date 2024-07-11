@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from "@storybook/test";
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 
 import { useState } from 'react';
 import { ConnectionManagement } from '../../components/ConnectionManagement';
@@ -34,6 +34,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const Selected: Story = {
   args: {
+    selectedConnection: 'google-calendar',
+  },
+};
+
+export const Compact: Story = {
+  args: {
+    compact: 'true',
     selectedConnection: 'google-calendar',
   },
 };

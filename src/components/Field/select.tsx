@@ -41,6 +41,7 @@ export interface ISelectFieldItem {
   intent?: TReqoreIntent;
   badge?: IReqorePanelProps['badge'];
   messages?: IOptionsSchemaArg['messages'];
+  actions?: IReqorePanelProps['actions'];
   metadata?: {
     [key: string]: any;
     needs_auth?: boolean;
@@ -462,10 +463,10 @@ const SelectField: React.FC<
                 100: hasError(items, value || filteredItems[0].name)
                   ? 'danger:darken'
                   : hasWarning(items, value || filteredItems[0].name)
-                  ? 'warning'
-                  : value
-                  ? 'info'
-                  : 'main',
+                    ? 'warning'
+                    : value
+                      ? 'info'
+                      : 'main',
               },
             },
           }
@@ -560,6 +561,7 @@ const SelectField: React.FC<
               selected: item.name === value,
               intent: item.intent,
               badge: item.badge,
+              actions: item.actions,
               tooltip: !!item.desc
                 ? {
                     delay: 800,
@@ -577,9 +579,11 @@ const SelectField: React.FC<
                   ? { gradient: { colors: 'main' } }
                   : undefined,
               onClick: !item.disabled
-                ? () => {
-                    handleSelectClick(item);
-                    setSelectDialogOpen(false);
+                ? (e) => {
+                    if (e.currentTarget.contains(e.target)) {
+                      handleSelectClick(item);
+                      setSelectDialogOpen(false);
+                    }
                   }
                 : undefined,
             })
@@ -653,10 +657,10 @@ const SelectField: React.FC<
                         100: hasError(items, value)
                           ? 'danger:darken'
                           : hasWarning(items, value)
-                          ? 'warning'
-                          : value
-                          ? 'info'
-                          : 'main',
+                            ? 'warning'
+                            : value
+                              ? 'info'
+                              : 'main',
                       },
                     },
                   }

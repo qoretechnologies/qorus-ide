@@ -1,21 +1,25 @@
 import { ReqoreButton, ReqorePanel } from '@qoretechnologies/reqore';
 import { IReqorePanelAction } from '@qoretechnologies/reqore/dist/components/Panel';
+import { useReqraftStorage } from '@qoretechnologies/reqraft';
 import timeago from 'epoch-timeago';
 import { capitalize, forEach, size } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useUnmount } from 'react-use';
-import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
 import styled from 'styled-components';
 import { useContextSelector } from 'use-context-selector';
 import { TTranslator } from '../../App';
+import { CreateInterfaceFromTextModal } from '../../components/CreateInterfaceFromText/modal';
 import CustomDialog from '../../components/CustomDialog';
 import { DraftsTable } from '../../components/DraftsTable';
 import { NegativeColorEffect } from '../../components/Field/multiPair';
+import { TOption } from '../../components/Field/systemOptions';
 import {
   interfaceIcons,
   interfaceImages,
   interfaceKindTransform,
+  supportsAICreation,
 } from '../../constants/interfaces';
 import { Messages } from '../../constants/messages';
 import { DraftsContext, IDraftsContext } from '../../context/drafts';
@@ -24,13 +28,10 @@ import { InterfacesContext } from '../../context/interfaces';
 import { MethodsContext } from '../../context/methods';
 import { TextContext } from '../../context/text';
 import { EnableToggle } from '../../handlers/EnableToggle';
-import { callBackendBasic } from '../../helpers/functions';
+import { callBackendBasic, deleteDraft } from '../../helpers/functions';
 import withFieldsConsumer from '../../hocomponents/withFieldsConsumer';
 import withGlobalOptionsConsumer from '../../hocomponents/withGlobalOptionsConsumer';
-import {
-  addMessageListener,
-  postMessage,
-} from '../../hocomponents/withMessageHandler';
+import { postMessage } from '../../hocomponents/withMessageHandler';
 import withMethodsConsumer from '../../hocomponents/withMethodsConsumer';
 import withTextContext from '../../hocomponents/withTextContext';
 
@@ -276,28 +277,28 @@ const Tab: React.FC<ITabProps> = ({
       toggleEnabled,
     })
   );
+  const [searchParams] = useSearchParams();
+  const [isAiDialogAllowed] = useReqraftStorage<TOption>(
+    'config.allowAiCreateDialog',
+    { type: 'boolean', value: true }
+  );
+  const allowAiCreateDialog =
+    !searchParams.has('draftId') &&
+    supportsAICreation[type] &&
+    !isEditing() &&
+    isAiDialogAllowed.value === true;
+  const [isCreateFromTextOpen, setIsCreateFromTextOpen] =
+    useState<boolean>(allowAiCreateDialog);
+
+  useEffect(() => {
+    setIsCreateFromTextOpen(allowAiCreateDialog);
+  }, [type]);
 
   useEffect(() => {
     if (lastDraft && lastDraft.type === type) {
       setLastDraft(lastDraft.id);
     }
   }, [lastDraft]);
-
-  useMount(() => {
-    const recreateListener = addMessageListener(
-      Messages.MAYBE_RECREATE_INTERFACE,
-      (data) => {
-        setRecreateDialog(() => data);
-      }
-    );
-
-    // Ask for recreation dialog
-    postMessage('check-edit-data', {});
-
-    return () => {
-      recreateListener();
-    };
-  });
 
   useUnmount(() => {
     // Remove the associated type interface from initial data
@@ -461,6 +462,49 @@ const Tab: React.FC<ITabProps> = ({
       });
     }
 
+    actions.push({
+      id: 'button-discard',
+      icon: 'HistoryLine',
+      compact: true,
+      label: 'Reset',
+      tooltip: 'Discard unsaved changes and delete the draft',
+      disabled: !searchParams.has('draftId'),
+      onClick: () => {
+        data.confirmAction(
+          'ResetFieldsConfirm',
+          () => {
+            if (searchParams.has('draftId')) {
+              deleteDraft(type, searchParams.get('draftId'));
+            }
+
+            resetAllInterfaceData(type);
+
+            changeTab(`proxy`, undefined, undefined, {
+              to: `/CreateInterface/${type}${id ? `/${id}` : ''}`,
+            });
+          },
+          'Confirm',
+          'warning'
+        );
+      },
+    });
+
+    actions.push({
+      id: 'button-cancel',
+      icon: 'CloseLine',
+      label: 'Cancel',
+      compact: true,
+      tooltip: 'Cancel you work, delete a draft and go back',
+      onClick: () => {
+        if (searchParams.has('draftId')) {
+          deleteDraft(type, searchParams.get('draftId'));
+        }
+
+        resetAllInterfaceData(type);
+        changeTab('Interfaces', type);
+      },
+    });
+
     if (isEditing()) {
       actions.push({
         icon: 'DeleteBinLine',
@@ -485,6 +529,12 @@ const Tab: React.FC<ITabProps> = ({
 
   return (
     <>
+      {isCreateFromTextOpen && (
+        <CreateInterfaceFromTextModal
+          type={type}
+          onClose={() => setIsCreateFromTextOpen(false)}
+        />
+      )}
       {draftsOpen && (
         <CustomDialog
           isOpen
@@ -547,8 +597,8 @@ const Tab: React.FC<ITabProps> = ({
               badge: isSavingDraft
                 ? t('SavingDraft')
                 : isDraftSaved
-                ? `${t('DraftSaved')} ${timeago(Date.now())}`
-                : undefined,
+                  ? `${t('DraftSaved')} ${timeago(Date.now())}`
+                  : undefined,
             },
           ],
         }}

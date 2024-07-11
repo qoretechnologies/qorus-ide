@@ -216,7 +216,12 @@ export const InterfacesViewCollection = ({
                 id: item.id,
               });
             } else {
-              changeTab('CreateInterface', type, item.data?.id);
+              changeTab(
+                'CreateInterface',
+                type,
+                item.data?.id,
+                item.draft ? { draftId: item.data?.id } : undefined
+              );
             }
           },
           actions: [
@@ -272,6 +277,7 @@ export const InterfacesViewCollection = ({
             {
               as: EnableToggle,
               props: {
+                key: item.data?.id,
                 enabled: item.data?.enabled,
                 type,
                 id: item.data?.id,

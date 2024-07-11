@@ -50,7 +50,7 @@ export const buildMenu = (
         as: Link,
         id: id,
         rightIcon: 'AddLine',
-        onRightIconClick: () => navigate(`/CreateInterface/${id}`),
+        onRightIconClick: () => navigate(`/proxy?to=/CreateInterface/${id}`),
       })
     ),
   },

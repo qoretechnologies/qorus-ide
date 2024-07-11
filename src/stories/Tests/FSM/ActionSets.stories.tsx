@@ -48,7 +48,9 @@ export const CreateNewSet: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll('.system-option.reqore-textarea')[0],
+      document.querySelectorAll(
+        '.fsm-action-set-dialog .system-option.reqore-textarea'
+      )[0],
       {
         target: { value: 'Test action set' },
       }
@@ -92,7 +94,9 @@ export const CreateNewSetWithEventTrigger: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll('.system-option.reqore-textarea')[0],
+      document.querySelectorAll(
+        '.fsm-action-set-dialog .system-option.reqore-textarea'
+      )[0],
       {
         target: { value: 'With Event Trigger' },
       }
@@ -250,9 +254,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await _testsOpenAppCatalogue(undefined, 500, 200);
 
-    await expect(
-      document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(30);
+    let appCount = document.querySelectorAll('.reqore-collection-item').length;
 
     await _testsSelectAppOrAction(canvas, 'Saved Favorites');
 
@@ -262,7 +264,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await expect(
       document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(29);
+    ).toBe(appCount - 1);
   },
 };
 

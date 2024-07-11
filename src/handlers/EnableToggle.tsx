@@ -20,6 +20,7 @@ export interface IEnableToggleProps
 export const EnableToggle = memo(
   ({ enabled, type, id, hasLabel, ...rest }: IEnableToggleProps) => {
     const [value, setValue] = useState<IEnableToggleProps['enabled']>(enabled);
+
     const { toggleEnabled } = useContextSelector(
       InterfacesContext,
       ({ toggleEnabled }) => ({ toggleEnabled })

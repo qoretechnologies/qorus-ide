@@ -1,5 +1,5 @@
 import { ReqoreMessage, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
-import { forEach, omit, reduce } from 'lodash';
+import { forEach, isEqual, omit, reduce } from 'lodash';
 import size from 'lodash/size';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useUpdateEffect } from 'react-use';
@@ -114,6 +114,12 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   const t = useContext(TextContext);
   const [showConfigItemsManager, setShowConfigItemsManager] =
     useState<boolean>(false);
+
+  useUpdateEffect(() => {
+    if (!isEqual(data, newData)) {
+      setNewData(data);
+    }
+  }, [data]);
 
   useUpdateEffect(() => {
     onSubmit(id, omit(newData, ['transitions']));
