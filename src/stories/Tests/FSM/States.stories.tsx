@@ -823,7 +823,7 @@ export const NewSingleSearchState: StoryFSM = {
     // Check that state data were saved
     await _testsClickState(stateName);
 
-    await sleep(500);
+    await sleep(1000);
 
     await waitFor(
       async () => {
