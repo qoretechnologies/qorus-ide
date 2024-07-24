@@ -48,7 +48,7 @@ export const RichText: StoryObj<typeof Auto> = {
     await waitFor(() => canvasElement.querySelector('div[contenteditable]'), {
       timeout: 15000,
     });
-    await sleep(500);
+    await sleep(1500);
     await fireEvent.click(canvasElement.querySelector('div[contenteditable]'));
   },
 };

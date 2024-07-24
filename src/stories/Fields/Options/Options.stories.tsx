@@ -216,7 +216,7 @@ export const Basic: StoryObj<typeof meta> = {
         expect(
           document.querySelectorAll('.reqore-collection-item.system-option')
             .length
-        ).toBe(15),
+        ).toBe(16),
       {
         timeout: 10000,
       }
