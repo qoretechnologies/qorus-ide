@@ -29,7 +29,9 @@ export const useTemplates = (
         );
 
         if (serverTemplates.ok) {
-          templatesCache[interfaceContext] = buildTemplates(serverTemplates.data);
+          templatesCache[interfaceContext] = buildTemplates(
+            serverTemplates.data
+          );
         }
       }
 
@@ -45,7 +47,10 @@ export const useTemplates = (
 
     return {
       ...(globalTemplates.value || {}),
-      items: [...(globalTemplates.value?.items || []), ...(localTemplates?.items || [])],
+      items: [
+        ...(globalTemplates.value?.items || []),
+        ...(localTemplates?.items || []),
+      ],
     };
   }, [globalTemplates, localTemplates]);
 

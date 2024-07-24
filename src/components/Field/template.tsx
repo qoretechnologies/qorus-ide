@@ -26,6 +26,7 @@ import BooleanField from '../Field/boolean';
 import DateField from '../Field/date';
 import LongStringField from '../Field/longString';
 import Number from '../Field/number';
+import { RichTextField } from './richText';
 
 export type IQorusType =
   | 'string'
@@ -129,6 +130,7 @@ export const ComponentMap = {
   bool: BooleanField,
   boolean: BooleanField,
   date: DateField,
+  richtext: RichTextField,
 };
 
 export const TemplateField = ({

@@ -1,8 +1,12 @@
 import { createContext } from 'use-context-selector';
-import { TQorusInterfaceCount } from '../containers/InterfacesView';
+import {
+  IQorusInterface,
+  TQorusInterfaceCount,
+} from '../containers/InterfacesView';
 
 export interface IInterfacesContext {
   categories?: TQorusInterfaceCount;
+  interfaces?: Record<string, IQorusInterface[]>;
   clone?: (type: string, id: string | number) => void;
   storage?: Record<string, any>;
   getStorage?: <T>(path: string, defaultValue?: T) => T;
@@ -12,5 +16,6 @@ export interface IInterfacesContext {
 
 export const InterfacesContext = createContext<IInterfacesContext>({
   categories: {},
+  interfaces: {},
   storage: {},
 });

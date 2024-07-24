@@ -1,6 +1,11 @@
 import { StoryObj } from '@storybook/react';
+import { fireEvent, waitFor } from '@storybook/test';
+import { useState } from 'react';
 import Auto from '../../components/Field/auto';
-import { _testsClickButton, _testsWaitForText } from '../Tests/utils';
+import Loader from '../../components/Loader';
+import { useTemplates } from '../../hooks/useTemplates';
+import { InterfacesProvider } from '../../providers/Interfaces';
+import { _testsClickButton, _testsWaitForText, sleep } from '../Tests/utils';
 
 export default {
   component: Auto,
@@ -11,6 +16,40 @@ export const Default: StoryObj<typeof Auto> = {};
 export const Connection: StoryObj<typeof Auto> = {
   args: {
     defaultType: 'connection',
+  },
+};
+export const RichText: StoryObj<typeof Auto> = {
+  render: (args) => {
+    const [value, setValue] = useState(undefined);
+    const templates = useTemplates(true);
+
+    if (templates.loading) {
+      return <Loader />;
+    }
+
+    return (
+      <InterfacesProvider>
+        <Auto
+          {...args}
+          value={value}
+          onChange={(name, value) => setValue(value)}
+          templates={templates.value}
+        />
+      </InterfacesProvider>
+    );
+  },
+  args: {
+    defaultType: 'richtext',
+    supports_references: true,
+    supports_styling: true,
+    supports_templates: true,
+  },
+  play: async ({ canvasElement }) => {
+    await waitFor(() => canvasElement.querySelector('div[contenteditable]'), {
+      timeout: 15000,
+    });
+    await sleep(500);
+    await fireEvent.click(canvasElement.querySelector('div[contenteditable]'));
   },
 };
 export const ConnectionWithAllowedValues: StoryObj<typeof Auto> = {

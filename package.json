@@ -9,7 +9,7 @@
     "@monaco-editor/react": "^4.6.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@qoretechnologies/python-parser": "^0.4.10",
-    "@qoretechnologies/reqore": "^0.47.4",
+    "@qoretechnologies/reqore": "^0.48.2",
     "@qoretechnologies/reqraft": "^0.6.1",
     "@sentry/browser": "^7.109.0",
     "@svgr/webpack": "^5.5.0",
