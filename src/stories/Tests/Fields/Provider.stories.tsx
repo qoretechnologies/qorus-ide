@@ -19,9 +19,6 @@ export const GoStepBack: StoryObj<typeof meta> = {
   args: {
     requiresRequest: true,
   },
-  parameters: {
-    chromatic: { disable: true },
-  },
   play: async ({ canvasElement, ...rest }) => {
     await waitFor(
       () =>

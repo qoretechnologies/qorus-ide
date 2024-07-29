@@ -77,19 +77,19 @@ export async function _testsChangeRichText(value: string, nth: number = 0) {
 
   await element.scrollIntoView();
 
-  await sleep(3000);
+  await sleep(500);
 
   await userEvent.click(element);
 
-  await sleep(3000);
+  await sleep(500);
 
   await userEvent.click(element);
 
-  await sleep(3000);
+  await sleep(500);
 
   await userEvent.keyboard(value);
 
-  await sleep(1000);
+  await sleep(500);
 }
 
 export async function _testsQodexCanBePublished() {
