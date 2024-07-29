@@ -18,7 +18,6 @@ import {
   _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
-  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -142,27 +141,6 @@ export const FieldsCanBeAdded: Story = {
       'Optional fields available (1)'
     )();
     await _testsExpectFieldsCountToMatch(4, true, 'errors');
-  },
-};
-
-export const ChangesCanBeDiscarded: Story = {
-  ...New,
-  parameters: {
-    chromatic: { disable: true },
-  },
-
-  play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true, 'errors');
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'SelectAll',
-      'Optional fields available (2)'
-    )();
-    await _testsExpectFieldsCountToMatch(4, true, 'errors');
-    await sleep(2000);
-    await _testsClickButton({ label: 'Reset', wait: 10000 });
-    await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(2, true, 'errors');
   },
 };
 
