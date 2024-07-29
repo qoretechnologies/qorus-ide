@@ -18,6 +18,7 @@ import {
   _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
+  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
@@ -158,7 +159,8 @@ export const ChangesCanBeDiscarded: Story = {
       'Optional fields available (2)'
     )();
     await _testsExpectFieldsCountToMatch(4, true, 'errors');
-    await _testsClickButton({ label: 'Reset' });
+    await sleep(2000);
+    await _testsClickButton({ label: 'Reset', wait: 10000 });
     await _testsConfirmDialog();
     await _testsExpectFieldsCountToMatch(2, true, 'errors');
   },
