@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { fireEvent, waitFor } from '@storybook/test';
+import { expect, userEvent, waitFor } from '@storybook/test';
 import { useState } from 'react';
 import Auto from '../../components/Field/auto';
 import Loader from '../../components/Loader';
@@ -20,7 +20,7 @@ export const Connection: StoryObj<typeof Auto> = {
 };
 export const RichText: StoryObj<typeof Auto> = {
   render: (args) => {
-    const [value, setValue] = useState(undefined);
+    const [value, setValue] = useState(args.value);
     const templates = useTemplates(true);
 
     if (templates.loading) {
@@ -40,6 +40,7 @@ export const RichText: StoryObj<typeof Auto> = {
   },
   args: {
     defaultType: 'richtext',
+    value: 'something',
     supports_references: true,
     supports_styling: true,
     supports_templates: true,
@@ -49,7 +50,14 @@ export const RichText: StoryObj<typeof Auto> = {
       timeout: 15000,
     });
     await sleep(4500);
-    await fireEvent.click(canvasElement.querySelector('div[contenteditable]'));
+    await userEvent.click(canvasElement.querySelector('div[contenteditable]'));
+    await sleep(1000);
+    await userEvent.click(canvasElement.querySelector('div[contenteditable]'));
+    await userEvent.keyboard(' test');
+
+    await expect(
+      canvasElement.querySelector('div[contenteditable]').textContent
+    ).toBe('something test');
   },
 };
 export const ConnectionWithAllowedValues: StoryObj<typeof Auto> = {

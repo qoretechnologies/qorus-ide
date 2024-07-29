@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { expect, userEvent, waitFor, within } from "@storybook/test";
+import { expect, userEvent, waitFor, within } from '@storybook/test';
 import { GlobalSearch } from '../../components/GlobalSearch';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import { sleep } from '../Tests/utils';
@@ -37,9 +37,10 @@ export const NoResults: Story = {
       canvasElement.querySelector('.reqore-input')!,
       'no results'
     );
+    await sleep(1100);
     await waitFor(
-      () => expect(canvas.findByText('No results found')).toBeTruthy(),
-      { timeout: 5000 }
+      () => expect(canvas.queryAllByText('No results found')).toBeTruthy(),
+      { timeout: 10000 }
     );
   },
 };

@@ -60,6 +60,38 @@ export function _testsSubmitFSMState(buttonId?: string) {
   };
 }
 
+export async function _testsChangeRichText(value: string, nth: number = 0) {
+  await waitFor(
+    () =>
+      expect(
+        document.querySelectorAll('div.system-option[contenteditable="true"]')[
+          nth
+        ]
+      ).toBeInTheDocument(),
+    { timeout: 10000 }
+  );
+
+  const element = document.querySelectorAll(
+    'div.system-option[contenteditable="true"]'
+  )[nth];
+
+  await element.scrollIntoView();
+
+  await sleep(3000);
+
+  await userEvent.click(element);
+
+  await sleep(3000);
+
+  await userEvent.click(element);
+
+  await sleep(3000);
+
+  await userEvent.keyboard(value);
+
+  await sleep(1000);
+}
+
 export async function _testsQodexCanBePublished() {
   await waitFor(
     () => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(),

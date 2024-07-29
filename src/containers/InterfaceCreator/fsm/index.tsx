@@ -823,7 +823,9 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   // For example when switching from one draft to another or from
   // a new Qog to a draft, but only if interface id has changed
   useUpdateEffect(() => {
-    setIsAddingNewStateAt(undefined);
+    if (size(states) !== 0) {
+      setIsAddingNewStateAt(undefined);
+    }
   }, [interfaceId]);
 
   useMount(() => {

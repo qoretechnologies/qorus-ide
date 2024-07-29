@@ -21,7 +21,7 @@ import {
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
-const classData = interfaces.class[0].data.class;
+const classData = interfaces.class[5].data.class;
 
 const Creator = compose(
   withFields(),

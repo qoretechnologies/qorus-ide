@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
-import { expect, fireEvent, waitFor, within } from "@storybook/test";
+import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import connectors from '../../../components/Field/connectors';
 import {
+  _testsChangeRichText,
   _testsSelectItemFromCollection,
   _testsSelectItemFromDropdown,
   sleep,
@@ -222,15 +223,7 @@ export const ApiCall: StoryObj<typeof meta> = {
 
     await sleep(2500);
 
-    await waitFor(
-      () =>
-        fireEvent.change(document.querySelector('.system-option textarea'), {
-          target: {
-            value: 'logging some stuff',
-          },
-        }),
-      { timeout: 10000 }
-    );
+    await _testsChangeRichText('logging some stuff');
   },
 };
 

@@ -4,7 +4,7 @@ import FSMView from '../../../containers/InterfaceCreator/fsm';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import { Existing } from '../../Views/FSM.stories';
 import { StoryMeta } from '../../types';
-import { _testsClickState, sleep } from '../utils';
+import { _testsClickButton, _testsClickState, sleep } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
 
 const meta = {
@@ -39,6 +39,8 @@ export const StateDataIsShown: StoryFSM = {
       document.querySelector('.system-option.reqore-textarea')
     );
     await sleep(500);
+    await _testsClickButton({ label: 'Templates' });
+    await sleep(100);
     await expect(
       document.querySelectorAll('.reqore-popover-content .reqore-menu-item')
     ).toHaveLength(3);
