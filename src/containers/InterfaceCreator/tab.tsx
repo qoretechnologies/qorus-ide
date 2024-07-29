@@ -430,6 +430,7 @@ const Tab: React.FC<ITabProps> = ({
         label: 'Clone',
         tooltip: 'Clone and edit this interface',
         icon: 'FileCopyLine',
+        show: !categories[type].disable_creation,
         onClick: () => {
           clone(type, id);
         },

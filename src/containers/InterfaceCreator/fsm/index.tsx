@@ -821,12 +821,10 @@ export const FSMView: React.FC<IFSMViewProps> = ({
 
   // We need to hide the modal if the draft is applied
   // For example when switching from one draft to another or from
-  // a new Qog to a draft
-  useEffect(() => {
-    if (searchParams.get('draftId')) {
-      setIsAddingNewStateAt(undefined);
-    }
-  }, [searchParams.get('draftId')]);
+  // a new Qog to a draft, but only if interface id has changed
+  useUpdateEffect(() => {
+    setIsAddingNewStateAt(undefined);
+  }, [interfaceId]);
 
   useMount(() => {
     if (!embedded) {
@@ -2341,6 +2339,7 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }
 
   const renderAppCatalogue = () => {
+    console.log(addingNewStateAt);
     if (addingNewStateAt) {
       const isFirstTriggerState =
         (size(states) === 0 || !hasEventTriggerState()) &&

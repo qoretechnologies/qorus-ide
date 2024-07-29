@@ -537,8 +537,10 @@ export async function _testsCreatorViewCode() {
   );
 }
 
-export async function _testsCreatorDraftSaveCheck() {
-  await _testsWaitForText('field-label-display_name');
+export async function _testsCreatorDraftSaveCheck(
+  label: string = 'display_name'
+) {
+  await _testsWaitForText(`field-label-${label}`);
 
   await fireEvent.change(
     document.querySelector('.creator-field .reqore-input'),

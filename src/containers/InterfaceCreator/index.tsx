@@ -207,8 +207,8 @@ export const CreateInterface = ({
           <InterfaceCreatorPanel
             type={'constant'}
             onSubmitSuccess={onSubmit}
-            data={initialData.group}
-            isEditing={!!initialData.group}
+            data={initialData.constant}
+            isEditing={!!initialData.constant}
           />
         </CreatorWrapper>
       )}
@@ -217,8 +217,8 @@ export const CreateInterface = ({
           <InterfaceCreatorPanel
             type={'function'}
             onSubmitSuccess={onSubmit}
-            data={initialData.group}
-            isEditing={!!initialData.group}
+            data={initialData.function}
+            isEditing={!!initialData.function}
           />
         </CreatorWrapper>
       )}

@@ -1,5 +1,5 @@
 {
-  "request_id": "FSIprXnA442PhlB",
+  "request_id": "3di1FiFY4T5oovr",
   "tab_token": "none",
   "data": {
     "fsm": {
@@ -9,7 +9,7 @@
       "supports_code": false,
       "url_root": "fsms",
       "drafts": 2,
-      "items": 49
+      "items": 50
     },
     "connection": {
       "singular_display_name": "Connection",
@@ -18,7 +18,7 @@
       "supports_code": false,
       "url_root": "connections",
       "drafts": 0,
-      "items": 25
+      "items": 30
     },
     "class": {
       "singular_display_name": "Class",
@@ -27,7 +27,17 @@
       "supports_code": true,
       "url_root": "classes",
       "drafts": 0,
-      "items": 192
+      "items": 193
+    },
+    "constant": {
+      "singular_display_name": "Constant",
+      "display_name": "Constants",
+      "short_desc": "Constants that can be used in Qorus interface code",
+      "disable_creation": true,
+      "supports_code": true,
+      "url_root": "constants",
+      "drafts": 0,
+      "items": 8
     },
     "errors": {
       "singular_display_name": "Error",
@@ -36,7 +46,7 @@
       "supports_code": false,
       "url_root": "error-sets",
       "drafts": 0,
-      "items": 14
+      "items": 15
     },
     "event": {
       "singular_display_name": "Workflow Sync Event",
@@ -47,6 +57,16 @@
       "drafts": 0,
       "items": 9
     },
+    "function": {
+      "singular_display_name": "Function",
+      "display_name": "Functions",
+      "short_desc": "Functions that can be used in Qorus interface code",
+      "supports_code": true,
+      "disable_creation": true,
+      "url_root": "functions",
+      "drafts": 0,
+      "items": 162
+    },
     "group": {
       "singular_display_name": "Interface Group",
       "display_name": "Interface Groups",
@@ -54,7 +74,7 @@
       "supports_code": false,
       "url_root": "groups",
       "drafts": 0,
-      "items": 102
+      "items": 42
     },
     "job": {
       "singular_display_name": "Scheduled Job",
@@ -63,7 +83,7 @@
       "supports_code": true,
       "url_root": "jobs",
       "drafts": 0,
-      "items": 91
+      "items": 92
     },
     "mapper": {
       "singular_display_name": "Mapper",
@@ -81,7 +101,7 @@
       "supports_code": true,
       "url_root": "classes",
       "drafts": 0,
-      "items": 3
+      "items": 4
     },
     "pipeline": {
       "singular_display_name": "Data Pipeline",
@@ -108,7 +128,7 @@
       "supports_code": true,
       "url_root": "services",
       "drafts": 0,
-      "items": 117
+      "items": 118
     },
     "sla": {
       "singular_display_name": "SLA",

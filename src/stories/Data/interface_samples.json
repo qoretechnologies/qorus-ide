@@ -1,7 +1,201 @@
 {
   "class": [
     {
-      "request_id": "6eIjSdPN44VMXNm",
+      "request_id": "NZaNwcRrqKYqoD3",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 97,
+          "type": "class",
+          "desc": "FSM retry test",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass FsmRetryTest {\n    string retry() {\n        UserApi::logInfo(\"returning RETRY\");\n        return OMQ::StatRetry;\n    }\n}\n",
+          "name": "FsmRetryTest",
+          "display_name": "Fsm Retry Test",
+          "short_desc": "FSM retry test",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-connectors": [
+            {
+              "name": "retry",
+              "method": "retry",
+              "output-provider": {
+                "can_manage_fields": false,
+                "name": "qoretechnologies",
+                "path": "/building-blocks/generic/string",
+                "type": "type"
+              },
+              "type": "output"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 97"
+    },
+    {
+      "request_id": "y3oFM2ShqThp0fn",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 134,
+          "type": "class",
+          "desc": "Java noop test step class",
+          "lang": "java",
+          "source": "package com.qoretechnologies.qorus.test.regression.java1;\n\nimport com.qoretechnologies.qorus.workflow.QorusNormalStep;\n\npublic class JavaNoopTestStep1 extends QorusNormalStep {\n    public void primary() throws Throwable {\n    }\n}\n",
+          "name": "JavaNoopTestStep1",
+          "display_name": "Java Noop Test Step1",
+          "short_desc": "Java noop test step class",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 134"
+    },
+    {
+      "request_id": "5TzxWCdSmKwyz9V",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 438,
+          "type": "class",
+          "desc": "Sets Busylight settings according to the input and configuration",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass HaltianToBusylight {\n    hash<auto> process(*hash<auto> input) {\n        string key = UserApi::getConfigItemValue(\"key\");\n        auto value = input.last_measurement{key};\n        if (!exists value) {\n            throw \"VALUE-ERROR\", sprintf(\"Could not find any measurement value in input:last_measurement.%s: %y\",\n                key, input);\n        }\n        list<auto> l = UserApi::getConfigItemValue(\"thresholds\");\n        UserApi::logInfo(\"got measurement: %y\", value);\n        foreach auto e in (l) {\n            auto start = e.start;\n            if (!exists start) {\n                UserApi::logError(\"Threshold entry %d/%d has no 'start' value: %y\", $# + 1, l.size(), e);\n                continue;\n            }\n            auto end = e.end;\n            if (!exists end) {\n                UserApi::logError(\"Threshold entry %d/%d has no 'end' value: %y\", $# + 1, l.size(), e);\n                continue;\n            }\n            if (value >= start && value < end) {\n                UserApi::logInfo(\"Value %y range [%d, %d]: MATCH: %y\", value, start, end, e);\n                return {\n                    \"red\": e.red ?? 0,\n                    \"green\": e.green ?? 0,\n                    \"blue\": e.blue ?? 0,\n                    \"on\": e.on ?? 255,\n                    \"off\": e.off ?? 0,\n                };\n            } else {\n                UserApi::logInfo(\"Value %y range [%y, %y]: NO MATCH\", value, start, end);\n            }\n        }\n        UserApi::logInfo(\"No match in %d threshold entr%s; returning default: turn off the Busylight\", l.size(),\n            l.size() == 1 ? \"y\" : \"ies\");\n        return {\n            \"red\": 0,\n            \"green\": 0,\n            \"blue\": 0,\n            \"on\": 0,\n            \"off\": 255,\n        };\n    }\n}\n",
+          "name": "HaltianToBusylight",
+          "display_name": "Haltian To Busylight",
+          "short_desc": "Sets Busylight settings according to the input and configuration",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-connectors": [
+            {
+              "name": "process",
+              "type": "input-output",
+              "method": "process",
+              "input-provider": {
+                "type": "type",
+                "name": "qore",
+                "can_manage_fields": true,
+                "descriptions": ["Qore data type \"hash<auto>\""],
+                "path": "/hash"
+              },
+              "output-provider": {
+                "type": "type",
+                "name": "haltian",
+                "descriptions": ["Qore data type \"hash<auto>\""],
+                "path": "/sensor/busylight-output"
+              }
+            }
+          ],
+          "config-items": [
+            {
+              "name": "thresholds",
+              "description": "A list of thresholds and sensor ranges to be matched in order; the first entry that matches will be used.\n\nEach entry in the list must be a hash with the following keys:\n- `start`: the start of the range, the value must be >= to this value to match\n- `end`: the end of the range, the value must be < this value to match\n- [`red`]: the red value for the Busylight; must be between 0-255 inclusive\n- [`green`]: the green value for the Busylight; must be between 0-255 inclusive\n- [`blue`]: the blue value for the Busylight; must be between 0-255 inclusive\n- [`on`]: the on value for the Busylight; must be between 0-255 inclusive; if omitted will be assumed as `255`\n- [`off`]: the off value for the Busylight; must be between 0-255 inclusive' if omitted will be assumed as `0`\n\nExample entry:\n```\n- start: 15\n  end: 17\n  blue: 255\n- start: 17\n  end: 25\n  green: 255\n- start: 25\n  end: 35\n  red: 255\n- start: 35\n  end: 200\n  red: 255\n  on: 50\n  off: 50\n```\n\nThis would set the light to blue if the sensor value is between `15` and `17`, green if it's between `17` and `25`, red if it's between `25` and `35`, and flashing red if `35` or more.",
+              "config_group": "Main",
+              "type": "list",
+              "strictly_local": true
+            },
+            {
+              "name": "key",
+              "description": "The name of the value key to check",
+              "config_group": "Main",
+              "type": "string",
+              "default_value": "value",
+              "strictly_local": true,
+              "default_value_true_type": "string"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 438"
+    },
+    {
+      "request_id": "qbcW0MxLdmlSt2I",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 519,
+          "type": "class",
+          "desc": "Convert Gingco bookings to EmpathicBuilding measurements",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\n#! Converts Gingco bookings to EmpathicBuildiung measurements\nclass GingcoBookingsToEmpathicBuilding {\n    public {\n        const DefaultReportSubject = \"Gingco Buchung\";\n    }\n\n    #! Converts Gingco API bookings to EmpathicBuildiung measurements\n    static list<auto> convertApi(*list<auto> bookings) {\n        *date adjust;\n        if (*int add_hours = UserApi::getConfigItemValue(\"gingco-time-adjust\")) {\n            adjust = hours(add_hours);\n        }\n        hash<auto> rinfo;\n        foreach hash<auto> info in (bookings) {\n            date start = date(info.Datum + \" \" + info.Beginn, \"DD.MM.YYYY HH:mm\") + adjust;\n            if (!rinfo{info.object_id}) {\n                rinfo{info.object_id} = {\n                    \"type\": \"reservation\",\n                    \"time\": start,\n                    \"vendor_id\": info.object_id,\n                    \"name\": info.object_name,\n                    \"events\": (),\n                };\n            }\n            rinfo{info.object_id}.events += {\n                \"start\": info.begin + adjust,\n                \"end\": info.end + adjust,\n                \"subject\": info.topic,\n            };\n        }\n\n        #logDebug(\"RINFO: %N\", rinfo);\n        UserApi::logInfo(\"Gingco to EmpathicBuilding: %d booking%s processed (adjusted: %y)\", bookings.size(),\n            bookings.size() == 1 ? \"\" : \"s\", adjust);\n        return rinfo.values();\n    }\n\n    #! Converts Gingco report bookings to EmpathicBuildiung measurements\n    static list<auto> convertReport(*list<auto> bookings) {\n        *date adjust;\n        if (*int add_hours = UserApi::getConfigItemValue(\"gingco-time-adjust\")) {\n            adjust = hours(add_hours);\n        }\n        hash<auto> rinfo;\n        foreach hash<auto> info in (bookings) {\n            date start = date(info.Datum + \" \" + info.Beginn, \"DD.MM.YYYY HH:mm\") + adjust;\n            date end = date(info.Datum + \" \" + info.Ende, \"DD.MM.YYYY HH:mm\") + adjust;\n\n            if (!rinfo{info.\"Gebuchtes Objekt\"}) {\n                rinfo{info.\"Gebuchtes Objekt\"} = {\n                    \"type\": \"reservation\",\n                    \"time\": start,\n                    \"vendor_id\": info.Reservation_ID,\n                    \"name\": info.\"Gebuchtes Objekt\",\n                    \"events\": (),\n                };\n            }\n            rinfo{info.\"Gebuchtes Objekt\"}.events += {\n                \"start\": start,\n                \"end\": end,\n                \"subject\": DefaultReportSubject,\n                \"booking_ref\": UUID::get(),\n            };\n        }\n\n        UserApi::logInfo(\"Gingco to EmpathicBuilding: %d booking%s processed (adjusted: %y)\", bookings.size(),\n            bookings.size() == 1 ? \"\" : \"s\", adjust);\n\n        #UserApi::logDebug(\"RINFO: %N\", rinfo);\n\n        return rinfo.values();\n    }\n}\n",
+          "name": "GingcoBookingsToEmpathicBuilding",
+          "display_name": "Gingco Bookings To Empathic Building",
+          "short_desc": "Convert Gingco bookings to EmpathicBuilding measurements",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-connectors": [
+            {
+              "name": "convertApi",
+              "type": "input",
+              "method": "convertApi"
+            },
+            {
+              "name": "convertReport",
+              "type": "input",
+              "method": "convertReport"
+            }
+          ],
+          "config-items": [
+            {
+              "name": "gingco-time-adjust",
+              "description": "The number of hours to add or subtract from the time before posting in Empathic Building",
+              "config_group": "Main",
+              "type": "*int",
+              "strictly_local": true
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 519"
+    },
+    {
+      "request_id": "rx0BijtHx7IYh95",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 98,
+          "type": "class",
+          "desc": "Simple action class connector",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3485Action {\n    auto action1(auto _data) {\n        UserApi::logInfo(\"Issue3485Action action1 was called: %y\", _data);\n        hash res = {\"d\": _data, \"action1\": True};\n        return res;\n    }\n\n    auto errorAction(auto _data) {\n        throw \"ERROR-ACTION\", \"action error\";\n    }\n}\n",
+          "name": "Issue3485Action",
+          "display_name": "Issue3485 Action",
+          "short_desc": "Simple action class connector",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-connectors": [
+            {
+              "name": "action1",
+              "method": "action1",
+              "type": "input-output"
+            },
+            {
+              "name": "errorAction",
+              "method": "errorAction",
+              "type": "input"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 98"
+    },
+    {
+      "request_id": "UEUuS4yB2nanHgR",
       "tab_token": "none",
       "data": {
         "iface_kind": "class",
@@ -64,201 +258,7 @@
       "message": "got class 117"
     },
     {
-      "request_id": "9EtXdidIFqtufTS",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 134,
-          "type": "class",
-          "desc": "Java noop test step class",
-          "lang": "java",
-          "source": "package com.qoretechnologies.qorus.test.regression.java1;\n\nimport com.qoretechnologies.qorus.workflow.QorusNormalStep;\n\npublic class JavaNoopTestStep1 extends QorusNormalStep {\n    public void primary() throws Throwable {\n    }\n}\n",
-          "name": "JavaNoopTestStep1",
-          "display_name": "Java Noop Test Step1",
-          "short_desc": "Java noop test step class",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 134"
-    },
-    {
-      "request_id": "X2n4TvaPWoKyTH3",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 97,
-          "type": "class",
-          "desc": "FSM retry test",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass FsmRetryTest {\n    string retry() {\n        UserApi::logInfo(\"returning RETRY\");\n        return OMQ::StatRetry;\n    }\n}\n",
-          "name": "FsmRetryTest",
-          "display_name": "Fsm Retry Test",
-          "short_desc": "FSM retry test",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-connectors": [
-            {
-              "name": "retry",
-              "method": "retry",
-              "output-provider": {
-                "can_manage_fields": false,
-                "name": "qoretechnologies",
-                "path": "/building-blocks/generic/string",
-                "type": "type"
-              },
-              "type": "output"
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 97"
-    },
-    {
-      "request_id": "Zm6TlSXsyHRJrld",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 438,
-          "type": "class",
-          "desc": "Sets Busylight settings according to the input and configuration",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass HaltianToBusylight {\n    hash<auto> process(*hash<auto> input) {\n        string key = UserApi::getConfigItemValue(\"key\");\n        auto value = input.last_measurement{key};\n        if (!exists value) {\n            throw \"VALUE-ERROR\", sprintf(\"Could not find any measurement value in input:last_measurement.%s: %y\",\n                key, input);\n        }\n        list<auto> l = UserApi::getConfigItemValue(\"thresholds\");\n        UserApi::logInfo(\"got measurement: %y\", value);\n        foreach auto e in (l) {\n            auto start = e.start;\n            if (!exists start) {\n                UserApi::logError(\"Threshold entry %d/%d has no 'start' value: %y\", $# + 1, l.size(), e);\n                continue;\n            }\n            auto end = e.end;\n            if (!exists end) {\n                UserApi::logError(\"Threshold entry %d/%d has no 'end' value: %y\", $# + 1, l.size(), e);\n                continue;\n            }\n            if (value >= start && value < end) {\n                UserApi::logInfo(\"Value %y range [%d, %d]: MATCH: %y\", value, start, end, e);\n                return {\n                    \"red\": e.red ?? 0,\n                    \"green\": e.green ?? 0,\n                    \"blue\": e.blue ?? 0,\n                    \"on\": e.on ?? 255,\n                    \"off\": e.off ?? 0,\n                };\n            } else {\n                UserApi::logInfo(\"Value %y range [%y, %y]: NO MATCH\", value, start, end);\n            }\n        }\n        UserApi::logInfo(\"No match in %d threshold entr%s; returning default: turn off the Busylight\", l.size(),\n            l.size() == 1 ? \"y\" : \"ies\");\n        return {\n            \"red\": 0,\n            \"green\": 0,\n            \"blue\": 0,\n            \"on\": 0,\n            \"off\": 255,\n        };\n    }\n}\n",
-          "name": "HaltianToBusylight",
-          "display_name": "Haltian To Busylight",
-          "short_desc": "Sets Busylight settings according to the input and configuration",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-connectors": [
-            {
-              "name": "process",
-              "type": "input-output",
-              "method": "process",
-              "input-provider": {
-                "type": "type",
-                "name": "qore",
-                "can_manage_fields": true,
-                "descriptions": ["Qore data type \"hash<auto>\""],
-                "path": "/hash"
-              },
-              "output-provider": {
-                "type": "type",
-                "name": "haltian",
-                "descriptions": ["Qore data type \"hash<auto>\""],
-                "path": "/sensor/busylight-output"
-              }
-            }
-          ],
-          "config-items": [
-            {
-              "name": "thresholds",
-              "description": "A list of thresholds and sensor ranges to be matched in order; the first entry that matches will be used.\n\nEach entry in the list must be a hash with the following keys:\n- `start`: the start of the range, the value must be >= to this value to match\n- `end`: the end of the range, the value must be < this value to match\n- [`red`]: the red value for the Busylight; must be between 0-255 inclusive\n- [`green`]: the green value for the Busylight; must be between 0-255 inclusive\n- [`blue`]: the blue value for the Busylight; must be between 0-255 inclusive\n- [`on`]: the on value for the Busylight; must be between 0-255 inclusive; if omitted will be assumed as `255`\n- [`off`]: the off value for the Busylight; must be between 0-255 inclusive' if omitted will be assumed as `0`\n\nExample entry:\n```\n- start: 15\n  end: 17\n  blue: 255\n- start: 17\n  end: 25\n  green: 255\n- start: 25\n  end: 35\n  red: 255\n- start: 35\n  end: 200\n  red: 255\n  on: 50\n  off: 50\n```\n\nThis would set the light to blue if the sensor value is between `15` and `17`, green if it's between `17` and `25`, red if it's between `25` and `35`, and flashing red if `35` or more.",
-              "config_group": "Main",
-              "type": "list",
-              "strictly_local": true
-            },
-            {
-              "name": "key",
-              "description": "The name of the value key to check",
-              "config_group": "Main",
-              "type": "string",
-              "default_value": "value",
-              "strictly_local": true,
-              "default_value_true_type": "string"
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 438"
-    },
-    {
-      "request_id": "MD9dknKFxlhFHL1",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 519,
-          "type": "class",
-          "desc": "Convert Gingco bookings to EmpathicBuilding measurements",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\n#! Converts Gingco bookings to EmpathicBuildiung measurements\nclass GingcoBookingsToEmpathicBuilding {\n    public {\n        const DefaultReportSubject = \"Gingco Buchung\";\n    }\n\n    #! Converts Gingco API bookings to EmpathicBuildiung measurements\n    static list<auto> convertApi(*list<auto> bookings) {\n        *date adjust;\n        if (*int add_hours = UserApi::getConfigItemValue(\"gingco-time-adjust\")) {\n            adjust = hours(add_hours);\n        }\n        hash<auto> rinfo;\n        foreach hash<auto> info in (bookings) {\n            date start = date(info.Datum + \" \" + info.Beginn, \"DD.MM.YYYY HH:mm\") + adjust;\n            if (!rinfo{info.object_id}) {\n                rinfo{info.object_id} = {\n                    \"type\": \"reservation\",\n                    \"time\": start,\n                    \"vendor_id\": info.object_id,\n                    \"name\": info.object_name,\n                    \"events\": (),\n                };\n            }\n            rinfo{info.object_id}.events += {\n                \"start\": info.begin + adjust,\n                \"end\": info.end + adjust,\n                \"subject\": info.topic,\n            };\n        }\n\n        #logDebug(\"RINFO: %N\", rinfo);\n        UserApi::logInfo(\"Gingco to EmpathicBuilding: %d booking%s processed (adjusted: %y)\", bookings.size(),\n            bookings.size() == 1 ? \"\" : \"s\", adjust);\n        return rinfo.values();\n    }\n\n    #! Converts Gingco report bookings to EmpathicBuildiung measurements\n    static list<auto> convertReport(*list<auto> bookings) {\n        *date adjust;\n        if (*int add_hours = UserApi::getConfigItemValue(\"gingco-time-adjust\")) {\n            adjust = hours(add_hours);\n        }\n        hash<auto> rinfo;\n        foreach hash<auto> info in (bookings) {\n            date start = date(info.Datum + \" \" + info.Beginn, \"DD.MM.YYYY HH:mm\") + adjust;\n            date end = date(info.Datum + \" \" + info.Ende, \"DD.MM.YYYY HH:mm\") + adjust;\n\n            if (!rinfo{info.\"Gebuchtes Objekt\"}) {\n                rinfo{info.\"Gebuchtes Objekt\"} = {\n                    \"type\": \"reservation\",\n                    \"time\": start,\n                    \"vendor_id\": info.Reservation_ID,\n                    \"name\": info.\"Gebuchtes Objekt\",\n                    \"events\": (),\n                };\n            }\n            rinfo{info.\"Gebuchtes Objekt\"}.events += {\n                \"start\": start,\n                \"end\": end,\n                \"subject\": DefaultReportSubject,\n                \"booking_ref\": UUID::get(),\n            };\n        }\n\n        UserApi::logInfo(\"Gingco to EmpathicBuilding: %d booking%s processed (adjusted: %y)\", bookings.size(),\n            bookings.size() == 1 ? \"\" : \"s\", adjust);\n\n        #UserApi::logDebug(\"RINFO: %N\", rinfo);\n\n        return rinfo.values();\n    }\n}\n",
-          "name": "GingcoBookingsToEmpathicBuilding",
-          "display_name": "Gingco Bookings To Empathic Building",
-          "short_desc": "Convert Gingco bookings to EmpathicBuilding measurements",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-connectors": [
-            {
-              "name": "convertApi",
-              "type": "input",
-              "method": "convertApi"
-            },
-            {
-              "name": "convertReport",
-              "type": "input",
-              "method": "convertReport"
-            }
-          ],
-          "config-items": [
-            {
-              "name": "gingco-time-adjust",
-              "description": "The number of hours to add or subtract from the time before posting in Empathic Building",
-              "config_group": "Main",
-              "type": "*int",
-              "strictly_local": true
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 519"
-    },
-    {
-      "request_id": "Y4QRHoR6X74lpE0",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 98,
-          "type": "class",
-          "desc": "Simple action class connector",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3485Action {\n    auto action1(auto _data) {\n        UserApi::logInfo(\"Issue3485Action action1 was called: %y\", _data);\n        hash res = {\"d\": _data, \"action1\": True};\n        return res;\n    }\n\n    auto errorAction(auto _data) {\n        throw \"ERROR-ACTION\", \"action error\";\n    }\n}\n",
-          "name": "Issue3485Action",
-          "display_name": "Issue3485 Action",
-          "short_desc": "Simple action class connector",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-connectors": [
-            {
-              "name": "action1",
-              "method": "action1",
-              "type": "input-output"
-            },
-            {
-              "name": "errorAction",
-              "method": "errorAction",
-              "type": "input"
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 98"
-    },
-    {
-      "request_id": "PQlc0rXijG5U1TA",
+      "request_id": "zRWj99Oqb7DPoyB",
       "tab_token": "none",
       "data": {
         "iface_kind": "class",
@@ -272,7 +272,13 @@
           "display_name": "Qore Dev Modules Test Step4",
           "short_desc": "Qore test step class",
           "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."]
+          "author": ["Qore Technologies, s.r.o."],
+          "requires": [
+            {
+              "id": 1,
+              "name": "QoreTest"
+            }
+          ]
         }
       },
       "action": "return-interface-data-complete",
@@ -280,29 +286,63 @@
       "message": "got class 154"
     },
     {
-      "request_id": "f0ejaDD4VCjYAMU",
+      "request_id": "tLRNc2xuIMqQr5y",
       "tab_token": "none",
       "data": {
         "iface_kind": "class",
         "class": {
-          "id": 139,
+          "id": 153,
           "type": "class",
-          "desc": "Java test step class",
-          "lang": "java",
-          "source": "package com.qoretechnologies.qorus.test.regression.java1;\n\nimport com.qoretechnologies.qorus.OMQ;\nimport com.qoretechnologies.qorus.UserApi;\nimport com.qoretechnologies.qorus.workflow.WorkflowApi;\nimport com.qoretechnologies.qorus.workflow.QorusSubworkflowArrayStep;\n\nimport java.util.HashMap;\n\npublic class JavaSimpleTestStep5 extends QorusSubworkflowArrayStep {\n    public Object[] array() throws Throwable {\n        String[] myList = {\n            \"value-1\",\n        };\n\n        return myList;\n    }\n\n    public void primary(Object array_arg) throws Throwable {\n        logInfo(\"skipping subworkflow: array value: %y\", array_arg);\n        skipSubworkflow();\n    }\n}\n",
-          "name": "JavaSimpleTestStep5",
-          "display_name": "Java Simple Test Step5",
-          "short_desc": "Java test step class",
+          "desc": "Qore test step class",
+          "lang": "qore",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass QoreDevModulesTestStep3 inherits TestAsyncStep, QoreTest {\n    primaryImpl() {\n        assertTrue(True);\n        skipAsyncStep();\n    }\n}\n",
+          "name": "QoreDevModulesTestStep3",
+          "display_name": "Qore Dev Modules Test Step3",
+          "short_desc": "Qore test step class",
           "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."]
+          "author": ["Qore Technologies, s.r.o."],
+          "requires": [
+            {
+              "id": 1,
+              "name": "QoreTest"
+            }
+          ]
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got class 139"
+      "message": "got class 153"
     },
     {
-      "request_id": "Ax9EdZ0LAyVsOlC",
+      "request_id": "sEysX9gr8fdfhS2",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "class",
+        "class": {
+          "id": 146,
+          "type": "class",
+          "desc": "Qore test step class",
+          "lang": "qore",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass UserInteractionTest inherits QorusAsyncStep, QoreTest {\n    public {\n        const DefaultMetadata = {\n            \"test\": 3,\n        };\n\n        const DefaultData = {\n            \"test\": 1,\n        };\n\n        const NewData = {\n            \"test2\": 2,\n        };\n\n        const AllData = DefaultData + NewData;\n    }\n\n    primary() {\n        hash<auto> h = getStepInfo();\n        #logInfo(\"h: %y\", h);\n        assertTrue(h.user_interaction);\n\n        # test step metadata\n        assertEq(DefaultMetadata, call_rest_api(\"GET\", \"steps/user-interaction-test-1/userdata\"));\n\n        hash<auto> stepdata = getStepData();\n        assertEq(DefaultData, stepdata);\n        # ensure that the REST order response has the step data when the order is cached\n        assertEq(DefaultData, call_rest_api(\"GET\", \"orders/\" + getWfiid() + \"/stepdata\")[0].data[0]);\n\n        updateStepData(NewData);\n        stepdata = getStepData();\n        assertEq(AllData, stepdata);\n        assertEq(AllData, call_rest_api(\"GET\", \"orders/\" + getWfiid() + \"/stepdata/\")[0].data[0]);\n\n        StepDataHelper sdh();\n        assertEq(AllData, sdh.get());\n        assertThrows(\"LOCK-ERROR\", sub () { new StepDataHelper(); });\n\n        string key = generateUniqueKey();\n        logInfo(\"using key %y\", key);\n        submitAsyncKey(key);\n    }\n\n    end(auto end_data) {\n    }\n\n    *hash<auto> getDefaultStepData() {\n        return DefaultData;\n    }\n\n    *hash<auto> getStepMetadata() {\n        return DefaultMetadata;\n    }\n}\n",
+          "name": "UserInteractionTest",
+          "display_name": "User Interaction Test",
+          "short_desc": "Qore test step class",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "requires": [
+            {
+              "id": 1,
+              "name": "QoreTest"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got class 146"
+    },
+    {
+      "request_id": "cKCAGBKjyU02z0d",
       "tab_token": "none",
       "data": {
         "iface_kind": "class",
@@ -336,33 +376,11 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got class 105"
-    },
-    {
-      "request_id": "sv8tNnCLavXpFb7",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "class",
-        "class": {
-          "id": 153,
-          "type": "class",
-          "desc": "Qore test step class",
-          "lang": "qore",
-          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass QoreDevModulesTestStep3 inherits TestAsyncStep, QoreTest {\n    primaryImpl() {\n        assertTrue(True);\n        skipAsyncStep();\n    }\n}\n",
-          "name": "QoreDevModulesTestStep3",
-          "display_name": "Qore Dev Modules Test Step3",
-          "short_desc": "Qore test step class",
-          "version": "1.0",
-          "author": ["Qore Technologies, s.r.o."]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got class 153"
     }
   ],
   "connection": [
     {
-      "request_id": "M2e7aNyZqtHXpgM",
+      "request_id": "YvEQtuHk5bxjIHN",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -381,7 +399,7 @@
       "message": "got connection 2"
     },
     {
-      "request_id": "lXvqfeePXdDWJAx",
+      "request_id": "CxI4vnRBFFlzoAN",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -400,7 +418,7 @@
       "message": "got connection 6"
     },
     {
-      "request_id": "0e4prj08sl4fTmr",
+      "request_id": "5zVVnwR8oUJOlrU",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -411,8 +429,16 @@
           "display_name": "Omq",
           "short_desc": "Qorus system database",
           "desc": "Qorus system database",
-          "url": "db://pgsql:omq/omq@omq{min=3,max=40}",
+          "url": "db://pgsql:omq/omq@omq(UTF8){optimal-numbers,timezone=Europe/Prague,min=3,max=40}",
           "options": {
+            "optimal-numbers": {
+              "type": "bool",
+              "value": true
+            },
+            "timezone": {
+              "type": "string",
+              "value": "Europe/Prague"
+            },
             "min": {
               "type": "integer",
               "value": 3
@@ -429,26 +455,151 @@
       "message": "got connection 0"
     },
     {
-      "request_id": "YmsokoYPfKn76y3",
+      "request_id": "SuH6AyND1oQ8my7",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
         "connection": {
-          "id": 1141,
+          "id": 1441,
           "type": "connection",
-          "name": "test-connection-ac1ff7e6-ad7c-49a1-8a45-c2ddbbc68b10",
-          "display_name": "Test Connection Ac1ff7e6 Ad7c 49a1 8a45 C2ddbbc68b10",
-          "short_desc": "q0Vk6P2XM7C04H3",
-          "desc": "q0Vk6P2XM7C04H3",
-          "url": "db://error:name/pass@db"
+          "name": "arch",
+          "display_name": "Arch",
+          "short_desc": "Archiving schema",
+          "desc": "Archiving schema",
+          "url": "db://pgsql:omqarch/omqarch@omqarch"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got connection 1141"
+      "message": "got connection 1441"
     },
     {
-      "request_id": "dkdg8IVerCQKQz6",
+      "request_id": "YHdmbcjGqZtwauJ",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "connection",
+        "connection": {
+          "id": 1447,
+          "type": "connection",
+          "name": "gcal",
+          "display_name": "Google Calendar Connection",
+          "short_desc": "Connection to Google Calendar server",
+          "desc": "Connection to Google Calendar server",
+          "url": "gcal://www.googleapis.com",
+          "options": {
+            "connect_timeout": {
+              "type": "integer",
+              "value": 45000
+            },
+            "error_passthru": {
+              "type": "bool",
+              "value": false
+            },
+            "http_version": {
+              "type": "string",
+              "value": "1.1"
+            },
+            "redirect_passthru": {
+              "type": "bool",
+              "value": false
+            },
+            "ssl_verify_cert": {
+              "type": "bool",
+              "value": false
+            },
+            "timeout": {
+              "type": "integer",
+              "value": 45000
+            },
+            "data": {
+              "type": "string",
+              "value": "json"
+            },
+            "oauth2_auth_args": {
+              "type": "hash",
+              "value": "{access_type: \"offline\", prompt: \"consent\"}\n"
+            },
+            "oauth2_auth_url": {
+              "type": "string",
+              "value": "https://accounts.google.com/o/oauth2/v2/auth"
+            },
+            "oauth2_auto_refresh": {
+              "type": "bool",
+              "value": true
+            },
+            "oauth2_grant_type": {
+              "type": "string",
+              "value": "authorization_code"
+            },
+            "oauth2_pkce": {
+              "type": "bool",
+              "value": false
+            },
+            "oauth2_redirect_url": {
+              "type": "string",
+              "value": "auto"
+            },
+            "oauth2_token_url": {
+              "type": "string",
+              "value": "https://oauth2.googleapis.com/token"
+            },
+            "token_type": {
+              "type": "string",
+              "value": "Bearer"
+            },
+            "api_profile": {
+              "type": "string",
+              "value": "calendar"
+            },
+            "oauth2_client_id": {
+              "type": "string",
+              "value": "1007814644021-funaickqu1eatb6qkf2q45ic9ko6b2im.apps.googleusercontent.com"
+            },
+            "oauth2_client_secret": {
+              "type": "string",
+              "value": "cloud"
+            },
+            "oauth2_alt_token_url": {
+              "type": "string",
+              "value": "https://api.qoretechnologies.com/qorus-api/token"
+            },
+            "oauth2_token_args": {
+              "type": "hash",
+              "value": "{oauth2_app: \"GoogleCalendar\"}\n"
+            },
+            "oauth2_scopes": {
+              "type": "list",
+              "value": "[\"https://www.googleapis.com/auth/calendar\"]\n"
+            },
+            "ping_method": {
+              "type": "string",
+              "value": "GET"
+            },
+            "ping_path": {
+              "type": "string",
+              "value": "/calendar/v3/users/me/calendarList?maxResults=1"
+            },
+            "ping_headers": {
+              "type": "hash",
+              "value": "{Accept: \"application/json\"}\n"
+            },
+            "token": {
+              "type": "string",
+              "value": "ya29.a0AXooCgvGVM8K_0G_gdfeLkb176DAmhP9LXh_ni0j5CEl0Ahwm6gh3MMrTSlhGUgIM-3pVFcZ-2AeNTFlpCPSXD3ijTW1qsoiZ1yxYwdELTSZXmT5FGMn1EMJl3JagDiB-lwAIANJfd52Xv-Mqn0O9GDc4BkUbQbmIot9aCgYKAcoSARASFQHGX2MivhyV2EKeh5GKlWJLHvSM3w0171"
+            },
+            "oauth2_refresh_token": {
+              "type": "string",
+              "value": "1//09jrcAy8l1fgxCgYIARAAGAkSNwF-L9IrvDsTbduu7x7O5zU4MghWS-yAe3oKY-cwqKnDfC9TofgBdubnlzxATxkWolyxhnAkyGo"
+            }
+          }
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got connection 1447"
+    },
+    {
+      "request_id": "9J6jKj3yt1UGeiW",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -517,32 +668,7 @@
       "message": "got connection 1"
     },
     {
-      "request_id": "7yNjnclqCRULRuF",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "connection",
-        "connection": {
-          "id": 1034,
-          "type": "connection",
-          "name": "fs-regression-win",
-          "display_name": "Fs Regression Win",
-          "short_desc": "temp filesystem in windows",
-          "desc": "temp filesystem in windows",
-          "url": "file:///C:/temp",
-          "options": {
-            "readonly": {
-              "type": "bool",
-              "value": false
-            }
-          }
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got connection 1034"
-    },
-    {
-      "request_id": "y5IjVrhMMms5aEl",
+      "request_id": "CNXtZN9N57EnWAs",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -623,68 +749,7 @@
       "message": "got connection 562"
     },
     {
-      "request_id": "hEDubumLDpnda7z",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "connection",
-        "connection": {
-          "id": 981,
-          "type": "connection",
-          "name": "busylight-matthias",
-          "display_name": "Busylight-Matthias",
-          "short_desc": "Matthias' Busylight",
-          "desc": "Connection to MQTT Kuando Busylight server",
-          "url": "blssl://eu1.cloud.thethings.network",
-          "options": {
-            "clean_session": {
-              "type": "bool",
-              "value": true
-            },
-            "client_id": {
-              "type": "string",
-              "value": "QoreMqttClient"
-            },
-            "connect_timeout": {
-              "type": "integer",
-              "value": 30
-            },
-            "encoding": {
-              "type": "string",
-              "value": "UTF-8"
-            },
-            "keep_alive_interval": {
-              "type": "integer",
-              "value": 60
-            },
-            "max_in_flight": {
-              "type": "integer",
-              "value": 10
-            },
-            "message_format": {
-              "type": "string",
-              "value": "json"
-            },
-            "disable_automatic_pings": {
-              "type": "bool",
-              "value": true
-            },
-            "username": {
-              "type": "string",
-              "value": "1st-gdc-app@ttn"
-            },
-            "password": {
-              "type": "string",
-              "value": "NNSXS.L2F7BKG2744MM4B66VPZPTL2XLVJTPMNSSSNJRI.SNGQABBHGCWGDOOM7RW57DMGSSP72TIGH7IQA4ATDYGOSWOPOCQA"
-            }
-          }
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got connection 981"
-    },
-    {
-      "request_id": "5cdcxPPItHQ9yTN",
+      "request_id": "36ahhZXLt8iyWZR",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
@@ -709,106 +774,316 @@
       "message": "got connection 667"
     },
     {
-      "request_id": "ALXcqh9cOodxFpx",
+      "request_id": "GnykbWh9WP63edO",
       "tab_token": "none",
       "data": {
         "iface_kind": "connection",
         "connection": {
-          "id": 5,
+          "id": 965,
           "type": "connection",
-          "name": "fs-regression",
-          "display_name": "Fs Regression",
-          "short_desc": "shared filesystem in mseplftp directory",
-          "desc": "shared filesystem in mseplftp directory",
-          "url": "file:///tmp",
+          "name": "conn-test",
+          "display_name": "Conn Test",
+          "short_desc": "testing connection availability",
+          "desc": "testing connection availability",
+          "url": "http://localhost:1",
           "options": {
-            "readonly": {
+            "connect_timeout": {
+              "type": "integer",
+              "value": 2000
+            },
+            "error_passthru": {
               "type": "bool",
               "value": false
+            },
+            "http_version": {
+              "type": "string",
+              "value": "1.1"
+            },
+            "redirect_passthru": {
+              "type": "bool",
+              "value": false
+            },
+            "ssl_verify_cert": {
+              "type": "bool",
+              "value": false
+            },
+            "timeout": {
+              "type": "integer",
+              "value": 2000
+            }
+          },
+          "tags": {
+            "tag1": {
+              "type": "string",
+              "value": "iiyMEG4tdHRN5uZ"
+            },
+            "tag2": {
+              "type": "string",
+              "value": "2"
+            },
+            "tag3": {
+              "type": "string",
+              "value": "3"
             }
           }
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got connection 5"
+      "message": "got connection 965"
+    },
+    {
+      "request_id": "PNTznJHZrinjPJJ",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "connection",
+        "connection": {
+          "id": 323,
+          "type": "connection",
+          "name": "servicenow",
+          "display_name": "Servicenow",
+          "short_desc": "ServiceNow",
+          "desc": "ServiceNow",
+          "url": "snrests://dev81239.service-now.com",
+          "options": {
+            "connect_timeout": {
+              "type": "integer",
+              "value": 45000
+            },
+            "error_passthru": {
+              "type": "bool",
+              "value": false
+            },
+            "http_version": {
+              "type": "string",
+              "value": "1.1"
+            },
+            "redirect_passthru": {
+              "type": "bool",
+              "value": false
+            },
+            "ssl_verify_cert": {
+              "type": "bool",
+              "value": false
+            },
+            "timeout": {
+              "type": "integer",
+              "value": 45000
+            },
+            "data": {
+              "type": "string",
+              "value": "auto"
+            },
+            "oauth2_auth_url": {
+              "type": "string",
+              "value": "/oauth_auth.do"
+            },
+            "oauth2_auto_refresh": {
+              "type": "bool",
+              "value": true
+            },
+            "oauth2_grant_type": {
+              "type": "string",
+              "value": "authorization_code"
+            },
+            "oauth2_pkce": {
+              "type": "bool",
+              "value": false
+            },
+            "oauth2_redirect_url": {
+              "type": "string",
+              "value": "auto"
+            },
+            "oauth2_token_url": {
+              "type": "string",
+              "value": "/oauth_token.do"
+            },
+            "ping_method": {
+              "type": "string",
+              "value": "GET"
+            },
+            "ping_path": {
+              "type": "string",
+              "value": "table/sys_properties?sysparm_exclude_reference_link=true&sysparm_suppress_pagination_header=true&sysparm_fields=value&sysparm_query=name=mid.version"
+            },
+            "ping_headers": {
+              "type": "hash",
+              "value": "{Accept: \"application/json\"}\n"
+            },
+            "token_type": {
+              "type": "string",
+              "value": "Bearer"
+            },
+            "api": {
+              "type": "string",
+              "value": "now"
+            },
+            "token": {
+              "type": "string",
+              "value": "ZMvMzjNGNBf7JNey-z1A84z0G2GatFndILrpBq9QR7SGU8dxKOmdi9JkMzIbNmTRORXXznF3CX15Og4mu2L7dQ"
+            }
+          }
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got connection 323"
+    }
+  ],
+  "constant": [
+    {
+      "request_id": "8h9QS1LbLK1ylYa",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 7,
+          "type": "constant",
+          "desc": "example test constants 1",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nconst Example1 = 1;\nconst Example1_1 = \"one\";\n",
+          "name": "issue3102ExampleTestConstants1",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 7"
+    },
+    {
+      "request_id": "OGh47u9sJWf1PGa",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 8,
+          "type": "constant",
+          "desc": "example test constants 2",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nconst Example2 = 2;\nconst Example2_1 = \"two\";\n",
+          "name": "issue3102ExampleTestConstants2",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 8"
+    },
+    {
+      "request_id": "rIu3QQ8FGNt9FAV",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 9,
+          "type": "constant",
+          "desc": "example test constants 1",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nconst Example1 = 1;\nconst Example1_1 = \"one\";\n",
+          "name": "issue3102constant",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 9"
+    },
+    {
+      "request_id": "qF2LC82VFgL60gT",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 4,
+          "type": "constant",
+          "desc": "defines constants",
+          "source": "namespace TEST {\n    const HELLO_WORLD = 'Hello world';\n}\n\nnamespace ERROR {\n    const PROPERTY_ERROR = \"PROPERTY-ERROR\";\n    const BUSINESS_ERROR = \"BUSINESS-ERROR\";\n    const FILE_OPEN_ERROR = \"FILE-OPEN-ERROR\";\n}\n",
+          "name": "test-debug_const",
+          "version": "1.0"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 4"
+    },
+    {
+      "request_id": "ULyOF5wwM43hetb",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 27,
+          "type": "constant",
+          "desc": "example test constants 1",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nconst Example1 = 1;\nconst Example1_1 = \"one\";\n",
+          "name": "issue3333constant",
+          "version": "1.0"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 27"
+    },
+    {
+      "request_id": "g7mI6l3Tx5PAYhh",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 26,
+          "type": "constant",
+          "desc": "test constant 1",
+          "source": "const test1 = 1;\n",
+          "name": "issue-3010-constant",
+          "version": "1.0"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 26"
+    },
+    {
+      "request_id": "imwoas9MIvzGXi8",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 29,
+          "type": "constant",
+          "desc": "test constants 1",
+          "source": "const t1 = 1;\n",
+          "name": "TestConstants1",
+          "version": "1.0",
+          "author": ["Qore Technologies, sro"]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 29"
+    },
+    {
+      "request_id": "OLaMB8yX8bZfJtI",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "constant",
+        "constant": {
+          "id": 3,
+          "type": "constant",
+          "desc": "test constants 2",
+          "source": "const t2 = 2;\n",
+          "name": "TestConstants2",
+          "version": "1.0",
+          "author": ["Qore Technologies, sro"]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got constant 3"
     }
   ],
   "event": [
     {
-      "request_id": "8S9rOKPAG0U9nzl",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "event",
-        "event": {
-          "id": 6,
-          "type": "event",
-          "desc": "test event type for the REGRESSION-TEST workflow",
-          "name": "regression-test",
-          "display_name": "Regression Test",
-          "short_desc": "test event type for the REGRESSION-TEST workflow"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got event 6"
-    },
-    {
-      "request_id": "Z5qPzaKQZUV44Ws",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "event",
-        "event": {
-          "id": 2,
-          "type": "event",
-          "desc": "Class workflow test event type",
-          "name": "qore-class-event-test",
-          "display_name": "Qore Class Event Test",
-          "short_desc": "Class workflow test event type"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got event 2"
-    },
-    {
-      "request_id": "YJnyHIxO8yOTUZr",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "event",
-        "event": {
-          "id": 0,
-          "type": "event",
-          "desc": "default system event type",
-          "name": "OMQ-SYSTEM-DEFAULT-EVENT-TYPE",
-          "display_name": "OMQ SYSTEM DEFAULT EVENT TYPE",
-          "short_desc": "default system event type"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got event 0"
-    },
-    {
-      "request_id": "lZETepjK69R5kfW",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "event",
-        "event": {
-          "id": 8,
-          "type": "event",
-          "desc": "Class workflow test event type",
-          "name": "issue3102event",
-          "display_name": "Issue3102event",
-          "short_desc": "Class workflow test event type"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got event 8"
-    },
-    {
-      "request_id": "BEKlDkggVNngr9L",
+      "request_id": "idNRa9bBUab5g87",
       "tab_token": "none",
       "data": {
         "iface_kind": "event",
@@ -826,7 +1101,25 @@
       "message": "got event 1"
     },
     {
-      "request_id": "JMGl1AvMtnxClNI",
+      "request_id": "VJsVllwGIMnEtgk",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "event",
+        "event": {
+          "id": 8,
+          "type": "event",
+          "desc": "Class workflow test event type",
+          "name": "issue3102event",
+          "display_name": "Issue3102event",
+          "short_desc": "Class workflow test event type"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got event 8"
+    },
+    {
+      "request_id": "v2NlppPbsuzm1ZB",
       "tab_token": "none",
       "data": {
         "iface_kind": "event",
@@ -844,7 +1137,25 @@
       "message": "got event 3"
     },
     {
-      "request_id": "68Los8qSBKfDyjW",
+      "request_id": "db1LHJM0lyXxmoW",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "event",
+        "event": {
+          "id": 2,
+          "type": "event",
+          "desc": "Class workflow test event type",
+          "name": "qore-class-event-test",
+          "display_name": "Qore Class Event Test",
+          "short_desc": "Class workflow test event type"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got event 2"
+    },
+    {
+      "request_id": "gVgkSWAFBm8kMUl",
       "tab_token": "none",
       "data": {
         "iface_kind": "event",
@@ -862,7 +1173,43 @@
       "message": "got event 4"
     },
     {
-      "request_id": "mFjHOgZUSeUq748",
+      "request_id": "rKZLxKVmeBGa0C8",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "event",
+        "event": {
+          "id": 5,
+          "type": "event",
+          "desc": "test event type for the FEEDBACK-DETACH-CHILD workflow",
+          "name": "feedback-detach-child",
+          "display_name": "Feedback Detach Child",
+          "short_desc": "test event type for the FEEDBACK-DETACH-CHILD workflow"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got event 5"
+    },
+    {
+      "request_id": "kwcFbaDt4qeNS88",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "event",
+        "event": {
+          "id": 6,
+          "type": "event",
+          "desc": "test event type for the REGRESSION-TEST workflow",
+          "name": "regression-test",
+          "display_name": "Regression Test",
+          "short_desc": "test event type for the REGRESSION-TEST workflow"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got event 6"
+    },
+    {
+      "request_id": "VWOJ5CZ2dvS11gQ",
       "tab_token": "none",
       "data": {
         "iface_kind": "event",
@@ -880,27 +1227,27 @@
       "message": "got event 7"
     },
     {
-      "request_id": "NjhEDKWixTr6G0J",
+      "request_id": "6NNwH4EWViTZ9z6",
       "tab_token": "none",
       "data": {
         "iface_kind": "event",
         "event": {
-          "id": 5,
+          "id": 0,
           "type": "event",
-          "desc": "test event type for the FEEDBACK-DETACH-CHILD workflow",
-          "name": "feedback-detach-child",
-          "display_name": "Feedback Detach Child",
-          "short_desc": "test event type for the FEEDBACK-DETACH-CHILD workflow"
+          "desc": "default system event type",
+          "name": "OMQ-SYSTEM-DEFAULT-EVENT-TYPE",
+          "display_name": "OMQ SYSTEM DEFAULT EVENT TYPE",
+          "short_desc": "default system event type"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got event 5"
+      "message": "got event 0"
     }
   ],
   "errors": [
     {
-      "request_id": "36uZKw000GhIYHu",
+      "request_id": "ztF3dqc5MtBxpl1",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -936,7 +1283,7 @@
       "message": "got errors 54"
     },
     {
-      "request_id": "3BF690i8HC67zan",
+      "request_id": "cCR4WZj4rBh8udX",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -972,7 +1319,7 @@
       "message": "got errors 55"
     },
     {
-      "request_id": "kZRTXaU9HqOLkR9",
+      "request_id": "b53JXZbMGD5Tchd",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1008,7 +1355,7 @@
       "message": "got errors 56"
     },
     {
-      "request_id": "uh5UblsP4OTyu0k",
+      "request_id": "9WVWZO1J9q86Wda",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1044,7 +1391,7 @@
       "message": "got errors 57"
     },
     {
-      "request_id": "slo1cORfPUunvXN",
+      "request_id": "RGTEJYXBTNJEITa",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1080,7 +1427,7 @@
       "message": "got errors 58"
     },
     {
-      "request_id": "R62VbHcCzrw8km5",
+      "request_id": "7KIi1kR4DNhNSvG",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1116,7 +1463,7 @@
       "message": "got errors 59"
     },
     {
-      "request_id": "BqadidpjWSFlbW4",
+      "request_id": "TYL8wYKt5tzUgXy",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1152,7 +1499,7 @@
       "message": "got errors 60"
     },
     {
-      "request_id": "nEzUrpweNghOiho",
+      "request_id": "9d5reuLl2HoVNuj",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1188,7 +1535,7 @@
       "message": "got errors 61"
     },
     {
-      "request_id": "Gbg2CKyz0uTfNI8",
+      "request_id": "RRadOFEqEgBNaWU",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1224,7 +1571,7 @@
       "message": "got errors 62"
     },
     {
-      "request_id": "TaUxOEMEKUuZaTQ",
+      "request_id": "QZnojSGyuWZDjzi",
       "tab_token": "none",
       "data": {
         "iface_kind": "errors",
@@ -1260,9 +1607,219 @@
       "message": "got errors 63"
     }
   ],
+  "function": [
+    {
+      "request_id": "XAiIEDL2OhkvW2U",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 1,
+          "type": "function",
+          "desc": "common demo step logic",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nconst PropNameDisableErrors = \"disable-errors\";\n\nsub demo() {\n    hash<auto> sh = wf_get_step_info();\n\n    # 1/20 chance of a delay once in the order\n    if (!(rand() % 20) && !wf_get_dynamic_data(\"delay-done\")) {\n        log(LL_INFO, \"delaying execution for 1 second\");\n        wf_update_dynamic_data({\"delay-done\": True});\n        omqsleep(1);\n    }\n\n    if (wf_get_dynamic_data(\"disable-errors\")) {\n        log(LL_INFO, \"static data value %y set (step %s v%s (%d))\", PropNameDisableErrors, sh.name, sh.version, sh.stepid);\n        return;\n    }\n\n    if (wf_get_static_data(\"disable-errors\")) {\n        log(LL_INFO, \"dynamic data value %y set (step %s v%s (%d))\", PropNameDisableErrors, sh.name, sh.version, sh.stepid);\n        return;\n    }\n\n    if (prop_get(\"demo\", PropNameDisableErrors)) {\n        log(LL_INFO, \"system property %y set in the \\\"demo\\\" domain (step %s v%s (%d))\", PropNameDisableErrors, sh.name, sh.version, sh.stepid);\n        return;\n    }\n\n    # 1/10 chance of a retry error if errors are not disabled\n    if (!(rand() % 10)) {\n        log(LL_INFO, \"raising a random technical error for step %s v%s (%d)\", sh.name, sh.version, sh.stepid);\n        wf_serror(\"RETRY-ERROR\", \"random technical error\", 2);\n        return;\n    }\n\n    log(LL_INFO, \"no errors for step %s v%s (%d)\", sh.name, sh.version, sh.stepid);\n}\n",
+          "name": "demo",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 1"
+    },
+    {
+      "request_id": "7J3keaSyid97I82",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 2,
+          "type": "function",
+          "desc": "demo validation function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nstring sub demo_val() {\n    hash<auto> sh = wf_get_step_info();\n    log(LL_INFO, \"recovered step %s v%s (%d) automatically\", sh.name, sh.version, sh.stepid);\n    return OMQ::StatComplete;\n}\n",
+          "name": "demo_val",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 2"
+    },
+    {
+      "request_id": "aM5KXvN3EPQ4wCs",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 3,
+          "type": "function",
+          "desc": "common demo step logic",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_async() {\n    wf_skip_async_step();\n}\n",
+          "name": "demo_async",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 3"
+    },
+    {
+      "request_id": "m0BxGkMcJ5kTuwz",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 4,
+          "type": "function",
+          "desc": "demo async end function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_end(auto x) {\n}\n",
+          "name": "demo_end",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 4"
+    },
+    {
+      "request_id": "fwcLlTAP1O2vooO",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 5,
+          "type": "function",
+          "desc": "telco demo customer account activation subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_customer_account_activation_subworkflow(auto e) {\n}\n",
+          "name": "demo_telco_customer_account_activation_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 5"
+    },
+    {
+      "request_id": "Dws3sHXpipw2uvi",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 6,
+          "type": "function",
+          "desc": "telco demo account services subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_services_activation_subworkflow(auto e) {\n    wf_bind_subworkflow({\"name\": \"TELCO-ACTIVATE-SERVICE\"}, {\"staticdata\": {}});\n}\n",
+          "name": "demo_telco_services_activation_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 6"
+    },
+    {
+      "request_id": "gKb5qsXLYNp7e78",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 7,
+          "type": "function",
+          "desc": "telco demo customer account suspension subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_customer_suspend_accounts_subworkflow(auto e) {\n    wf_bind_subworkflow({\"name\": \"TELCO-SUSPEND-ACCOUNT\"}, {\"staticdata\": {}});\n}\n",
+          "name": "demo_telco_customer_suspend_accounts_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 7"
+    },
+    {
+      "request_id": "zdF5Jm3PWL1C4Vv",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 8,
+          "type": "function",
+          "desc": "telco demo customer account suspension subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_suspend_services_subworkflow(auto e) {\n    wf_bind_subworkflow({\"name\": \"TELCO-SUSPEND-SERVICE\"}, {\"staticdata\": {}});\n}\n",
+          "name": "demo_telco_suspend_services_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 8"
+    },
+    {
+      "request_id": "oXZGikFHVKfDBHV",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 9,
+          "type": "function",
+          "desc": "telco demo customer account resume subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_customer_resume_accounts_subworkflow(auto e) {\n    wf_bind_subworkflow({\"name\": \"TELCO-RESUME-ACCOUNT\"}, {\"staticdata\": {}});\n}\n",
+          "name": "demo_telco_customer_resume_accounts_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 9"
+    },
+    {
+      "request_id": "in5X7Kt0KKeqGen",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "function",
+        "function": {
+          "id": 10,
+          "type": "function",
+          "desc": "telco demo customer account resume subworkflow step function",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nsub demo_telco_resume_services_subworkflow(auto e) {\n    wf_bind_subworkflow({\"name\": \"TELCO-RESUME-SERVICE\"}, {\"staticdata\": {}});\n}\n",
+          "name": "demo_telco_resume_services_subworkflow",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got function 10"
+    }
+  ],
   "group": [
     {
-      "request_id": "EI661iQd2EJF6t7",
+      "request_id": "79HoGajEwa2EYRF",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "group",
+        "group": {
+          "id": 792,
+          "type": "group",
+          "name": "Test_Empty_Group_1",
+          "display_name": "Test Empty Group 1",
+          "short_desc": "test empty group",
+          "desc": "test empty group"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got group 792"
+    },
+    {
+      "request_id": "7kAwNvtzEHNE5eG",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
@@ -1280,79 +1837,25 @@
       "message": "got group 0"
     },
     {
-      "request_id": "auqKgv8iFudVlR3",
+      "request_id": "f7OuCITIXUhRbQr",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
         "group": {
-          "id": 613,
+          "id": 793,
           "type": "group",
-          "name": "creator-test-group1-a68744da-15d3-4858-98a0-12d9ec85a5be",
-          "display_name": "Creator Test Group1 A68744da 15d3 4858 98a0 12d9ec85a5be",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
+          "name": "Test_Small_Group_1",
+          "display_name": "Test Small Group 1",
+          "short_desc": "test small group",
+          "desc": "test small group"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got group 613"
+      "message": "got group 793"
     },
     {
-      "request_id": "uV3F7qb9o9Hv6kQ",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "group",
-        "group": {
-          "id": 615,
-          "type": "group",
-          "name": "creator-test-group1-f25c8150-dc78-4123-8634-52aad11b37cf",
-          "display_name": "Creator Test Group1 F25c8150 Dc78 4123 8634 52aad11b37cf",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got group 615"
-    },
-    {
-      "request_id": "VF69AdXc29HMitI",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "group",
-        "group": {
-          "id": 264,
-          "type": "group",
-          "name": "creator-test-group1-18ca8e9d-a275-4d0f-9197-0fb7e5180993",
-          "display_name": "Creator Test Group1 18ca8e9d A275 4d0f 9197 0fb7e5180993",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got group 264"
-    },
-    {
-      "request_id": "MbTdQ9uE4RD7OK1",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "group",
-        "group": {
-          "id": 265,
-          "type": "group",
-          "name": "creator-test-group1-706de6e4-45d5-489d-ad77-385507892e86",
-          "display_name": "Creator Test Group1 706de6e4 45d5 489d Ad77 385507892e86",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got group 265"
-    },
-    {
-      "request_id": "g9EdKLLiP06k7dL",
+      "request_id": "pe8v7zp65LZEwss",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
@@ -1370,122 +1873,117 @@
       "message": "got group 388"
     },
     {
-      "request_id": "vOc1OLi8tXXeg4n",
+      "request_id": "am4ykdcXfnFc5UE",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
         "group": {
-          "id": 335,
+          "id": 293,
           "type": "group",
-          "name": "creator-test-group1-5331b024-ae50-47c2-a344-ced691ae5cb8",
-          "display_name": "Creator Test Group1 5331b024 Ae50 47c2 A344 Ced691ae5cb8",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
+          "name": "issue-3485-XgfyJHQJj7uK0lK",
+          "display_name": "Issue 3485 XgfyJHQ Jj7uK0lK",
+          "short_desc": "test empty group",
+          "desc": "test empty group"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got group 335"
+      "message": "got group 293"
     },
     {
-      "request_id": "y7FgAod67bse2U0",
+      "request_id": "rWpReoxOeyic5A8",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
         "group": {
-          "id": 341,
+          "id": 18,
           "type": "group",
-          "name": "creator-test-group1-d4990d22-4528-4b71-8b3a-a4ae5fd0c513",
-          "display_name": "Creator Test Group1 D4990d22 4528 4b71 8b3a A4ae5fd0c513",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
+          "name": "Test-debug",
+          "display_name": "Test Debug",
+          "short_desc": "Test debug",
+          "desc": "Test debug"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got group 341"
+      "message": "got group 18"
     },
     {
-      "request_id": "bjSc4ybla8itYjo",
+      "request_id": "iJoySFVmMIhUIvh",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
         "group": {
-          "id": 342,
+          "id": 22,
           "type": "group",
-          "name": "creator-test-group1-43b4015b-b013-4aee-8625-09a474f82911",
-          "display_name": "Creator Test Group1 43b4015b B013 4aee 8625 09a474f82911",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
+          "name": "BASIC-TRAINING-EXCHANGE-APP",
+          "display_name": "BASIC TRAINING EXCHANGE APP",
+          "short_desc": "Basic training exchange application objects",
+          "desc": "Basic training exchange application objects"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got group 342"
+      "message": "got group 22"
     },
     {
-      "request_id": "i27a5W0s2MoQoVw",
+      "request_id": "HPajIgT4guGgRA5",
       "tab_token": "none",
       "data": {
         "iface_kind": "group",
         "group": {
-          "id": 343,
+          "id": 26,
           "type": "group",
-          "name": "creator-test-group1-859e4d91-5f5d-4052-bb82-29d740be15ac",
-          "display_name": "Creator Test Group1 859e4d91 5f5d 4052 Bb82 29d740be15ac",
-          "short_desc": "creator test group",
-          "desc": "creator test group"
+          "name": "issue3102group",
+          "display_name": "Issue3102group",
+          "short_desc": "test group",
+          "desc": "test group"
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got group 343"
+      "message": "got group 26"
+    },
+    {
+      "request_id": "VDUrKdgeFHFWEHQ",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "group",
+        "group": {
+          "id": 1,
+          "type": "group",
+          "name": "qorus-admin",
+          "display_name": "Qorus Admin",
+          "short_desc": "Qorus administrative user configuration",
+          "desc": "Qorus administrative user configuration"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got group 1"
+    },
+    {
+      "request_id": "kbzxwgSsVZMyFZn",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "group",
+        "group": {
+          "id": 2,
+          "type": "group",
+          "name": "demo",
+          "display_name": "Demo",
+          "short_desc": "demo interfaces",
+          "desc": "demo interfaces"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got group 2"
     }
   ],
   "job": [
     {
-      "request_id": "KdUp7VIdW60VXZv",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "job",
-        "job": {
-          "id": 11,
-          "type": "job",
-          "desc": "Java pipeline test job",
-          "lang": "java",
-          "source": "import com.qoretechnologies.qorus.*;\nimport com.qoretechnologies.qorus.job.*;\n\n@SuppressWarnings(\"deprecation\")\nclass Issue3485JavaTest extends QorusJob {\n    public void run() throws Throwable {\n    }\n}\n",
-          "base-class-name": "QorusJob",
-          "class-name": "Issue3485JavaTest",
-          "schedule": "0 0 1 1 *",
-          "name": "issue-3485-java-test",
-          "display_name": "Issue 3485 Java Test",
-          "short_desc": "Java pipeline test job",
-          "version": "1.0",
-          "active": false,
-          "remote": true,
-          "author": ["Qore Technologies, s.r.o."],
-          "fsm": [
-            {
-              "name": "java-test-fsm",
-              "triggers": [
-                {
-                  "method": "run"
-                }
-              ]
-            }
-          ]
-        },
-        "supports_enable": true,
-        "supports_active": true,
-        "active": false,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got job 11"
-    },
-    {
-      "request_id": "Eo59wRdIOOHnOuA",
+      "request_id": "QFoV5jnjS3nUOHM",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
@@ -1526,73 +2024,96 @@
       "message": "got job 24"
     },
     {
-      "request_id": "cgYIKtDqXKHZSfN",
+      "request_id": "Td5BiXcpbuLDrGy",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
         "job": {
-          "id": 74,
+          "id": 11,
           "type": "job",
-          "desc": "example job with configuration items",
-          "lang": "qore",
-          "source": "\n%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3166JobNeg2 inherits QorusJob {\n    run() {\n    }\n\n    private *hash<string, hash<ConfigItemInfo>> getConfigItemsImpl() {\n        return {\n            \"issue-3166-job-config-1\": <ConfigItemInfo>{\n                \"type\": \"bool\",\n                \"description\": \"This is an example configuration item of type bool\",\n                \"strictly_local\": True,\n                \"allowed_values\": (True,)\n            },\n        };\n    }\n}\n",
+          "desc": "Java pipeline test job",
+          "lang": "java",
+          "source": "import com.qoretechnologies.qorus.*;\nimport com.qoretechnologies.qorus.job.*;\n\n@SuppressWarnings(\"deprecation\")\nclass Issue3485JavaTest extends QorusJob {\n    public void run() throws Throwable {\n    }\n}\n",
           "base-class-name": "QorusJob",
-          "class-name": "Issue3166JobNeg2",
-          "schedule": "* * * * *",
-          "name": "issue-3166neg2-job",
-          "display_name": "Issue 3166neg2 Job",
-          "short_desc": "example job with configuration items",
+          "class-name": "Issue3485JavaTest",
+          "schedule": "0 0 1 1 *",
+          "name": "issue-3485-java-test",
+          "display_name": "Issue 3485 Java Test",
+          "short_desc": "Java pipeline test job",
           "version": "1.0",
-          "active": true,
+          "active": false,
           "remote": true,
-          "groups": ["test", "regression"],
-          "author": ["Qore Technologies, s.r.o."]
-        },
-        "supports_enable": true,
-        "supports_active": true,
-        "active": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got job 74"
-    },
-    {
-      "request_id": "ES26Kyz9zarNj2G",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "job",
-        "job": {
-          "id": 1230,
-          "type": "job",
-          "desc": "Job for scheduled FSM \"Fsm Actions 3\"",
-          "lang": "qore",
-          "source": "class FsmJob inherits QorusJob {run() {}}",
-          "base-class-name": "QorusJob",
-          "class-name": "FsmJob",
-          "schedule": "* * * * *",
-          "name": "fsm-actions-3",
-          "version": "1.0",
-          "active": true,
-          "remote": false,
+          "author": ["Qore Technologies, s.r.o."],
           "fsm": [
             {
-              "name": "fsm-actions-3",
-              "triggers": []
+              "name": "java-test-fsm",
+              "triggers": [
+                {
+                  "method": "run"
+                }
+              ]
             }
           ]
         },
         "supports_enable": true,
         "supports_active": true,
-        "active": true,
+        "active": false,
         "enabled": true
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got job 1230"
+      "message": "got job 11"
     },
     {
-      "request_id": "cdQgwA56QlImjVb",
+      "request_id": "Lo743zDS2tJAFFn",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "job",
+        "job": {
+          "id": 39,
+          "type": "job",
+          "desc": "Test for issue #4004: verify that the Qore Datasource* classes can be used from native Java with jdbc connections",
+          "lang": "java",
+          "source": "import qore.OMQ.*;\nimport qore.OMQ.UserApi.*;\nimport qore.OMQ.UserApi.Job.*;\n\nimport qore.Qore.SQL.DatasourcePool;\n\nimport qore.QoreTest;\n\nclass Issue4004 extends QorusJob {\n    // constructor requires explicit exception declaration due to imported base Qorus class\n    Issue4004() throws Throwable {\n        super();\n    }\n\n    public void run() throws Throwable {\n        String err;\n        try {\n            DatasourcePool ds = new DatasourcePool(\"jdbc:/@\" +\n                \"sqlserver://no-server;port=1433;loginTimeout=1\" +\n                \"{classpath=$OMQ_DIR/user/jar/mssql-jdbc-12.4.0.jre11.jar\" +\n            \"}\");\n            err = \"\";\n        } catch (Throwable e) {\n            err = e.toString();\n            logInfo(err);\n        }\n        QoreTest.assertTrue(err.contains(\"The TCP/IP connection to the host\"));\n    }\n}\n",
+          "base-class-name": "QorusJob",
+          "class-name": "Issue4004",
+          "schedule": "0 0 1 1 *",
+          "name": "issue-4004",
+          "display_name": "Issue 4004",
+          "short_desc": "Test for issue #4004: verify that the Qore Datasource* classes can be used from native Java with jdbc connections",
+          "version": "1.0",
+          "active": false,
+          "remote": false,
+          "groups": ["regression", "test"],
+          "author": ["Qore Technologies, s.r.o."],
+          "classes": [
+            {
+              "id": 1,
+              "name": "QoreTest"
+            }
+          ],
+          "system-options": {
+            "java-min-heap": {
+              "type": "byte-size",
+              "value": "20MiB"
+            },
+            "java-max-heap": {
+              "type": "byte-size",
+              "value": "20MiB"
+            }
+          }
+        },
+        "supports_enable": true,
+        "supports_active": true,
+        "active": false,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got job 39"
+    },
+    {
+      "request_id": "SFGGUCg5E1SjJqm",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
@@ -1624,7 +2145,7 @@
       "message": "got job 4"
     },
     {
-      "request_id": "DzjEpTgYMR4GrnR",
+      "request_id": "YA75B6k6kIVno0b",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
@@ -1656,28 +2177,36 @@
       "message": "got job 3"
     },
     {
-      "request_id": "blTY56VKoMdwMmS",
+      "request_id": "o5erLa6lfsvYIgb",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
         "job": {
-          "id": 881,
+          "id": 122,
           "type": "job",
-          "desc": "Test for the `trunc` attribute in mappers with DB output columns",
+          "desc": "Tests the `BBM_GetPipelineData` and `BBM_SimpleFileterPipelineData` building blocks",
           "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue4046 inherits QorusJob {\n    run() {\n        Mapper m = getMapper(\"issue-4046\");\n        m.mapData({\n            \"num\": 100,\n            \"string\": \"this is a very long string, loger than the column can take\",\n        });\n    }\n}\n",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass BbmSimpleFilterPipelineDataTest inherits QorusJob {\n    run() {\n    }\n}\n",
           "base-class-name": "QorusJob",
-          "class-name": "Issue4046",
-          "schedule": "0 0 * * *",
-          "name": "issue-4046",
-          "display_name": "Issue 4046",
-          "short_desc": "Test for the 'trunc' attribute in mappers with DB output columns",
+          "class-name": "BbmSimpleFilterPipelineDataTest",
+          "schedule": "0 0 1 1 *",
+          "name": "bbm-simple-filter-pipeline-data-test",
+          "display_name": "Bbm Simple Filter Pipeline Data Test",
+          "short_desc": "Tests the 'BBM_GetPipelineData' and 'BBM_SimpleFileterPipelineData' building blocks",
           "version": "1.0",
           "active": false,
-          "remote": true,
-          "groups": ["regression", "test"],
+          "remote": false,
           "author": ["Qore Technologies, s.r.o."],
-          "mappers": ["issue-4046"]
+          "fsm": [
+            {
+              "name": "bbm-simple-filter-pipeline-data-test",
+              "triggers": [
+                {
+                  "method": "run"
+                }
+              ]
+            }
+          ]
         },
         "supports_enable": true,
         "supports_active": true,
@@ -1686,24 +2215,129 @@
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got job 881"
+      "message": "got job 122"
     },
     {
-      "request_id": "jSsIgZ7SUNIO4Va",
+      "request_id": "7WaXDgvLUmJnwUK",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
         "job": {
-          "id": 75,
+          "id": 1509,
+          "type": "job",
+          "desc": "Job for scheduled FSM \"Fsm Actions 3\"",
+          "lang": "qore",
+          "source": "class FsmJob inherits QorusJob {run() {}}",
+          "base-class-name": "QorusJob",
+          "class-name": "FsmJob",
+          "schedule": "* * * * *",
+          "name": "fsm-actions-3",
+          "version": "1.0",
+          "active": true,
+          "remote": false,
+          "fsm": [
+            {
+              "name": "fsm-actions-3",
+              "triggers": []
+            }
+          ]
+        },
+        "supports_enable": true,
+        "supports_active": true,
+        "active": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got job 1509"
+    },
+    {
+      "request_id": "LywjtY3lSCs8Pc4",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "job",
+        "job": {
+          "id": 2,
+          "type": "job",
+          "desc": "Rotates log files and optionally handles moving and compressing old log files",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass QorusLogRotator inherits QorusJob {\n    private {\n        #! The archive dir, if any; set on each run\n        *string archdir;\n\n        #! Process old files too?  Set on each run\n        bool process_old;\n\n        #! Log retention days\n        *int retention_days;\n\n        #! Log compression type\n        string log_compression;\n\n        #! Map of current files\n        *hash<string, hash<auto>> fmap;\n\n        #! The system log directory cannot be changed while Qorus is running\n        const Logdir = UserApi::getQorusOptions(\"logdir\").logdir;\n\n        #! The maximum number of log files kept when rotating\n        const MaxLogFiles = UserApi::getQorusOptions(\"max-log-files\").\"max-log-files\";\n\n        #! Log file directory\n        const logdir = new Dir();\n\n        #! Stat attributes\n        const StatAttrs = (\n            \"size\",\n            \"atime\",\n            \"mtime\",\n            \"ctime\",\n        );\n\n        #! Archive block size (16K)\n        const BlockSize = 16 * 1024;\n    }\n\n    run() {\n        # set global / class vars\n        setVars();\n\n        # map of current files if necessary\n        getCurrentFileMap();\n\n        # execute the rotation action\n        callRestApi(\"PUT\", \"system/rotateLogFiles\");\n\n        # delete old files\n        deleteOldFiles();\n\n        # manually rotate old files if necessary to handle interfaces not running now with log files\n        rotateOldFiles();\n\n        # perform file archiving\n        archiveFiles();\n\n        # log done\n        logInfo(\"done\");\n    }\n\n    private setVars() {\n        # get archive directory, if any\n        archdir = getConfigItemValue(\"qorus-log-archive-dir\");\n        if (archdir) {\n            archdir = normalize_dir(archdir, Logdir);\n            log_compression = getConfigItemValue(\"qorus-log-compression\");\n        } else {\n            log_compression = \"<ignored>\";\n        }\n\n        # process old files too?\n        process_old = getConfigItemValue(\"qorus-log-process-old-files\");\n\n        # log retention days\n        retention_days = getConfigItemValue(\"qorus-log-retention-days\");\n\n        # make sure logdir is in the log directory\n        logdir.chdir(Logdir);\n\n        logInfo(\"arch dir: %y (compression: %y) process old files: %y retention days: %y log dir: %y \"\n            \"max log files: %y\", archdir, log_compression, process_old, retention_days, Logdir, MaxLogFiles);\n    }\n\n    private getCurrentFileMap() {\n        if (!process_old) {\n            return;\n        }\n\n        # get a hash of all files\n        # issue #3838: skip hidden files starting with a dot\n        fmap = cast<*hash<string, hash<auto>>>(map {$1.name: $1}, logdir.listFiles(True), $1.name !~ /^\\./);\n    }\n\n    private deleteOldFiles() {\n        if (!exists retention_days) {\n            return;\n        }\n\n        date cutoff = now() - days(retention_days);\n        deleteOldFiles(logdir, cutoff);\n        if (archdir && hstat(archdir)) {\n            deleteOldFiles(archdir, cutoff);\n        }\n    }\n\n    private deleteOldFiles(string dir, date cutoff) {\n        Dir d();\n        d.chdir(dir);\n        deleteOldFiles(d, cutoff);\n    }\n\n    private deleteOldFiles(Dir dir, date cutoff) {\n        foreach hash<auto> info in (dir.listFiles(True)) {\n            # issue #3838: skip hidden files starting with a dot\n            if (info.ctime > cutoff || info.name =~ /^\\./) {\n                continue;\n            }\n\n            string path = normalize_dir(sprintf(\"%s%s%s\", dir.path(), DirSep, info.name));\n            logInfo(\"deleting old %y (create date %y < cutoff %y)\", info.name, info.ctime, cutoff);\n            unlink(path);\n        }\n    }\n\n    private rotateOldFiles() {\n        if (!process_old) {\n            return;\n        }\n\n        # check for identical base files in fmap\n        foreach hash<auto> info in (logdir.listFiles(True)) {\n            # skip rotated files\n            # issue #3838: skip hidden files starting with a dot as well\n            if (info.name =~ /\\.[0-9]+$/ || info.name =~ /^\\./) {\n                continue;\n            }\n            *hash<auto> orig_info = fmap{info.name};\n            # rotate files manually if present in both hashes\n            if (orig_info == info) {\n                rotate(info.name);\n            }\n        }\n    }\n\n    private rotate(string basename, int num = 0) {\n        int next = num + 1;\n        string next_name = sprintf(\"%s.%d\", basename, next);\n        string next_path = normalize_dir(sprintf(\"%s%s%s\", Logdir, DirSep, next_name));\n        if (is_file(next_path)) {\n            rotate(basename, next);\n            # delete files if archdir is not set and if the current version is greater than the max\n            if (!archdir && next > MaxLogFiles) {\n                logInfo(\"manual rotation: deleting old %y (version %d > max log file version %d)\", next_name, next,\n                    MaxLogFiles);\n                unlink(next_path);\n            }\n        }\n        if (archdir || (num <= MaxLogFiles)) {\n            string name = basename;\n            if (num) {\n                name += sprintf(\".%d\", num);\n            }\n            logInfo(\"manual rotation: renaming %y -> %y\", name, next_name);\n            string path = normalize_dir(sprintf(\"%s%s%s\", Logdir, DirSep, name));\n            rename(path, next_path);\n        }\n    }\n\n    private archiveFiles() {\n        if (!archdir) {\n            logInfo(\"archiving disabled; skipping\");\n            return;\n        }\n\n        if (!is_dir(archdir)) {\n            mkdir_ex(archdir, hstat(Logdir).mode, True);\n        }\n\n        # issue #3838: skip hidden files starting with a dot as well\n        map archive($1), logdir.listFiles(\"\\\\.[0-9]+$\", NOTHING, True), $1.name !~ /^\\./;\n    }\n\n    private archive(hash<auto> info) {\n        # get source and target paths\n        string source_path = normalize_dir(sprintf(\"%s%s%s\", Logdir, DirSep, info.name));\n        string target_path = normalize_dir(sprintf(\"%s%s%s-%s\", archdir, DirSep, info.name,\n            now().format(\"YYYY-MM-DDTHH:mm:SS\")));\n        if (log_compression != \"NONE\") {\n            target_path += \".\" + log_compression.lwr();\n        }\n\n        # setup input and output streams\n        FileInputStream i(source_path);\n        OutputStream o = new FileOutputStream(target_path);\n\n        # apply compression to the stream\n        switch (log_compression) {\n            case \"BZ2\":\n                o = new TransformOutputStream(o, get_compressor(COMPRESSION_ALG_BZIP2));\n                break;\n\n            case \"GZ\":\n                o = new TransformOutputStream(o, get_compressor(COMPRESSION_ALG_GZIP));\n                break;\n\n            case \"Z\":\n                o = new TransformOutputStream(o, get_compressor(COMPRESSION_ALG_ZLIB));\n                break;\n        }\n\n        int size;\n        while (exists (*binary buf = i.read(BlockSize))) {\n            o.write(buf);\n            size += buf.size();\n        }\n        o.close();\n\n        # delete source file\n        unlink(source_path);\n\n        # get target file size\n        int output_size = hstat(target_path).size;\n        logInfo(\"archived %y -> %y (%d bytes read, %d bytes written)\", source_path, target_path, size, output_size);\n    }\n}\n",
+          "base-class-name": "QorusJob",
+          "class-name": "QorusLogRotator",
+          "schedule": "0 3 * * *",
+          "name": "qorus-log-rotator",
+          "display_name": "Qorus Log Rotator",
+          "short_desc": "Rotates log files and optionally handles moving and compressing old log files",
+          "version": "6.1",
+          "active": true,
+          "remote": false,
+          "groups": ["qorus-admin"],
+          "author": ["Qore Technologies, s.r.o."],
+          "config-items": [
+            {
+              "name": "qorus-log-archive-dir",
+              "description": "The directory where to move archived log files after rotation.\n\nIf this config item has no value, then files will not be moved after rotation.\n\nIf set and the path is not absolute, then the path will be relative to the Qorus log directory.",
+              "config_group": "Qorus Log Rotator Main",
+              "type": "*string",
+              "default_value": "arch",
+              "strictly_local": true,
+              "default_value_true_type": "*string"
+            },
+            {
+              "name": "qorus-log-compression",
+              "description": "The compression algorithm to use for log files:\n- `BZ2`: [bzip2](http://en.wikipedia.org/wiki/Bzip2) compression; filename extension: `.bz2`\n- `GZ`: gzip compression ([RFC 1952](http://www.ietf.org/rfc/rfc1952.txt)); filename excension: `.gz`\n- `NONE`: no compression; no changes to file name\n- `Z`: zlib-based  *deflate* data compression ([RFC 1951](http://www.ietf.org/rfc/rfc1951.txt)); filename extension: `.Z`",
+              "config_group": "Qorus Log Rotator Main",
+              "type": "string",
+              "default_value": "BZ2",
+              "allowed_values": ["BZ2", "GZ", "NONE", "Z"],
+              "strictly_local": true,
+              "default_value_true_type": "string"
+            },
+            {
+              "name": "qorus-log-retention-days",
+              "description": "The number of days that archived or already rotated log files will be kept.\n\nIf this config item has a value, then any archived files or rotated log files will be deleted if they have a creation date older than this value as a number of days from the current date.",
+              "config_group": "Qorus Log Rotator Main",
+              "type": "*int",
+              "default_value": 90,
+              "strictly_local": true,
+              "default_value_true_type": "*int"
+            },
+            {
+              "name": "qorus-log-process-old-files",
+              "description": "If this config item is set to `true` (the default), then all files that still exist after rotation are assumed to be log files and will be rotated manually.\n\nThis allows for handling log files for interfaces no longer running when the log rotation action is executed, however it also means that all files in the log directory will be treated as log files.",
+              "config_group": "Qorus Log Rotator Main",
+              "type": "bool",
+              "default_value": true,
+              "strictly_local": true,
+              "default_value_true_type": "bool"
+            }
+          ]
+        },
+        "supports_enable": true,
+        "supports_active": true,
+        "active": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got job 2"
+    },
+    {
+      "request_id": "jUsidKpC20zmy6m",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "job",
+        "job": {
+          "id": 74,
           "type": "job",
           "desc": "example job with configuration items",
           "lang": "qore",
-          "source": "\n%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3166JobNeg4 inherits QorusJob {\n    run() {\n    }\n\n    private *hash<string, hash<ConfigItemInfo>> getConfigItemsImpl() {\n        return {\n            \"issue-3166-job-config-1\": <ConfigItemInfo>{\n                \"type\": \"int\",\n                \"default_value\": 123,\n                \"description\": \"This is an example configuration item of type int\",\n                \"strictly_local\": True,\n                \"allowed_values\": (123, 23, 123, 4, 1)\n            },\n        };\n    }\n}\n",
+          "source": "\n%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3166JobNeg2 inherits QorusJob {\n    run() {\n    }\n\n    private *hash<string, hash<ConfigItemInfo>> getConfigItemsImpl() {\n        return {\n            \"issue-3166-job-config-1\": <ConfigItemInfo>{\n                \"type\": \"bool\",\n                \"description\": \"This is an example configuration item of type bool\",\n                \"strictly_local\": True,\n                \"allowed_values\": (True,)\n            },\n        };\n    }\n}\n",
           "base-class-name": "QorusJob",
-          "class-name": "Issue3166JobNeg4",
+          "class-name": "Issue3166JobNeg2",
           "schedule": "* * * * *",
-          "name": "issue-3166neg4-job",
-          "display_name": "Issue 3166neg4 Job",
+          "name": "issue-3166neg2-job",
+          "display_name": "Issue 3166neg2 Job",
           "short_desc": "example job with configuration items",
           "version": "1.0",
           "active": true,
@@ -1718,10 +2352,10 @@
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got job 75"
+      "message": "got job 74"
     },
     {
-      "request_id": "4dWEDGWg1aTdFbr",
+      "request_id": "IWiWbsmKYSr6xgG",
       "tab_token": "none",
       "data": {
         "iface_kind": "job",
@@ -1756,51 +2390,11 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got job 17"
-    },
-    {
-      "request_id": "DpivAqUQgNgTBAw",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "job",
-        "job": {
-          "id": 19,
-          "type": "job",
-          "desc": "test",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3563Pipeline inherits QorusJob {\n    run() {\n    }\n}\n",
-          "base-class-name": "QorusJob",
-          "class-name": "Issue3563Pipeline",
-          "schedule": "0 * * * *",
-          "name": "issue-3563-pipeline",
-          "display_name": "Issue 3563 Pipeline",
-          "short_desc": "test",
-          "version": "1.0",
-          "active": false,
-          "remote": true,
-          "fsm": [
-            {
-              "name": "issue-3563-pipeline-fsm",
-              "triggers": [
-                {
-                  "method": "run"
-                }
-              ]
-            }
-          ]
-        },
-        "supports_enable": true,
-        "supports_active": true,
-        "active": false,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got job 19"
     }
   ],
   "mapper": [
     {
-      "request_id": "8P0PetQbmdT0oN1",
+      "request_id": "XWppBBkJtIEyStE",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -1871,7 +2465,7 @@
       "message": "got mapper 1"
     },
     {
-      "request_id": "zeIwPaouWRozPNc",
+      "request_id": "WC8WAfNh9ykvPE2",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -1937,7 +2531,7 @@
       "message": "got mapper 2"
     },
     {
-      "request_id": "YZt9f1vSjAWunDe",
+      "request_id": "MBV64XHNLEaZvBD",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2003,7 +2597,7 @@
       "message": "got mapper 3"
     },
     {
-      "request_id": "yuw6iDSkX4ctml8",
+      "request_id": "L5FxkuHrEOYdocK",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2305,7 +2899,7 @@
       "message": "got mapper 4"
     },
     {
-      "request_id": "UCu4lLFeDtqTqcc",
+      "request_id": "dCNV4IU7RXA5SUw",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2348,7 +2942,7 @@
       "message": "got mapper 6"
     },
     {
-      "request_id": "ZCjqscU5KukUUwB",
+      "request_id": "v66EhMKyqQGldbj",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2394,7 +2988,7 @@
       "message": "got mapper 7"
     },
     {
-      "request_id": "kANefT3VhSoj5du",
+      "request_id": "NygRCxy0NRO8Xq3",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2809,7 +3403,7 @@
       "message": "got mapper 9"
     },
     {
-      "request_id": "w6tGa2BJr4sj0jZ",
+      "request_id": "kFAIkD3tUBBuqdf",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2856,7 +3450,7 @@
       "message": "got mapper 10"
     },
     {
-      "request_id": "45Y8kucRQokDyz6",
+      "request_id": "zS5d7x9erBIE0oY",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2901,7 +3495,7 @@
       "message": "got mapper 11"
     },
     {
-      "request_id": "3IIUVThjjIFhUuk",
+      "request_id": "nyhtaniUWg1gsEt",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper",
@@ -2949,7 +3543,7 @@
   ],
   "mapper-code": [
     {
-      "request_id": "i1RT40H2T1LFLfo",
+      "request_id": "COrUa6jDb14RtS2",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper-code",
@@ -2985,7 +3579,7 @@
       "message": "got mapper-code 125"
     },
     {
-      "request_id": "LDdtUHSGNaChYgH",
+      "request_id": "CIvOru4Wkif2tUr",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper-code",
@@ -3021,7 +3615,7 @@
       "message": "got mapper-code 124"
     },
     {
-      "request_id": "ajeAjfBcVZCsigd",
+      "request_id": "wmr0vrtvRwbn41s",
       "tab_token": "none",
       "data": {
         "iface_kind": "mapper-code",
@@ -3055,11 +3649,47 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got mapper-code 123"
+    },
+    {
+      "request_id": "xWeJqI8XCshDLK1",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "mapper-code",
+        "mapper-code": {
+          "id": 187,
+          "type": "mapper-code",
+          "desc": "mapper code",
+          "lang": "qore",
+          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass issue3102mappercode {\n    static string getMapperField(auto ignored, hash record) {\n        string value = UserApi::get_global_config_item_value(\"test-item\");\n        value += record.test;\n        return value;\n    }\n\n    static auto getOutput4(auto ignored, hash<auto> record) {\n        return \"test4\";\n    }\n\n    static string get_value(string value) {\n        return \"test\" + value;\n    }\n\n    static string getValue(auto ignored, hash record) {\n        return issue3102mappercode::get_value(\"testdata\");\n    }\n}",
+          "name": "issue3102mappercode",
+          "display_name": "Issue3102mappercode",
+          "short_desc": "mapper code",
+          "version": "1.0",
+          "author": ["Qore Technologies, s.r.o."],
+          "mapper-methods": [
+            {
+              "name": "getMapperField",
+              "desc": "test method 1"
+            },
+            {
+              "name": "getOutput4",
+              "desc": "test method 2"
+            },
+            {
+              "name": "getValue",
+              "desc": "test method 3"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got mapper-code 187"
     }
   ],
   "pipeline": [
     {
-      "request_id": "00OYe61sgNA4Qmw",
+      "request_id": "eGXSPNj7qtiok2F",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3091,7 +3721,7 @@
       "message": "got pipeline 112"
     },
     {
-      "request_id": "cpf4vzTJzJK8WIR",
+      "request_id": "ydORNoeN6K6No4q",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3123,7 +3753,7 @@
       "message": "got pipeline 17"
     },
     {
-      "request_id": "uQbTZGBzq20cfuD",
+      "request_id": "Je7d99r6t11XKMV",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3173,12 +3803,12 @@
       "message": "got pipeline 130"
     },
     {
-      "request_id": "DvJeWydR2WNEVD7",
+      "request_id": "aS2tr0uiwwqrXit",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
         "pipeline": {
-          "id": 271,
+          "id": 391,
           "type": "pipeline",
           "desc": "low code test pipeline",
           "name": "pipeline7",
@@ -3201,74 +3831,10 @@
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got pipeline 271"
+      "message": "got pipeline 391"
     },
     {
-      "request_id": "bQK0uG9UhDCZWy1",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "pipeline",
-        "pipeline": {
-          "id": 117,
-          "type": "pipeline",
-          "desc": "pipeline 2",
-          "name": "pipeline2",
-          "display_name": "Pipeline2",
-          "short_desc": "pipeline 2",
-          "children": [
-            {
-              "pid": "id1",
-              "name": "Issue3485Processor1",
-              "type": "processor",
-              "children": [
-                {
-                  "pid": "id2",
-                  "name": "Issue3485Processor2",
-                  "type": "processor"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got pipeline 117"
-    },
-    {
-      "request_id": "ORl0DwR4BYxDuGh",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "pipeline",
-        "pipeline": {
-          "id": 111,
-          "type": "pipeline",
-          "desc": "pipeline 3",
-          "name": "pipeline3",
-          "display_name": "Pipeline3",
-          "short_desc": "pipeline 3",
-          "children": [
-            {
-              "pid": "id1",
-              "name": "Issue3485Processor2",
-              "type": "processor",
-              "children": [
-                {
-                  "pid": "id2",
-                  "name": "Issue3485Processor1",
-                  "type": "processor"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got pipeline 111"
-    },
-    {
-      "request_id": "jVua9xivLFl6jxT",
+      "request_id": "JIadajR7I2RQlY2",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3319,7 +3885,71 @@
       "message": "got pipeline 100"
     },
     {
-      "request_id": "7AaBe39lYHkcmbP",
+      "request_id": "NQ60c94SCS5coMB",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "pipeline",
+        "pipeline": {
+          "id": 117,
+          "type": "pipeline",
+          "desc": "pipeline 2",
+          "name": "pipeline2",
+          "display_name": "Pipeline2",
+          "short_desc": "pipeline 2",
+          "children": [
+            {
+              "pid": "id1",
+              "name": "Issue3485Processor1",
+              "type": "processor",
+              "children": [
+                {
+                  "pid": "id2",
+                  "name": "Issue3485Processor2",
+                  "type": "processor"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got pipeline 117"
+    },
+    {
+      "request_id": "bPEXeAquHdinfuL",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "pipeline",
+        "pipeline": {
+          "id": 111,
+          "type": "pipeline",
+          "desc": "pipeline 3",
+          "name": "pipeline3",
+          "display_name": "Pipeline3",
+          "short_desc": "pipeline 3",
+          "children": [
+            {
+              "pid": "id1",
+              "name": "Issue3485Processor2",
+              "type": "processor",
+              "children": [
+                {
+                  "pid": "id2",
+                  "name": "Issue3485Processor1",
+                  "type": "processor"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got pipeline 111"
+    },
+    {
+      "request_id": "dVTUQooUzEZ2Cbj",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3351,7 +3981,54 @@
       "message": "got pipeline 113"
     },
     {
-      "request_id": "5MIMtNND0OmeJ4a",
+      "request_id": "qtV8yOyLHmbe1ZV",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "pipeline",
+        "pipeline": {
+          "id": 26,
+          "type": "pipeline",
+          "desc": "test",
+          "name": "issue-3563-pipeline",
+          "display_name": "Issue 3563 Pipeline",
+          "short_desc": "test",
+          "children": [
+            {
+              "type": "processor",
+              "name": "issue3563CreateProcessor",
+              "pid": "KmxHv3Z4t",
+              "children": [
+                {
+                  "type": "queue",
+                  "children": [
+                    {
+                      "type": "processor",
+                      "name": "issue3563LeftProcessor",
+                      "pid": "15YUM9r_3"
+                    }
+                  ]
+                },
+                {
+                  "type": "queue",
+                  "children": [
+                    {
+                      "type": "processor",
+                      "name": "issue3563RightProcessor",
+                      "pid": "-jov0iO0-"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got pipeline 26"
+    },
+    {
+      "request_id": "bF9QGmrdzmBGX2v",
       "tab_token": "none",
       "data": {
         "iface_kind": "pipeline",
@@ -3401,110 +4078,11 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got pipeline 18"
-    },
-    {
-      "request_id": "ZxTpvUiJeBpzFhX",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "pipeline",
-        "pipeline": {
-          "id": 19,
-          "type": "pipeline",
-          "desc": "test",
-          "name": "bbm-simple-filter-pipeline-data-test-2",
-          "display_name": "Bbm Simple Filter Pipeline Data Test 2",
-          "short_desc": "test",
-          "children": [
-            {
-              "type": "processor",
-              "name": "BBM_GetPipelineData",
-              "pid": "gc_wFTIjY",
-              "children": [
-                {
-                  "type": "processor",
-                  "name": "BBM_SimpleFilterPipelineData",
-                  "pid": "NEF3L8hSZ",
-                  "children": [
-                    {
-                      "type": "mapper",
-                      "name": "bbm-simple-filter-pipeline-data-test-2:1.0",
-                      "children": [
-                        {
-                          "type": "processor",
-                          "name": "PipelineElementSaveDataInJob",
-                          "pid": "8heYLpGMm"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got pipeline 19"
     }
   ],
   "queue": [
     {
-      "request_id": "Bf6QCkyzoJZRih5",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 8,
-          "type": "queue",
-          "desc": "asynchronous test queue for REF-TEST workflow",
-          "name": "ref-test",
-          "display_name": "Ref Test",
-          "short_desc": "asynchronous test queue for REF-TEST workflow"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 8"
-    },
-    {
-      "request_id": "L8rdRBolw7sP2kU",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 9,
-          "type": "queue",
-          "desc": "issue 2495 asynchronous test queue",
-          "name": "issue-2495-test",
-          "display_name": "Issue 2495 Test",
-          "short_desc": "issue 2495 asynchronous test queue"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 9"
-    },
-    {
-      "request_id": "yxys88fBuZMfw7n",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 10,
-          "type": "queue",
-          "desc": "asynchronous test queue for the ERRORTEST workflow",
-          "name": "errortest-async",
-          "display_name": "Errortest Async",
-          "short_desc": "asynchronous test queue for the ERRORTEST workflow"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 10"
-    },
-    {
-      "request_id": "xO4opM4qIq6TMqs",
+      "request_id": "NZd2kTwfamNYYMF",
       "tab_token": "none",
       "data": {
         "iface_kind": "queue",
@@ -3522,7 +4100,7 @@
       "message": "got queue 11"
     },
     {
-      "request_id": "GvoDMAmLFLlCKg0",
+      "request_id": "MoyUMDhqXJ6uKBT",
       "tab_token": "none",
       "data": {
         "iface_kind": "queue",
@@ -3540,61 +4118,7 @@
       "message": "got queue 12"
     },
     {
-      "request_id": "Y6t5FSExi2sksas",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 1,
-          "type": "queue",
-          "desc": "asynchronous demo queue",
-          "name": "demo-queue",
-          "display_name": "Demo Queue",
-          "short_desc": "asynchronous demo queue"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 1"
-    },
-    {
-      "request_id": "5BQPHjHbVPYsMtE",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 15,
-          "type": "queue",
-          "desc": "Class workflow asynchronous test queue",
-          "name": "issue3102queue",
-          "display_name": "Issue3102queue",
-          "short_desc": "Class workflow asynchronous test queue"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 15"
-    },
-    {
-      "request_id": "nmTXSYbAmfkh7xH",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "queue",
-        "queue": {
-          "id": 3,
-          "type": "queue",
-          "desc": "Class workflow asynchronous test queue",
-          "name": "qore-class-test",
-          "display_name": "Qore Class Test",
-          "short_desc": "Class workflow asynchronous test queue"
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got queue 3"
-    },
-    {
-      "request_id": "867kFRRu2jzCo5E",
+      "request_id": "yHwZ73GfgQmCXY3",
       "tab_token": "none",
       "data": {
         "iface_kind": "queue",
@@ -3612,7 +4136,61 @@
       "message": "got queue 5"
     },
     {
-      "request_id": "cnQj0nvHqFtw9hC",
+      "request_id": "XNfnncoccMbrJhb",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 15,
+          "type": "queue",
+          "desc": "Class workflow asynchronous test queue",
+          "name": "issue3102queue",
+          "display_name": "Issue3102queue",
+          "short_desc": "Class workflow asynchronous test queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 15"
+    },
+    {
+      "request_id": "3sa38m5rqqtjagB",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 6,
+          "type": "queue",
+          "desc": "Java user interaction test asynchronous test queue",
+          "name": "java-user-interaction-test-1",
+          "display_name": "Java User Interaction Test 1",
+          "short_desc": "Java user interaction test asynchronous test queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 6"
+    },
+    {
+      "request_id": "IgSo7UcZZbVL7Kh",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 1,
+          "type": "queue",
+          "desc": "asynchronous demo queue",
+          "name": "demo-queue",
+          "display_name": "Demo Queue",
+          "short_desc": "asynchronous demo queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 1"
+    },
+    {
+      "request_id": "VMOpcOFwVMMpntR",
       "tab_token": "none",
       "data": {
         "iface_kind": "queue",
@@ -3628,11 +4206,65 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got queue 2"
+    },
+    {
+      "request_id": "SIjT5fYphfqBEq5",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 7,
+          "type": "queue",
+          "desc": "User interaction test asynchronous test queue",
+          "name": "user-interaction-test-1",
+          "display_name": "User Interaction Test 1",
+          "short_desc": "User interaction test asynchronous test queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 7"
+    },
+    {
+      "request_id": "rREahqk5jWIJuDb",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 4,
+          "type": "queue",
+          "desc": "Java asynchronous test queue",
+          "name": "java-test",
+          "display_name": "Java Test",
+          "short_desc": "Java asynchronous test queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 4"
+    },
+    {
+      "request_id": "GfLBvw2EfB5Wck9",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "queue",
+        "queue": {
+          "id": 3,
+          "type": "queue",
+          "desc": "Class workflow asynchronous test queue",
+          "name": "qore-class-test",
+          "display_name": "Qore Class Test",
+          "short_desc": "Class workflow asynchronous test queue"
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got queue 3"
     }
   ],
   "service": [
     {
-      "request_id": "wfZqUzdvWAEk46t",
+      "request_id": "qOXfMBf4oujuOEk",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -3861,7 +4493,7 @@
       "message": "got service 620"
     },
     {
-      "request_id": "didkcW5WdnGFiya",
+      "request_id": "5GHUR0F5T2LYyt7",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -4192,7 +4824,7 @@
       "message": "got service 152"
     },
     {
-      "request_id": "Fb2KnmE3VRQvZ3X",
+      "request_id": "6inlBCf7kMsciWc",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -4295,7 +4927,38 @@
       "message": "got service 120"
     },
     {
-      "request_id": "OgQOyS1bldcowkC",
+      "request_id": "LsyYqRZZOUqg0UZ",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "service",
+        "service": {
+          "id": 893,
+          "type": "service",
+          "desc": "Service for event-driven FSM \"Haltian Demo\"",
+          "lang": "qore",
+          "source": "class FsmService inherits QorusService { init() {} }",
+          "base-class-name": "QorusService",
+          "class-name": "FsmService",
+          "servicetype": "USER",
+          "name": "haltian-demo",
+          "version": "1.0",
+          "autostart": true,
+          "remote": false,
+          "methods": [
+            {
+              "name": "init"
+            }
+          ]
+        },
+        "supports_enable": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got service 893"
+    },
+    {
+      "request_id": "UusO7TXat9RC0e2",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -4374,7 +5037,7 @@
       "message": "got service 248"
     },
     {
-      "request_id": "bEB0CdnIJt4DsCs",
+      "request_id": "XL7fYwkmEtXXNsv",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -4606,7 +5269,7 @@
       "message": "got service 12"
     },
     {
-      "request_id": "RQTN995x8y1R7mf",
+      "request_id": "nzLnoDupImxYjnV",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -4839,7 +5502,7 @@
       "message": "got service 279"
     },
     {
-      "request_id": "7IVghGTZ1GKmqOu",
+      "request_id": "AWIBQiU6Cl5BRwZ",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -5082,7 +5745,7 @@
       "message": "got service 215"
     },
     {
-      "request_id": "M783VDGw2IFdc8q",
+      "request_id": "x1fIeQ6m7psX4WQ",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -5320,7 +5983,7 @@
       "message": "got service 11"
     },
     {
-      "request_id": "SZlWtDjHcrx3tec",
+      "request_id": "xoozGjixHtQoMTZ",
       "tab_token": "none",
       "data": {
         "iface_kind": "service",
@@ -5361,65 +6024,11 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got service 726"
-    },
-    {
-      "request_id": "lQx1yIjcUmYdnne",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "service",
-        "service": {
-          "id": 29,
-          "type": "service",
-          "desc": "Service HTTP handler thread context test",
-          "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass MyRestHandler inherits AbstractServiceRestHandler {\n    constructor() : AbstractServiceRestHandler(\"issue-3534\", False, new PermissiveAuthenticator()) {\n    }\n\n    hash<HttpHandlerResponseInfo> get(hash<auto> cx, *hash<auto> ah) {\n        return UserApi::getConfigItemValue(\"issue-3534-test\")\n            ? RestHandler::makeResponse(200, \"OK\")\n            : RestHandler::makeResponse(501, \"ERROR\");\n    }\n}\n\nclass Issue3534 inherits QorusService {\n    init() {\n        bindHttp(new MyRestHandler());\n    }\n}\n",
-          "base-class-name": "QorusService",
-          "class-name": "Issue3534",
-          "servicetype": "USER",
-          "name": "issue-3534",
-          "display_name": "Issue 3534",
-          "short_desc": "Service HTTP handler thread context test",
-          "version": "1.0",
-          "autostart": false,
-          "remote": true,
-          "methods": [
-            {
-              "name": "init",
-              "author": "Qore Technologies, s.r.o."
-            }
-          ],
-          "groups": ["regression", "test"],
-          "author": ["Qore Technologies, s.r.o."],
-          "config-items": [
-            {
-              "name": "issue-3534-test",
-              "description": "test",
-              "config_group": "Issue 3534 Test",
-              "type": "bool",
-              "default_value": true,
-              "strictly_local": true,
-              "default_value_true_type": "bool"
-            }
-          ],
-          "tags": [
-            {
-              "id": 1,
-              "key": "TEST",
-              "value": "issue-3534"
-            }
-          ]
-        },
-        "supports_enable": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got service 29"
     }
   ],
   "sla": [
     {
-      "request_id": "1VhA3s9cDPNZy2n",
+      "request_id": "Y35bPclTOM2Z5yC",
       "tab_token": "none",
       "data": {
         "iface_kind": "sla",
@@ -5438,7 +6047,7 @@
       "message": "got sla 164"
     },
     {
-      "request_id": "mxBAr6YQNPosHMv",
+      "request_id": "idJ3iDReYOQJ3qH",
       "tab_token": "none",
       "data": {
         "iface_kind": "sla",
@@ -5457,7 +6066,7 @@
       "message": "got sla 165"
     },
     {
-      "request_id": "e8SUZ6KNkuwghgj",
+      "request_id": "AIW8EIOGWyq8oVW",
       "tab_token": "none",
       "data": {
         "iface_kind": "sla",
@@ -5476,7 +6085,7 @@
       "message": "got sla 284"
     },
     {
-      "request_id": "zsViMvh1nK9kz32",
+      "request_id": "EufrbUs2hdOWqmK",
       "tab_token": "none",
       "data": {
         "iface_kind": "sla",
@@ -5495,7 +6104,7 @@
       "message": "got sla 285"
     },
     {
-      "request_id": "W8nLsSjfKJ1ZqcK",
+      "request_id": "YAKtbudUfd9GATX",
       "tab_token": "none",
       "data": {
         "iface_kind": "sla",
@@ -5516,7 +6125,7 @@
   ],
   "step": [
     {
-      "request_id": "ifTbFwjEMqQnnjo",
+      "request_id": "J8TxORBZoY225Lq",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
@@ -5548,29 +6157,7 @@
       "message": "got step 8"
     },
     {
-      "request_id": "S1TKQVeVcFs69qO",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "step",
-        "step": {
-          "id": 104,
-          "type": "step",
-          "lang": "qore",
-          "name": "async_dummy_1",
-          "display_name": "Async Dummy 1",
-          "desc": "async seg dummy test func",
-          "version": "1.0",
-          "steptype": "NORMAL",
-          "arraytype": "SERIES",
-          "author": ["Qore Technologies, sro"]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got step 104"
-    },
-    {
-      "request_id": "M36FUI1YDOnv1tt",
+      "request_id": "SDWbUmAaSFRCydR",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
@@ -5602,7 +6189,7 @@
       "message": "got step 10"
     },
     {
-      "request_id": "oFRKYQMjwnYVVEW",
+      "request_id": "mBEFOfR7L42SomQ",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
@@ -5634,74 +6221,29 @@
       "message": "got step 11"
     },
     {
-      "request_id": "GHDPrK6L9DvEtZy",
+      "request_id": "TD8pAkcWl9DFQGM",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
         "step": {
-          "id": 70,
+          "id": 104,
           "type": "step",
           "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass FsmTestStep1 inherits QorusNormalStep {\n    primary() {\n    }\n}\n",
-          "name": "FsmTestStep1",
-          "display_name": "Fsm Test Step1",
-          "short_desc": "FSM step test 1",
-          "desc": "FSM step test 1",
-          "version": "1.0",
-          "steptype": "NORMAL",
-          "arraytype": "NONE",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-name": "FsmTestStep1",
-          "base-class-name": "QorusNormalStep",
-          "fsm": [
-            {
-              "name": "fsm-dep-test",
-              "triggers": [
-                {
-                  "method": "primary"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got step 70"
-    },
-    {
-      "request_id": "HxuYSWcd8l2sq8n",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "step",
-        "step": {
-          "id": 278,
-          "type": "step",
-          "lang": "qore",
-          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass issue3333step2 inherits QorusNormalArrayStep {\n    softlist<auto> array() {\n        return (\"test1\", \"test2\", \"test3\");\n    }\n\n    primary(auto array_arg) {\n        logInfo(\"array_arg: %s\", array_arg);\n    }\n}\n",
-          "name": "issue3333step2",
-          "display_name": "Issue3333step2",
-          "short_desc": "issue3333 array test step",
-          "desc": "issue3333 array test step",
+          "name": "async_dummy_1",
+          "display_name": "Async Dummy 1",
+          "desc": "async seg dummy test func",
           "version": "1.0",
           "steptype": "NORMAL",
           "arraytype": "SERIES",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-name": "issue3333step2",
-          "classes": [
-            {
-              "id": 1,
-              "name": "issue3333class"
-            }
-          ]
+          "author": ["Qore Technologies, sro"]
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got step 278"
+      "message": "got step 104"
     },
     {
-      "request_id": "tCKA7KZVwDgC99J",
+      "request_id": "ukgKkwAVLJyPnzA",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
@@ -5721,42 +6263,29 @@
       "message": "got step 220"
     },
     {
-      "request_id": "ol5XqaT0IYm6BN6",
+      "request_id": "sKpXjMNgQcqeLV3",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
         "step": {
-          "id": 68,
+          "id": 105,
           "type": "step",
-          "lang": "java",
-          "source": "import com.qoretechnologies.qorus.*;\nimport com.qoretechnologies.qorus.workflow.*;\n\nclass Issue3471Step extends QorusNormalStep {\n    public Issue3471Step() throws Throwable {\n        throw new Exception(\"shouldn't be called when loaded\");\n    }\n\n    public void primary() throws Throwable {\n    }\n}\n",
-          "name": "Issue3471Step",
-          "display_name": "Issue3471 Step",
-          "short_desc": "test step class",
-          "desc": "test step class",
+          "lang": "qore",
+          "name": "dummy_swf_1",
+          "display_name": "Dummy Swf 1",
+          "desc": "async seg dummy swf test func",
           "version": "1.0",
-          "steptype": "NORMAL",
+          "steptype": "SUBWORKFLOW",
           "arraytype": "NONE",
-          "author": ["Qore Technologies, s.r.o."],
-          "class-name": "Issue3471Step",
-          "base-class-name": "QorusNormalStep",
-          "config-items": [
-            {
-              "name": "issue-3471-step-cfg-item-1",
-              "description": "test",
-              "config_group": "test",
-              "type": "*hash",
-              "strictly_local": true
-            }
-          ]
+          "author": ["Qore Technologies, sro"]
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got step 68"
+      "message": "got step 105"
     },
     {
-      "request_id": "4WfegDoWw6UiLIo",
+      "request_id": "iQceK8KK5oipXO6",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
@@ -5829,45 +6358,93 @@
       "message": "got step 223"
     },
     {
-      "request_id": "X5TfAXewLYBxwhM",
+      "request_id": "7zh61B13UMpwFgE",
       "tab_token": "none",
       "data": {
         "iface_kind": "step",
         "step": {
-          "id": 97,
+          "id": 106,
           "type": "step",
           "lang": "qore",
-          "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue39892 inherits QorusNormalStep {\n    primary() {\n    }\n}\n",
-          "name": "issue-3989-2",
-          "display_name": "Issue 3989 2",
-          "short_desc": "config item test",
-          "desc": "config item test",
+          "name": "dummy_end_1",
+          "display_name": "Dummy End 1",
+          "desc": "async seg dummy end test func",
           "version": "1.0",
           "steptype": "NORMAL",
           "arraytype": "NONE",
-          "class-name": "Issue39892",
-          "base-class-name": "QorusNormalStep",
-          "config-items": [
+          "author": ["Qore Technologies, sro"]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got step 106"
+    },
+    {
+      "request_id": "r2L2MEXJOdMl4CW",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "step",
+        "step": {
+          "id": 277,
+          "type": "step",
+          "lang": "qore",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass issue3333step1 inherits QorusNormalArrayStep {\n    softlist<auto> array() {\n        return (\"test1\", \"test2\", \"test3\");\n    }\n\n    primary(auto array_arg) {\n        logInfo(\"array_arg: %s\", array_arg);\n    }\n}\n",
+          "name": "issue3333step1",
+          "display_name": "Issue3333step1",
+          "short_desc": "issue3333 array test step",
+          "desc": "issue3333 array test step",
+          "version": "1.0",
+          "steptype": "NORMAL",
+          "arraytype": "SERIES",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-name": "issue3333step1",
+          "classes": [
             {
-              "name": "config-test",
-              "description": "test",
-              "config_group": "Group",
-              "type": "string",
-              "default_value": "a",
-              "allowed_values": ["a", "b", "c"],
-              "default_value_true_type": "string"
+              "id": 1,
+              "name": "issue3333class"
             }
           ]
         }
       },
       "action": "return-interface-data-complete",
       "ok": true,
-      "message": "got step 97"
+      "message": "got step 277"
+    },
+    {
+      "request_id": "COLEEL0FLypyqZc",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "step",
+        "step": {
+          "id": 278,
+          "type": "step",
+          "lang": "qore",
+          "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass issue3333step2 inherits QorusNormalArrayStep {\n    softlist<auto> array() {\n        return (\"test1\", \"test2\", \"test3\");\n    }\n\n    primary(auto array_arg) {\n        logInfo(\"array_arg: %s\", array_arg);\n    }\n}\n",
+          "name": "issue3333step2",
+          "display_name": "Issue3333step2",
+          "short_desc": "issue3333 array test step",
+          "desc": "issue3333 array test step",
+          "version": "1.0",
+          "steptype": "NORMAL",
+          "arraytype": "SERIES",
+          "author": ["Qore Technologies, s.r.o."],
+          "class-name": "issue3333step2",
+          "classes": [
+            {
+              "id": 1,
+              "name": "issue3333class"
+            }
+          ]
+        }
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got step 278"
     }
   ],
   "type": [
     {
-      "request_id": "5UnyZkNHAqIXbYB",
+      "request_id": "4HwTOQUgwCoKQ0c",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -6002,7 +6579,7 @@
       "message": "got type 11"
     },
     {
-      "request_id": "HxHG3j0kUnyga4E",
+      "request_id": "uODTAXCFLQLmFWi",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -6466,7 +7043,7 @@
       "message": "got type 14"
     },
     {
-      "request_id": "o6qoRC59i7KDY6N",
+      "request_id": "u6TptTI3TOBaZja",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -6715,7 +7292,7 @@
       "message": "got type 18"
     },
     {
-      "request_id": "fVnCriuGGuNNJnM",
+      "request_id": "HHByxMV4ifgVwOf",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -9791,7 +10368,7 @@
       "message": "got type 19"
     },
     {
-      "request_id": "pKaFUiOOYlCExbj",
+      "request_id": "5W8u4XBziuiDh1i",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -10080,7 +10657,7 @@
       "message": "got type 21"
     },
     {
-      "request_id": "a28z9997mQS3gQu",
+      "request_id": "49Bq7zNsMHTKZYn",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -10698,7 +11275,7 @@
       "message": "got type 24"
     },
     {
-      "request_id": "ETPSI3DsgJs7nkT",
+      "request_id": "r3eS19TE3iWI5o5",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -10764,7 +11341,7 @@
       "message": "got type 28"
     },
     {
-      "request_id": "HBtxKvV12PZ8ouS",
+      "request_id": "0zMnzx9IHDSxnvV",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -11258,7 +11835,7 @@
       "message": "got type 29"
     },
     {
-      "request_id": "s7DBB6jVC6A4pzv",
+      "request_id": "EAzIdBZuwRSI1Q1",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -11367,7 +11944,7 @@
       "message": "got type 30"
     },
     {
-      "request_id": "oRMzjVysR9cGr1q",
+      "request_id": "0H2w0vPYkBY4GLM",
       "tab_token": "none",
       "data": {
         "iface_kind": "type",
@@ -11586,7 +12163,7 @@
   ],
   "value-map": [
     {
-      "request_id": "sLJulOHA5DGg62K",
+      "request_id": "uEkfx5UcPJqhBlb",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11621,7 +12198,7 @@
       "message": "got value-map 1"
     },
     {
-      "request_id": "G4ie0scaaYWz2cb",
+      "request_id": "U6wnrjyGP3nu6L8",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11656,7 +12233,7 @@
       "message": "got value-map 2"
     },
     {
-      "request_id": "8E08XLKZRWr2bgz",
+      "request_id": "oUyztG485gLyJkS",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11691,7 +12268,7 @@
       "message": "got value-map 3"
     },
     {
-      "request_id": "uQ3xlU3d6vlueXB",
+      "request_id": "HgLbA8wx2qRssem",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11726,7 +12303,7 @@
       "message": "got value-map 6"
     },
     {
-      "request_id": "xFp7Eob4DTiu4VX",
+      "request_id": "NzxwIMf1BEHvffg",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11766,7 +12343,7 @@
       "message": "got value-map 7"
     },
     {
-      "request_id": "IN38XlZlkIkOCTy",
+      "request_id": "YXzQCGOVDyoQmat",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11826,7 +12403,7 @@
       "message": "got value-map 17"
     },
     {
-      "request_id": "91mj8sfapEVBWzX",
+      "request_id": "VbyAD0zmKQLvjNF",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11871,7 +12448,7 @@
       "message": "got value-map 18"
     },
     {
-      "request_id": "gaasrkUplhfklQW",
+      "request_id": "3Y2Nqk0qTw7vPvA",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11905,7 +12482,7 @@
       "message": "got value-map 147"
     },
     {
-      "request_id": "k5LGTVAkMiF47B2",
+      "request_id": "AHOrtitkT0qIIHl",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11939,7 +12516,7 @@
       "message": "got value-map 148"
     },
     {
-      "request_id": "QFaENH2TqqqhXQY",
+      "request_id": "d5MIU9DH8JypTCx",
       "tab_token": "none",
       "data": {
         "iface_kind": "value-map",
@@ -11985,7 +12562,7 @@
   ],
   "workflow": [
     {
-      "request_id": "KBZLsiNT6Tuhho0",
+      "request_id": "yXTTtwOrvnlWBT1",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12050,7 +12627,7 @@
       "message": "got workflow 166"
     },
     {
-      "request_id": "iknlYgk915dyKNx",
+      "request_id": "Z2IbSnhoPG13AwL",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12135,53 +12712,7 @@
       "message": "got workflow 14"
     },
     {
-      "request_id": "WpHQrfMtacMIK4I",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "workflow",
-        "workflow": {
-          "id": 114,
-          "type": "workflow",
-          "name": "ISSUE-3274-WORKFLOW2",
-          "display_name": "ISSUE 3274 WORKFLOW2",
-          "short_desc": "test class-based java workflow",
-          "desc": "test class-based java workflow",
-          "version": "1.0",
-          "autostart": 0,
-          "remote": true,
-          "sla_threshold": 2,
-          "source": "import com.qoretechnologies.qorus.OMQ;\nimport com.qoretechnologies.qorus.UserApi;\nimport com.qoretechnologies.qorus.workflow.QorusWorkflow;\n\nimport java.util.Map;\n\nclass Issue3274WorkflowJavaClass extends QorusWorkflow {\n    @Override\n    protected void oneTimeInitImpl() throws Throwable {\n        logInfo(\"Issue3274WorkflowClass::oneTimeInitImpl is called\");\n    }\n\n    @Override\n    protected void errorHandlerImpl(String errcode, Map<String, Object> errinfo, Object opt) throws Throwable {\n        logInfo(\"Issue3274WorkflowClass::errorHandlerImpl is called\");\n    }\n\n    @Override\n    protected void detachImpl(String status, String external_order_instanceid) throws Throwable {\n        logInfo(\"Issue3274WorkflowClass::detachImpl is called\");\n    }\n\n    @Override\n    protected void attachImpl() throws Throwable {\n        logInfo(\"Issue3274WorkflowClass::attachImpl is called\");\n    }\n}\n",
-          "base-class-name": "QorusWorkflow",
-          "class-name": "Issue3274WorkflowJavaClass",
-          "lang": "java",
-          "author": ["Qore Technologies, s.r.o."],
-          "steps": ["Issue3274Step2:1.0"],
-          "steps-info": {
-            "Issue3274Step2:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass Issue3274Step inherits QorusNormalStep {\n    primary() {\n        log(LL_INFO, \"Issue3274Step was called\");\n    }\n}\n",
-              "name": "Issue3274Step2",
-              "display_name": "Issue3274 Step2",
-              "short_desc": "Simple worklfow step example",
-              "desc": "Simple worklfow step example",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, s.r.o."],
-              "class-name": "Issue3274Step"
-            }
-          }
-        },
-        "supports_enable": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got workflow 114"
-    },
-    {
-      "request_id": "GSFrhW59vMHze92",
+      "request_id": "dASF9HbAS8lJCpE",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12254,98 +12785,7 @@
       "message": "got workflow 47"
     },
     {
-      "request_id": "D65WlctrYJcWjHl",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "workflow",
-        "workflow": {
-          "id": 148,
-          "type": "workflow",
-          "name": "BB-BIND-TEST-CHILD",
-          "display_name": "BB BIND TEST CHILD",
-          "short_desc": "test bind BB",
-          "desc": "test bind BB",
-          "version": "1.0",
-          "autostart": 0,
-          "remote": true,
-          "sla_threshold": 1800,
-          "groups": ["bb-test", "test"],
-          "lang": "qore",
-          "author": ["Qore Technologies, s.r.o."],
-          "steps": ["bb-test-child:1.0"],
-          "steps-info": {
-            "bb-test-child:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "source": "%new-style\n%strict-args\n%require-types\n%enable-all-warnings\n\nclass BbTestChild inherits QorusNormalStep {\n    primary() {\n    }\n}\n",
-              "name": "bb-test-child",
-              "display_name": "Bb Test Child",
-              "short_desc": "test bind BB",
-              "desc": "test bind BB",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, s.r.o."],
-              "class-name": "BbTestChild",
-              "base-class-name": "QorusNormalStep"
-            }
-          }
-        },
-        "supports_enable": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got workflow 148"
-    },
-    {
-      "request_id": "t6bjtWXFeLxZtat",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "workflow",
-        "workflow": {
-          "id": 152,
-          "type": "workflow",
-          "name": "BB-TEST-SFTP-WORKFLOW-DUP",
-          "display_name": "BB TEST SFTP WORKFLOW DUP",
-          "short_desc": "SFTP create order job BB test workflow",
-          "desc": "SFTP create order job BB test workflow",
-          "version": "1.0",
-          "autostart": 0,
-          "remote": false,
-          "sla_threshold": 20,
-          "keylist": ["filename", "orig_name"],
-          "groups": ["test", "bb-test"],
-          "lang": "qore",
-          "author": ["Qore Technologies, s.r.o."],
-          "steps": ["BBM_TestSftpWorkflowStep:1.0"],
-          "steps-info": {
-            "BBM_TestSftpWorkflowStep:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "source": "%new-style\n%require-types\n%strict-args\n%enable-all-warnings\n\nclass BBM_TestSftpWorkflowStep inherits QorusNormalStep {\n    primary() {\n        # get path\n        *string path = getStaticData(\"local_path\");\n        if (path) {\n            # read in file data to dynamic data\n            string data = File::readTextFile(path);\n            # log path\n            logInfo(\"got path: %y (%d bytes)\", path, data.size());\n            # update dynamic data\n            updateDynamicData({\"data\": data});\n            # unlink file\n            unlink(path);\n        } else {\n            logInfo(\"file data: %d bytes\", getStaticData(\"data\").size());\n        }\n    }\n}\n",
-              "name": "BBM_TestSftpWorkflowStep",
-              "display_name": "BBM Test Sftp Workflow Step",
-              "short_desc": "Qore test step class",
-              "desc": "Qore test step class",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, s.r.o."],
-              "class-name": "BBM_TestSftpWorkflowStep",
-              "base-class-name": "QorusNormalStep"
-            }
-          }
-        },
-        "supports_enable": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got workflow 152"
-    },
-    {
-      "request_id": "orbQLG9vEHdNR4C",
+      "request_id": "RsRKxkmI6AA0vyz",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12390,95 +12830,7 @@
       "message": "got workflow 49"
     },
     {
-      "request_id": "ujDf0kMZvUHn2sc",
-      "tab_token": "none",
-      "data": {
-        "iface_kind": "workflow",
-        "workflow": {
-          "id": 68,
-          "type": "workflow",
-          "name": "SIMPLETEST",
-          "display_name": "SIMPLETEST",
-          "short_desc": "simple test workflow with 3 linear steps",
-          "desc": "simple test workflow with 3 linear steps",
-          "version": "1.0",
-          "autostart": 0,
-          "remote": true,
-          "sla_threshold": 1800,
-          "keylist": [
-            "key1",
-            "key2",
-            "key3",
-            "key4",
-            "key5",
-            "key6",
-            "key7",
-            "key8",
-            "key9"
-          ],
-          "groups": ["test"],
-          "lang": "qore",
-          "author": ["Qore Technologies, sro"],
-          "classes": [
-            {
-              "id": 1,
-              "name": "TestClass1"
-            },
-            {
-              "id": 2,
-              "name": "TestClass2"
-            }
-          ],
-          "steps": [
-            "test_function_1:1.0",
-            "test_function_2:1.0",
-            "test_function_3:1.0"
-          ],
-          "steps-info": {
-            "test_function_1:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "name": "test_function_1",
-              "display_name": "Test Function 1",
-              "desc": "test function 1",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, sro"]
-            },
-            "test_function_2:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "name": "test_function_2",
-              "display_name": "Test Function 2",
-              "desc": "test function 2",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, sro"]
-            },
-            "test_function_3:1.0": {
-              "type": "step",
-              "lang": "qore",
-              "name": "test_function_3",
-              "display_name": "Test Function 3",
-              "desc": "test function 3",
-              "version": "1.0",
-              "steptype": "NORMAL",
-              "arraytype": "NONE",
-              "author": ["Qore Technologies, sro"]
-            }
-          }
-        },
-        "supports_enable": true,
-        "enabled": true
-      },
-      "action": "return-interface-data-complete",
-      "ok": true,
-      "message": "got workflow 68"
-    },
-    {
-      "request_id": "dHqFJgFHNWvsppG",
+      "request_id": "pa4ST08cIW1tGIw",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12536,7 +12888,48 @@
       "message": "got workflow 13"
     },
     {
-      "request_id": "8pZdrUcoFh6HHYn",
+      "request_id": "8Ptwy9f0bwrfCoi",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "workflow",
+        "workflow": {
+          "id": 90,
+          "type": "workflow",
+          "name": "RECOVERY-TEST",
+          "display_name": "RECOVERY TEST",
+          "short_desc": "recovery test workflow",
+          "desc": "recovery test workflow",
+          "version": "1.0",
+          "autostart": 1,
+          "remote": true,
+          "sla_threshold": 1800,
+          "groups": ["test", "regression"],
+          "lang": "qore",
+          "author": ["Qore Technologies, s.r.o."],
+          "steps": ["recovery_1:1.0"],
+          "steps-info": {
+            "recovery_1:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "recovery_1",
+              "display_name": "Recovery 1",
+              "desc": "recovery step 1",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            }
+          }
+        },
+        "supports_enable": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got workflow 90"
+    },
+    {
+      "request_id": "87bv8Zi8PY7xx1x",
       "tab_token": "none",
       "data": {
         "iface_kind": "workflow",
@@ -12591,6 +12984,207 @@
       "action": "return-interface-data-complete",
       "ok": true,
       "message": "got workflow 15"
+    },
+    {
+      "request_id": "VyA24BbKgxo7DTo",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "workflow",
+        "workflow": {
+          "id": 16,
+          "type": "workflow",
+          "name": "TELCO-RETIRE-SERVICE",
+          "display_name": "TELCO RETIRE SERVICE",
+          "short_desc": "demo telco technical service suspension workflow",
+          "desc": "demo telco technical service suspension workflow",
+          "version": "1.0",
+          "autostart": 1,
+          "remote": false,
+          "sla_threshold": 15,
+          "groups": ["demo", "demo-telco-om"],
+          "lang": "qore",
+          "author": ["Qore Technologies, s.r.o."],
+          "steps": [
+            "telco_retire_service:1.0",
+            "telco_update_crm_retire_service:1.0"
+          ],
+          "steps-info": {
+            "telco_retire_service:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_retire_service",
+              "display_name": "Telco Retire Service",
+              "short_desc": "retire the technical service in the network or system",
+              "desc": "retire the technical service in the network or system",
+              "version": "1.0",
+              "steptype": "ASYNC",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."],
+              "queue": "demo-queue"
+            },
+            "telco_update_crm_retire_service:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_update_crm_retire_service",
+              "display_name": "Telco Update Crm Retire Service",
+              "short_desc": "update the CRM system on the status of the service suspension action",
+              "desc": "update the CRM system on the status of the service suspension action",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            }
+          }
+        },
+        "supports_enable": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got workflow 16"
+    },
+    {
+      "request_id": "glKzOZROT1V5ShQ",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "workflow",
+        "workflow": {
+          "id": 17,
+          "type": "workflow",
+          "name": "TELCO-SIM-SWAP",
+          "display_name": "TELCO SIM SWAP",
+          "short_desc": "demo telco technical SIM swap workflow",
+          "desc": "demo telco technical SIM swap workflow",
+          "version": "1.0",
+          "autostart": 1,
+          "remote": false,
+          "sla_threshold": 12,
+          "groups": ["demo", "demo-telco-om"],
+          "lang": "qore",
+          "author": ["Qore Technologies, s.r.o."],
+          "steps": [
+            "telco_sim_swap_technical:1.0",
+            "telco_update_crm_sim_swap:1.0"
+          ],
+          "steps-info": {
+            "telco_sim_swap_technical:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_sim_swap_technical",
+              "display_name": "Telco Sim Swap Technical",
+              "short_desc": "changes the SIM in technical systems / network",
+              "desc": "changes the SIM in technical systems / network",
+              "version": "1.0",
+              "steptype": "ASYNC",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."],
+              "queue": "demo-queue"
+            },
+            "telco_update_crm_sim_swap:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_update_crm_sim_swap",
+              "display_name": "Telco Update Crm Sim Swap",
+              "short_desc": "update the CRM system on the status of the SIM swap action",
+              "desc": "update the CRM system on the status of the SIM swap action",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            }
+          }
+        },
+        "supports_enable": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got workflow 17"
+    },
+    {
+      "request_id": "QleR7jph3wAvMgj",
+      "tab_token": "none",
+      "data": {
+        "iface_kind": "workflow",
+        "workflow": {
+          "id": 18,
+          "type": "workflow",
+          "name": "TELCO-SUSPEND-ACCOUNT",
+          "display_name": "TELCO SUSPEND ACCOUNT",
+          "short_desc": "demo telco account suspension workflow",
+          "desc": "demo telco account suspension workflow",
+          "version": "1.0",
+          "autostart": 1,
+          "remote": false,
+          "sla_threshold": 55,
+          "groups": ["demo", "demo-telco-om"],
+          "lang": "qore",
+          "author": ["Qore Technologies, s.r.o."],
+          "steps": [
+            "telco_suspend_billing_account:1.0",
+            [
+              "telco_suspend_technical_services:1.0",
+              "telco_suspend_counter_fraud_account:1.0"
+            ],
+            "telco_update_crm_suspend_account:1.0"
+          ],
+          "steps-info": {
+            "telco_suspend_billing_account:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_suspend_billing_account",
+              "display_name": "Telco Suspend Billing Account",
+              "short_desc": "suspend the billing account",
+              "desc": "suspend the billing account",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            },
+            "telco_suspend_technical_services:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_suspend_technical_services",
+              "display_name": "Telco Suspend Technical Services",
+              "short_desc": "suspend services on the network and supporting systems (number management, MNP etc) according to the product/tariff/options ordered",
+              "desc": "suspend services on the network and supporting systems (number management, MNP etc) according to the product/tariff/options ordered",
+              "version": "1.0",
+              "steptype": "SUBWORKFLOW",
+              "arraytype": "SERIES",
+              "author": ["Qore Technologies, s.r.o."]
+            },
+            "telco_suspend_counter_fraud_account:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_suspend_counter_fraud_account",
+              "display_name": "Telco Suspend Counter Fraud Account",
+              "short_desc": "suspend the account info in the counter-fraud system",
+              "desc": "suspend the account info in the counter-fraud system",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            },
+            "telco_update_crm_suspend_account:1.0": {
+              "type": "step",
+              "lang": "qore",
+              "name": "telco_update_crm_suspend_account",
+              "display_name": "Telco Update Crm Suspend Account",
+              "short_desc": "update the CRM system on the status of the account suspension action",
+              "desc": "update the CRM system on the status of the account suspension action",
+              "version": "1.0",
+              "steptype": "NORMAL",
+              "arraytype": "NONE",
+              "author": ["Qore Technologies, s.r.o."]
+            }
+          }
+        },
+        "supports_enable": true,
+        "enabled": true
+      },
+      "action": "return-interface-data-complete",
+      "ok": true,
+      "message": "got workflow 18"
     }
   ]
 }

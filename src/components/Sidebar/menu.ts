@@ -49,7 +49,7 @@ export const buildMenu = (
         activePaths: [`/Interfaces/${id}`, `/CreateInterface/${id}`],
         as: Link,
         id: id,
-        rightIcon: 'AddLine',
+        rightIcon: item.disable_creation ? undefined : 'AddLine',
         onRightIconClick: () => navigate(`/proxy?to=/CreateInterface/${id}`),
       })
     ),
