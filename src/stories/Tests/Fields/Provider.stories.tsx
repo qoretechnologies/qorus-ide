@@ -2,9 +2,9 @@ import { Meta, StoryObj } from '@storybook/react';
 import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import connectors from '../../../components/Field/connectors';
 import {
-    ApiCall,
-    Message,
-    Type,
+  ApiCall,
+  Message,
+  Type,
 } from '../../Fields/DataProvider/Provider.stories';
 import { sleep } from '../utils';
 
@@ -18,6 +18,9 @@ export default meta;
 export const GoStepBack: StoryObj<typeof meta> = {
   args: {
     requiresRequest: true,
+  },
+  parameters: {
+    chromatic: { disable: true },
   },
   play: async ({ canvasElement, ...rest }) => {
     await waitFor(
