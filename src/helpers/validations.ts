@@ -80,6 +80,20 @@ export const validateField: (
 
   // Check individual types
   switch (type) {
+    case 'richtext': {
+      if (!value || !size(value)) {
+        return false;
+      }
+
+      if (
+        JSON.stringify(value) ===
+        '[{"type":"paragraph","children":[{"text":""}]}]'
+      ) {
+        return false;
+      }
+
+      return true;
+    }
     case 'bool':
     case 'boolean':
       return value === true || value === false || value === undefined;

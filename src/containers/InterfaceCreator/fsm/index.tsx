@@ -2341,7 +2341,6 @@ export const FSMView: React.FC<IFSMViewProps> = ({
   }
 
   const renderAppCatalogue = () => {
-    console.log(addingNewStateAt);
     if (addingNewStateAt) {
       const isFirstTriggerState =
         (size(states) === 0 || !hasEventTriggerState()) &&

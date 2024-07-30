@@ -50,6 +50,14 @@ export const RichTextField = memo(
     const navigate = useNavigate();
 
     const handleChange = (value: any): void => {
+      if (
+        JSON.stringify(value) ===
+        '[{"type":"paragraph","children":[{"text":""}]}]'
+      ) {
+        onChange?.('');
+        return;
+      }
+
       onChange?.(value);
     };
 

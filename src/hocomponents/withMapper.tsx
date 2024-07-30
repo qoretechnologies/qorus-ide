@@ -167,8 +167,8 @@ export default () =>
         const prov = provider
           ? provider
           : fieldType === 'input'
-          ? inputOptionProvider
-          : outputOptionProvider;
+            ? inputOptionProvider
+            : outputOptionProvider;
 
         // If the provider is an api call, we need to add /request or /response at the end
         const url = prov.is_api_call
@@ -500,11 +500,6 @@ export default () =>
           setMapper(props.mapper);
         }
       }, [props.mapper]);
-
-      /*if (!error && qorus_instance && (!mapperKeys || (props.isEditingMapper && (!inputs || !outputs)))) {
-            console.log(error, qorus_instance, mapperKeys, inputs, outputs);
-            return <Component {...props} />;
-        }*/
 
       const addField = (fieldsType, path, data) => {
         // Save the field setters to be easily accessible
