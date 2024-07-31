@@ -37,10 +37,10 @@ export const EnableToggle = memo(
         fixed
         {...rest}
         {...{
-          icon: 'ToggleLine',
+          icon: value ? 'ToggleFill' : 'ToggleLine',
           effect: value ? SaveColorEffect : SelectorColorEffect,
-          label: hasLabel ? (value ? 'Disable' : 'Enable') : undefined,
-          tooltip: value ? 'Disable' : 'Enable',
+          label: hasLabel ? (value ? 'Enabled' : 'Disabled') : undefined,
+          tooltip: value ? 'Click To Disable' : 'Click To Enable',
           onClick: (e) => {
             e.stopPropagation();
             setValue(!value);

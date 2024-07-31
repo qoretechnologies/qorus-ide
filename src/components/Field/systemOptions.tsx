@@ -112,7 +112,7 @@ export const fixOptions = (
         return {
           ...newValue,
           [optionName]: {
-            type: getType(options[optionName].type, operators, option?.op),
+            type: getType(options?.[optionName]?.type, operators, option?.op),
             value: option,
             is_expression: option?.is_expression,
           },

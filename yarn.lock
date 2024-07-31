@@ -3747,10 +3747,10 @@
   dependencies:
     lodash "^4.17.15"
 
-"@qoretechnologies/reqore@^0.48.2":
-  version "0.48.2"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.48.2.tgz#2eb37e68e5d068258670c9b24508259db61b2d26"
-  integrity sha512-IyJ6rcyFMOmBOFSjzqEFXDAqSdIh0OoBD256kyKoX42k5UysiiMtWpJDcnwnEJtFMX+wy6NstgfhwuhQAZ4CMQ==
+"@qoretechnologies/reqore@^0.48.3":
+  version "0.48.3"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.48.3.tgz#59b505e917f6c4ee762ea633357a8a1365a90811"
+  integrity sha512-DMLVVJw8tE3Ni2K3Zk5h87xn5XRDsAaLy1l1u6NaDBWZMhZaqrXzdJMPfm388EjPiFOCtGoVMUBJqvJXkvfQVg==
   dependencies:
     "@internationalized/date" "^3.5.3"
     "@popperjs/core" "^2.11.6"
