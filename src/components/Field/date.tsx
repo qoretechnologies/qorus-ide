@@ -1,4 +1,8 @@
-import { ReqoreInput, useReqoreTheme } from '@qoretechnologies/reqore';
+import {
+  DatePicker,
+  ReqoreInput,
+  useReqoreTheme,
+} from '@qoretechnologies/reqore';
 import { FunctionComponent } from 'react';
 import useMount from 'react-use/lib/useMount';
 import compose from 'recompose/compose';
@@ -57,29 +61,17 @@ const DateField: FunctionComponent<IDateField & IField & IFieldChange> = ({
   });
 
   // When input value changes
-  const handleInputChange = (event: any): void => {
-    onChange(name, event.target.value);
-  };
-
-  // Clear the input on reset click
-  const handleResetClick = (): void => {
-    onChange(name, null);
+  const handleInputChange = (date: string): void => {
+    onChange(name, date);
   };
 
   return (
-    <StyledDateField
+    <DatePicker
       {...rest}
-      theme={theme}
-      // @ts-ignore
-      type='datetime-local'
-      disabled={disabled}
-      placeholder={'YYYY-MM-DDT00:00:00Z'}
-      // Make this datetime-local input have seconds
-      step='1'
-      fluid
-      value={!value && !default_value ? undefined : value || default_value}
+      value={value || default_value}
       onChange={handleInputChange}
-      onClearClick={handleResetClick}
+      customTheme={theme}
+      isDisabled={disabled}
     />
   );
 };

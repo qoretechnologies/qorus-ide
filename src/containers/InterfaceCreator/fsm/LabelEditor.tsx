@@ -1,10 +1,16 @@
-import { ReqoreIcon, ReqoreP, ReqorePanel, ReqoreTextarea } from '@qoretechnologies/reqore';
+import {
+  ReqoreIcon,
+  ReqoreP,
+  ReqorePanel,
+  ReqoreTextarea,
+} from '@qoretechnologies/reqore';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { memo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useUpdateEffect } from 'react-use';
 
-export interface IEditableMesasgeProps extends Omit<IReqorePanelProps, 'children'> {
+export interface IEditableMesasgeProps
+  extends Omit<IReqorePanelProps, 'children'> {
   content: string | number;
   onEdit: (label: string | number) => void;
   asMarkdown?: boolean;
@@ -48,12 +54,12 @@ export const EditableMessage = memo(
         minimal
         {...rest}
         onClick={() => setIsEditing(true)}
-        tooltip="Click to edit"
+        tooltip='Click to edit'
       >
         {asMarkdown ? (
           <ReactMarkdown
             components={{
-              p: ({ node, ...props }) => <ReqoreP {...props} />,
+              p: ({ node, ...props }) => <ReqoreP block={false} {...props} />,
             }}
           >
             {localContent.toString()}
@@ -61,7 +67,7 @@ export const EditableMessage = memo(
         ) : (
           localContent
         )}
-        <ReqoreIcon icon="EditLine" size="small" margin="left" />
+        <ReqoreIcon icon='EditLine' size='small' margin='left' />
       </ReqorePanel>
     );
   }

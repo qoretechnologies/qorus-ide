@@ -2,7 +2,6 @@ import { StoryObj } from '@storybook/react';
 import { expect, fireEvent, fn, waitFor } from '@storybook/test';
 import { compose } from 'recompose';
 import { CreateInterface } from '../../../containers/InterfaceCreator';
-import Panel from '../../../containers/InterfaceCreator/panel';
 import withFields from '../../../hocomponents/withFields';
 import withGlobalOptions from '../../../hocomponents/withGlobalOptions';
 import withInitialData from '../../../hocomponents/withInitialData';
@@ -15,13 +14,12 @@ import interfaces from '../../Data/interface_samples.json';
 import {
   _testsClickButton,
   _testsConfirmDialog,
+  _testsCreatorDraftSaveCheck,
   _testsExpectFieldsCountToMatch,
   _testsSelectItemFromDropdown,
-  sleep,
 } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
-
-const classData = interfaces.class[5].data.class;
+import * as ClassStories from '../Class/Class.stories';
 
 const Creator = compose(
   withFields(),
@@ -34,40 +32,62 @@ const Creator = compose(
 
 const meta = {
   component: CreateInterface,
-  title: 'Interfaces Manager/Config Item',
   args: {
-    id: classData.id,
     onSubmit: fn(),
   },
-  render: ({ id, data, onSubmit }) => {
+  title: 'Interfaces Manager/Function',
+  render: (args) => {
     return (
       <InterfacesProvider>
         <Creator>
-          <Panel
-            forceSubmit
-            parent='class'
-            type={'config-item'}
-            initialInterfaceId={id}
-            data={data}
-            onSubmitSuccess={onSubmit}
-            disabledFields={data && data.parent && ['name']}
-            isEditing={!!data}
-          />
+          <CreateInterface {...args} />
         </Creator>
       </InterfacesProvider>
     );
   },
-} as StoryMeta<any>;
+} as StoryMeta<typeof CreateInterface>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const New: Story = {};
-
 export const Existing: Story = {
   args: {
-    data: classData['config-items'][0],
+    data: {
+      subtab: 'function',
+      function: interfaces.function[0].data.function,
+    },
+  },
+};
+export const DraftIsSaved: Story = {
+  ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
+
+  play: async () => {
+    await _testsCreatorDraftSaveCheck('name');
+  },
+};
+
+export const FieldsAreFiltered: Story = {
+  ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async () => {
+    await waitFor(
+      () => expect(document.querySelector('.reqore-input')).toBeInTheDocument(),
+      {
+        timeout: 5000,
+      }
+    );
+
+    await fireEvent.change(document.querySelector('.reqore-input'), {
+      target: { value: 'desc' },
+    });
+
+    await _testsExpectFieldsCountToMatch(1);
   },
 };
 
@@ -76,16 +96,17 @@ export const FieldCanBeRemoved: Story = {
   parameters: {
     chromatic: { disable: true },
   },
-  play: async ({ beforeCount, afterCount }) => {
-    await _testsExpectFieldsCountToMatch(beforeCount ?? 7, true);
-    await _testsClickButton({ selector: '.creator-field-remove' });
-    await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(afterCount ?? 6, true);
+  play: async (args) => {
+    await ClassStories.FieldCanBeRemoved.play({
+      ...args,
+      beforeCount: 4,
+      afterCount: 3,
+    });
   },
 };
 
 export const FieldsCanBeAdded: Story = {
-  ...New,
+  ...Existing,
   parameters: {
     chromatic: { disable: true },
   },
@@ -93,17 +114,33 @@ export const FieldsCanBeAdded: Story = {
     await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
-      'strictly_local',
-      'Optional fields available (5)'
+      'tags',
+      'Optional fields available (1)'
     )();
     await _testsExpectFieldsCountToMatch(5, true);
-    await sleep(300);
+  },
+};
+
+export const ChangesCanBeDiscarded: Story = {
+  ...Existing,
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async () => {
+    await _testsExpectFieldsCountToMatch(4, true);
     await _testsSelectItemFromDropdown(
       undefined,
       'SelectAll',
-      'Optional fields available (4)'
+      'Optional fields available (1)'
     )();
-    await _testsExpectFieldsCountToMatch(9, true);
+    await _testsExpectFieldsCountToMatch(5, true);
+    await fireEvent.change(
+      document.querySelector('.creator-field .reqore-input'),
+      { target: { value: 'Test' } }
+    );
+    await _testsClickButton({ label: 'Reset' });
+    await _testsConfirmDialog();
+    await _testsExpectFieldsCountToMatch(4, true);
   },
 };
 
@@ -116,10 +153,7 @@ export const SubmittedDataAreCorrect: Story = {
   },
   play: async ({ args, ...rest }) => {
     await FieldCanBeRemoved.play({ args, ...rest });
-    await fireEvent.change(
-      document.querySelector('.creator-field .reqore-input'),
-      { target: { value: 'Test' } }
-    );
+    await DraftIsSaved.play({ args, ...rest });
     await _testsClickButton({ label: 'Submit' });
 
     await waitFor(

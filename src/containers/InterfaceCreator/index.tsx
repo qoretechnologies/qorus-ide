@@ -202,6 +202,26 @@ export const CreateInterface = ({
           />
         </CreatorWrapper>
       )}
+      {initialData.subtab === 'constant' && (
+        <CreatorWrapper>
+          <InterfaceCreatorPanel
+            type={'constant'}
+            onSubmitSuccess={onSubmit}
+            data={initialData.constant}
+            isEditing={!!initialData.constant}
+          />
+        </CreatorWrapper>
+      )}
+      {initialData.subtab === 'function' && (
+        <CreatorWrapper>
+          <InterfaceCreatorPanel
+            type={'function'}
+            onSubmitSuccess={onSubmit}
+            data={initialData.function}
+            isEditing={!!initialData.function}
+          />
+        </CreatorWrapper>
+      )}
       {initialData.subtab === 'value-map' && (
         <CreatorWrapper>
           <InterfaceCreatorPanel

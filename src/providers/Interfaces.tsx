@@ -6,7 +6,10 @@ import { useAsyncRetry } from 'react-use';
 import Loader from '../components/Loader';
 import { interfaceToPlural } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
-import { TQorusInterfaceCount } from '../containers/InterfacesView';
+import {
+  IQorusInterface,
+  TQorusInterfaceCount,
+} from '../containers/InterfacesView';
 import { InterfacesContext } from '../context/interfaces';
 import { NotificationsHandler } from '../handlers/Notifications';
 import { callBackendBasic, fetchData } from '../helpers/functions';
@@ -24,6 +27,9 @@ export const InterfacesProvider = ({
   _injectedStorage = {},
 }: IInterfacesProviderProps) => {
   const [categories, setCategories] = useState<TQorusInterfaceCount>(undefined);
+  const [interfaces, setInterfaces] = useState<
+    Record<string, IQorusInterface[]>
+  >({});
   const [storage, setStorage] = useState<TQorusStorage>({});
 
   const addNotification = useReqoreProperty('addNotification');
@@ -67,6 +73,16 @@ export const InterfacesProvider = ({
         true
       );
 
+      const interfacesData = await callBackendBasic(
+        Messages.GET_ALL_INTERFACES,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
+
+      setInterfaces(interfacesData.data);
       setCategories(data.data);
     })();
   }, []);
@@ -149,6 +165,7 @@ export const InterfacesProvider = ({
     <InterfacesContext.Provider
       value={{
         categories,
+        interfaces,
         clone,
         storage,
         getStorage,

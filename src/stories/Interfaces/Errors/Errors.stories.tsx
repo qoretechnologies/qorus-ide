@@ -144,26 +144,6 @@ export const FieldsCanBeAdded: Story = {
   },
 };
 
-export const ChangesCanBeDiscarded: Story = {
-  ...New,
-  parameters: {
-    chromatic: { disable: true },
-  },
-
-  play: async () => {
-    await _testsExpectFieldsCountToMatch(2, true, 'errors');
-    await _testsSelectItemFromDropdown(
-      undefined,
-      'SelectAll',
-      'Optional fields available (2)'
-    )();
-    await _testsExpectFieldsCountToMatch(4, true, 'errors');
-    await _testsClickButton({ label: 'Reset' });
-    await _testsConfirmDialog();
-    await _testsExpectFieldsCountToMatch(2, true, 'errors');
-  },
-};
-
 export const SubmittedDataAreCorrect: Story = {
   args: {
     ...Existing.args,

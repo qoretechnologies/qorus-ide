@@ -677,6 +677,7 @@ export const filterTemplatesByType = (
     const subItems = item.items?.filter((subItem) => {
       return (
         subItem.badge === fieldType ||
+        fieldType === 'richtext' ||
         (fieldType === 'string' &&
           isTypeStringCompatible(subItem.badge as string)) ||
         (fieldType === 'number' &&

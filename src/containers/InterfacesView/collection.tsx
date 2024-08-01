@@ -35,6 +35,7 @@ export const InterfacesViewCollection = ({
   type,
   display_name,
   singular_display_name,
+  disable_creation,
 }: IInterfaceViewCollectionProps) => {
   const addNotification = useReqoreProperty('addNotification');
   const confirmAction = useReqoreProperty('confirmAction');
@@ -105,9 +106,18 @@ export const InterfacesViewCollection = ({
     badgeList.push({
       label: getDraftsCount(),
       intent: 'pending',
-      tooltip: 'Number of drafts, click to remove all drafts',
+      tooltip: 'Number of drafts',
       onRemoveClick: () => onDeleteClick(type),
     });
+
+    if (disable_creation) {
+      badgeList.push({
+        label: 'Deprecated',
+        intent: 'warning',
+        icon: 'FlagLine',
+        tooltip: 'Creation of this interface type is disabled',
+      });
+    }
 
     return badgeList;
   }, [getDraftsCount, getRemotesCount, qorus_instance]);
@@ -145,6 +155,7 @@ export const InterfacesViewCollection = ({
           onClick: () => changeTab('CreateInterface', type),
           effect: PositiveColorEffect,
           pill: true,
+          show: !disable_creation,
         },
       ]}
       icon={interfaceIcons[type]}
@@ -269,7 +280,7 @@ export const InterfacesViewCollection = ({
               effect: SynthColorEffect,
               tooltip: 'Clone This Interface',
               size: 'tiny',
-              show: item.data ? 'hover' : false,
+              show: item.data && !disable_creation ? 'hover' : false,
               onClick: () => {
                 clone(type, item.id);
               },

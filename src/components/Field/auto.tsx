@@ -5,6 +5,7 @@ import {
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
+import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
@@ -32,6 +33,7 @@ import MultiSelect from './multiSelect';
 import NumberField from './number';
 import OptionHashField from './optionHash';
 import RadioField from './radioField';
+import { RichTextField } from './richText';
 import SelectField, { ISelectFieldItem } from './select';
 import StringField from './string';
 import { IOptionsSchema, IQorusType } from './systemOptions';
@@ -54,6 +56,11 @@ export interface IAutoFieldProps extends IField {
   disableSearchOptions?: boolean;
 
   allowedTypes?: { name: IQorusType }[];
+  supports_templates?: boolean;
+  supports_references?: boolean;
+  supports_styling?: boolean;
+
+  templates?: IReqoreFormTemplates;
 }
 
 export const DefaultNoSoftTypes = [
@@ -341,6 +348,20 @@ function AutoField<T = any>({
             type={currentType}
           />
         );
+      case 'richtext': {
+        return (
+          <RichTextField
+            fill
+            {...rest}
+            name={name}
+            onChange={(value) => {
+              handleChange(name, value);
+            }}
+            value={value}
+            tagsListProps={{}}
+          />
+        );
+      }
       case 'bool':
       case 'softbool':
       case 'boolean':

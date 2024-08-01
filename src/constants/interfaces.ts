@@ -26,6 +26,8 @@ export const interfaceKindTransform = {
   scripts: 'scripts',
   tests: 'tests',
   sla: 'sla',
+  function: 'function',
+  constant: 'constant',
 };
 
 export const interfaceToPlural = {
@@ -50,6 +52,8 @@ export const interfaceToPlural = {
   scripts: 'scripts',
   tests: 'tests',
   sla: 'slas',
+  function: 'functions',
+  constant: 'constants',
 };
 
 export const viewsIcons: Record<string, IReqoreIconName> = {
@@ -90,6 +94,8 @@ export const interfaceIcons: Record<string, IReqoreIconName> = {
   scripts: 'FileCodeLine',
   tests: 'FilterLine',
   sla: 'TimerLine',
+  function: 'FacebookLine',
+  constant: 'Hashtag',
 };
 
 export const interfaceImages: Record<string, string> = {
@@ -118,6 +124,8 @@ export const interfaceNameToKind = {
   Script: 'scripts',
   Test: 'tests',
   Sla: 'sla',
+  Function: 'function',
+  Constant: 'constant',
 };
 
 // Reverse the interfaceNameToKind object

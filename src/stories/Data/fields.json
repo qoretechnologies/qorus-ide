@@ -1,4 +1,128 @@
 {
+  "function": {
+    "request_id": "Bj5G301fb0wtBSc",
+    "tab_token": "none",
+    "iface_kind": "function",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      },
+      {
+        "name": "tags",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
+  "constant": {
+    "request_id": "8JtHI3Sn8owklt1",
+    "tab_token": "none",
+    "iface_kind": "constant",
+    "fields": [
+      {
+        "name": "name",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "version",
+        "type": "string",
+        "mandatory": true,
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "author",
+        "type": "select-array",
+        "mandatory": false,
+        "get_message": {
+          "action": "creator-get-objects",
+          "object_type": "author",
+          "useWebSocket": true
+        },
+        "return_message": {
+          "action": "creator-return-objects",
+          "object_type": "author",
+          "return_value": "objects",
+          "useWebSocket": true
+        },
+        "compact": true,
+        "group": "info"
+      },
+      {
+        "name": "desc",
+        "type": "long-string",
+        "mandatory": true,
+        "markdown": true
+      },
+      {
+        "name": "tags",
+        "type": "array-of-pairs",
+        "mandatory": false,
+        "fields": ["key", "value"]
+      },
+      {
+        "name": "source",
+        "type": "string",
+        "mandatory": true,
+        "isValid": true,
+        "selected": true,
+        "internal": true
+      }
+    ],
+    "action": "creator-return-fields",
+    "ok": true,
+    "message": "all fields"
+  },
   "connection": {
     "request_id": "eexX13aNGTIRCVS",
     "tab_token": "none",

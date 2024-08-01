@@ -9,6 +9,7 @@ import { StoryMeta } from '../../types';
 import {
   _testsAddNewState,
   _testsAddNewVariableState,
+  _testsChangeRichText,
   _testsClickState,
   _testsCloseStateDetail,
   _testsGetStateByLabel,
@@ -571,18 +572,13 @@ export const NewApiCallState: StoryFSM = {
       }
     );
 
-    await waitFor(
-      () =>
-        fireEvent.change(
-          document.querySelector('.fsm-state-detail .system-option textarea'),
-          {
-            target: {
-              value: 'logging some stuff',
-            },
-          }
-        ),
-      { timeout: 10000 }
-    );
+    await _testsChangeRichText('logging some stuff');
+
+    await expect(
+      document.querySelector(
+        '.fsm-state-detail .system-option div[contenteditable]'
+      )
+    ).toHaveTextContent('logging some stuff');
 
     await waitFor(_testsSubmitFSMState(), { timeout: 10000 });
     await _testsCloseStateDetail();
@@ -599,12 +595,14 @@ export const NewApiCallState: StoryFSM = {
 
     // Check that state data were saved
     await _testsClickState('Call API');
-    await waitFor(() => canvas.findByDisplayValue('logging some stuff'), {
+    await waitFor(() => canvas.findByText('logging some stuff'), {
       timeout: 10000,
     });
     await expect(
-      document.querySelector('.fsm-state-detail .system-option textarea')
-    ).toHaveValue('logging some stuff');
+      document.querySelector(
+        '.fsm-state-detail .system-option div[contenteditable]'
+      )
+    ).toHaveTextContent('logging some stuff');
     await _testsQodexCanBePublished();
   },
 };

@@ -112,7 +112,7 @@ export const fixOptions = (
         return {
           ...newValue,
           [optionName]: {
-            type: getType(options[optionName].type, operators, option?.op),
+            type: getType(options?.[optionName]?.type, operators, option?.op),
             value: option,
             is_expression: option?.is_expression,
           },
@@ -165,7 +165,8 @@ export type IQorusType =
   | 'nothing'
   | 'null'
   | 'rgbcolor'
-  | 'data';
+  | 'data'
+  | 'richtext';
 
 export type TOperatorValue = string | string[] | undefined | null;
 
@@ -201,7 +202,8 @@ export interface IOptionsSchemaArg {
   arg_schema?: IOptionsSchema;
 
   supports_templates?: boolean;
-
+  supports_references?: boolean;
+  supports_styling?: boolean;
   supports_expressions?: boolean;
 
   app?: string;

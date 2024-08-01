@@ -58,6 +58,11 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     display_name: 'Template option',
     supports_templates: true,
   },
+  richTextOption: {
+    type: 'richtext',
+    display_name: 'Rich Text option',
+    supports_templates: true,
+  },
   optionWithMessages: {
     short_desc: 'Option with some messages',
     preselected: !allOptional,
@@ -174,6 +179,24 @@ export const Basic: StoryObj<typeof meta> = {
       optionWithInvalidValue: { type: 'string', value: 123 },
       templateOption: { type: 'string', value: '$local:test' },
       selectedOption: { type: 'hash', value: undefined },
+      richTextOption: {
+        type: 'richtext',
+        value: [
+          {
+            type: 'paragraph',
+            children: [
+              { text: 'This is a rich text option ' },
+              {
+                type: 'tag',
+                label: 'Day End',
+                value: '$timestamp:next_midnight',
+                children: [{ text: '' }],
+              },
+              { text: '' },
+            ],
+          },
+        ],
+      },
     },
   },
   play: async ({ canvasElement, ...rest }) => {
@@ -193,7 +216,7 @@ export const Basic: StoryObj<typeof meta> = {
         expect(
           document.querySelectorAll('.reqore-collection-item.system-option')
             .length
-        ).toBe(15),
+        ).toBe(16),
       {
         timeout: 10000,
       }

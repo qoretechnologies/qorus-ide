@@ -3,6 +3,7 @@ import {
   ReqoreMessage,
   ReqoreP,
   ReqorePanel,
+  ReqoreSpan,
   ReqoreSpinner,
   ReqoreTag,
   ReqoreTree,
@@ -148,16 +149,16 @@ export const QodexActionExec = memo(
                 margin='right'
               />
               {action.action_code_str === 'EVENT' ? (
-                <ReqoreP>
+                <ReqoreSpan>
                   Fill all required fields to see automatically generated event
                   data
-                </ReqoreP>
+                </ReqoreSpan>
               ) : (
-                <ReqoreP>
+                <ReqoreSpan>
                   Fill all required fields and press the{' '}
-                  <ReqoreTag icon='PlayLine' size='small' label='Run' /> button
-                  to test your action
-                </ReqoreP>
+                  <ReqoreTag icon='PlayLine' size='small' label='Run' compact />{' '}
+                  button to test your action
+                </ReqoreSpan>
               )}
             </>
           )}
