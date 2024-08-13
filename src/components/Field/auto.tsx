@@ -8,7 +8,7 @@ import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Pane
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
 import jsyaml from 'js-yaml';
-import { get, map, rest, set, size } from 'lodash';
+import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { apiHost } from '../../common/vscode';
@@ -63,6 +63,8 @@ export interface IAutoFieldProps extends IField {
   supports_templates?: boolean;
   supports_references?: boolean;
   supports_styling?: boolean;
+
+  fluid?: boolean;
 
   templates?: IReqoreFormTemplates;
 }

@@ -138,8 +138,8 @@ export const ProviderMessageData = ({
                 })
                   ? SelectorColorEffect
                   : isValueSubmitted
-                  ? SaveColorEffect
-                  : PositiveColorEffect
+                    ? SaveColorEffect
+                    : PositiveColorEffect
               }
               onClick={() => {
                 onChange(maybeParseYaml(localValue), messageData.type);
@@ -157,6 +157,7 @@ export const ProviderMessageData = ({
         <ReqoreTabsContent tabId='form'>
           <Auto
             {...getTypeAndCanBeNull(type || messageData.type)}
+            fluid
             arg_schema={messageData.arg_schema}
             defaultType={messageData.type}
             onChange={(_name, value, type) => {
