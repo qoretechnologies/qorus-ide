@@ -1,10 +1,12 @@
 import { StoryObj } from '@storybook/react';
+import { expect, waitFor } from '@storybook/test';
 import jsyaml from 'js-yaml';
 import { useState } from 'react';
 import Auto from '../../components/Field/auto';
 import { buildTemplates } from '../../helpers/functions';
 import { InterfacesProvider } from '../../providers/Interfaces';
 import templates from '../Data/templates.json';
+import { _testsClickButton, _testsConfirmDialog, sleep } from '../Tests/utils';
 import { StoryMeta } from '../types';
 
 const meta = {
@@ -66,8 +68,6 @@ export const ListWithElementType: Story = {
 export const ListWithElementTypeAndArgSchema: Story = {
   render: (args) => {
     const [value, setValue] = useState(args.value);
-
-    console.log({ templates: args.templates });
 
     return (
       <InterfacesProvider>
@@ -140,5 +140,25 @@ export const ListWithElementTypeAndArgSchema: Story = {
         required: true,
       },
     },
+  },
+};
+
+export const ItemsCanBeAddedAndRemoved = {
+  ...ListWithElementType,
+  play: async (context) => {
+    await waitFor(() =>
+      expect(document.querySelectorAll('.array-auto-item').length).toBe(1)
+    );
+    await _testsClickButton({ label: 'Add new value' });
+    await _testsClickButton({ label: 'Add new value' });
+
+    await sleep(300);
+
+    expect(document.querySelectorAll('.array-auto-item').length).toBe(3);
+
+    await _testsClickButton({ selector: '.array-auto-item-remove' });
+    await _testsConfirmDialog();
+
+    expect(document.querySelectorAll('.array-auto-item').length).toBe(2);
   },
 };

@@ -189,20 +189,25 @@ export const TemplateField = ({
   const showTemplateToggle =
     allowCustomValues &&
     allowTemplates &&
+    !rest.arg_schema &&
     (type === 'boolean' ||
       type === 'date' ||
       type === 'bool' ||
       type === 'auto' ||
+      type === 'hash' ||
+      type === 'list' ||
       type === 'any');
 
-  const templateSupportsCustomValues =
-    allowCustomValues &&
-    (type === 'string' || type === 'list' || type === 'hash');
+  const templateSupportsCustomValues = allowCustomValues && type === 'string';
   const showTemplatesDropdown =
     allowTemplates &&
     (!allowCustomValues || (isTemplate && !templateSupportsCustomValues));
 
   const Component = componentFromType ? ComponentMap[type] : Comp;
+
+  if (name === 'optionWithShortDescription') {
+    console.log(name, type, showTemplateToggle, isTemplate, rest);
+  }
 
   if (allowFunctions && functions.loading) {
     return (
@@ -250,12 +255,15 @@ export const TemplateField = ({
     );
   }
 
+  console.log(name);
+
   return (
     <ReqoreControlGroup
       fluid={rest.fluid}
       fixed={rest.fixed}
       size={rest.size}
       stack={rest.stack}
+      verticalAlign='flex-start'
     >
       {!isTemplate && (
         <Component
@@ -267,7 +275,7 @@ export const TemplateField = ({
           templates={
             allowTemplates
               ? filterTemplates
-                ? filterTemplatesByType(templates, type)
+                ? filterTemplatesByType(templates, type, !!rest.arg_schema)
                 : templates
               : undefined
           }
@@ -282,7 +290,7 @@ export const TemplateField = ({
           templates={
             allowTemplates
               ? filterTemplates
-                ? filterTemplatesByType(templates, type)
+                ? filterTemplatesByType(templates, type, !!rest.arg_schema)
                 : templates
               : undefined
           }
@@ -307,7 +315,8 @@ export const TemplateField = ({
             }
             items={
               filterTemplates
-                ? filterTemplatesByType(templates, type)?.items
+                ? filterTemplatesByType(templates, type, !!rest.arg_schema)
+                    ?.items
                 : templates?.items
             }
             label={isValueTemplate(value) ? value : 'Select Template'}

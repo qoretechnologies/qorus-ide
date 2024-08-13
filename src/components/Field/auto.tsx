@@ -8,7 +8,7 @@ import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Pane
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
 import jsyaml from 'js-yaml';
-import { get, map, set, size } from 'lodash';
+import { get, map, rest, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { apiHost } from '../../common/vscode';
@@ -461,7 +461,6 @@ function AutoField<T = any>({
       case 'softlist':
       case 'list<auto>': {
         if (element_type) {
-          console.log({ rest });
           return (
             <ArrayAutoField
               {...rest}
@@ -485,6 +484,7 @@ function AutoField<T = any>({
             dataType='yaml'
             resultDataType='yaml'
             type='array'
+            {...rest}
           />
         );
       }

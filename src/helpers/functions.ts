@@ -666,9 +666,10 @@ export const getDraftId = (
 
 export const filterTemplatesByType = (
   templates: IReqoreFormTemplates = {},
-  fieldType: IQorusType = 'string'
+  fieldType: IQorusType = 'string',
+  hasArgSchema?: boolean
 ): IReqoreFormTemplates => {
-  if (fieldType === 'hash' || fieldType === 'list') {
+  if ((fieldType === 'hash' || fieldType === 'list') && hasArgSchema) {
     return templates;
   }
 
@@ -698,8 +699,6 @@ export const filterTemplatesByType = (
       },
     ];
   }, []);
-
-  console.log('filteringTemplates', templates, fieldType, newTemplates);
 
   return newTemplates;
 };

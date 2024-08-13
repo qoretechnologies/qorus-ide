@@ -49,8 +49,6 @@ export const RichTextField = memo(
     );
     const navigate = useNavigate();
 
-    console.log(templates);
-
     const handleChange = (value: any): void => {
       if (
         JSON.stringify(value) ===

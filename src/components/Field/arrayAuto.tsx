@@ -134,8 +134,6 @@ const ArrayAutoField: FunctionComponent<IField & IFieldChange> = ({
     });
   };
 
-  console.log({ rest });
-
   // Render list of auto fields
   return (
     <>
@@ -146,6 +144,7 @@ const ArrayAutoField: FunctionComponent<IField & IFieldChange> = ({
             <ReqorePanel
               label={`Item #${idx}`}
               collapsible
+              className='array-auto-item'
               size='small'
               minimal
               actions={[
@@ -153,6 +152,7 @@ const ArrayAutoField: FunctionComponent<IField & IFieldChange> = ({
                   show: size(values) !== 1,
                   icon: 'DeleteBinLine',
                   intent: 'danger',
+                  className: 'array-auto-item-remove',
                   tooltip: 'Remove item',
                   onClick: () =>
                     confirmAction({
