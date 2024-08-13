@@ -668,6 +668,10 @@ export const filterTemplatesByType = (
   templates: IReqoreFormTemplates = {},
   fieldType: IQorusType = 'string'
 ): IReqoreFormTemplates => {
+  if (fieldType === 'hash' || fieldType === 'list') {
+    return templates;
+  }
+
   const newTemplates = cloneDeep(templates);
 
   newTemplates.items = newTemplates.items?.reduce((newItems, item) => {
@@ -694,6 +698,8 @@ export const filterTemplatesByType = (
       },
     ];
   }, []);
+
+  console.log('filteringTemplates', templates, fieldType, newTemplates);
 
   return newTemplates;
 };
@@ -830,6 +836,7 @@ export const isTypeStringCompatible = (type: string) => {
   const strongType = getStrongType(type);
 
   return (
+    strongType === 'richtext' ||
     strongType === 'string' ||
     strongType === 'binary' ||
     strongType === 'number' ||

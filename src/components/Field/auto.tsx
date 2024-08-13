@@ -7,6 +7,7 @@ import {
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
+import jsyaml from 'js-yaml';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
@@ -21,6 +22,7 @@ import withTextContext from '../../hocomponents/withTextContext';
 import { ConnectionManagement } from '../ConnectionManagement';
 import { IField } from '../FieldWrapper';
 import SubField from '../SubField';
+import ArrayAutoField from './arrayAuto';
 import BooleanField from './boolean';
 import ByteSizeField from './byteSize';
 import { ColorField } from './color';
@@ -37,9 +39,11 @@ import { RichTextField } from './richText';
 import SelectField, { ISelectFieldItem } from './select';
 import StringField from './string';
 import { IOptionsSchema, IQorusType } from './systemOptions';
+import { TemplateField } from './template';
 
 export interface IAutoFieldProps extends IField {
   arg_schema?: IOptionsSchema;
+  element_type?: IQorusType;
   path?: string;
   column?: boolean;
   level?: number;
@@ -94,6 +98,7 @@ function AutoField<T = any>({
   isConfigItem,
   isVariable,
   allowedTypes,
+  element_type,
   ...rest
 }: IAutoFieldProps & T) {
   const [currentType, setType] = useState<IQorusType>(
@@ -396,7 +401,7 @@ function AutoField<T = any>({
           return map(arg_schema, (schema, option) => {
             return (
               <SubField
-                title={option}
+                title={schema.display_name || option}
                 key={option}
                 {...schema}
                 desc={`${schema.desc}`}
@@ -413,7 +418,9 @@ function AutoField<T = any>({
                 }
                 detail={schema.required ? 'Required' : 'Optional'}
               >
-                <AutoField
+                <TemplateField
+                  component={AutoField}
+                  {...rest}
                   {...schema}
                   path={`${currentPath}${option}`}
                   name={`${currentPath}${option}`}
@@ -452,7 +459,25 @@ function AutoField<T = any>({
       case 'list':
       case 'softlist<string>':
       case 'softlist':
-      case 'list<auto>':
+      case 'list<auto>': {
+        if (element_type) {
+          console.log({ rest });
+          return (
+            <ArrayAutoField
+              {...rest}
+              arg_schema={arg_schema}
+              name={name}
+              value={
+                value ? (level === 0 ? jsyaml.load(value) : value) : undefined
+              }
+              type={element_type}
+              onChange={(name, value) =>
+                handleChange(name, level === 0 ? jsyaml.dump(value) : value)
+              }
+            />
+          );
+        }
+
         return (
           <ReqraftObjectFormField
             value={value}
@@ -462,6 +487,7 @@ function AutoField<T = any>({
             type='array'
           />
         );
+      }
       case 'int':
       case 'integer':
       case 'softint':
@@ -661,7 +687,7 @@ function AutoField<T = any>({
           marginLeft: 10 * level,
           overflow: 'hidden',
           flex: '1 1 auto',
-          maxHeight: level === 0 ? '500px' : undefined,
+          //maxHeight: level === 0 ? '500px' : undefined,
           overflowY: level === 0 ? 'auto' : undefined,
         }}
       >

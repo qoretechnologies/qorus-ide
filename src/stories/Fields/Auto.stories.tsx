@@ -100,3 +100,26 @@ export const ListWithAllowedValues: StoryObj<typeof Auto> = {
     ],
   },
 };
+
+export const ListWithElementType: StoryObj<typeof Auto> = {
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+
+    return (
+      <InterfacesProvider>
+        <Auto
+          {...args}
+          value={value}
+          onChange={(name, value) => {
+            console.log(name, value);
+            setValue(value);
+          }}
+        />
+      </InterfacesProvider>
+    );
+  },
+  args: {
+    defaultType: 'list',
+    element_type: 'int',
+  },
+};

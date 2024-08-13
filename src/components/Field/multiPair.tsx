@@ -159,21 +159,19 @@ const MultiPairField: FunctionComponent<
     <>
       {size(value)
         ? value.map((pair: IPair, index: number) => (
-            <StyledPairField key={index + 1}>
-              <PairField
-                index={index + 1}
-                canBeRemoved={size(value) !== 1}
-                onRemoveClick={() => handleRemoveClick(index)}
-                key={index + 1}
-                keyName={fields[0]}
-                valueName={fields[1]}
-                keyValue={pair[fields[0]]}
-                valueValue={pair[fields[1]]}
-                onChange={(fieldName: string, value: any) => {
-                  changePairData(index, fieldName, value);
-                }}
-              />
-            </StyledPairField>
+            <PairField
+              index={index + 1}
+              canBeRemoved={size(value) !== 1}
+              onRemoveClick={() => handleRemoveClick(index)}
+              key={index + 1}
+              keyName={fields[0]}
+              valueName={fields[1]}
+              keyValue={pair[fields[0]]}
+              valueValue={pair[fields[1]]}
+              onChange={(fieldName: string, value: any) => {
+                changePairData(index, fieldName, value);
+              }}
+            />
           ))
         : null}
       <ReqoreControlGroup fluid>
