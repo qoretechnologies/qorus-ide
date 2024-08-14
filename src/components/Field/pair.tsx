@@ -1,4 +1,8 @@
-import { ReqoreButton, ReqoreControlGroup, ReqoreTag } from '@qoretechnologies/reqore';
+import {
+  ReqoreButton,
+  ReqoreControlGroup,
+  ReqorePanel,
+} from '@qoretechnologies/reqore';
 import { FunctionComponent, useContext } from 'react';
 import { InitialContext } from '../../context/init';
 import { IFieldChange } from '../FieldWrapper';
@@ -27,9 +31,21 @@ const PairField: FunctionComponent<IPairField & IFieldChange> = ({
 }) => {
   const initContext = useContext(InitialContext);
   return (
-    <div>
+    <ReqorePanel
+      label={`${index}.`}
+      actions={[
+        {
+          show: canBeRemoved,
+          icon: 'DeleteBinLine',
+          intent: 'danger',
+          tooltip: 'Remove item',
+          onClick: () =>
+            initContext.confirmAction('ConfirmRemoveItem', onRemoveClick),
+          minimal: true,
+        },
+      ]}
+    >
       <ReqoreControlGroup stack>
-        <ReqoreTag label={`${index}.`} />
         <StringField
           placeholder={keyName}
           name={keyName}
@@ -50,14 +66,16 @@ const PairField: FunctionComponent<IPairField & IFieldChange> = ({
         {canBeRemoved && (
           <ReqoreButton
             icon={'DeleteBinLine'}
-            intent="danger"
+            intent='danger'
             minimal
-            onClick={() => initContext.confirmAction('ConfirmRemoveItem', onRemoveClick)}
-            tooltip="Remove item"
+            onClick={() =>
+              initContext.confirmAction('ConfirmRemoveItem', onRemoveClick)
+            }
+            tooltip='Remove item'
           />
         )}
       </ReqoreControlGroup>
-    </div>
+    </ReqorePanel>
   );
 };
 

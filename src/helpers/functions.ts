@@ -666,8 +666,13 @@ export const getDraftId = (
 
 export const filterTemplatesByType = (
   templates: IReqoreFormTemplates = {},
-  fieldType: IQorusType = 'string'
+  fieldType: IQorusType = 'string',
+  hasArgSchema?: boolean
 ): IReqoreFormTemplates => {
+  if ((fieldType === 'hash' || fieldType === 'list') && hasArgSchema) {
+    return templates;
+  }
+
   const newTemplates = cloneDeep(templates);
 
   newTemplates.items = newTemplates.items?.reduce((newItems, item) => {
@@ -830,6 +835,7 @@ export const isTypeStringCompatible = (type: string) => {
   const strongType = getStrongType(type);
 
   return (
+    strongType === 'richtext' ||
     strongType === 'string' ||
     strongType === 'binary' ||
     strongType === 'number' ||

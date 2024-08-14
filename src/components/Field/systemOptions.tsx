@@ -192,6 +192,7 @@ export interface IOptionFieldMessage {
 
 export interface IOptionsSchemaArg {
   type: IQorusType | IQorusType[];
+  element_type?: IQorusType;
   value?: unknown | IExpression;
   default_value?: any;
   required?: boolean;
