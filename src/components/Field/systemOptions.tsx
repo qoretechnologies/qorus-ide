@@ -76,7 +76,12 @@ export const fixOptions = (
 
   // Add missing required options to the fixedValue
   forEach(options, (option, name) => {
-    if (option.preselected || option.value || (option.required && !fixedValue[name])) {
+    if (
+      option.preselected ||
+      option.value ||
+      (option.required && !fixedValue[name]) ||
+      (option.required && option.default_value && !option.value)
+    ) {
       fixedValue[name] = {
         is_expression: fixedValue[name]?.is_expression,
         type: getType(option.type, operators, fixedValue[name]?.op),

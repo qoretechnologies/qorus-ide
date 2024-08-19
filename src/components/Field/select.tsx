@@ -437,7 +437,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
           filteredItems[0].desc
             ? icon ||
               (hasError(items, value || filteredItems[0].name) ? 'ErrorWarningLine' : undefined)
-            : 'ArrowDownSFill'
+            : undefined
         }
         effect={
           !rest.minimal && {
@@ -456,6 +456,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
           }
         }
         {...rest}
+        disabled={false}
       />
     );
   }

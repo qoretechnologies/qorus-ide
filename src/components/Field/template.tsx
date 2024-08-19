@@ -61,11 +61,7 @@ export type IQorusType =
  * @returns A function that takes a string and returns a boolean.
  */
 export const isValueTemplate = (value?: any) => {
-  if (
-    typeof value !== 'string' ||
-    !value?.startsWith('$') ||
-    !value?.includes(':')
-  ) {
+  if (typeof value !== 'string' || !value?.startsWith('$') || !value?.includes(':')) {
     return false;
   }
 
@@ -100,12 +96,7 @@ export const getTemplateValue = (value?: string) => {
 export interface ITemplateFieldProps {
   value?: any;
   name?: string;
-  onChange?: (
-    name: string,
-    value: any,
-    type?: IQorusType,
-    isFunction?: boolean
-  ) => void;
+  onChange?: (name: string, value: any, type?: IQorusType, isFunction?: boolean) => void;
   // React element
   component?: React.FC<any>;
   interfaceContext?: string;
@@ -200,14 +191,9 @@ export const TemplateField = ({
 
   const templateSupportsCustomValues = allowCustomValues && type === 'string';
   const showTemplatesDropdown =
-    allowTemplates &&
-    (!allowCustomValues || (isTemplate && !templateSupportsCustomValues));
+    allowTemplates && (!allowCustomValues || (isTemplate && !templateSupportsCustomValues));
 
   const Component = componentFromType ? ComponentMap[type] : Comp;
-
-  if (name === 'optionWithShortDescription') {
-    console.log(name, type, showTemplateToggle, isTemplate, rest);
-  }
 
   if (allowFunctions && functions.loading) {
     return (
@@ -239,23 +225,13 @@ export const TemplateField = ({
           }}
           type={type}
           returnType={type}
-          onChange={(
-            expressionValue: IExpression | undefined,
-            remove: boolean
-          ) => {
-            onChange(
-              name,
-              expressionValue?.value || value?.args[0]?.value,
-              type,
-              !remove
-            );
+          onChange={(expressionValue: IExpression | undefined, remove: boolean) => {
+            onChange(name, expressionValue?.value || value?.args[0]?.value, type, !remove);
           }}
         />
       </>
     );
   }
-
-  console.log(name);
 
   return (
     <ReqoreControlGroup
@@ -310,13 +286,10 @@ export const TemplateField = ({
         <ReqoreControlGroup stack>
           <ReqoreDropdown
             className='template-selector'
-            onItemSelect={(item) =>
-              onChange(name, item.value, item.badge as IQorusType)
-            }
+            onItemSelect={(item) => onChange(name, item.value, item.badge as IQorusType)}
             items={
               filterTemplates
-                ? filterTemplatesByType(templates, type, !!rest.arg_schema)
-                    ?.items
+                ? filterTemplatesByType(templates, type, !!rest.arg_schema)?.items
                 : templates?.items
             }
             label={isValueTemplate(value) ? value : 'Select Template'}
@@ -364,10 +337,7 @@ export const TemplateField = ({
                 exp: func.name,
                 args: [
                   {
-                    type: getExpressionArgumentType(
-                      func.args[0],
-                      qorusTypes.value
-                    ),
+                    type: getExpressionArgumentType(func.args[0], qorusTypes.value),
                     value,
                   },
                 ],
