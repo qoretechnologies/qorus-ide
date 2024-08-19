@@ -20,11 +20,9 @@ import ReactMarkdown from 'react-markdown';
 import useMount from 'react-use/lib/useMount';
 import { compose } from 'recompose';
 import styled from 'styled-components';
-import {
-  addMessageListener,
-  postMessage,
-} from '../../hocomponents/withMessageHandler';
+import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
+import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import CustomDialog from '../CustomDialog';
 import FieldEnhancer from '../FieldEnhancer';
 import { IField } from '../FieldWrapper';
@@ -127,9 +125,7 @@ export const StyledDialogSelectItem = styled.div`
   }
 `;
 
-const SelectField: React.FC<
-  ISelectField & IField & IReqoreControlGroupProps
-> = ({
+const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = ({
   get_message,
   return_message,
   name,
@@ -206,10 +202,7 @@ const SelectField: React.FC<
             (data: any) => {
               // Check if this is the correct
               // object type
-              if (
-                !return_message.object_type ||
-                data.object_type === return_message.object_type
-              ) {
+              if (!return_message.object_type || data.object_type === return_message.object_type) {
                 setItems(get(data, return_message.return_value));
               }
             },
@@ -221,9 +214,7 @@ const SelectField: React.FC<
   }, [hasProcessor, return_message?.object_type]);
 
   useEffect(() => {
-    setIsProcessorSelected(
-      requestFieldData ? requestFieldData('processor', 'selected') : false
-    );
+    setIsProcessorSelected(requestFieldData ? requestFieldData('processor', 'selected') : false);
   });
 
   // Check if the processor field exists on every change
@@ -249,10 +240,7 @@ const SelectField: React.FC<
     handleClick();
   }, [listener]);
 
-  const handleEditSubmit: (_defaultName: string, val: string) => void = (
-    _defaultName,
-    val
-  ) => {
+  const handleEditSubmit: (_defaultName: string, val: string) => void = (_defaultName, val) => {
     handleSelectClick({ name: val });
     handleClick();
   };
@@ -311,10 +299,7 @@ const SelectField: React.FC<
     filteredItems = filteredItems.filter((item) => predicate(item.name));
   }
 
-  const getItemShortDescription = (
-    itemName: string,
-    defaultDesc: string = ''
-  ) => {
+  const getItemShortDescription = (itemName: string, defaultDesc: string = '') => {
     if (showDescription !== true) {
       return null;
     }
@@ -323,14 +308,9 @@ const SelectField: React.FC<
       return defaultDesc;
     }
 
-    const item = items.find(
-      (item) => item.name === itemName || item.value === itemName
-    );
+    const item = items.find((item) => item.name === itemName || item.value === itemName);
 
-    return (
-      item?.short_desc ||
-      (item?.desc ? 'Hover to see description' : defaultDesc)
-    );
+    return item?.short_desc || (item?.desc ? 'Hover to see description' : defaultDesc);
   };
 
   const getItemDescription = (itemName) => {
@@ -378,8 +358,7 @@ const SelectField: React.FC<
     const item = data.find((item) => item.name === value);
 
     return (
-      item?.intent === 'danger' ||
-      !!item?.messages?.find((message) => message.intent === 'danger')
+      item?.intent === 'danger' || !!item?.messages?.find((message) => message.intent === 'danger')
     );
   };
 
@@ -400,8 +379,7 @@ const SelectField: React.FC<
   const hasItemsWithError = (data: ISelectFieldItem[]) => {
     return data.some(
       (item) =>
-        item.intent === 'danger' ||
-        item.messages?.find((message) => message.intent === 'danger')
+        item.intent === 'danger' || item.messages?.find((message) => message.intent === 'danger')
     );
   };
 
@@ -416,20 +394,31 @@ const SelectField: React.FC<
 
   const getLabel = (items: ISelectFieldItem[], value: string) => {
     return (
-      items?.find((item) => item.name === value || item.value === value)
-        ?.display_name || value
+      items?.find((item) => item.name === value || item.value === value)?.display_name || value
     );
   };
 
+  useWhyDidYouUpdate(name, {
+    items,
+    value,
+    query,
+    appliedFilters,
+    isSelectDialogOpen,
+    listener,
+    hasProcessor,
+    isProcessorSelected,
+  });
+
   if (autoSelect && filteredItems.length === 1 && !filteredItems[0].disabled) {
     // Automaticaly select the first item
-    if (filteredItems[0].name !== value) {
+    if (!disabled && filteredItems[0].name !== value && !value) {
       handleSelectClick(filteredItems[0]);
     }
     // Show readonly string
     return (
       <ReqoreButton
         fluid
+        minimal
         className={className}
         label={value || filteredItems[0].name}
         description={getItemShortDescription(value)}
@@ -437,9 +426,7 @@ const SelectField: React.FC<
           !!getItemDescription(value)
             ? {
                 delay: 300,
-                content: (
-                  <ReactMarkdown>{getItemDescription(value)}</ReactMarkdown>
-                ),
+                content: <ReactMarkdown>{getItemDescription(value)}</ReactMarkdown>,
                 maxWidth: '50vh',
               }
             : undefined
@@ -449,23 +436,20 @@ const SelectField: React.FC<
         icon={
           filteredItems[0].desc
             ? icon ||
-              (hasError(items, value || filteredItems[0].name)
-                ? 'ErrorWarningLine'
-                : undefined)
+              (hasError(items, value || filteredItems[0].name) ? 'ErrorWarningLine' : undefined)
             : 'ArrowDownSFill'
         }
-        rightIcon={filteredItems[0].desc ? 'ListUnordered' : undefined}
         effect={
           !rest.minimal && {
             gradient: {
               colors: {
-                0: value ? 'info' : 'main',
+                0: value ? 'transparent' : 'main',
                 100: hasError(items, value || filteredItems[0].name)
                   ? 'danger:darken'
                   : hasWarning(items, value || filteredItems[0].name)
                     ? 'warning'
                     : value
-                      ? 'info'
+                      ? 'transparent'
                       : 'main',
               },
             },
@@ -477,14 +461,7 @@ const SelectField: React.FC<
   }
 
   if (!reference && (!filteredItems || filteredItems.length === 0)) {
-    return (
-      <ReqoreTag
-        intent='muted'
-        label={t('NoDataAvailable')}
-        {...rest}
-        icon='ForbidLine'
-      />
-    );
+    return <ReqoreTag intent='muted' label={t('NoDataAvailable')} {...rest} icon='ForbidLine' />;
   }
 
   const filterItems = (items: ISelectFieldItem[]): ISelectFieldItem[] => {
@@ -538,20 +515,18 @@ const SelectField: React.FC<
               label: item.display_name || item.name,
               content: (
                 <>
-                  {(item.messages || []).map(
-                    ({ intent, title, content }, index) => (
-                      <ReqoreMessage
-                        intent={intent}
-                        title={title}
-                        key={title || index}
-                        size='small'
-                        margin='bottom'
-                        opaque={false}
-                      >
-                        {content}
-                      </ReqoreMessage>
-                    )
-                  )}
+                  {(item.messages || []).map(({ intent, title, content }, index) => (
+                    <ReqoreMessage
+                      intent={intent}
+                      title={title}
+                      key={title || index}
+                      size='small'
+                      margin='bottom'
+                      opaque={false}
+                    >
+                      {content}
+                    </ReqoreMessage>
+                  ))}
                   <ReactMarkdown>{getItemDescription(item.name)}</ReactMarkdown>
                 </>
               ),
@@ -565,19 +540,12 @@ const SelectField: React.FC<
               tooltip: !!item.desc
                 ? {
                     delay: 800,
-                    content: (
-                      <ReactMarkdown>
-                        {getItemDescription(item.name)}
-                      </ReactMarkdown>
-                    ),
+                    content: <ReactMarkdown>{getItemDescription(item.name)}</ReactMarkdown>,
                     maxWidth: '70vw',
                   }
                 : undefined,
               headerEffect: { color: '#ffffff' },
-              contentEffect:
-                item.name === value
-                  ? { gradient: { colors: 'main' } }
-                  : undefined,
+              contentEffect: item.name === value ? { gradient: { colors: 'main' } } : undefined,
               onClick: !item.disabled
                 ? (e) => {
                     if (e.currentTarget.contains(e.target)) {
@@ -592,9 +560,7 @@ const SelectField: React.FC<
             label: capitalize(filter.replace('_', ' ')),
             badge: items.filter((item) => item[filter]).length,
             active: appliedFilters.includes(filter),
-            effect: appliedFilters.includes(filter)
-              ? PositiveColorEffect
-              : undefined,
+            effect: appliedFilters.includes(filter) ? PositiveColorEffect : undefined,
             onClick: () => {
               // Add this filter to the applied filters if it's not already there
               if (!appliedFilters.includes(filter)) {
@@ -602,9 +568,7 @@ const SelectField: React.FC<
               } else {
                 // Remove this filter from the applied filters
                 setAppliedFilters(
-                  appliedFilters.filter(
-                    (appliedFilter) => appliedFilter !== filter
-                  )
+                  appliedFilters.filter((appliedFilter) => appliedFilter !== filter)
                 );
               }
             },
@@ -612,11 +576,7 @@ const SelectField: React.FC<
         />
       </CustomDialog>
       {!filteredItems || filteredItems.length === 0 ? (
-        <ReqoreTag
-          color='transparent'
-          icon='ForbidLine'
-          label={t('NothingToSelect')}
-        />
+        <ReqoreTag color='transparent' icon='ForbidLine' label={t('NothingToSelect')} />
       ) : null}
       <FieldEnhancer
         // What should happen when the user deletes an interface
@@ -624,9 +584,7 @@ const SelectField: React.FC<
         onDelete={reference?.onDelete}
         context={{
           iface_kind,
-          target_dir:
-            (requestFieldData && requestFieldData('target_dir', 'value')) ||
-            target_dir,
+          target_dir: (requestFieldData && requestFieldData('target_dir', 'value')) || target_dir,
           ...context,
         }}
       >
@@ -636,16 +594,10 @@ const SelectField: React.FC<
               <ReqoreButton
                 fluid
                 key={value}
-                icon={
-                  icon ||
-                  (hasError(items, value) ? 'ErrorWarningLine' : undefined)
-                }
+                icon={icon || (hasError(items, value) ? 'ErrorWarningLine' : undefined)}
                 rightIcon='ListUnordered'
                 onClick={() => setSelectDialogOpen(true)}
-                description={getItemShortDescription(
-                  value,
-                  'Select from available values'
-                )}
+                description={getItemShortDescription(value, 'Select from available values')}
                 tooltip={getItemDescriptionTooltip(value)}
                 disabled={disabled}
                 effect={
@@ -667,9 +619,7 @@ const SelectField: React.FC<
                 }
                 className={className}
               >
-                {value
-                  ? getLabel(items, value)
-                  : placeholder || t('PleaseSelect')}
+                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
               </ReqoreButton>
             ) : asMenu ? (
               <ReqoreMenu>
@@ -718,9 +668,7 @@ const SelectField: React.FC<
                   }
                 }
               >
-                {value
-                  ? getLabel(items, value)
-                  : placeholder || t('PleaseSelect')}
+                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
               </ReqoreDropdown>
             )}
 
@@ -740,9 +688,7 @@ const SelectField: React.FC<
                     icon='EditLine'
                     fixed
                     className='select-reference-edit'
-                    onClick={() =>
-                      onEditClick(value, reference, handleEditSubmit)
-                    }
+                    onClick={() => onEditClick(value, reference, handleEditSubmit)}
                   />
                 )}
               </ReqoreControlGroup>
@@ -755,7 +701,5 @@ const SelectField: React.FC<
 };
 
 export default compose(withTextContext())(SelectField) as React.FC<
-  ISelectField &
-    IField &
-    Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
+  ISelectField & IField & Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
 >;

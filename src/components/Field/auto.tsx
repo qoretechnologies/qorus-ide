@@ -103,27 +103,18 @@ function AutoField<T = any>({
   element_type,
   ...rest
 }: IAutoFieldProps & T) {
-  const [currentType, setType] = useState<IQorusType>(
-    defaultInternalType || null
-  );
-  const [currentInternalType, setInternalType] = useState<IQorusType>(
-    defaultInternalType || 'any'
-  );
+  const [currentType, setType] = useState<IQorusType>(defaultInternalType || null);
+  const [currentInternalType, setInternalType] = useState<IQorusType>(defaultInternalType || 'any');
   const [isSetToNull, setIsSetToNull] = useState<boolean>(false);
   const addModal = useReqoreProperty('addModal');
 
   useMount(() => {
-    let defType: IQorusType =
-      defaultType && (defaultType.replace(/"/g, '').trim() as any);
+    let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
     defType = defType || 'any';
     let internalType;
     // If value already exists, but the type is auto or any
     // set the type based on the value
-    if (
-      value &&
-      (defType === 'auto' || defType === 'any') &&
-      !defaultInternalType
-    ) {
+    if (value && (defType === 'auto' || defType === 'any') && !defaultInternalType) {
       internalType = getTypeFromValue(maybeParseYaml(value));
     } else {
       internalType = defaultInternalType || defType;
@@ -132,10 +123,8 @@ function AutoField<T = any>({
     setType(defType);
     // If the value is null and can be null, set the null flag
     if (
-      (getValueOrDefaultValue(value, default_value, _canBeNull(defType)) ===
-        'null' ||
-        getValueOrDefaultValue(value, default_value, _canBeNull(defType)) ===
-          null) &&
+      (getValueOrDefaultValue(value, default_value, _canBeNull(defType)) === 'null' ||
+        getValueOrDefaultValue(value, default_value, _canBeNull(defType)) === null) &&
       _canBeNull(defType)
     ) {
       setIsSetToNull(true);
@@ -154,42 +143,27 @@ function AutoField<T = any>({
     // which will be used as a type
     if (rest['type-depends-on']) {
       // Get the requested type
-      const typeValue: IQorusType = requestFieldData(
-        rest['type-depends-on'],
-        'value'
-      );
+      const typeValue: IQorusType = requestFieldData(rest['type-depends-on'], 'value');
       // Check if the field has the value set yet
       if (typeValue && typeValue !== currentType) {
         // If this is auto / any field
         // set the internal type
         if (typeValue === 'auto' || typeValue === 'any') {
-          setInternalType(
-            value ? getTypeFromValue(maybeParseYaml(value)) : 'any'
-          );
+          setInternalType(value ? getTypeFromValue(maybeParseYaml(value)) : 'any');
         } else {
           setInternalType(typeValue);
         }
         // Set the new type
         setType(typeValue);
         if (!currentType) {
-          handleChange(
-            name,
-            value === undefined ? undefined : value,
-            typeValue
-          );
+          handleChange(name, value === undefined ? undefined : value, typeValue);
         } else if (typeValue !== 'any') {
           const typeFromValue =
-            value || value === null
-              ? getTypeFromValue(maybeParseYaml(value))
-              : 'any';
+            value || value === null ? getTypeFromValue(maybeParseYaml(value)) : 'any';
 
           handleChange(
             name,
-            value === null
-              ? null
-              : typeValue === typeFromValue
-                ? value
-                : undefined,
+            value === null ? null : typeValue === typeFromValue ? value : undefined,
             typeValue
           );
         }
@@ -227,10 +201,7 @@ function AutoField<T = any>({
     }
   };
 
-  const handleTypeChange: (name: string, type?: IQorusType) => void = (
-    name,
-    type
-  ) => {
+  const handleTypeChange: (name: string, type?: IQorusType) => void = (name, type) => {
     // Run the onchange
     onChange?.(name, null, type);
     setInternalType(type);
@@ -278,15 +249,7 @@ function AutoField<T = any>({
     // If this field is set to null
     if (isSetToNull) {
       // Render a readonly field with null
-      return (
-        <StringField
-          name={name}
-          value={null}
-          onChange={handleChange}
-          read_only
-          canBeNull
-        />
-      );
+      return <StringField name={name} value={null} onChange={handleChange} read_only canBeNull />;
     }
     if (!currentType) {
       return null;
@@ -303,15 +266,15 @@ function AutoField<T = any>({
       if (currentType === 'list') {
         return (
           <MultiSelect
-            default_items={rest.allowed_values.map(
-              ({ value, name, ...rest }) => ({
-                name: name || value,
-                value,
-                ...rest,
-              })
-            )}
+            default_items={rest.allowed_values.map(({ value, name, ...rest }) => ({
+              name: name || value,
+              value,
+              ...rest,
+            }))}
             name={name}
             onChange={(name, value) => onChange(name, value)}
+            size={rest.size}
+            disabled={rest.disabled}
           />
         );
       }
@@ -333,6 +296,7 @@ function AutoField<T = any>({
           showDescription={rest.showDescription}
           style={{ width: '100%' }}
           size={rest.size}
+          disabled={rest.disabled}
         />
       );
     }
@@ -397,8 +361,7 @@ function AutoField<T = any>({
       case 'hash<auto>': {
         if (arg_schema) {
           const currentPath = path ? `${path}.` : '';
-          const transformedValue =
-            typeof value === 'string' ? maybeParseYaml(value) : value;
+          const transformedValue = typeof value === 'string' ? maybeParseYaml(value) : value;
 
           return map(arg_schema, (schema, option) => {
             return (
@@ -412,10 +375,7 @@ function AutoField<T = any>({
                 nested={level > 0}
                 isValid={
                   schema.required
-                    ? validateField(
-                        schema.type,
-                        get(transformedValue, `${option}`)
-                      )
+                    ? validateField(schema.type, get(transformedValue, `${option}`))
                     : true
                 }
                 detail={schema.required ? 'Required' : 'Optional'}
@@ -468,9 +428,7 @@ function AutoField<T = any>({
               {...rest}
               arg_schema={arg_schema}
               name={name}
-              value={
-                value ? (level === 0 ? jsyaml.load(value) : value) : undefined
-              }
+              value={value ? (level === 0 ? jsyaml.load(value) : value) : undefined}
               type={element_type}
               onChange={(name, value) =>
                 handleChange(name, level === 0 ? jsyaml.dump(value) : value)
@@ -549,14 +507,7 @@ function AutoField<T = any>({
         );
       }
       case 'multi-select': {
-        return (
-          <MultiSelect
-            {...rest}
-            value={value}
-            name={name}
-            onChange={handleChange}
-          />
-        );
+        return <MultiSelect {...rest} value={value} name={name} onChange={handleChange} />;
       }
       case 'mapper':
       case 'workflow':
@@ -645,9 +596,7 @@ function AutoField<T = any>({
           />
         );
       default:
-        return (
-          <ReqoreTag intent='danger' icon='SpamLine' label={t('UnknownType')} />
-        );
+        return <ReqoreTag intent='danger' icon='SpamLine' label={t('UnknownType')} />;
     }
   };
 
