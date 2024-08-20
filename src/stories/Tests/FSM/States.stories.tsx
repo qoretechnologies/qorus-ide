@@ -706,16 +706,16 @@ export const NewSearchState: StoryFSM = {
   },
 };
 
-export const NewDeleteState: StoryFSM = {
-  play: async ({ canvasElement, ...rest }) => {
-    await NewSingleSearchState.play({
-      canvasElement,
-      ...rest,
-      stateType: 'delete',
-      stateName: 'Delete',
-    });
-  },
-};
+// export const NewDeleteState: StoryFSM = {
+//   play: async ({ canvasElement, ...rest }) => {
+//     await NewSingleSearchState.play({
+//       canvasElement,
+//       ...rest,
+//       stateType: 'delete',
+//       stateName: 'Delete',
+//     });
+//   },
+// };
 
 export const NewUpdateState: StoryFSM = {
   play: async ({ canvasElement, ...rest }) => {
