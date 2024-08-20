@@ -230,7 +230,7 @@ export const Basic: StoryObj<typeof meta> = {
     });
     await waitFor(
       () =>
-        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(18),
+        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(19),
       {
         timeout: 10000,
       }
