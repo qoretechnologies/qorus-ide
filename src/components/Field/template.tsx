@@ -317,7 +317,7 @@ export const TemplateField = ({
         </ReqoreControlGroup>
       ) : null}
 
-      {allowFunctions && !size(rest.allowed_values) ? (
+      {allowFunctions && !size(rest.allowed_values) && !rest.readonly ? (
         <ReqoreDropdown
           items={functions.value?.map((func) => ({
             label: func.display_name,

@@ -183,6 +183,7 @@ export interface IOptionsSchemaArg {
   element_type?: IQorusType;
   value?: unknown | IExpression;
   default_value?: any;
+  default_value_desc?: string;
   required?: boolean;
   preselected?: boolean;
   allowed_values?: any[];
@@ -207,6 +208,8 @@ export interface IOptionsSchemaArg {
   sort?: number;
 
   disabled?: boolean;
+  readonly?: boolean;
+
   intent?: TReqoreIntent;
   metadata?: Record<string, any>;
 

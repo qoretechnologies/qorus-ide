@@ -42,6 +42,8 @@ import { IOptionsSchema, IQorusType } from './systemOptions';
 import { TemplateField } from './template';
 
 export interface IAutoFieldProps extends IField {
+  default_value_desc?: string;
+
   arg_schema?: IOptionsSchema;
   element_type?: IQorusType;
   path?: string;
@@ -65,6 +67,8 @@ export interface IAutoFieldProps extends IField {
   supports_styling?: boolean;
 
   fluid?: boolean;
+  readonly?: boolean;
+  disabled?: boolean;
 
   templates?: IReqoreFormTemplates;
 }
@@ -251,6 +255,7 @@ function AutoField<T = any>({
       // Render a readonly field with null
       return <StringField name={name} value={null} onChange={handleChange} read_only canBeNull />;
     }
+
     if (!currentType) {
       return null;
     }
@@ -260,6 +265,20 @@ function AutoField<T = any>({
     if (pos > 0) {
       // Get the type from start to the position of the `<`
       currentType = currentType.slice(0, pos) as IQorusType;
+    }
+
+    if (rest.readonly) {
+      return (
+        <ReqoreButton
+          readOnly
+          fluid
+          label={value}
+          customTheme={{
+            main: 'main:darken:2',
+          }}
+          description={value === default_value ? rest.default_value_desc : undefined}
+        />
+      );
     }
 
     if (rest.allowed_values && currentType !== 'enum') {

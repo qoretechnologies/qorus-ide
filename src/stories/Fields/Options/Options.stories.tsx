@@ -10,6 +10,11 @@ const meta = {
   args: {
     onChange: fn(),
   },
+  parameters: {
+    chromatic: {
+      viewports: [2560],
+    },
+  },
 } as Meta<typeof Options>;
 
 export default meta;
@@ -90,6 +95,22 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     type: 'number',
     display_name: 'Disabled option',
     disabled: true,
+    preselected: !allOptional,
+  },
+  readOnlyOption: {
+    type: 'number',
+    display_name: 'Read only option with default value',
+    default_value: 123,
+    default_value_desc: 'Default value is 123',
+    readonly: true,
+    preselected: !allOptional,
+  },
+  readOnlyOptionWithValue: {
+    type: 'number',
+    display_name: 'Read only option with default value and value',
+    default_value: 123,
+    default_value_desc: 'Default value is 123',
+    readonly: true,
     preselected: !allOptional,
   },
   optionWithAutoSelect: {
@@ -178,6 +199,7 @@ export const Basic: StoryObj<typeof meta> = {
     value: {
       optionWithValue: { type: 'string', value: '123' },
       optionWithInvalidValue: { type: 'string', value: 123 },
+      readOnlyOptionWithValue: { type: 'number', value: 456 },
       templateOption: { type: 'string', value: '$local:test' },
       selectedOption: { type: 'hash', value: undefined },
       richTextOption: {
@@ -208,7 +230,7 @@ export const Basic: StoryObj<typeof meta> = {
     });
     await waitFor(
       () =>
-        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(17),
+        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(18),
       {
         timeout: 10000,
       }
