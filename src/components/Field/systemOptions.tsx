@@ -309,6 +309,7 @@ const Options = ({
 
   useEffect(() => {
     setOptions(rest.options);
+    setLoading(false);
   }, [JSON.stringify(rest.options)]);
 
   useEffect(() => {
