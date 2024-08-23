@@ -16,6 +16,19 @@ import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Pane
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
 import { IReqoreAutoFocusRules } from '@qoretechnologies/reqore/dist/hooks/useAutoFocus';
+import {
+  IQorusFormField,
+  IQorusFormFieldMessage,
+  IQorusFormFieldOnChangeMeta,
+  IQorusFormFieldSchema,
+  IQorusFormOperator,
+  IQorusFormOperatorsSchema,
+  IQorusFormSchema,
+  TQorusFlatForm,
+  TQorusForm,
+  TQorusFormOperatorValue,
+  TQorusType,
+} from '@qoretechnologies/ts-toolkit';
 import { cloneDeep, findKey, forEach, last } from 'lodash';
 import isArray from 'lodash/isArray';
 import map from 'lodash/map';
@@ -30,7 +43,6 @@ import { fetchData, insertAtIndex } from '../../helpers/functions';
 import { hasAllDependenciesFullfilled, validateField } from '../../helpers/validations';
 import { useTemplates } from '../../hooks/useTemplates';
 import { Description } from '../Description';
-import { IExpression } from '../ExpressionBuilder';
 import AutoField from './auto';
 import { NegativeColorEffect, PositiveColorEffect } from './multiPair';
 import { OptionFieldMessages } from './optionFieldMessages';
@@ -128,132 +140,27 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
   );
 };
 
-export type IQorusType =
-  | 'string'
-  | 'int'
-  | 'integer'
-  | 'list'
-  | 'bool'
-  | 'boolean'
-  | 'float'
-  | 'binary'
-  | 'hash'
-  | 'date'
-  | 'any'
-  | 'auto'
-  | 'mapper'
-  | 'workflow'
-  | 'service'
-  | 'job'
-  | 'select-string'
-  | 'data-provider'
-  | 'file-as-string'
-  | 'connection'
-  | 'number'
-  | 'nothing'
-  | 'null'
-  | 'rgbcolor'
-  | 'data'
-  | 'richtext';
+export type IQorusType = TQorusType;
 
-export type TOperatorValue = string | string[] | undefined | null;
+export type TOperatorValue = TQorusFormOperatorValue;
 
-export type TOption = {
-  type: IQorusType;
-  value: any;
-  is_expression?: boolean;
-  op?: TOperatorValue;
-};
-export type IOptions =
-  | {
-      [optionName: string]: TOption | undefined;
-    }
-  | undefined;
+export type TOption = IQorusFormField;
+export type IOptions = TQorusForm;
 
-export type TFlatOptions = Record<string, any>;
+export type TFlatOptions = TQorusFlatForm;
 
-export interface IOptionFieldMessage {
-  title?: string;
-  content: string;
-  intent?: TReqoreIntent;
-}
+export interface IOptionFieldMessage extends IQorusFormFieldMessage<TReqoreIntent> {}
 
-export interface IOptionsSchemaArg {
-  type: IQorusType | IQorusType[];
-  element_type?: IQorusType;
-  value?: unknown | IExpression;
-  default_value?: any;
-  default_value_desc?: string;
-  required?: boolean;
-  preselected?: boolean;
-  allowed_values?: any[];
-  sensitive?: boolean;
-  desc?: string;
-  arg_schema?: IOptionsSchema;
+export interface IOptionsSchemaArg
+  extends IQorusFormFieldSchema<TReqoreIntent, IReqoreAutoFocusRules> {}
 
-  supports_templates?: boolean;
-  supports_references?: boolean;
-  supports_styling?: boolean;
-  supports_expressions?: boolean;
+export interface IOptionsSchema extends IQorusFormSchema<TReqoreIntent, IReqoreAutoFocusRules> {}
 
-  app?: string;
-  action?: string;
+export interface IOperator extends IQorusFormOperator {}
 
-  depends_on?: string[];
-  has_dependents?: boolean;
-  on_change?: string[];
+export interface IOperatorsSchema extends IQorusFormOperatorsSchema {}
 
-  display_name?: string;
-  short_desc?: string;
-  sort?: number;
-
-  disabled?: boolean;
-  readonly?: boolean;
-
-  intent?: TReqoreIntent;
-  metadata?: Record<string, any>;
-
-  messages?: IOptionFieldMessage[];
-
-  focusRules?: IReqoreAutoFocusRules;
-
-  markdown?: boolean;
-
-  get_message?: {
-    action: string;
-    object_type?: string;
-    return_value?: string;
-    message_data?: any;
-    useWebSocket?: boolean;
-  };
-
-  return_message?: {
-    action?: string;
-    object_type?: string;
-    return_value?: string;
-    useWebSocket?: boolean;
-  };
-}
-
-export interface IOptionsSchema {
-  [optionName: string]: IOptionsSchemaArg;
-}
-
-export interface IOperator {
-  type?: IQorusType;
-  name: string;
-  desc: string;
-  supports_nesting?: boolean;
-  selected?: boolean;
-}
-
-export interface IOperatorsSchema {
-  [operatorName: string]: IOperator;
-}
-
-export interface IOptionsOnChangeMeta {
-  events?: string[];
-}
+export interface IOptionsOnChangeMeta extends IQorusFormFieldOnChangeMeta {}
 
 export interface IOptionsProps extends Omit<IReqoreCollectionProps, 'onChange'> {
   name: string;
@@ -493,7 +400,7 @@ const Options = ({
     ) {
       // We also need to remove the value from all dependants
       forEach(options, (option, name) => {
-        if (option.depends_on?.includes(optionName)) {
+        if (option.depends_on?.includes(optionName) && updatedValue[name]) {
           updatedValue[name].value = undefined;
         }
       });

@@ -12,10 +12,7 @@ import Options, {
 } from '../../../components/Field/systemOptions';
 import { prepareFSMDataForPublishing } from '../../../helpers/fsm';
 import { buildTemplates, fetchData } from '../../../helpers/functions';
-import {
-  addMessageListener,
-  postMessage,
-} from '../../../hocomponents/withMessageHandler';
+import { addMessageListener, postMessage } from '../../../hocomponents/withMessageHandler';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
 import { useWhyDidYouUpdate } from '../../../hooks/useWhyDidYouUpdate';
@@ -55,10 +52,7 @@ export interface IQodexStateDataForTemplates extends TFSMStateAction {
   action?: IAppAction;
 }
 
-export type TQodexStatesForTemplates = Record<
-  string | number,
-  IQodexStateDataForTemplates
->;
+export type TQodexStatesForTemplates = Record<string | number, IQodexStateDataForTemplates>;
 
 export const QodexAppActionOptions = memo(
   ({
@@ -72,8 +66,7 @@ export const QodexAppActionOptions = memo(
     const { action } = useGetAppActionData(appName, actionName);
     const [options, setOptions] = useState<IOptionsSchema>(action?.options);
     const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
-    const [templates, setTemplates] =
-      useState<IReqoreTextareaProps['templates']>();
+    const [templates, setTemplates] = useState<IReqoreTextareaProps['templates']>();
     const [value, setValue] = useState<IOptions>(outsideValue);
     const { metadata, states } = useContext(FSMContext);
 
@@ -157,9 +150,7 @@ export const QodexAppActionOptions = memo(
 
         const data = response.data;
 
-        setTemplates(
-          buildTemplates(data, states, 'Use data from connected actions')
-        );
+        setTemplates(buildTemplates(data, states, 'Use data from connected actions'));
       }
     }, [JSON.stringify(connectedStates)]);
 
