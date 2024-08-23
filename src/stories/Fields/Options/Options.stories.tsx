@@ -2,15 +2,18 @@ import { Meta, StoryObj } from '@storybook/react';
 import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import jsyaml from 'js-yaml';
 import { useEffect, useState } from 'react';
-import Options, {
-  IOptionsSchema,
-} from '../../../components/Field/systemOptions';
+import Options, { IOptionsSchema } from '../../../components/Field/systemOptions';
 
 const meta = {
   component: Options,
   title: 'Fields/Options',
   args: {
     onChange: fn(),
+  },
+  parameters: {
+    chromatic: {
+      viewports: [2560],
+    },
   },
 } as Meta<typeof Options>;
 
@@ -24,6 +27,13 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     desc: 'Option with markdown `description`\n\r ## Nice',
     preselected: !allOptional,
     supports_templates: true,
+  },
+  optionWithDefaultValue: {
+    type: 'string',
+    display_name: 'Option with default value',
+    preselected: !allOptional,
+    supports_templates: true,
+    default_value: 'default',
   },
   optionWithShortDescription: {
     type: 'list',
@@ -87,12 +97,26 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     disabled: true,
     preselected: !allOptional,
   },
+  readOnlyOption: {
+    type: 'number',
+    display_name: 'Read only option with default value',
+    default_value: 123,
+    default_value_desc: 'Default value is 123',
+    readonly: true,
+    preselected: !allOptional,
+  },
+  readOnlyOptionWithValue: {
+    type: 'number',
+    display_name: 'Read only option with default value and value',
+    default_value: 123,
+    default_value_desc: 'Default value is 123',
+    readonly: true,
+    preselected: !allOptional,
+  },
   optionWithAutoSelect: {
     type: 'string',
     display_name: 'Option with auto select',
-    allowed_values: [
-      { name: 'Allowed value 1', short_desc: 'Allowed value 1' },
-    ],
+    allowed_values: [{ name: 'Allowed value 1', short_desc: 'Allowed value 1' }],
     required: !allOptional,
     supports_templates: true,
   },
@@ -142,9 +166,7 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
       optionWithAutoSelect: {
         type: 'string',
         display_name: 'Option with auto select',
-        allowed_values: [
-          { name: 'Allowed value 1', short_desc: 'Allowed value 1' },
-        ],
+        allowed_values: [{ name: 'Allowed value 1', short_desc: 'Allowed value 1' }],
         required: true,
       },
     },
@@ -177,6 +199,7 @@ export const Basic: StoryObj<typeof meta> = {
     value: {
       optionWithValue: { type: 'string', value: '123' },
       optionWithInvalidValue: { type: 'string', value: 123 },
+      readOnlyOptionWithValue: { type: 'number', value: 456 },
       templateOption: { type: 'string', value: '$local:test' },
       selectedOption: { type: 'hash', value: undefined },
       richTextOption: {
@@ -202,21 +225,12 @@ export const Basic: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
+    await waitFor(() => expect(canvas.getAllByDisplayValue('$local:test')[0]).toBeInTheDocument(), {
+      timeout: 10000,
+    });
     await waitFor(
       () =>
-        expect(
-          canvas.getAllByDisplayValue('$local:test')[0]
-        ).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
-    await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.reqore-collection-item.system-option')
-            .length
-        ).toBe(16),
+        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(19),
       {
         timeout: 10000,
       }
@@ -262,13 +276,9 @@ export const OptionalOpened: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () =>
-        expect(canvas.queryAllByText(/AddNewOption/)[0]).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
+    await waitFor(() => expect(canvas.queryAllByText(/AddNewOption/)[0]).toBeInTheDocument(), {
+      timeout: 10000,
+    });
 
     await fireEvent.click(canvas.queryAllByText(/AddNewOption/)[0]);
   },
@@ -311,19 +321,12 @@ export const NonExistentOptionsFiltered: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () =>
-        expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
-    await fireEvent.change(
-      document.querySelectorAll('.system-option .reqore-textarea')[0],
-      {
-        target: { value: 'option1a' },
-      }
-    );
+    await waitFor(() => expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(), {
+      timeout: 10000,
+    });
+    await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[0], {
+      target: { value: 'option1a' },
+    });
 
     await expect(rest.args.onChange).toHaveBeenLastCalledWith(
       undefined,
@@ -354,19 +357,12 @@ export const OptionsWithOnChangeTriggerEvents: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () =>
-        expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
-    await fireEvent.change(
-      document.querySelectorAll('.system-option .reqore-textarea')[1],
-      {
-        target: { value: 'option1a' },
-      }
-    );
+    await waitFor(() => expect(canvas.getAllByDisplayValue('option1')[0]).toBeInTheDocument(), {
+      timeout: 10000,
+    });
+    await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[1], {
+      target: { value: 'option1a' },
+    });
 
     await expect(rest.args.onChange).toHaveBeenLastCalledWith(
       undefined,

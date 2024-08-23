@@ -11,11 +11,7 @@ import { SaveColorEffect } from '../../../components/Field/multiPair';
 import { IOptions } from '../../../components/Field/systemOptions';
 import { getProtocol } from '../../../components/Field/urlField';
 import FieldGroup from '../../../components/FieldGroup';
-import {
-  ContentWrapper,
-  FieldWrapper,
-  IField,
-} from '../../../components/FieldWrapper';
+import { ContentWrapper, FieldWrapper, IField } from '../../../components/FieldWrapper';
 import Loader from '../../../components/Loader';
 import { Messages } from '../../../constants/messages';
 import { DraftsContext, IDraftData } from '../../../context/drafts';
@@ -25,10 +21,7 @@ import { TextContext } from '../../../context/text';
 import { mapFieldsToGroups } from '../../../helpers/common';
 import { getDraftId, hasValue } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
-import {
-  addMessageListener,
-  postMessage,
-} from '../../../hocomponents/withMessageHandler';
+import { addMessageListener, postMessage } from '../../../hocomponents/withMessageHandler';
 
 export interface IConnection {
   name?: string;
@@ -41,8 +34,7 @@ export interface IConnection {
 
 export const ConnectionView = ({ onSubmitSuccess, connection }) => {
   const { confirmAction, callBackend, saveDraft } = useContext(InitialContext);
-  const { resetAllInterfaceData, setConnectionReset } =
-    useContext(GlobalContext);
+  const { resetAllInterfaceData, setConnectionReset } = useContext(GlobalContext);
   const t = useContext(TextContext);
   const { maybeApplyDraft, draft } = useContext(DraftsContext);
 
@@ -58,7 +50,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
       const result = { ...cur };
 
       // Remove the connection options if they are empty
-      if (name === 'connection_options' && size(value) === 0) {
+      if (name === 'options' && size(value) === 0) {
         delete result.options;
       } else {
         result[name] = value;
@@ -81,11 +73,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
       true
     );
 
-    postMessage(
-      Messages.GET_FIELDS,
-      { iface_kind: 'connection', is_editing: !!connection },
-      true
-    );
+    postMessage(Messages.GET_FIELDS, { iface_kind: 'connection', is_editing: !!connection }, true);
   });
 
   const applyDraft = () => {
@@ -94,10 +82,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
       'connection',
       undefined,
       connection,
-      ({
-        connectionData: { fields, data },
-        interfaceId: ifaceId,
-      }: IDraftData) => {
+      ({ connectionData: { fields, data }, interfaceId: ifaceId }: IDraftData) => {
         setInterfaceId(ifaceId);
         setData(data);
         setFields(fields);
@@ -155,9 +140,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
       validateField('string', data.display_name) &&
       validateField('string', data.desc) &&
       validateField('url', data.url) &&
-      (!data.options ||
-        size(data.options) === 0 ||
-        validateField('options', data.options))
+      (!data.options || size(data.options) === 0 || validateField('options', data.options))
     );
   };
 
@@ -243,9 +226,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
         );
       }
 
-      return (
-        <React.Fragment key={groupName}>{renderFields(fields)}</React.Fragment>
-      );
+      return <React.Fragment key={groupName}>{renderFields(fields)}</React.Fragment>;
     });
   };
 
@@ -274,9 +255,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
             label={t('field-label-url')}
             isValid={
               validateField('url', data.url) &&
-              (data.options && size(data.options)
-                ? validateField('options', data.options)
-                : true)
+              (data.options && size(data.options) ? validateField('options', data.options) : true)
             }
             collapsible={false}
           >
@@ -295,7 +274,7 @@ export const ConnectionView = ({ onSubmitSuccess, connection }) => {
                   value={data.options}
                   url={`remote/${getProtocol(data.url)}`}
                   onChange={handleDataChange}
-                  name='connection_options'
+                  name='options'
                 />
               </>
             )}

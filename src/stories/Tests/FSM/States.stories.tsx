@@ -47,32 +47,23 @@ export const NewStateFromVariable: StoryFSM = {
     await NewVariableState.play({ canvasElement, ...rest });
 
     await fireEvent.click(canvas.getByText(`testVariable`, { selector: 'h4' }));
-    await waitFor(() =>
-      expect(document.querySelector('.fsm-state-detail')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(document.querySelector('.fsm-state-detail')).toBeInTheDocument());
     expect(_testsGetStateByLabel('testVariable')).toBeInTheDocument();
 
     // The submit button needs to be disabled
     //await expect(document.querySelector('.state-submit-button')).toBeDisabled();
     await _testsSelectItemFromDropdown(canvas, 'search-single')();
     await sleep(300);
-    await _testsSelectItemFromCollection(
-      canvas,
-      'invoice_amount',
-      'AddArgument (39)'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'invoice_amount', 'AddArgument (39)')();
 
     // Fill the search arg selected
     await waitFor(
       async () => {
-        await fireEvent.change(
-          document.querySelectorAll('.system-option .reqore-input')[0],
-          {
-            target: {
-              value: '100',
-            },
-          }
-        );
+        await fireEvent.change(document.querySelectorAll('.system-option .reqore-input')[0], {
+          target: {
+            value: '100',
+          },
+        });
         await sleep(500);
       },
       { timeout: 5000 }
@@ -91,9 +82,7 @@ export const NewStateFromVariable: StoryFSM = {
     // Open the state
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.system-option.reqore-input')[0]
-        ).toHaveValue(100);
+        await expect(document.querySelectorAll('.system-option.reqore-input')[0]).toHaveValue(100);
       },
       { timeout: 15000 }
     );
@@ -108,17 +97,11 @@ export const NewMapperState: StoryFSM = {
 
     await sleep(200);
 
-    await _testsSelectItemFromCollection(
-      canvas,
-      'bb-test-db-step',
-      'Select or create a Mapper'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'bb-test-db-step', 'Select or create a Mapper')();
 
     // Submit the state
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
-    await waitFor(() =>
-      expect(canvas.getAllByText('bb-test-db-step').length).toBe(2)
-    );
+    await waitFor(() => expect(canvas.getAllByText('bb-test-db-step').length).toBe(2));
     await _testsQodexCanBePublished();
   },
 };
@@ -135,9 +118,7 @@ export const NewPipelineState: StoryFSM = {
 
     // Submit the state
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
-    await waitFor(() =>
-      expect(canvas.getAllByText('factory-test').length).toBe(2)
-    );
+    await waitFor(() => expect(canvas.getAllByText('factory-test').length).toBe(2));
     await _testsQodexCanBePublished();
   },
 };
@@ -158,18 +139,12 @@ export const NewConnectorState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
 
-    await expect(
-      document.querySelector('.state-submit-button')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.state-submit-button')).not.toBeInTheDocument();
     await waitFor(() =>
-      expect(
-        canvas.getAllByText(`Manage Configuration Items`)[0]
-      ).toBeInTheDocument()
+      expect(canvas.getAllByText(`Manage Configuration Items`)[0]).toBeInTheDocument()
     );
     await waitFor(() =>
-      expect(
-        canvas.getByText(`${className}:${connectorName} connector`)
-      ).toBeInTheDocument()
+      expect(canvas.getByText(`${className}:${connectorName} connector`)).toBeInTheDocument()
     );
     await _testsQodexCanBePublished();
   },
@@ -188,29 +163,19 @@ export const NewFSMState: StoryFSM = {
     // Submit the state
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
 
-    await waitFor(() =>
-      expect(canvas.getAllByText('fsm-event-test').length).toBe(3)
-    );
+    await waitFor(() => expect(canvas.getAllByText('fsm-event-test').length).toBe(3));
     await _testsQodexCanBePublished();
   },
 };
 
 export const NewWhileState: StoryFSM = {
-  play: async ({
-    canvasElement,
-    blockType = 'while',
-    stateName = 'While',
-    ...rest
-  }) => {
+  play: async ({ canvasElement, blockType = 'while', stateName = 'While', ...rest }) => {
     const canvas = within(canvasElement);
 
     await NewState.play({ canvasElement, ...rest, stateType: blockType });
 
     await waitFor(
-      async () =>
-        await expect(
-          document.querySelector('.state-next-button')
-        ).toBeDisabled(),
+      async () => await expect(document.querySelector('.state-next-button')).toBeDisabled(),
       {
         timeout: 5000,
       }
@@ -219,23 +184,17 @@ export const NewWhileState: StoryFSM = {
     // Fill the required option
     await waitFor(
       async () => {
-        await fireEvent.change(
-          document.querySelectorAll('.system-option .reqore-textarea')[0],
-          {
-            target: {
-              value: 'This is a test',
-            },
-          }
-        );
+        await fireEvent.change(document.querySelectorAll('.system-option .reqore-textarea')[0], {
+          target: {
+            value: 'This is a test',
+          },
+        });
       },
       { timeout: 5000 }
     );
 
     await waitFor(
-      async () =>
-        await expect(
-          document.querySelector('.state-next-button')
-        ).toBeEnabled(),
+      async () => await expect(document.querySelector('.state-next-button')).toBeEnabled(),
       {
         timeout: 5000,
       }
@@ -246,17 +205,11 @@ export const NewWhileState: StoryFSM = {
     // Add new mapper state to the block
     await _testsAddNewState('mapper', canvas, `${upperFirst(blockType)}`);
 
-    await waitFor(() =>
-      expect(document.querySelectorAll('.fsm-state-detail').length).toBe(2)
-    );
+    await waitFor(() => expect(document.querySelectorAll('.fsm-state-detail').length).toBe(2));
 
     await sleep(200);
 
-    await _testsSelectItemFromCollection(
-      canvas,
-      'bb-test-db-step',
-      'Select or create a Mapper'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'bb-test-db-step', 'Select or create a Mapper')();
 
     // Submit the state
     await waitFor(_testsSubmitFSMState('state-mapper-submit-button'), {
@@ -277,23 +230,14 @@ export const NewWhileState: StoryFSM = {
     await sleep(200);
     await _testsCloseStateDetail();
     await sleep(200);
-    await waitFor(() =>
-      expect(document.querySelectorAll('.fsm-state-detail').length).toBe(0)
-    );
-    await waitFor(() =>
-      expect(canvas.getByText(`${blockType} block (1)`)).toBeInTheDocument()
-    );
+    await waitFor(() => expect(document.querySelectorAll('.fsm-state-detail').length).toBe(0));
+    await waitFor(() => expect(canvas.getByText(`${blockType} block (1)`)).toBeInTheDocument());
 
     // State can be opened and viewed
     await _testsClickState(stateName);
-    await waitFor(
-      async () =>
-        await fireEvent.click(document.querySelector('.state-next-button'))
-    );
+    await waitFor(async () => await fireEvent.click(document.querySelector('.state-next-button')));
     await waitFor(async () => {
-      await expect(document.querySelectorAll('.fsm-state-detail').length).toBe(
-        1
-      );
+      await expect(document.querySelectorAll('.fsm-state-detail').length).toBe(1);
       await expect(
         canvas.getByText('bb-test-db-step', {
           selector: '.reqore-tag-content span',
@@ -335,9 +279,7 @@ export const NewTransactionState: StoryFSM = {
     // The submit button needs to be disabled
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.fsm-state-detail .system-option').length
-        ).toBe(1);
+        await expect(document.querySelectorAll('.fsm-state-detail .system-option').length).toBe(1);
       },
       {
         timeout: 10000,
@@ -346,43 +288,34 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(200);
 
-    await fireEvent.click(
-      document.querySelector('.fsm-state-detail .provider-type-selector')
-    );
+    await fireEvent.click(document.querySelector('.fsm-state-detail .provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.fsm-state-detail .provider-selector')
-            .length
-        ).toBe(1);
+        await expect(document.querySelectorAll('.fsm-state-detail .provider-selector').length).toBe(
+          1
+        );
       },
       {
         timeout: 10000,
       }
     );
 
-    await fireEvent.click(
-      document.querySelector('.fsm-state-detail .provider-selector')
-    );
+    await fireEvent.click(document.querySelector('.fsm-state-detail .provider-selector'));
     await fireEvent.click(canvas.getAllByText('db')[0]);
 
     await waitFor(
       () =>
         expect(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-textarea'
-          )
+          document.querySelector('.fsm-state-detail .system-option .reqore-textarea')
         ).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
     await fireEvent.change(
-      document.querySelector(
-        '.fsm-state-detail .system-option .reqore-textarea'
-      ),
+      document.querySelector('.fsm-state-detail .system-option .reqore-textarea'),
       {
         target: {
           value: 'omquser',
@@ -400,10 +333,9 @@ export const NewTransactionState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.fsm-state-detail .provider-selector')
-            .length
-        ).toBe(2);
+        await expect(document.querySelectorAll('.fsm-state-detail .provider-selector').length).toBe(
+          2
+        );
       },
       {
         timeout: 10000,
@@ -412,19 +344,13 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(1500);
 
-    await fireEvent.click(
-      document.querySelectorAll('.fsm-state-detail .provider-selector')[1]
-    );
-    const withinSelectDialog = within(
-      document.querySelector('.q-select-dialog')
-    );
+    await fireEvent.click(document.querySelectorAll('.fsm-state-detail .provider-selector')[1]);
+    const withinSelectDialog = within(document.querySelector('.q-select-dialog'));
     await fireEvent.click(withinSelectDialog.getAllByText('bb_local')[0]);
 
     await sleep(1500);
 
-    await fireEvent.click(
-      document.querySelector('.fsm-state-detail .state-next-button')
-    );
+    await fireEvent.click(document.querySelector('.fsm-state-detail .state-next-button'));
 
     await _testsAddNewVariableState('trans', canvas, 'Transaction');
 
@@ -441,9 +367,7 @@ export const NewTransactionState: StoryFSM = {
 
     await sleep(1500);
 
-    await waitFor(() =>
-      expect(canvas.getByText('trans', { selector: 'h4' })).toBeInTheDocument()
-    );
+    await waitFor(() => expect(canvas.getByText('trans', { selector: 'h4' })).toBeInTheDocument());
 
     await waitFor(_testsSubmitFSMState('state-transaction-submit-button'), {
       timeout: 5000,
@@ -451,9 +375,7 @@ export const NewTransactionState: StoryFSM = {
     await _testsCloseStateDetail();
     await sleep(200);
     await expect(size(document.querySelectorAll('.fsm-state-detail'))).toBe(0);
-    await waitFor(() =>
-      expect(canvas.getByText('transaction block (1)')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(canvas.getByText('transaction block (1)')).toBeInTheDocument());
 
     await _testsClickState('Transaction');
 
@@ -461,9 +383,7 @@ export const NewTransactionState: StoryFSM = {
 
     await fireEvent.click(document.querySelector('.state-next-button'));
 
-    await waitFor(() =>
-      expect(canvas.getByText('transaction')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(canvas.getByText('transaction')).toBeInTheDocument());
     await _testsQodexCanBePublished();
   },
 };
@@ -489,9 +409,7 @@ export const NewIfState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
 
-    await waitFor(() =>
-      expect(canvas.getByText('asfg condition')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(canvas.getByText('asfg condition')).toBeInTheDocument());
     await _testsQodexCanBePublished();
   },
 };
@@ -514,9 +432,7 @@ export const NewIfStateWithExpression: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
 
-    await waitFor(() =>
-      expect(canvas.getByText('Expression')).toBeInTheDocument()
-    );
+    await waitFor(() => expect(canvas.getByText('Expression')).toBeInTheDocument());
     await _testsQodexCanBePublished();
   },
 };
@@ -545,12 +461,8 @@ export const NewApiCallState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.provider-selector').length
-        ).toBe(2);
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[1]
-        );
+        await expect(document.querySelectorAll('.provider-selector').length).toBe(2);
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
         await fireEvent.click(canvas.getAllByText('Util')[0]);
       },
       {
@@ -562,9 +474,7 @@ export const NewApiCallState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[2]
-        );
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[2]);
         await fireEvent.click(canvas.getAllByText('Log Message')[0]);
       },
       {
@@ -575,23 +485,16 @@ export const NewApiCallState: StoryFSM = {
     await _testsChangeRichText('logging some stuff');
 
     await expect(
-      document.querySelector(
-        '.fsm-state-detail .system-option div[contenteditable]'
-      )
+      document.querySelector('.fsm-state-detail .system-option div[contenteditable]')
     ).toHaveTextContent('logging some stuff');
 
     await waitFor(_testsSubmitFSMState(), { timeout: 10000 });
     await _testsCloseStateDetail();
     await sleep(200);
-    await expect(
-      document.querySelector('.fsm-state-detail')
-    ).not.toBeInTheDocument();
-    await waitFor(
-      () => canvas.findByText('factory/qorus-api/util/log-message'),
-      {
-        timeout: 10000,
-      }
-    );
+    await expect(document.querySelector('.fsm-state-detail')).not.toBeInTheDocument();
+    await waitFor(() => canvas.findByText('factory/qorus-api/util/log-message'), {
+      timeout: 10000,
+    });
 
     // Check that state data were saved
     await _testsClickState('Call API');
@@ -599,9 +502,7 @@ export const NewApiCallState: StoryFSM = {
       timeout: 10000,
     });
     await expect(
-      document.querySelector(
-        '.fsm-state-detail .system-option div[contenteditable]'
-      )
+      document.querySelector('.fsm-state-detail .system-option div[contenteditable]')
     ).toHaveTextContent('logging some stuff');
     await _testsQodexCanBePublished();
   },
@@ -612,43 +513,31 @@ export const NewMessageState: StoryFSM = {
     const canvas = within(canvasElement);
     await NewState.play({ canvasElement, ...rest, stateType: 'send-message' });
 
-    await fireEvent.click(
-      document.querySelector('.fsm-state-detail .provider-type-selector')
-    );
+    await fireEvent.click(document.querySelector('.fsm-state-detail .provider-type-selector'));
     await fireEvent.click(canvas.getByText('factory'));
 
     await waitFor(
       () =>
-        expect(
-          document.querySelector('.fsm-state-detail .provider-selector')
-        ).toBeInTheDocument(),
+        expect(document.querySelector('.fsm-state-detail .provider-selector')).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
 
-    await fireEvent.click(
-      document.querySelector('.fsm-state-detail .provider-selector')
-    );
+    await fireEvent.click(document.querySelector('.fsm-state-detail .provider-selector'));
     await fireEvent.click(canvas.getAllByText('wsclient')[0]);
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelector('.fsm-state-detail .system-option')
-        ).toBeInTheDocument(),
+      () => expect(document.querySelector('.fsm-state-detail .system-option')).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
-    await fireEvent.change(
-      document.querySelector('.fsm-state-detail .system-option textarea'),
-      {
-        target: {
-          value: 'wss://sandbox:sandbox@sandbox.qoretechnologies.com/apievents',
-        },
-      }
-    );
+    await fireEvent.change(document.querySelector('.fsm-state-detail .system-option textarea'), {
+      target: {
+        value: 'wss://sandbox:sandbox@sandbox.qoretechnologies.com/apievents',
+      },
+    });
 
     await waitFor(
       async () => {
@@ -682,14 +571,10 @@ export const NewMessageState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector(
-            '.fsm-state-detail .provider-message-data textarea'
-          )
+          document.querySelector('.fsm-state-detail .provider-message-data textarea')
         ).toBeInTheDocument();
         await fireEvent.change(
-          document.querySelector(
-            '.fsm-state-detail .provider-message-data textarea'
-          ),
+          document.querySelector('.fsm-state-detail .provider-message-data textarea'),
           {
             target: { value: 'Hello World' },
           }
@@ -702,9 +587,7 @@ export const NewMessageState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 10000 });
     await sleep(200);
     await _testsCloseStateDetail();
-    await expect(
-      document.querySelector('.fsm-state-detail')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.fsm-state-detail')).not.toBeInTheDocument();
     await waitFor(() => canvas.findByText('factory/wsclient'), {
       timeout: 10000,
     });
@@ -714,20 +597,15 @@ export const NewMessageState: StoryFSM = {
     await waitFor(() => canvas.findByDisplayValue('Hello World'), {
       timeout: 10000,
     });
-    await expect(
-      document.querySelector('.provider-message-data textarea')
-    ).toHaveValue('Hello World');
+    await expect(document.querySelector('.provider-message-data textarea')).toHaveValue(
+      'Hello World'
+    );
     await _testsQodexCanBePublished();
   },
 };
 
 export const NewSingleSearchState: StoryFSM = {
-  play: async ({
-    canvasElement,
-    stateType,
-    stateName = 'Single Search',
-    ...rest
-  }) => {
+  play: async ({ canvasElement, stateType, stateName = 'Single Search', ...rest }) => {
     const canvas = within(canvasElement);
     await NewState.play({
       canvasElement,
@@ -750,12 +628,8 @@ export const NewSingleSearchState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.provider-selector').length
-        ).toBe(2);
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[1]
-        );
+        await expect(document.querySelectorAll('.provider-selector').length).toBe(2);
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
         await sleep(1000);
         await fireEvent.click(canvas.getAllByText('audit_event_codes')[0]);
       },
@@ -765,26 +639,16 @@ export const NewSingleSearchState: StoryFSM = {
     );
 
     // Add the search criteria
-    await _testsSelectItemFromCollection(
-      canvas,
-      'audit_event_code',
-      'AddArgument (4)'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'audit_event_code', 'AddArgument (4)')();
 
     // Change the operator to logical not, which allows us to add second operator
-    await _testsSelectItemFromCollection(
-      canvas,
-      'logical not (!)',
-      'equals (=)'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'logical not (!)', 'equals (=)')();
 
     // Add second operator like
     await waitFor(
       async () =>
         await fireEvent.click(
-          document.querySelectorAll(
-            '.fsm-state-detail .operators .reqore-button'
-          )[1]
+          document.querySelectorAll('.fsm-state-detail .operators .reqore-button')[1]
         )
     );
     await _testsSelectItemFromCollection(canvas, 'like')();
@@ -795,9 +659,7 @@ export const NewSingleSearchState: StoryFSM = {
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-input'
-          ),
+          document.querySelector('.fsm-state-detail .system-option .reqore-input'),
           {
             target: {
               value: 12,
@@ -808,27 +670,23 @@ export const NewSingleSearchState: StoryFSM = {
       { timeout: 10000 }
     );
 
-    await sleep(500);
+    await sleep(1500);
 
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await _testsCloseStateDetail();
     await sleep(200);
-    await expect(
-      document.querySelector('.fsm-state-detail')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.fsm-state-detail')).not.toBeInTheDocument();
     await waitFor(() => canvas.findByText('datasource/omq/audit_event_codes'));
 
     // Check that state data were saved
     await _testsClickState(stateName);
 
-    await sleep(1000);
+    await sleep(1500);
 
     await waitFor(
       async () => {
         await expect(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-input'
-          )
+          document.querySelector('.fsm-state-detail .system-option .reqore-input')
         ).toHaveValue(12);
       },
       { timeout: 10000 }
@@ -848,16 +706,16 @@ export const NewSearchState: StoryFSM = {
   },
 };
 
-export const NewDeleteState: StoryFSM = {
-  play: async ({ canvasElement, ...rest }) => {
-    await NewSingleSearchState.play({
-      canvasElement,
-      ...rest,
-      stateType: 'delete',
-      stateName: 'Delete',
-    });
-  },
-};
+// export const NewDeleteState: StoryFSM = {
+//   play: async ({ canvasElement, ...rest }) => {
+//     await NewSingleSearchState.play({
+//       canvasElement,
+//       ...rest,
+//       stateType: 'delete',
+//       stateName: 'Delete',
+//     });
+//   },
+// };
 
 export const NewUpdateState: StoryFSM = {
   play: async ({ canvasElement, ...rest }) => {
@@ -881,12 +739,8 @@ export const NewUpdateState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.provider-selector').length
-        ).toBe(2);
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[1]
-        );
+        await expect(document.querySelectorAll('.provider-selector').length).toBe(2);
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
         await sleep(1000);
         await fireEvent.click(canvas.getAllByText('audit_event_codes')[0]);
       },
@@ -896,19 +750,13 @@ export const NewUpdateState: StoryFSM = {
     );
 
     // Add the search criteria
-    await _testsSelectItemFromCollection(
-      canvas,
-      'description',
-      'AddArgument (4)'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'description', 'AddArgument (4)')();
 
     // Add the search criteria value
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-textarea'
-          ),
+          document.querySelector('.fsm-state-detail .system-option .reqore-textarea'),
           {
             target: {
               value: 'Some description',
@@ -924,9 +772,7 @@ export const NewUpdateState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
     await _testsCloseStateDetail();
-    await expect(
-      document.querySelector('.reqore-drawer')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.reqore-drawer')).not.toBeInTheDocument();
     await waitFor(() => canvas.findByText('datasource/omq/audit_event_codes'));
 
     // Check that state data were saved
@@ -934,9 +780,7 @@ export const NewUpdateState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-textarea'
-          )
+          document.querySelector('.fsm-state-detail .system-option .reqore-textarea')
         ).toHaveValue('Some description');
       },
       { timeout: 5000 }
@@ -967,12 +811,8 @@ export const NewCreateFromFormState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.provider-selector').length
-        ).toBe(2);
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[1]
-        );
+        await expect(document.querySelectorAll('.provider-selector').length).toBe(2);
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
         await sleep(1000);
         await fireEvent.click(canvas.getAllByText('audit_event_codes')[0]);
       },
@@ -992,19 +832,13 @@ export const NewCreateFromFormState: StoryFSM = {
     );
 
     // Add the search criteria
-    await _testsSelectItemFromCollection(
-      canvas,
-      'description',
-      'AddArgument (4)'
-    )();
+    await _testsSelectItemFromCollection(canvas, 'description', 'AddArgument (4)')();
 
     // Add the search criteria value
     await waitFor(
       async () => {
         await fireEvent.change(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-textarea'
-          ),
+          document.querySelector('.fsm-state-detail .system-option .reqore-textarea'),
           {
             target: {
               value: 'Some description',
@@ -1020,9 +854,7 @@ export const NewCreateFromFormState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
     await _testsCloseStateDetail();
-    await expect(
-      document.querySelector('.fsm-state-detail')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.fsm-state-detail')).not.toBeInTheDocument();
     await waitFor(() => canvas.findByText('datasource/omq/audit_event_codes'));
 
     // Check that state data were saved
@@ -1030,9 +862,7 @@ export const NewCreateFromFormState: StoryFSM = {
     await waitFor(
       async () => {
         await expect(
-          document.querySelector(
-            '.fsm-state-detail .system-option .reqore-textarea'
-          )
+          document.querySelector('.fsm-state-detail .system-option .reqore-textarea')
         ).toHaveValue('Some description');
       },
       { timeout: 5000 }
@@ -1063,12 +893,8 @@ export const NewCreateFromTextState: StoryFSM = {
 
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.provider-selector').length
-        ).toBe(2);
-        await fireEvent.click(
-          document.querySelectorAll('.provider-selector')[1]
-        );
+        await expect(document.querySelectorAll('.provider-selector').length).toBe(2);
+        await fireEvent.click(document.querySelectorAll('.provider-selector')[1]);
         await sleep(1000);
         await fireEvent.click(canvas.getAllByText('audit_event_codes')[0]);
       },
@@ -1090,20 +916,13 @@ export const NewCreateFromTextState: StoryFSM = {
     // Add the search criteria value
     await waitFor(
       async () => {
-        await fireEvent.change(
-          document.querySelectorAll('.reqore-textarea')[0],
-          {
-            target: {
-              value: '- description: Some description',
-            },
-          }
-        );
-        await fireEvent.click(
-          document.querySelectorAll('#save-create-args')[0]
-        );
-        await expect(
-          document.querySelectorAll('#save-create-args').length
-        ).toBe(0);
+        await fireEvent.change(document.querySelectorAll('.reqore-textarea')[0], {
+          target: {
+            value: '- description: Some description',
+          },
+        });
+        await fireEvent.click(document.querySelectorAll('#save-create-args')[0]);
+        await expect(document.querySelectorAll('#save-create-args').length).toBe(0);
       },
       { timeout: 5000 }
     );
@@ -1113,18 +932,16 @@ export const NewCreateFromTextState: StoryFSM = {
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
     await _testsCloseStateDetail();
-    await expect(
-      document.querySelector('.fsm-state-detail')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.fsm-state-detail')).not.toBeInTheDocument();
     await waitFor(() => canvas.findByText('datasource/omq/audit_event_codes'));
 
     // Check that state data were saved
     await _testsClickState('Create');
     await waitFor(
       async () => {
-        await expect(
-          document.querySelectorAll('.reqore-textarea')[0]
-        ).toHaveDisplayValue(/- description: Some description/);
+        await expect(document.querySelectorAll('.reqore-textarea')[0]).toHaveDisplayValue(
+          /- description: Some description/
+        );
       },
       { timeout: 5000 }
     );

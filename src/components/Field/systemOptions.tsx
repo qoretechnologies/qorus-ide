@@ -16,6 +16,19 @@ import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Pane
 import { IReqoreTextareaProps } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { TReqoreIntent } from '@qoretechnologies/reqore/dist/constants/theme';
 import { IReqoreAutoFocusRules } from '@qoretechnologies/reqore/dist/hooks/useAutoFocus';
+import {
+  IQorusFormField,
+  IQorusFormFieldMessage,
+  IQorusFormFieldOnChangeMeta,
+  IQorusFormFieldSchema,
+  IQorusFormOperator,
+  IQorusFormOperatorsSchema,
+  IQorusFormSchema,
+  TQorusFlatForm,
+  TQorusForm,
+  TQorusFormOperatorValue,
+  TQorusType,
+} from '@qoretechnologies/ts-toolkit';
 import { cloneDeep, findKey, forEach, last } from 'lodash';
 import isArray from 'lodash/isArray';
 import map from 'lodash/map';
@@ -27,13 +40,9 @@ import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { isObject } from 'util';
 import { TextContext } from '../../context/text';
 import { fetchData, insertAtIndex } from '../../helpers/functions';
-import {
-  hasAllDependenciesFullfilled,
-  validateField,
-} from '../../helpers/validations';
+import { hasAllDependenciesFullfilled, validateField } from '../../helpers/validations';
 import { useTemplates } from '../../hooks/useTemplates';
 import { Description } from '../Description';
-import { IExpression } from '../ExpressionBuilder';
 import AutoField from './auto';
 import { NegativeColorEffect, PositiveColorEffect } from './multiPair';
 import { OptionFieldMessages } from './optionFieldMessages';
@@ -45,8 +54,7 @@ export const getType = (
   operators?: IOperatorsSchema,
   operator?: TOperatorValue
 ) => {
-  const finalType =
-    getTypeFromOperator(operators, fixOperatorValue(operator)) || type;
+  const finalType = getTypeFromOperator(operators, fixOperatorValue(operator)) || type;
 
   return isArray(finalType) ? finalType[0] : finalType;
 };
@@ -55,21 +63,14 @@ const getTypeFromOperator = (
   operators?: IOperatorsSchema,
   operatorData?: (string | null | undefined)[]
 ) => {
-  if (
-    !operators ||
-    !operatorData ||
-    !size(operatorData) ||
-    !last(operatorData)
-  ) {
+  if (!operators || !operatorData || !size(operatorData) || !last(operatorData)) {
     return null;
   }
 
   return operators[last(operatorData) as string]?.type || null;
 };
 
-export const fixOperatorValue = (
-  operator: TOperatorValue
-): (string | null | undefined)[] => {
+export const fixOperatorValue = (operator: TOperatorValue): (string | null | undefined)[] => {
   return isArray(operator) ? operator : [operator];
 };
 
@@ -90,15 +91,14 @@ export const fixOptions = (
     if (
       option.preselected ||
       option.value ||
-      (option.required && !fixedValue[name])
+      (option.required && !fixedValue[name]) ||
+      (option.required && option.default_value && !option.value)
     ) {
       fixedValue[name] = {
         is_expression: fixedValue[name]?.is_expression,
         type: getType(option.type, operators, fixedValue[name]?.op),
         value:
-          (typeof fixedValue[name] === 'object'
-            ? fixedValue[name]?.value
-            : fixedValue[name]) ??
+          (typeof fixedValue[name] === 'object' ? fixedValue[name]?.value : fixedValue[name]) ??
           option.value ??
           option.default_value,
       };
@@ -140,142 +140,35 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
   );
 };
 
-export type IQorusType =
-  | 'string'
-  | 'int'
-  | 'integer'
-  | 'list'
-  | 'bool'
-  | 'boolean'
-  | 'float'
-  | 'binary'
-  | 'hash'
-  | 'date'
-  | 'any'
-  | 'auto'
-  | 'mapper'
-  | 'workflow'
-  | 'service'
-  | 'job'
-  | 'select-string'
-  | 'data-provider'
-  | 'file-as-string'
-  | 'connection'
-  | 'number'
-  | 'nothing'
-  | 'null'
-  | 'rgbcolor'
-  | 'data'
-  | 'richtext';
+export type IQorusType = TQorusType;
 
-export type TOperatorValue = string | string[] | undefined | null;
+export type TOperatorValue = TQorusFormOperatorValue;
 
-export type TOption = {
-  type: IQorusType;
-  value: any;
-  is_expression?: boolean;
-  op?: TOperatorValue;
-};
-export type IOptions =
-  | {
-      [optionName: string]: TOption | undefined;
-    }
-  | undefined;
+export type TOption = IQorusFormField;
+export type IOptions = TQorusForm;
 
-export type TFlatOptions = Record<string, any>;
+export type TFlatOptions = TQorusFlatForm;
 
-export interface IOptionFieldMessage {
-  title?: string;
-  content: string;
-  intent?: TReqoreIntent;
-}
+export interface IOptionFieldMessage extends IQorusFormFieldMessage<TReqoreIntent> {}
 
-export interface IOptionsSchemaArg {
-  type: IQorusType | IQorusType[];
-  element_type?: IQorusType;
-  value?: unknown | IExpression;
-  default_value?: any;
-  required?: boolean;
-  preselected?: boolean;
-  allowed_values?: any[];
-  sensitive?: boolean;
-  desc?: string;
-  arg_schema?: IOptionsSchema;
+export interface IOptionsSchemaArg
+  extends IQorusFormFieldSchema<TReqoreIntent, IReqoreAutoFocusRules> {}
 
-  supports_templates?: boolean;
-  supports_references?: boolean;
-  supports_styling?: boolean;
-  supports_expressions?: boolean;
+export interface IOptionsSchema extends IQorusFormSchema<TReqoreIntent, IReqoreAutoFocusRules> {}
 
-  app?: string;
-  action?: string;
+export interface IOperator extends IQorusFormOperator {}
 
-  depends_on?: string[];
-  has_dependents?: boolean;
-  on_change?: string[];
+export interface IOperatorsSchema extends IQorusFormOperatorsSchema {}
 
-  display_name?: string;
-  short_desc?: string;
-  sort?: number;
+export interface IOptionsOnChangeMeta extends IQorusFormFieldOnChangeMeta {}
 
-  disabled?: boolean;
-  intent?: TReqoreIntent;
-  metadata?: Record<string, any>;
-
-  messages?: IOptionFieldMessage[];
-
-  focusRules?: IReqoreAutoFocusRules;
-
-  markdown?: boolean;
-
-  get_message?: {
-    action: string;
-    object_type?: string;
-    return_value?: string;
-    message_data?: any;
-    useWebSocket?: boolean;
-  };
-
-  return_message?: {
-    action?: string;
-    object_type?: string;
-    return_value?: string;
-    useWebSocket?: boolean;
-  };
-}
-
-export interface IOptionsSchema {
-  [optionName: string]: IOptionsSchemaArg;
-}
-
-export interface IOperator {
-  type?: IQorusType;
-  name: string;
-  desc: string;
-  supports_nesting?: boolean;
-  selected?: boolean;
-}
-
-export interface IOperatorsSchema {
-  [operatorName: string]: IOperator;
-}
-
-export interface IOptionsOnChangeMeta {
-  events?: string[];
-}
-
-export interface IOptionsProps
-  extends Omit<IReqoreCollectionProps, 'onChange'> {
+export interface IOptionsProps extends Omit<IReqoreCollectionProps, 'onChange'> {
   name: string;
   url?: string;
   customUrl?: string;
   value?: IOptions | TFlatOptions;
   options?: IOptionsSchema;
-  onChange?: (
-    name: string,
-    value?: IOptions,
-    meta?: IOptionsOnChangeMeta
-  ) => void;
+  onChange?: (name: string, value?: IOptions, meta?: IOptionsOnChangeMeta) => void;
   onSingleOptionsChange?: (name: string, value: TOption) => void;
   onDependableOptionChange?: (
     name: string,
@@ -314,8 +207,7 @@ export const getTypeAndCanBeNull = (
   return {
     type: realType,
     defaultType: realType,
-    defaultInternalType:
-      realType === 'auto' || realType === 'any' ? undefined : realType,
+    defaultInternalType: realType === 'auto' || realType === 'any' ? undefined : realType,
     canBeNull,
   };
 };
@@ -341,12 +233,8 @@ const Options = ({
   ...rest
 }: IOptionsProps) => {
   const t: any = useContext(TextContext);
-  const [options, setOptions] = useState<IOptionsSchema | undefined>(
-    rest?.options || undefined
-  );
-  const [operators, setOperators] = useState<IOperatorsSchema | undefined>(
-    undefined
-  );
+  const [options, setOptions] = useState<IOptionsSchema | undefined>(rest?.options || undefined);
+  const [operators, setOperators] = useState<IOperatorsSchema | undefined>(undefined);
   const confirmAction = useReqoreProperty('confirmAction');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(rest.options ? false : true);
@@ -421,6 +309,7 @@ const Options = ({
 
   useEffect(() => {
     setOptions(rest.options);
+    setLoading(false);
   }, [JSON.stringify(rest.options)]);
 
   useEffect(() => {
@@ -512,7 +401,7 @@ const Options = ({
     ) {
       // We also need to remove the value from all dependants
       forEach(options, (option, name) => {
-        if (option.depends_on?.includes(optionName)) {
+        if (option.depends_on?.includes(optionName) && updatedValue[name]) {
           updatedValue[name].value = undefined;
         }
       });
@@ -550,36 +439,22 @@ const Options = ({
   };
 
   // Add empty operator at the provider index
-  const handleAddOperator = (
-    optionName,
-    currentValue: IOptions,
-    index: number
-  ) => {
+  const handleAddOperator = (optionName, currentValue: IOptions, index: number) => {
     onChange?.(name, {
       ...currentValue,
       [optionName]: {
         ...currentValue[optionName],
-        op: insertAtIndex(
-          fixOperatorValue(currentValue[optionName].op),
-          index,
-          null
-        ),
+        op: insertAtIndex(fixOperatorValue(currentValue[optionName].op), index, null),
       },
     });
   };
 
-  const handleRemoveOperator = (
-    optionName,
-    currentValue: IOptions,
-    index: number
-  ) => {
+  const handleRemoveOperator = (optionName, currentValue: IOptions, index: number) => {
     onChange?.(name, {
       ...currentValue,
       [optionName]: {
         ...currentValue[optionName],
-        op: fixOperatorValue(currentValue[optionName].op).filter(
-          (_op, idx) => idx !== index
-        ),
+        op: fixOperatorValue(currentValue[optionName].op).filter((_op, idx) => idx !== index),
       },
     });
   };
@@ -588,41 +463,33 @@ const Options = ({
     onChange?.(name, undefined);
   };
 
-  const buildBadges = useCallback(
-    (option: IOptionsSchemaArg): IReqorePanelProps['badge'] => {
-      const badges: IReqorePanelProps['badge'] = [];
+  const buildBadges = useCallback((option: IOptionsSchemaArg): IReqorePanelProps['badge'] => {
+    const badges: IReqorePanelProps['badge'] = [];
 
-      if (option.required) {
-        badges.push({
-          icon: 'Asterisk',
-          leftIconProps: {
-            size: 'tiny',
-          },
-          tooltip: t('This option is required'),
-        });
-      }
+    if (option.required) {
+      badges.push({
+        icon: 'Asterisk',
+        leftIconProps: {
+          size: 'tiny',
+        },
+        tooltip: t('This option is required'),
+      });
+    }
 
-      if (option.has_dependents) {
-        badges.push({
-          icon: 'LinkUnlink',
-          intent: 'info',
-          tooltip: t(
-            'Other options depend on this option, changing it may result in configuration changes.'
-          ),
-        });
-      }
+    if (option.has_dependents) {
+      badges.push({
+        icon: 'LinkUnlink',
+        intent: 'info',
+        tooltip: t(
+          'Other options depend on this option, changing it may result in configuration changes.'
+        ),
+      });
+    }
 
-      return badges;
-    },
-    []
-  );
+    return badges;
+  }, []);
 
-  if (
-    (operatorsUrl && !operators) ||
-    (!rest.options && !options) ||
-    templates.loading ||
-    loading
-  ) {
+  if ((operatorsUrl && !operators) || (!rest.options && !options) || templates.loading || loading) {
     return (
       <ReqorePanel fill flat transparent>
         <ReqoreSpinner
@@ -669,10 +536,7 @@ const Options = ({
       optionName,
       fixedValue,
       options[optionName].default_value,
-      getTypeAndCanBeNull(
-        options[optionName].type,
-        options[optionName].allowed_values
-      ).type
+      getTypeAndCanBeNull(options[optionName].type, options[optionName].allowed_values).type
     );
   };
 
@@ -718,16 +582,9 @@ const Options = ({
     {}
   );
 
-  const isOptionValid = (
-    optionName: string,
-    type: IQorusType,
-    optionValue: any
-  ) => {
+  const isOptionValid = (optionName: string, type: IQorusType, optionValue: any) => {
     // If the option is not required and undefined it's valid :)
-    if (
-      !options[optionName].required &&
-      (optionValue === undefined || optionValue === '')
-    ) {
+    if (!options[optionName].required && (optionValue === undefined || optionValue === '')) {
       return true;
     }
 
@@ -762,8 +619,7 @@ const Options = ({
       {recordRequiresSearchOptions && !readOnly ? (
         <>
           <ReqoreMessage intent='info'>
-            This provider record requires some search options to be set. You can
-            set them below.
+            This provider record requires some search options to be set. You can set them below.
           </ReqoreMessage>
           <ReqoreVerticalSpacer height={10} />
         </>
@@ -805,10 +661,11 @@ const Options = ({
                     })
                   )}
                   fill
+                  customTheme={{
+                    main: '#22273b',
+                  }}
                   onChange={(_name, value) => addSelectedOption(value)}
-                  placeholder={`${t(placeholder || 'AddNewOption')} (${size(
-                    filteredOptions
-                  )})`}
+                  placeholder={`${t(placeholder || 'AddNewOption')} (${size(filteredOptions)})`}
                 />
               </>
             ) : null}
@@ -825,9 +682,7 @@ const Options = ({
             customTheme: {
               main: 'main:darken:1',
             },
-            icon: !isOptionValid(optionName, type, other.value)
-              ? 'SpamFill'
-              : undefined,
+            icon: !isOptionValid(optionName, type, other.value) ? 'SpamFill' : undefined,
             transparent: false,
             intent: getIntent(optionName, type, other.value, other.op),
             badge: buildBadges(options[optionName]),
@@ -837,9 +692,7 @@ const Options = ({
                 icon: 'DeleteBinLine',
                 intent: 'danger',
                 show:
-                  !options[optionName].preselected &&
-                  !options[optionName].required &&
-                  !readOnly,
+                  !options[optionName].preselected && !options[optionName].required && !readOnly,
                 onClick: () => {
                   confirmAction({
                     title: 'RemoveSelectedOption',
@@ -856,20 +709,18 @@ const Options = ({
                   shortDescription={options[optionName].short_desc}
                   longDescription={options[optionName].desc}
                 />
-                {(options[optionName].messages || []).map(
-                  ({ intent, title, content }, index) => (
-                    <ReqoreMessage
-                      intent={intent}
-                      title={title}
-                      key={title || index}
-                      opaque={false}
-                      size='small'
-                      margin='bottom'
-                    >
-                      {content}
-                    </ReqoreMessage>
-                  )
-                )}
+                {(options[optionName].messages || []).map(({ intent, title, content }, index) => (
+                  <ReqoreMessage
+                    intent={intent}
+                    title={title}
+                    key={title || index}
+                    opaque={false}
+                    size='small'
+                    margin='bottom'
+                  >
+                    {content}
+                  </ReqoreMessage>
+                ))}
                 {operators && size(operators) ? (
                   <>
                     <ReqoreControlGroup fill wrap className='operators'>
@@ -887,10 +738,7 @@ const Options = ({
                                 handleOperatorChange(
                                   optionName,
                                   fixedValue,
-                                  findKey(
-                                    operators,
-                                    (operator) => operator.name === val
-                                  ) as string,
+                                  findKey(operators, (operator) => operator.name === val) as string,
                                   index
                                 );
                               }
@@ -904,13 +752,7 @@ const Options = ({
                               disabled={readOnly}
                               fixed
                               effect={PositiveColorEffect}
-                              onClick={() =>
-                                handleAddOperator(
-                                  optionName,
-                                  fixedValue,
-                                  index + 1
-                                )
-                              }
+                              onClick={() => handleAddOperator(optionName, fixedValue, index + 1)}
                             />
                           ) : null}
                           {size(fixOperatorValue(other.op)) > 1 ? (
@@ -919,13 +761,7 @@ const Options = ({
                               icon='DeleteBinLine'
                               effect={NegativeColorEffect}
                               fixed
-                              onClick={() =>
-                                handleRemoveOperator(
-                                  optionName,
-                                  fixedValue,
-                                  index
-                                )
-                              }
+                              onClick={() => handleRemoveOperator(optionName, fixedValue, index)}
                             />
                           ) : null}
                         </React.Fragment>
@@ -936,18 +772,12 @@ const Options = ({
                 ) : null}
                 <TemplateField
                   {...options[optionName]}
-                  allowTemplates={
-                    !!(allowTemplates && options[optionName].supports_templates)
-                  }
+                  allowTemplates={!!(allowTemplates && options[optionName].supports_templates)}
                   allowFunctions={!!options[optionName].supports_expressions}
                   fluid
                   templates={templates.value}
                   component={AutoField}
-                  {...getTypeAndCanBeNull(
-                    type,
-                    options[optionName].allowed_values,
-                    other.op
-                  )}
+                  {...getTypeAndCanBeNull(type, options[optionName].allowed_values, other.op)}
                   className='system-option'
                   name={optionName}
                   onChange={(optionName, val, givenType, isFunction) => {
@@ -957,10 +787,7 @@ const Options = ({
                         fixedValue,
                         val,
                         givenType ||
-                          getTypeAndCanBeNull(
-                            type,
-                            options[optionName].allowed_values
-                          ).type,
+                          getTypeAndCanBeNull(type, options[optionName].allowed_values).type,
                         isFunction
                       );
                     }
@@ -995,11 +822,7 @@ const Options = ({
                     <ReqoreVerticalSpacer height={5} />
                     <ReqoreMessage size='small'>
                       <ReqoreTagGroup>
-                        <ReqoreTag
-                          size='small'
-                          labelKey='WHERE'
-                          label={optionName}
-                        />
+                        <ReqoreTag size='small' labelKey='WHERE' label={optionName} />
                         <ReqoreTag
                           size='small'
                           labelKey='IS'
