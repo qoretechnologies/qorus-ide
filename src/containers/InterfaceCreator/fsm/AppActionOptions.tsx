@@ -64,7 +64,7 @@ export const QodexAppActionOptions = memo(
     id,
   }: IQodexAppActionOptionsProps) => {
     const { action } = useGetAppActionData(appName, actionName);
-    const [options, setOptions] = useState<IOptionsSchema>(action?.options);
+    const [options, setOptions] = useState<IOptionsSchema>(undefined);
     const [loadingTemplates, setLoadingTemplates] = useState<boolean>(true);
     const [templates, setTemplates] = useState<IReqoreTextareaProps['templates']>();
     const [value, setValue] = useState<IOptions>(outsideValue);
