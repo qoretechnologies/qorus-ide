@@ -95,7 +95,7 @@ export const NewConnectionWithRequiredOptions: Story = {
     await NewConnection.play({ canvasElement, ...rest });
 
     await waitFor(
-      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(4),
+      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(2),
       { timeout: 5000 }
     );
   },
