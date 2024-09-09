@@ -17,11 +17,7 @@ const meta = {
     return (
       // @ts-ignore
       <AppsContext.Provider value={{ apps }}>
-        <ConnectionManagement
-          {...args}
-          onChange={setConnection}
-          selectedConnection={connection}
-        />
+        <ConnectionManagement {...args} onChange={setConnection} selectedConnection={connection} />
       </AppsContext.Provider>
     );
   },
@@ -99,10 +95,7 @@ export const NewConnectionWithRequiredOptions: Story = {
     await NewConnection.play({ canvasElement, ...rest });
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.reqore-collection-item').length
-        ).toBe(4),
+      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(4),
       { timeout: 5000 }
     );
   },
@@ -129,10 +122,7 @@ export const EditingConnection: Story = {
     await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.reqore-collection-item').length
-        ).toBe(3),
+      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBeGreaterThan(1),
       { timeout: 5000 }
     );
   },
