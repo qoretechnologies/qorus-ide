@@ -706,6 +706,7 @@ const Options = ({
             content: (
               <>
                 <Description
+                  type={options[optionName].type as TQorusType}
                   shortDescription={options[optionName].short_desc}
                   longDescription={options[optionName].desc}
                 />

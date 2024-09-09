@@ -158,13 +158,27 @@ const getOptions = (allOptional: boolean = false): IOptionsSchema => ({
     short_desc: 'Option with arg schema',
     arg_schema: {
       schemaOption1: {
-        type: 'string',
+        type: 'richtext',
         display_name: 'Schema option 1',
         short_desc: 'Schema option 1',
         required: true,
       },
+      schemaOption2: {
+        type: 'hash',
+        display_name: 'Schema option with arg_schema',
+        short_desc: 'Schema option with arg_schema',
+        required: true,
+        arg_schema: {
+          schemaOption3: {
+            type: 'string',
+            display_name: 'Schema option 3',
+            short_desc: 'Schema option 3',
+            required: true,
+          },
+        },
+      },
       optionWithAutoSelect: {
-        type: 'string',
+        type: 'richtext',
         display_name: 'Option with auto select',
         allowed_values: [{ name: 'Allowed value 1', short_desc: 'Allowed value 1' }],
         required: true,
@@ -202,6 +216,20 @@ export const Basic: StoryObj<typeof meta> = {
       readOnlyOptionWithValue: { type: 'number', value: 456 },
       templateOption: { type: 'string', value: '$local:test' },
       selectedOption: { type: 'hash', value: undefined },
+      schemaOption: {
+        type: 'hash',
+        value: {
+          schemaOption2: {
+            type: 'hash',
+            value: {
+              schemaOption3: {
+                type: 'string',
+                value: 'test',
+              },
+            },
+          },
+        },
+      },
       richTextOption: {
         type: 'richtext',
         value: [

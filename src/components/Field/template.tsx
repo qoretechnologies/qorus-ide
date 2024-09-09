@@ -324,6 +324,7 @@ export const TemplateField = ({
             description: func.short_desc,
             value: func.name,
           }))}
+          fixed
           className='function-selector'
           icon='Functions'
           onItemSelect={(item) => {

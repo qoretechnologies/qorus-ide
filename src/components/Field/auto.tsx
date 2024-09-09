@@ -7,6 +7,7 @@ import {
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
+import { TQorusType } from '@qoretechnologies/ts-toolkit';
 import jsyaml from 'js-yaml';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
@@ -20,6 +21,7 @@ import {
 } from '../../helpers/validations';
 import withTextContext from '../../hocomponents/withTextContext';
 import { ConnectionManagement } from '../ConnectionManagement';
+import { Description } from '../Description';
 import { IField } from '../FieldWrapper';
 import SubField from '../SubField';
 import ArrayAutoField from './arrayAuto';
@@ -33,6 +35,7 @@ import { InterfaceSelector } from './interfaceSelector';
 import LongStringField from './longString';
 import MultiSelect from './multiSelect';
 import NumberField from './number';
+import { OptionFieldMessages } from './optionFieldMessages';
 import OptionHashField from './optionHash';
 import RadioField from './radioField';
 import { RichTextField } from './richText';
@@ -379,8 +382,10 @@ function AutoField<T = any>({
       case 'hash':
       case 'hash<auto>': {
         if (arg_schema) {
-          const currentPath = path ? `${path}.` : '';
-          const transformedValue = typeof value === 'string' ? maybeParseYaml(value) : value;
+          const transformedValue: Record<
+            string,
+            { type: TQorusType; value: any; is_expression?: boolean }
+          > = typeof value === 'string' ? maybeParseYaml(value) : value;
 
           return map(arg_schema, (schema, option) => {
             return (
@@ -388,39 +393,49 @@ function AutoField<T = any>({
                 title={schema.display_name || option}
                 key={option}
                 {...schema}
-                desc={`${schema.desc}`}
-                descTitle={`${currentPath}${option}`}
                 collapsible
                 nested={level > 0}
                 isValid={
                   schema.required
-                    ? validateField(schema.type, get(transformedValue, `${option}`))
+                    ? validateField(schema.type, get(transformedValue, `${option}`)?.value, schema)
                     : true
                 }
                 detail={schema.required ? 'Required' : 'Optional'}
               >
+                <Description
+                  shortDescription={schema.short_desc}
+                  longDescription={schema.desc}
+                  type={schema.type as TQorusType}
+                />
                 <TemplateField
                   component={AutoField}
+                  allowFunctions
+                  isFunction={get(transformedValue, `${option}`)?.is_expression}
                   {...rest}
                   {...schema}
-                  path={`${currentPath}${option}`}
-                  name={`${currentPath}${option}`}
+                  name={option}
                   level={level + 1}
                   defaultType={schema.type}
                   defaultInternalType={schema.type}
-                  value={get(transformedValue, `${option}`)}
-                  onChange={(n, v) => {
+                  value={get(transformedValue, `${option}`)?.value}
+                  onChange={(n, v, type, isFunction) => {
                     if (v !== undefined) {
-                      if (level === 0) {
-                        const newValue = set(transformedValue || {}, n, v);
+                      const newValue = set(transformedValue || {}, n, {
+                        type: type || schema.type,
+                        value: v,
+                        is_expression: isFunction,
+                      });
 
-                        handleChange(name, newValue);
-                      } else {
-                        handleChange(n, v);
-                      }
+                      handleChange(name, newValue);
                     }
                   }}
                   column
+                />
+                <OptionFieldMessages
+                  schema={arg_schema}
+                  allOptions={transformedValue}
+                  name={option}
+                  option={get(transformedValue, `${option}`) || {}}
                 />
               </SubField>
             );
@@ -654,7 +669,7 @@ function AutoField<T = any>({
         className='auto-field-schema-wrapper'
         style={{
           flexFlow: column || arg_schema ? 'column' : 'row',
-          marginLeft: 10 * level,
+          //marginLeft: 10 * level,
           overflow: 'hidden',
           flex: '1 1 auto',
           //maxHeight: level === 0 ? '500px' : undefined,
