@@ -13,6 +13,7 @@ import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { apiHost } from '../../common/vscode';
+import { fixOldArgSchemaData } from '../../helpers/functions';
 import {
   getTypeFromValue,
   getValueOrDefaultValue,
@@ -385,7 +386,10 @@ function AutoField<T = any>({
           const transformedValue: Record<
             string,
             { type: TQorusType; value: any; is_expression?: boolean }
-          > = typeof value === 'string' ? maybeParseYaml(value) : value;
+          > = fixOldArgSchemaData(
+            typeof value === 'string' ? maybeParseYaml(value) : value,
+            arg_schema
+          );
 
           return map(arg_schema, (schema, option) => {
             return (

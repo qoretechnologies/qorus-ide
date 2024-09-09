@@ -52,7 +52,6 @@ export const ListWithElementType: Story = {
           {...args}
           value={value}
           onChange={(name, value) => {
-            console.log(name, value);
             setValue(value);
           }}
         />
@@ -75,7 +74,6 @@ export const ListWithElementTypeAndArgSchema: Story = {
           {...args}
           value={value}
           onChange={(name, value) => {
-            console.log(name, value);
             setValue(value);
           }}
         />
@@ -146,9 +144,7 @@ export const ListWithElementTypeAndArgSchema: Story = {
 export const ItemsCanBeAddedAndRemoved = {
   ...ListWithElementType,
   play: async (context) => {
-    await waitFor(() =>
-      expect(document.querySelectorAll('.array-auto-item').length).toBe(1)
-    );
+    await waitFor(() => expect(document.querySelectorAll('.array-auto-item').length).toBe(1));
     await _testsClickButton({ label: 'Add new value' });
     await _testsClickButton({ label: 'Add new value' });
 
