@@ -75,6 +75,7 @@ export interface IAutoFieldProps extends IField {
   disabled?: boolean;
 
   templates?: IReqoreFormTemplates;
+  metadata?: ISelectFieldItem['metadata'];
 }
 
 export const DefaultNoSoftTypes = [
@@ -251,6 +252,34 @@ function AutoField<T = any>({
         return [];
       }
     }
+  };
+
+  const renderConnectionManagement = () => {
+    if (type !== 'connection') {
+      return null;
+    }
+
+    let metadata: ISelectFieldItem['metadata'] = rest.metadata;
+
+    // If the field has allowed values, and the value is set
+    // get the metadata from the allowed values
+    if (rest.allowed_values) {
+      if (value) {
+        metadata = rest.allowed_values?.find(
+          (item) => item.value === value || item.name === value
+        )?.metadata;
+      }
+    }
+
+    return (
+      <ConnectionManagement
+        selectedConnection={value}
+        onChange={(value) => handleChange(name, value)}
+        redirectUri={`${apiHost}/grant`}
+        {...rest}
+        metadata={metadata}
+      />
+    );
   };
 
   const renderField = (currentType: IQorusType) => {
@@ -720,16 +749,7 @@ function AutoField<T = any>({
             {isSetToNull ? 'Unset null' : 'Set as null'}
           </ReqoreButton>
         )}
-        {type === 'connection' ? (
-          <ConnectionManagement
-            selectedConnection={value}
-            onChange={(value) => handleChange(name, value)}
-            allowedValues={rest.allowed_values}
-            redirectUri={`${apiHost}/grant`}
-            app={rest.app}
-            action={rest.action}
-          />
-        ) : null}
+        {renderConnectionManagement()}
       </ReqoreControlGroup>
     </ReqoreControlGroup>
   );

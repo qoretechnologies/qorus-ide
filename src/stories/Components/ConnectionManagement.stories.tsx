@@ -36,7 +36,7 @@ export const Selected: Story = {
 
 export const Compact: Story = {
   args: {
-    compact: 'true',
+    compact: true,
     selectedConnection: 'google-calendar',
   },
 };
@@ -45,15 +45,10 @@ export const SelectedOAuth2UnAuthorized: Story = {
   name: 'Selected OAuth2 Un-Authorized',
   args: {
     selectedConnection: 'google-calendar',
-    allowedValues: [
-      {
-        value: 'google-calendar',
-        metadata: {
-          needs_auth: true,
-          oauth2_auth_code: true,
-        },
-      },
-    ],
+    metadata: {
+      needs_auth: true,
+      oauth2_auth_code: true,
+    },
   },
 };
 
@@ -61,14 +56,9 @@ export const SelectedOAuth2Authorized: Story = {
   name: 'Selected OAuth2 Authorized',
   args: {
     selectedConnection: 'google-calendar',
-    allowedValues: [
-      {
-        value: 'google-calendar',
-        metadata: {
-          oauth2_auth_code: true,
-        },
-      },
-    ],
+    metadata: {
+      oauth2_auth_code: true,
+    },
   },
 };
 
