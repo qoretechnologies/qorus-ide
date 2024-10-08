@@ -66,6 +66,8 @@ export interface ISelectField extends IField {
   context?: any;
   className?: string;
   showDescription?: 'tooltip' | boolean;
+  showPlaceholder?: boolean;
+  showRightIcon?: boolean;
   minimal?: boolean;
 }
 
@@ -151,6 +153,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   filters,
   className,
   showDescription = true,
+  showPlaceholder = true,
+  showRightIcon = true,
   ...rest
 }) => {
   const [items, setItems] = useState<ISelectFieldItem[]>(defaultItems || []);
@@ -596,7 +600,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                 fluid
                 key={value}
                 icon={icon || (hasError(items, value) ? 'ErrorWarningLine' : undefined)}
-                rightIcon='ListUnordered'
+                rightIcon={showRightIcon ? 'ListUnordered' : undefined}
                 onClick={() => setSelectDialogOpen(true)}
                 description={getItemShortDescription(value, 'Select from available values')}
                 tooltip={getItemDescriptionTooltip(value)}
@@ -620,7 +624,11 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                 }
                 className={className}
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : showPlaceholder
+                    ? placeholder || t('PleaseSelect')
+                    : undefined}
               </ReqoreButton>
             ) : asMenu ? (
               <ReqoreMenu>
@@ -669,7 +677,11 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                   }
                 }
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : showPlaceholder
+                    ? placeholder || t('PleaseSelect')
+                    : undefined}
               </ReqoreDropdown>
             )}
 

@@ -27,6 +27,7 @@ import DateField from '../Field/date';
 import LongStringField from '../Field/longString';
 import Number from '../Field/number';
 import { RichTextField } from './richText';
+import Select from './select';
 
 export type IQorusType =
   | 'string'
@@ -318,17 +319,17 @@ export const TemplateField = ({
       ) : null}
 
       {allowFunctions && !size(rest.allowed_values) && !rest.readonly ? (
-        <ReqoreDropdown
-          items={functions.value?.map((func) => ({
-            label: func.display_name,
-            description: func.short_desc,
-            value: func.name,
-          }))}
+        <Select
+          defaultItems={functions.value}
           fixed
+          showDescription='tooltip'
+          showPlaceholder={false}
+          showRightIcon={false}
           className='function-selector'
           icon='Functions'
-          onItemSelect={(item) => {
-            const func = functions.value.find((f) => f.name === item.value);
+          onChange={(_n, item) => {
+            console.log(item);
+            const func = functions.value.find((f) => f.name === item);
             setIsTemplate(false);
             setTemplateValue(null);
 

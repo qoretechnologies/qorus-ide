@@ -6,9 +6,11 @@ import { StoryMeta } from '../../types';
 import {
   _testsSelectFromAppCatalogue,
   _testsSelectItemFromCollection,
+  _testsSelectItemFromDropdown,
   _testsWaitForText,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { NewIfStateWithExpression } from './States.stories';
 
 const meta = {
   component: FSMView,
@@ -40,5 +42,15 @@ export const MultipleOptionsWithOneAllowedValue: StoryFSM = {
     await _testsSelectItemFromCollection(canvas, 'Haltian Demo')();
     await _testsWaitForText('239');
     await _testsWaitForText('337');
+  },
+};
+
+export const SubExpressionCanBeAddedInIfState: StoryFSM = {
+  play: async (context) => {
+    const canvas = within(context.canvasElement);
+    await NewIfStateWithExpression.play(context);
+
+    // Select concat from the list
+    await _testsSelectItemFromDropdown(canvas, 'equals', undefined, '.function-selector')();
   },
 };

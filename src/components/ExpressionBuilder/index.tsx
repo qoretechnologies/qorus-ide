@@ -14,14 +14,11 @@ import { clone, cloneDeep, get, set, size, unset } from 'lodash';
 import { darken, rgba } from 'polished';
 import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
-import {
-  fetchData,
-  getExpressionArgumentType,
-  getTypesAccepted,
-} from '../../helpers/functions';
+import { fetchData, getExpressionArgumentType, getTypesAccepted } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import { useQorusTypes } from '../../hooks/useQorusTypes';
 import { useTemplates } from '../../hooks/useTemplates';
+import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import auto from '../Field/auto';
 import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
@@ -45,8 +42,7 @@ export const StyledExpressionItem = styled.div`
         left: -10px;
         width: 10px;
         height: 1px;
-        background-color: ${({ theme }) =>
-          rgba(getReadableColorFrom(theme.main), 0.3)};
+        background-color: ${({ theme }) => rgba(getReadableColorFrom(theme.main), 0.3)};
       }
     `}
 `;
@@ -65,8 +61,7 @@ const StyledExpressionItemLabel = styled.div`
   justify-content: center;
   cursor: pointer;
   padding-right: 7px;
-  border-right: 1px solid
-    ${({ theme }) => rgba(getReadableColorFrom(theme.main), 0.3)};
+  border-right: 1px solid ${({ theme }) => rgba(getReadableColorFrom(theme.main), 0.3)};
 `;
 export interface IExpressionValue {
   exp?: string;
@@ -138,9 +133,7 @@ export const Expression = ({
       return [];
     }
 
-    const data = await fetchData(
-      `/system/expressions?first_arg_type=${firstParamType}`
-    );
+    const data = await fetchData(`/system/expressions?first_arg_type=${firstParamType}`);
 
     return data.data;
   }, [firstParamType]);
@@ -203,9 +196,7 @@ export const Expression = ({
     const args = [value.value.args[0]];
 
     // Check if this expression has variable arguments
-    const selectedExpression = expressions.value?.find(
-      (exp) => exp.name === val
-    );
+    const selectedExpression = expressions.value?.find((exp) => exp.name === val);
 
     if (selectedExpression.varargs) {
       args.push({});
@@ -285,9 +276,7 @@ export const Expression = ({
     onValueChange?.(undefined, path, true);
   };
 
-  const selectedExpression = expressions.value?.find(
-    (exp) => exp.name === value.value.exp
-  );
+  const selectedExpression = expressions.value?.find((exp) => exp.name === value.value.exp);
   const firstArgSchema = selectedExpression?.args[0];
   let restOfArgs = selectedExpression?.args.slice(1);
 
@@ -306,11 +295,7 @@ export const Expression = ({
     <StyledExpressionItem
       as={ReqorePanel}
       intent={
-        validateField('expression', value)
-          ? returnType !== 'bool'
-            ? 'info'
-            : undefined
-          : 'danger'
+        validateField('expression', value) ? (returnType !== 'bool' ? 'info' : undefined) : 'danger'
       }
       flat
       isChild={isChild}
@@ -326,12 +311,7 @@ export const Expression = ({
         overflowX: 'hidden',
       }}
     >
-      <ReqoreControlGroup
-        fluid={false}
-        wrap
-        verticalAlign='flex-end'
-        size='normal'
-      >
+      <ReqoreControlGroup fluid={false} wrap verticalAlign='flex-end' size='normal'>
         {firstParamType && (
           <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
             <ReqoreP
@@ -356,13 +336,8 @@ export const Expression = ({
               isFunction={firstArgument?.is_expression}
               onChange={(name, value, type, isFunction) => {
                 if (type !== 'any' && type !== 'auto') {
-                  updateArg(
-                    value,
-                    0,
-                    type,
-                    isFunction,
-                    selectedExpression?.args?.[0]?.required
-                  );
+                  console.log('Update from first arg', value, type, isFunction, selectedExpression);
+                  updateArg(value, 0, type, isFunction, selectedExpression?.args?.[0]?.required);
                 }
               }}
               templates={localTemplates}
@@ -379,8 +354,7 @@ export const Expression = ({
           defaultItems={
             firstArgSchema?.type?.types_accepted?.map((type) => ({
               name: type,
-              display_name: types.value.find((t) => t.name === type)
-                ?.display_name,
+              display_name: types.value.find((t) => t.name === type)?.display_name,
             })) || types.value
           }
           value={firstArgument?.type || type || 'ctx'}
@@ -426,11 +400,7 @@ export const Expression = ({
         }) &&
         selectedExpression
           ? restOfArgs?.map((arg, index) => (
-              <ReqoreControlGroup
-                vertical
-                key={`${value?.value.exp}${index}-group`}
-                wrap
-              >
+              <ReqoreControlGroup vertical key={`${value?.value.exp}${index}-group`} wrap>
                 <ReqoreP
                   size='tiny'
                   effect={{
@@ -468,13 +438,8 @@ export const Expression = ({
                     templates={localTemplates}
                     allowTemplates
                     onChange={(_name, value, type, isFunction) => {
-                      updateArg(
-                        value,
-                        index + 1,
-                        type,
-                        isFunction,
-                        arg.required
-                      );
+                      console.log('Update from var arg', value, type, isFunction, index);
+                      updateArg(value, index + 1, type, isFunction, arg.required);
                     }}
                     fluid={false}
                     fixed={true}
@@ -497,10 +462,7 @@ export const Expression = ({
                   ) : null}
                   <Select
                     name='type'
-                    defaultItems={getTypesAccepted(
-                      arg.type.types_accepted,
-                      types.value
-                    )}
+                    defaultItems={getTypesAccepted(arg.type.types_accepted, types.value)}
                     showDescription={false}
                     value={getExpressionArgumentType(
                       arg,
@@ -527,13 +489,9 @@ export const Expression = ({
             tooltip='Add argument'
             icon='AddLine'
             fixed
+            disabled={!validateField('expression', value)}
             onClick={() => {
-              updateArg(
-                undefined,
-                size(value.value.args),
-                firstParamType,
-                false
-              );
+              updateArg(undefined, size(value.value.args), firstParamType, false);
             }}
           />
         )}
@@ -604,6 +562,20 @@ export const ExpressionBuilder = ({
   const templates = useTemplates(!isChild, localTemplates);
   const theme = useReqoreTheme();
 
+  useWhyDidYouUpdate('ExpressionBuilder', {
+    localTemplates,
+    value,
+    isChild,
+    level,
+    index,
+    path,
+    type,
+    returnType,
+    group,
+    onChange,
+    onValueChange,
+  });
+
   if (templates.loading) {
     return (
       <ReqoreSpinner type={5} size='normal'>
@@ -612,11 +584,7 @@ export const ExpressionBuilder = ({
     );
   }
 
-  const handleChange = (
-    newValue: IExpression,
-    newPath: string,
-    remove?: boolean
-  ) => {
+  const handleChange = (newValue: IExpression, newPath: string, remove?: boolean) => {
     if (onChange) {
       if (!newPath) {
         onChange(newValue, remove);
@@ -660,10 +628,7 @@ export const ExpressionBuilder = ({
     }
   };
 
-  if (
-    value.is_expression &&
-    (value.value.exp === 'AND' || value.value.exp === 'OR')
-  ) {
+  if (value.is_expression && (value.value.exp === 'AND' || value.value.exp === 'OR')) {
     return (
       <StyledExpressionItem
         as={ReqorePanel}
@@ -682,13 +647,7 @@ export const ExpressionBuilder = ({
         headerEffect={{ color: theme.intents.pending }}
         headerSize={5}
       >
-        <ReqoreControlGroup
-          vertical
-          fluid
-          size='normal'
-          style={{ position: 'relative' }}
-          wrap
-        >
+        <ReqoreControlGroup vertical fluid size='normal' style={{ position: 'relative' }} wrap>
           <StyledExpressionItemLabel
             as={ReqoreP}
             color='transparent'
