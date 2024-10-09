@@ -148,6 +148,12 @@ function AutoField<T = any>({
   });
 
   useEffect(() => {
+    if (currentInternalType !== defaultType) {
+      setInternalType(defaultType);
+    }
+  }, [defaultType]);
+
+  useEffect(() => {
     // Auto field type depends on other fields' value
     // which will be used as a type
     if (rest['type-depends-on']) {

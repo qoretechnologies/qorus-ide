@@ -140,7 +140,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
   );
 };
 
-export type IQorusType = TQorusType;
+export type IQorusType = TQorusType | 'context' | 'select-string';
 
 export type TOperatorValue = TQorusFormOperatorValue;
 

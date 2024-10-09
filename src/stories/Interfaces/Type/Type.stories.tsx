@@ -11,11 +11,7 @@ import withSteps from '../../../hocomponents/withSteps';
 import { DraftsProvider } from '../../../providers/Drafts';
 import { InterfacesProvider } from '../../../providers/Interfaces';
 import interfaces from '../../Data/interface_samples.json';
-import {
-  _testsClickButton,
-  _testsConfirmDialog,
-  _testsWaitForText,
-} from '../../Tests/utils';
+import { _testsClickButton, _testsConfirmDialog, _testsWaitForText } from '../../Tests/utils';
 import { StoryMeta } from '../../types';
 
 const Creator = compose(
@@ -52,6 +48,9 @@ export const New: Story = {
   args: {
     data: { subtab: 'type' },
   },
+  play: async () => {
+    await _testsWaitForText('/qore/file/event');
+  },
 };
 
 export const Existing: Story = {
@@ -68,10 +67,9 @@ export const DraftIsSaved: Story = {
   play: async () => {
     await _testsWaitForText('field-label-display_name');
 
-    await fireEvent.change(
-      document.querySelector('.creator-field .reqore-input'),
-      { target: { value: 'Test' } }
-    );
+    await fireEvent.change(document.querySelector('.creator-field .reqore-input'), {
+      target: { value: 'Test' },
+    });
 
     await _testsWaitForText('DraftSaved just now');
   },

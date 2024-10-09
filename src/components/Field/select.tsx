@@ -8,6 +8,7 @@ import {
   ReqoreMessage,
   ReqoreTag,
 } from '@qoretechnologies/reqore';
+import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
 import { IReqoreControlGroupProps } from '@qoretechnologies/reqore/dist/components/ControlGroup';
 import { IReqoreMenuItemProps } from '@qoretechnologies/reqore/dist/components/Menu/item';
@@ -597,7 +598,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
           <ReqoreControlGroup {...rest} {...otherRest} stack fill>
             {hasItemsWithDesc(items) && !forceDropdown ? (
               <ReqoreButton
+                {...rest}
                 fluid
+                compact={rest.compact}
                 key={value}
                 icon={icon || (hasError(items, value) ? 'ErrorWarningLine' : undefined)}
                 rightIcon={showRightIcon ? 'ListUnordered' : undefined}
@@ -714,5 +717,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
 };
 
 export default compose(withTextContext())(SelectField) as React.FC<
-  ISelectField & IField & Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
+  ISelectField &
+    IField &
+    Omit<IReqoreControlGroupProps, 'onChange' | 'children'> &
+    Omit<IReqoreButtonProps, 'onChange' | 'children'>
 >;

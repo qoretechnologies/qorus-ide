@@ -626,6 +626,12 @@ export const getDraftId = (data: IQorusInterface['data'], interfaceId?: string) 
   return data?.id ?? interfaceId;
 };
 
+export const QorusTypeCompatibilityTable = {
+  string: ['string', 'binary', 'number', 'boolean', 'date', 'int', 'bool', 'float'],
+  number: ['number', 'int', 'float'],
+  data: ['string', 'binary'],
+};
+
 export const filterTemplatesByType = (
   templates: IReqoreFormTemplates = {},
   fieldType: IQorusType = 'string',

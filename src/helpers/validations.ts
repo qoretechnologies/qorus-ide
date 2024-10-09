@@ -708,7 +708,6 @@ export const validateField: (
       );
     }
     case 'expression': {
-      console.log('expression', value);
       const castedValue = value as IExpression;
 
       if (!castedValue) {

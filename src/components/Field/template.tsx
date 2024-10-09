@@ -322,6 +322,7 @@ export const TemplateField = ({
         <Select
           defaultItems={functions.value}
           fixed
+          compact
           showDescription='tooltip'
           showPlaceholder={false}
           showRightIcon={false}
