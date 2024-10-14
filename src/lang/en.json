@@ -1700,6 +1700,10 @@
     "text": "Event handlers"
   },
   {
+    "id": "field-label-webhooks",
+    "text": "Webhooks"
+  },
+  {
     "id": "field-label-step",
     "text": "Step"
   },
@@ -1718,6 +1722,10 @@
   {
     "id": "field-desc-event-handlers",
     "text": "Event handlers associated with this service"
+  },
+  {
+    "id": "field-desc-webhooks",
+    "text": "Webhooks associated with this service"
   },
   {
     "id": "field-label-queue",

@@ -104,7 +104,6 @@ export const FSMStateDetail = memo(
 
     useUpdateEffect(() => {
       if (!isEqual(data, dataToSubmit)) {
-        console.log('Data changed in detail', data, dataToSubmit);
         setDataToSubmit(data);
       }
     }, [JSON.stringify(data)]);
@@ -450,7 +449,6 @@ export const FSMStateDetail = memo(
               setIsMetadataHidden={setIsMetadataHidden}
               isLoading={isLoading}
               onSubmit={(_id, data) => {
-                console.log('Dialog data changed', data, dataToSubmit);
                 updateSubmitData(data);
               }}
               data={dataToSubmit}

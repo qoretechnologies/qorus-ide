@@ -21,12 +21,7 @@ import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { Messages } from '../../../constants/messages';
 import { TextContext } from '../../../context/text';
-import {
-  getRecursiveStatesConnectedtoState,
-  getStatesForTemplates,
-  getVariable,
-  removeFSMState,
-} from '../../../helpers/fsm';
+import { getStatesForTemplates, getVariable, removeFSMState } from '../../../helpers/fsm';
 import { getMaxExecutionOrderFromStates } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import { postMessage } from '../../../hocomponents/withMessageHandler';
@@ -93,7 +88,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   fsmName,
   target_dir,
   interfaceId,
-  disableInitial,
   metadata,
   blockLogicType,
   setBlockLogicType,
@@ -102,7 +96,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   isNameValid,
   isCustomBlockSecondPage,
   isActionValid,
-  isMetadatHidden,
   setIsMetadataHidden,
 }) => {
   const [newData, setNewData] = useState<IFSMState>(data);
@@ -111,14 +104,12 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
 
   useUpdateEffect(() => {
     if (!isEqual(data, newData)) {
-      console.log('Setting data', data);
       setNewData(data);
     }
   }, [JSON.stringify(data)]);
 
   useDebounce(
     () => {
-      console.log('Submitting', newData);
       onSubmit(id, omit(newData, ['transitions']));
     },
     100,
@@ -152,7 +143,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   );
 
   const handleDataUpdate = (name: string, value: any) => {
-    console.log('Updating', name, value);
     if (typeof value === 'undefined') {
       setNewData((cur) => omit(cur, [name]));
       return;
@@ -228,10 +218,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
 
   const statesForTemplates = useMemo(() => {
     return getStatesForTemplates(id || newData.keyId, otherStates);
-  }, [newData.keyId, JSON.stringify(otherStates)]);
-
-  const connectedStates = useMemo(() => {
-    return getRecursiveStatesConnectedtoState(id || newData.keyId, otherStates);
   }, [newData.keyId, JSON.stringify(otherStates)]);
 
   const renderActionField = () => {

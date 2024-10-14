@@ -3779,6 +3779,38 @@
     use-context-selector "^1.4.1"
     yaml "^2.3.1"
 
+"@qoretechnologies/reqore@^0.48.5":
+  version "0.48.5"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.48.5.tgz#f03c1423514d2b94240886e204a2ab1995d44215"
+  integrity sha512-pueABDfpIMzTZOmtpbzlKz9TSYYJIoYTbOVcApZRD2nLB7vu79zCPdErEXn5XYmTWIA5KuhsTOfyqFk3ViUVYQ==
+  dependencies:
+    "@internationalized/date" "^3.5.3"
+    "@popperjs/core" "^2.11.6"
+    "@radix-ui/react-slider" "^1.1.2"
+    "@react-spring/web" "^9.6.1"
+    classnames "^2.2.6"
+    epoch-timeago "^1.1.9"
+    fast-json-stable-stringify "^2.1.0"
+    lodash "^4.17.21"
+    polished "^4.2.2"
+    re-resizable "^6.9.0"
+    react-aria-components "^1.2.0"
+    react-icons "^4.7.1"
+    react-popper "^2.3.0"
+    react-scrollbar "^0.5.6"
+    react-use "^17.4.0"
+    react-use-pagination-hook "^1.1.2"
+    react-window "^1.8.6"
+    scheduler "^0.23.0"
+    shortid "^2.2.16"
+    slate "^0.103.0"
+    slate-history "^0.100.0"
+    slate-react "^0.107.0"
+    styled-components "^5.3.6"
+    thenby "^1.3.4"
+    use-context-selector "^1.4.1"
+    yaml "^2.3.1"
+
 "@qoretechnologies/reqraft@^0.6.3":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.6.3.tgz#1d5eab4076bfc7dc8506e8fc8543c76bdf61a130"
@@ -17996,6 +18028,7 @@ prelude-ls@~1.1.2:
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
 "prettier-fallback@npm:prettier@^3", prettier@^3.1.1:
+  name prettier-fallback
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
   integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==

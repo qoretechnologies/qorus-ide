@@ -511,6 +511,33 @@ export const validateField: (
         return validateField('service-event', serviceEvent);
       });
     }
+    case 'service-webhook': {
+      if (
+        !validateField('string', value.name) ||
+        !validateField('string', value['rest-method']) ||
+        !validateField('string', value.auth)
+      ) {
+        return false;
+      }
+
+      if (value.handler) {
+        return (
+          (value.handler.type === 'fsm' || value.handler.type === 'method') &&
+          validateField('string', value.handler.value)
+        );
+      }
+
+      return true;
+    }
+    case 'service-webhooks': {
+      if (!isArray(value) || !size(value)) {
+        return false;
+      }
+
+      return value.every((serviceWebhook) => {
+        return validateField('service-webhook', serviceWebhook);
+      });
+    }
     case 'auto':
     case 'any': {
       // Parse the string as yaml

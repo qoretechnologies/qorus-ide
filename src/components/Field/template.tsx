@@ -329,7 +329,6 @@ export const TemplateField = ({
           className='function-selector'
           icon='Functions'
           onChange={(_n, item) => {
-            console.log(item);
             const func = functions.value.find((f) => f.name === item);
             setIsTemplate(false);
             setTemplateValue(null);

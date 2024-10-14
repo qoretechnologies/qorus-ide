@@ -100,7 +100,6 @@ export const renderConditionField: (
         <ExpressionBuilder
           value={transitionData?.condition}
           onChange={(value) => {
-            console.log('Condition Value:', value);
             onChange('condition', value);
           }}
           localTemplates={localTemplates}

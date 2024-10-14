@@ -467,7 +467,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   }
 
   if (!reference && (!filteredItems || filteredItems.length === 0)) {
-    return <ReqoreTag intent='muted' label={t('NoDataAvailable')} {...rest} icon='ForbidLine' />;
+    return (
+      <ReqoreTag intent='muted' label={t('NoDataAvailable')} {...rest} icon='ForbidLine' fixed />
+    );
   }
 
   const filterItems = (items: ISelectFieldItem[]): ISelectFieldItem[] => {
