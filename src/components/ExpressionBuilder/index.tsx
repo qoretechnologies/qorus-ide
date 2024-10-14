@@ -225,6 +225,10 @@ export const Expression = ({
     );
   };
 
+  const unwrapExpression = () => {
+    onValueChange(value.value.args[0], path);
+  };
+
   const updateExpToAndOr = (val: 'AND' | 'OR') => {
     onValueChange(
       {
@@ -641,6 +645,45 @@ export const Expression = ({
                   ) : null}
                 </>
               ) : null}
+            </ReqoreControlGroup>
+            <ReqoreControlGroup>
+              <Select
+                flat
+                compact
+                className='expression-wrap'
+                placeholder='Wrap'
+                icon='BracesLine'
+                showRightIcon={false}
+                fluid={false}
+                fixed={true}
+                defaultItems={expressions.value
+                  ?.filter((exp) => exp.subtype !== 2)
+                  .map((exp) => ({
+                    name: exp.name,
+                    value: exp.name,
+                    display_name: exp.display_name,
+                    short_desc: exp.desc,
+                    badge: exp.symbol,
+                  }))}
+                onChange={(_name, value) => {
+                  wrapExpression(value);
+                }}
+                showDescription='tooltip'
+                size='normal'
+              />
+              {value.value.args?.[0]?.is_expression && (
+                <ReqoreButton
+                  flat
+                  compact
+                  className='expression-unwrap'
+                  intent='warning'
+                  textAlign='center'
+                  icon='CloseLine'
+                  tooltip='Remove this expression but keep the children'
+                  fixed
+                  onClick={unwrapExpression}
+                />
+              )}
               <ReqoreButton
                 flat
                 compact
@@ -648,34 +691,11 @@ export const Expression = ({
                 intent='danger'
                 textAlign='center'
                 icon='DeleteBinLine'
+                tooltip='Remove this expression and its children'
                 fixed
                 onClick={handleRemoveClick}
               />
             </ReqoreControlGroup>
-            <Select
-              flat
-              compact
-              className='expression-operator-selector'
-              placeholder='Wrap'
-              icon='Functions'
-              showRightIcon={false}
-              fluid={false}
-              fixed={true}
-              defaultItems={expressions.value
-                ?.filter((exp) => exp.subtype !== 2)
-                .map((exp) => ({
-                  name: exp.name,
-                  value: exp.name,
-                  display_name: exp.display_name,
-                  short_desc: exp.desc,
-                  badge: exp.symbol,
-                }))}
-              onChange={(_name, value) => {
-                wrapExpression(value);
-              }}
-              showDescription='tooltip'
-              size='normal'
-            />
           </ReqoreControlGroup>
         </ReqoreControlGroup>
       </ReqoreControlGroup>
@@ -687,7 +707,7 @@ export const Expression = ({
             icon='ErrorWarningLine'
             intent='danger'
             size='small'
-            label={`This expression returns ${expressionReturnType} but the expected return type is ${returnType}`}
+            label={`This expression returns ${expressionReturnType || 'nothing'} but the expected return type is ${returnType}`}
           />
         </>
       )}
@@ -828,7 +848,7 @@ export const ExpressionBuilder = ({
               index={index}
               type={type}
               onValueChange={handleChange}
-              returnType={returnType}
+              returnType='bool'
               group={value.value.exp}
             />
           ))}
