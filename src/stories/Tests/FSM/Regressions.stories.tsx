@@ -6,7 +6,6 @@ import { StoryMeta } from '../../types';
 import {
   _testsSelectFromAppCatalogue,
   _testsSelectItemFromCollection,
-  _testsSelectItemFromDropdown,
   _testsWaitForText,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
@@ -51,6 +50,6 @@ export const SubExpressionCanBeAddedInIfState: StoryFSM = {
     await NewIfStateWithExpression.play(context);
 
     // Select concat from the list
-    await _testsSelectItemFromDropdown(canvas, 'equals', undefined, '.function-selector')();
+    await _testsSelectItemFromCollection(canvas, 'equals', undefined, '.function-selector')();
   },
 };

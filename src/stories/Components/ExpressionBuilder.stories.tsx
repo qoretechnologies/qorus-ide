@@ -17,8 +17,6 @@ const meta = {
   render: (args) => {
     const [exp, setExp] = useState<IExpression>(args.value);
 
-    console.log(exp);
-
     return (
       <ExpressionBuilder
         {...args}

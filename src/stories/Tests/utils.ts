@@ -234,16 +234,22 @@ export function _testsSelectItemFromDropdown(
 export function _testsSelectItemFromCollection(
   canvas,
   itemLabel: string,
-  collectionLabel: string = 'PleaseSelect'
+  collectionLabel: string = 'PleaseSelect',
+  className?: string
 ) {
   return async () => {
-    await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], {
-      timeout: 10000,
-    });
+    if (className) {
+      await waitFor(() => expect(document.querySelectorAll(className)[0]).toBeInTheDocument(), {
+        timeout: 10000,
+      });
+      await fireEvent.click(document.querySelectorAll(className)[0]);
+    } else {
+      await waitFor(async () => await canvas.queryAllByText(collectionLabel)[0], {
+        timeout: 10000,
+      });
 
-    await sleep(500);
-
-    await fireEvent.click(canvas.getAllByText(collectionLabel)[0]);
+      await fireEvent.click(canvas.queryAllByText(collectionLabel)[0]);
+    }
 
     await waitFor(() => expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(), {
       timeout: 10000,

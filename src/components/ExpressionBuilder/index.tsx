@@ -316,8 +316,6 @@ export const Expression = ({
   const conformsType = (type: IQorusType, typesAccepted: IQorusType[]) =>
     type === 'auto' || type === 'any' || typesAccepted?.includes(type);
 
-  console.log({ rest });
-
   return (
     <StyledExpressionItem
       as={ReqorePanel}
