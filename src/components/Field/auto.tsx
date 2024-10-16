@@ -119,7 +119,12 @@ function AutoField<T = any>({
 
   useMount(() => {
     let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
-    defType = defType || 'any';
+
+    // If default type was not provided, get the type from the value
+    if (!defType) {
+      defType = getTypeFromValue(maybeParseYaml(value));
+    }
+
     let internalType;
     // If value already exists, but the type is auto or any
     // set the type based on the value
@@ -128,6 +133,7 @@ function AutoField<T = any>({
     } else {
       internalType = defaultInternalType || defType;
     }
+
     setInternalType(internalType);
     setType(defType);
     // If the value is null and can be null, set the null flag
@@ -148,7 +154,7 @@ function AutoField<T = any>({
   });
 
   useEffect(() => {
-    if (currentInternalType !== defaultType) {
+    if (defaultType && currentInternalType !== defaultType) {
       setInternalType(defaultType);
     }
   }, [defaultType]);

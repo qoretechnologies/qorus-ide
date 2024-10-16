@@ -833,7 +833,7 @@ export const getValueOrDefaultValue = (value, defaultValue, canBeNull) => {
 
 export const getTypeFromValue = (value: any) => {
   if (isNull(value)) {
-    return 'null';
+    return 'auto';
   }
   if (isBoolean(value)) {
     return 'bool';
@@ -859,7 +859,7 @@ export const getTypeFromValue = (value: any) => {
     return 'string';
   }
 
-  return 'none';
+  return 'any';
 };
 
 export const hasAllDependenciesFullfilled = (

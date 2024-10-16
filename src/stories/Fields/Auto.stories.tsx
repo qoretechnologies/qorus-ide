@@ -83,6 +83,12 @@ export const ConnectionWithAllowedValues: StoryObj<typeof Auto> = {
   },
 };
 
+export const Hash: StoryObj<typeof Auto> = {
+  args: {
+    value: { key: 'value' },
+  },
+};
+
 export const ListWithAllowedValues: StoryObj<typeof Auto> = {
   args: {
     defaultType: 'list',

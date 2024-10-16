@@ -15,7 +15,7 @@ test('Renders default <Auto /> field with no type', () => {
   expect(document.querySelector('.reqore-dropdown-control')).toBeTruthy();
   expect(document.querySelectorAll('.reqore-button').length).toBe(1);
 
-  expect(onChange).toHaveBeenLastCalledWith('test', undefined, 'any', true);
+  expect(onChange).toHaveBeenLastCalledWith('test', undefined, 'auto', false);
 });
 
 test('Renders default <Auto /> field with no type, type can be selected', () => {
@@ -74,12 +74,7 @@ test('Renders default <Auto /> field type determined from value', () => {
 
   expect(document.querySelectorAll('.reqore-tree').length).toBe(1);
 
-  expect(onChange).toHaveBeenLastCalledWith(
-    'test',
-    { key: 'value' },
-    'hash',
-    false
-  );
+  expect(onChange).toHaveBeenLastCalledWith('test', { key: 'value' }, 'hash', false);
 });
 
 test('Renders default <Auto /> field with default type', () => {
@@ -101,12 +96,7 @@ test('Renders default <Auto /> field with default internal type', () => {
 
   render(
     <ReqoreUIProvider>
-      <Auto
-        onChange={onChange}
-        name='test'
-        defaultInternalType='bool'
-        value={false}
-      />
+      <Auto onChange={onChange} name='test' defaultInternalType='bool' value={false} />
     </ReqoreUIProvider>
   );
 
