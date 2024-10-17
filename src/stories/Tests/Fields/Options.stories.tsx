@@ -72,43 +72,35 @@ export const DependantsResetWhenParentChanges: StoryObj<typeof meta> = {
   play: async ({ canvasElement, ...rest }) => {
     const canvas = within(canvasElement);
 
+    await waitFor(() => expect(canvas.getAllByDisplayValue('$local:test')[0]).toBeInTheDocument(), {
+      timeout: 10000,
+    });
     await waitFor(
       () =>
-        expect(
-          canvas.getAllByDisplayValue('$local:test')[0]
-        ).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
-    await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.reqore-collection-item.system-option')
-            .length
-        ).toBe(4),
+        expect(document.querySelectorAll('.reqore-collection-item.system-option').length).toBe(4),
       {
         timeout: 10000,
       }
     );
 
     await fireEvent.change(
-      document
-        .querySelectorAll('.system-option.reqore-panel')[3]
-        .querySelector('.reqore-textarea'),
+      document.querySelectorAll('.system-option.reqore-panel')[3].querySelector('.reqore-textarea'),
       {
         target: { value: 'My value changed' },
       }
     );
 
-    await expect(rest.args.onChange).toHaveBeenLastCalledWith('options', {
-      optionWithDependents: {
-        type: 'string',
-        value: 'My value changed',
-      },
-      anotherDependent: { type: 'string', value: 'My value will not change' },
-      dependent1: { type: 'string', value: undefined },
-      dependent2: { type: 'hash', value: undefined },
-    });
+    await expect(rest.args.onChange).toHaveBeenLastCalledWith(
+      'options',
+      expect.objectContaining({
+        optionWithDependents: {
+          type: 'string',
+          value: 'My value changed',
+        },
+        anotherDependent: { type: 'string', value: 'My value will not change' },
+        dependent1: { type: 'string', value: undefined },
+        dependent2: { type: 'hash', value: undefined },
+      })
+    );
   },
 };

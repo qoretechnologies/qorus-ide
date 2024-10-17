@@ -15,7 +15,6 @@ import { fetchData } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
-import { useWhyDidYouUpdate } from '../../../hooks/useWhyDidYouUpdate';
 
 export interface IQodexActionExecProps {
   appName: string;
@@ -39,16 +38,6 @@ export const QodexActionExec = memo(
       },
     });
 
-    useWhyDidYouUpdate('QodexActionExec', {
-      appName,
-      actionName,
-      options,
-      response,
-      loadingResponse,
-      loading,
-      data,
-    });
-
     const executeAction = async () => {
       setLoading(true);
       setError(undefined);
@@ -56,9 +45,7 @@ export const QodexActionExec = memo(
       const optionsUrl = action.exec_url.split('latest/')[1];
 
       const response = await fetchData(
-        `${optionsUrl}?context=ui${
-          action.action_code_str === 'EVENT' ? '&generate=true' : ''
-        }`,
+        `${optionsUrl}?context=ui${action.action_code_str === 'EVENT' ? '&generate=true' : ''}`,
         'POST',
         {
           options,
@@ -76,9 +63,7 @@ export const QodexActionExec = memo(
     };
 
     const areOptionsValid = useCallback(() => {
-      return (
-        size(data) && validateField('options', options, { optionSchema: data })
-      );
+      return size(data) && validateField('options', options, { optionSchema: data });
     }, [data, options]);
 
     useEffect(() => {
@@ -105,9 +90,7 @@ export const QodexActionExec = memo(
         <ReqorePanel
           size='small'
           fill
-          label={
-            action.action_code_str !== 'EVENT' ? 'Test Action' : `Event example`
-          }
+          label={action.action_code_str !== 'EVENT' ? 'Test Action' : `Event example`}
           collapsible
           minimal
           responsiveActions={false}
@@ -142,22 +125,16 @@ export const QodexActionExec = memo(
         >
           {!areOptionsValid() && (
             <>
-              <ReqoreIcon
-                icon='InformationLine'
-                size='small'
-                intent='pending'
-                margin='right'
-              />
+              <ReqoreIcon icon='InformationLine' size='small' intent='pending' margin='right' />
               {action.action_code_str === 'EVENT' ? (
                 <ReqoreSpan>
-                  Fill all required fields to see automatically generated event
-                  data
+                  Fill all required fields to see automatically generated event data
                 </ReqoreSpan>
               ) : (
                 <ReqoreSpan>
                   Fill all required fields and press the{' '}
-                  <ReqoreTag icon='PlayLine' size='small' label='Run' compact />{' '}
-                  button to test your action
+                  <ReqoreTag icon='PlayLine' size='small' label='Run' compact /> button to test your
+                  action
                 </ReqoreSpan>
               )}
             </>
@@ -172,31 +149,18 @@ export const QodexActionExec = memo(
                 </>
               ) : (
                 <ReqoreP>
-                  <ReqoreIcon
-                    icon='InformationLine'
-                    size='small'
-                    intent='info'
-                    margin='right'
-                  />
-                  Press the <ReqoreIcon icon='PlayLine' size='small' /> button
-                  to test your action
+                  <ReqoreIcon icon='InformationLine' size='small' intent='info' margin='right' />
+                  Press the <ReqoreIcon icon='PlayLine' size='small' /> button to test your action
                 </ReqoreP>
               )}
             </>
           ) : null}
           {error && (
-            <ReqoreMessage
-              intent='danger'
-              opaque={false}
-              margin='top'
-              size='small'
-            >
+            <ReqoreMessage intent='danger' opaque={false} margin='top' size='small'>
               {error}
             </ReqoreMessage>
           )}
-          {response && (
-            <ReqoreTree size='small' data={response} withLabelCopy />
-          )}
+          {response && <ReqoreTree size='small' data={response} withLabelCopy />}
         </ReqorePanel>
       </>
     );

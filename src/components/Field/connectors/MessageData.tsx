@@ -11,18 +11,11 @@ import jsyaml from 'js-yaml';
 import { useContext, useState } from 'react';
 import { useAsyncRetry, useUpdateEffect } from 'react-use';
 import { InitialContext } from '../../../context/init';
-import {
-  fetchData,
-  insertUrlPartBeforeQuery,
-} from '../../../helpers/functions';
+import { fetchData, insertUrlPartBeforeQuery } from '../../../helpers/functions';
 import { maybeParseYaml, validateField } from '../../../helpers/validations';
 import Auto from '../auto';
 import LongStringField from '../longString';
-import {
-  PositiveColorEffect,
-  SaveColorEffect,
-  SelectorColorEffect,
-} from '../multiPair';
+import { PositiveColorEffect, SaveColorEffect, SelectorColorEffect } from '../multiPair';
 import { IQorusType, getTypeAndCanBeNull } from '../systemOptions';
 
 export interface IProviderMessageDataProps {

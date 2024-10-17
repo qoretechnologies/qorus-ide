@@ -55,9 +55,9 @@ export const RichText: StoryObj<typeof Auto> = {
     await userEvent.click(canvasElement.querySelector('div[contenteditable]'));
     await userEvent.keyboard(' test');
 
-    await expect(
-      canvasElement.querySelector('div[contenteditable]').textContent
-    ).toBe('something test');
+    await expect(canvasElement.querySelector('div[contenteditable]').textContent).toBe(
+      'something test'
+    );
   },
 };
 export const ConnectionWithAllowedValues: StoryObj<typeof Auto> = {
@@ -80,6 +80,12 @@ export const ConnectionWithAllowedValues: StoryObj<typeof Auto> = {
   play: async () => {
     await _testsClickButton({ label: 'PleaseSelect' });
     await _testsWaitForText('Select from items');
+  },
+};
+
+export const Hash: StoryObj<typeof Auto> = {
+  args: {
+    value: { key: 'value' },
   },
 };
 
@@ -111,7 +117,6 @@ export const ListWithElementType: StoryObj<typeof Auto> = {
           {...args}
           value={value}
           onChange={(name, value) => {
-            console.log(name, value);
             setValue(value);
           }}
         />

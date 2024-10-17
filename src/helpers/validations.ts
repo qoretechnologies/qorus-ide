@@ -11,10 +11,7 @@ import uniqWith from 'lodash/uniqWith';
 import { isBoolean, isNull, isString, isUndefined } from 'util';
 import { IExpression } from '../components/ExpressionBuilder';
 import { TApiManagerEndpoint } from '../components/Field/apiManager';
-import {
-  IProviderType,
-  maybeBuildOptionProvider,
-} from '../components/Field/connectors';
+import { IProviderType, maybeBuildOptionProvider } from '../components/Field/connectors';
 import { ISelectFieldItem } from '../components/Field/select';
 import {
   IOptions,
@@ -24,17 +21,10 @@ import {
   TOption,
   fixOperatorValue,
 } from '../components/Field/systemOptions';
-import {
-  getTemplateKey,
-  getTemplateValue,
-  isValueTemplate,
-} from '../components/Field/template';
+import { getTemplateKey, getTemplateValue, isValueTemplate } from '../components/Field/template';
 import { getAddress, getProtocol } from '../components/Field/urlField';
 import { IField } from '../components/FieldWrapper';
-import {
-  TTrigger,
-  TVariableActionValue,
-} from '../containers/InterfaceCreator/fsm';
+import { TTrigger, TVariableActionValue } from '../containers/InterfaceCreator/fsm';
 import { splitByteSize } from './functions';
 
 const cron = require('cron-validator');
@@ -85,10 +75,7 @@ export const validateField: (
         return false;
       }
 
-      if (
-        JSON.stringify(value) ===
-        '[{"type":"paragraph","children":[{"text":""}]}]'
-      ) {
+      if (JSON.stringify(value) === '[{"type":"paragraph","children":[{"text":""}]}]') {
         return false;
       }
 
@@ -131,12 +118,7 @@ export const validateField: (
     case 'long-string':
     case 'method-name':
     case 'data': {
-      if (
-        value === undefined ||
-        value === null ||
-        value === '' ||
-        typeof value !== 'string'
-      ) {
+      if (value === undefined || value === null || value === '' || typeof value !== 'string') {
         return false;
       }
 
@@ -197,10 +179,7 @@ export const validateField: (
         valid = false;
       }
       // Get a list of unique values
-      const uniqueValues: any[] = uniqWith(
-        value,
-        (cur, prev) => cur.name === prev.name
-      );
+      const uniqueValues: any[] = uniqWith(value, (cur, prev) => cur.name === prev.name);
       // Check if there are any duplicates
       if (size(uniqueValues) !== size(value)) {
         valid = false;
@@ -216,18 +195,14 @@ export const validateField: (
       let valid = true;
       // Check if the fields are not empty
       if (
-        !value?.every(
-          (pair: { [key: string]: string }): boolean =>
-            pair.name && pair.name !== ''
-        )
+        !value?.every((pair: { [key: string]: string }): boolean => pair.name && pair.name !== '')
       ) {
         valid = false;
       }
       // Get a list of unique values
       const uniqueValues: any[] = uniqWith(
         value,
-        (cur, prev) =>
-          `${cur.prefix}${cur.name}` === `${prev.prefix}${prev.name}`
+        (cur, prev) => `${cur.prefix}${cur.name}` === `${prev.prefix}${prev.name}`
       );
       // Check if there are any duplicates
       if (size(uniqueValues) !== size(value)) {
@@ -242,9 +217,7 @@ export const validateField: (
       return !isNaN(value) && getTypeFromValue(value) === 'int';
     case 'float':
       return (
-        !isNaN(value) &&
-        (getTypeFromValue(value) === 'float' ||
-          getTypeFromValue(value) === 'int')
+        !isNaN(value) && (getTypeFromValue(value) === 'float' || getTypeFromValue(value) === 'int')
       );
     case 'select-array':
     case 'array':
@@ -269,29 +242,26 @@ export const validateField: (
     case 'hash':
     case 'hash<auto>': {
       // Get the parsed yaml
-      const parsedValue: any =
-        typeof value === 'object' ? value : maybeParseYaml(value);
+      const parsedValue: any = typeof value === 'object' ? value : maybeParseYaml(value);
 
       if (field?.arg_schema) {
-        return every(
-          field.arg_schema,
-          (fieldData: IOptionsSchemaArg, argName: string) => {
-            if (parsedValue?.[argName] === undefined) {
-              return fieldData.required === false;
-            }
-
-            return validateField(
-              fieldData.type as IQorusType,
-              parsedValue?.[argName],
-              fieldData
-            );
+        return every(field.arg_schema, (fieldData: IOptionsSchemaArg, argName: string) => {
+          if (parsedValue?.[argName] === undefined) {
+            return fieldData.required === false;
           }
-        );
+
+          return validateField(
+            fieldData.type as IQorusType,
+            parsedValue?.[argName]?.value,
+            fieldData
+          );
+        });
       }
       // If the value is not an object or empty
       if (!parsedValue || !isObject(parsedValue)) {
         return false;
       }
+
       return true;
     }
     case 'rgbcolor': {
@@ -321,9 +291,7 @@ export const validateField: (
         return false;
       }
       // If the value is not an object or empty
-      return parsedValue.every(
-        (item: any) => size(item) && validateField('hash', item)
-      );
+      return parsedValue.every((item: any) => size(item) && validateField('hash', item));
     }
     case 'mapper-code':
       if (!value) {
@@ -425,9 +393,7 @@ export const validateField: (
       // Send message only supports messages
       if (
         type === 'send-message' &&
-        (!newValue.supports_messages ||
-          !newValue.message_id ||
-          !newValue.message)
+        (!newValue.supports_messages || !newValue.message_id || !newValue.message)
       ) {
         return false;
       }
@@ -437,10 +403,7 @@ export const validateField: (
           return false;
         }
 
-        if (
-          !newValue.message ||
-          !validateField(newValue.message.type, newValue.message.value)
-        ) {
+        if (!newValue.message || !validateField(newValue.message.type, newValue.message.value)) {
           return false;
         }
       }
@@ -453,9 +416,7 @@ export const validateField: (
 
           if (
             !validateField(
-              newValue.args.type === 'hash'
-                ? 'system-options'
-                : newValue.args.type,
+              newValue.args.type === 'hash' ? 'system-options' : newValue.args.type,
               newValue.args.value
             )
           ) {
@@ -483,24 +444,13 @@ export const validateField: (
         const areFreeFormArgsInvalid =
           `${type}_args_freeform` in newValue &&
           (size(newValue[`${type}_args_freeform`]) === 0 ||
-            !validateField(
-              'list-of-hashes',
-              newValue[`${type}_args_freeform`]
-            ));
+            !validateField('list-of-hashes', newValue[`${type}_args_freeform`]));
 
-        if (
-          `${type}_args` in newValue &&
-          areNormalArgsInvalid &&
-          areFreeFormArgsInvalid
-        ) {
+        if (`${type}_args` in newValue && areNormalArgsInvalid && areFreeFormArgsInvalid) {
           return false;
         }
 
-        if (
-          `${type}_args_freeform` in newValue &&
-          areFreeFormArgsInvalid &&
-          areNormalArgsInvalid
-        ) {
+        if (`${type}_args_freeform` in newValue && areFreeFormArgsInvalid && areNormalArgsInvalid) {
           return false;
         }
       }
@@ -520,17 +470,11 @@ export const validateField: (
         return !!(newValue.type && newValue.name && options);
       }
 
-      if (
-        newValue.record_requires_search_options &&
-        newValue.searchOptionsChanged
-      ) {
+      if (newValue.record_requires_search_options && newValue.searchOptionsChanged) {
         return false;
       }
 
-      if (
-        newValue.search_options &&
-        !validateField('system-options', newValue.search_options)
-      ) {
+      if (newValue.search_options && !validateField('system-options', newValue.search_options)) {
         return false;
       }
 
@@ -538,9 +482,7 @@ export const validateField: (
     case 'context-selector':
       if (isString(value)) {
         const cont: string[] = value.split(':');
-        return (
-          validateField('string', cont[0]) && validateField('string', cont[1])
-        );
+        return validateField('string', cont[0]) && validateField('string', cont[1]);
       }
       return !!value?.iface_kind && !!value?.name;
     case 'service-event': {
@@ -552,9 +494,7 @@ export const validateField: (
         !size(value.handlers) ||
         !every(
           value.handlers,
-          (handler) =>
-            (handler.type === 'fsm' || handler.type === 'method') &&
-            handler.value
+          (handler) => (handler.type === 'fsm' || handler.type === 'method') && handler.value
         )
       ) {
         return false;
@@ -569,6 +509,33 @@ export const validateField: (
 
       return value.every((serviceEvent) => {
         return validateField('service-event', serviceEvent);
+      });
+    }
+    case 'service-webhook': {
+      if (
+        !validateField('string', value.name) ||
+        !validateField('string', value['rest-method']) ||
+        !validateField('string', value.auth)
+      ) {
+        return false;
+      }
+
+      if (value.handler) {
+        return (
+          (value.handler.type === 'fsm' || value.handler.type === 'method') &&
+          validateField('string', value.handler.value)
+        );
+      }
+
+      return true;
+    }
+    case 'service-webhooks': {
+      if (!isArray(value) || !size(value)) {
+        return false;
+      }
+
+      return value.every((serviceWebhook) => {
+        return validateField('service-webhook', serviceWebhook);
       });
     }
     case 'auto':
@@ -595,11 +562,7 @@ export const validateField: (
     }
     case 'processor': {
       let valid = true;
-      if (
-        !value ||
-        !value['processor-input-type'] ||
-        !value['processor-output-type']
-      ) {
+      if (!value || !value['processor-input-type'] || !value['processor-output-type']) {
         return false;
       }
       // Validate the input and output types
@@ -620,8 +583,7 @@ export const validateField: (
     }
     case 'fsm-list': {
       return value?.every(
-        (val: { name: string; triggers?: TTrigger[] }) =>
-          validateField('string', val.name) === true
+        (val: { name: string; triggers?: TTrigger[] }) => validateField('string', val.name) === true
       );
     }
     case 'api-manager': {
@@ -658,10 +620,7 @@ export const validateField: (
     case 'pipeline-options':
     case 'mapper-options':
     case 'system-options': {
-      const getIsValid = (
-        options?: IOptions,
-        optionSchema?: IOptionsSchema
-      ) => {
+      const getIsValid = (options?: IOptions, optionSchema?: IOptionsSchema) => {
         let isValid = true;
 
         if (!options || size(options) === 0) {
@@ -692,11 +651,7 @@ export const validateField: (
         isValid = every(options, (optionData, option) => {
           if (
             optionSchema?.[option]?.depends_on &&
-            !hasAllDependenciesFullfilled(
-              optionSchema[option].depends_on,
-              options,
-              optionSchema
-            )
+            !hasAllDependenciesFullfilled(optionSchema[option].depends_on, options, optionSchema)
           ) {
             return false;
           }
@@ -743,9 +698,7 @@ export const validateField: (
 
           if (
             !optionData.op ||
-            !fixOperatorValue(optionData.op).every((operator) =>
-              validateField('string', operator)
-            )
+            !fixOperatorValue(optionData.op).every((operator) => validateField('string', operator))
           ) {
             isValid = false;
           }
@@ -778,8 +731,7 @@ export const validateField: (
     }
     case 'url': {
       return (
-        validateField('string', getProtocol(value)) &&
-        validateField('string', getAddress(value))
+        validateField('string', getProtocol(value)) && validateField('string', getAddress(value))
       );
     }
     case 'expression': {
@@ -881,7 +833,7 @@ export const getValueOrDefaultValue = (value, defaultValue, canBeNull) => {
 
 export const getTypeFromValue = (value: any) => {
   if (isNull(value)) {
-    return 'null';
+    return 'auto';
   }
   if (isBoolean(value)) {
     return 'bool';
@@ -891,11 +843,7 @@ export const getTypeFromValue = (value: any) => {
     return 'int';
   }
 
-  if (
-    value === 0 ||
-    value === 0.0 ||
-    (Number(value) === value && value % 1 !== 0)
-  ) {
+  if (value === 0 || value === 0.0 || (Number(value) === value && value % 1 !== 0)) {
     return 'float';
   }
   if (isObject(value)) {
@@ -911,7 +859,7 @@ export const getTypeFromValue = (value: any) => {
     return 'string';
   }
 
-  return 'none';
+  return 'any';
 };
 
 export const hasAllDependenciesFullfilled = (

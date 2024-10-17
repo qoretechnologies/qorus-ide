@@ -9,8 +9,8 @@
     "@monaco-editor/react": "^4.6.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@qoretechnologies/python-parser": "^0.4.10",
-    "@qoretechnologies/reqore": "^0.48.3",
-    "@qoretechnologies/reqraft": "^0.6.3",
+    "@qoretechnologies/reqore": "^0.48.5",
+    "@qoretechnologies/reqraft": "^0.6.4",
     "@qoretechnologies/ts-toolkit": "^0.4.7",
     "@sentry/browser": "^7.109.0",
     "@svgr/webpack": "^5.5.0",
@@ -142,7 +142,7 @@
     "test-storybook-single": "STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook $1",
     "test-storybook": "DEBUG_PRINT_LIMIT=300 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Tests --maxWorkers=1 && DEBUG_PRINT_LIMIT=300 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Components --maxWorkers=1 && DEBUG_PRINT_LIMIT=300 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook src/Stories/Views --maxWorkers=1 && DEBUG_PRINT_LIMIT=300 test-storybook src/Stories/Fields --maxWorkers=1 && DEBUG_PRINT_LIMIT=300 test-storybook src/Stories/Interfaces --maxWorkers=1",
     "test-storybook-full": "DEBUG_PRINT_LIMIT=300 STORYBOOK_QORUS_TOKEN=$QORUS_TOKEN test-storybook",
-    "install-playwright": "npx playwright install --with-deps",
+    "install-playwright": "npx playwright@latest install --with-deps",
     "chromatic": "npx chromatic --project-token=chpt_1aaa74dd9c1b035"
   },
   "eslintConfig": {

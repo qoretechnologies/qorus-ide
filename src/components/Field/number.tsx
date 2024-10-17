@@ -3,10 +3,7 @@ import { IReqoreInputProps } from '@qoretechnologies/reqore/dist/components/Inpu
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ChangeEvent } from 'react';
 import useMount from 'react-use/lib/useMount';
-import {
-  addMessageListener,
-  postMessage,
-} from '../../hocomponents/withMessageHandler';
+import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
 
 export interface INumberField {
   fill?: boolean;

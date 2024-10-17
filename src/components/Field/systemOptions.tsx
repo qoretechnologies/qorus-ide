@@ -140,7 +140,7 @@ export const flattenOptions = (options: IOptions): TFlatOptions => {
   );
 };
 
-export type IQorusType = TQorusType;
+export type IQorusType = TQorusType | 'context' | 'select-string';
 
 export type TOperatorValue = TQorusFormOperatorValue;
 
@@ -706,6 +706,7 @@ const Options = ({
             content: (
               <>
                 <Description
+                  type={options[optionName].type as TQorusType}
                   shortDescription={options[optionName].short_desc}
                   longDescription={options[optionName].desc}
                 />
