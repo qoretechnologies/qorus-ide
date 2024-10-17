@@ -49,7 +49,12 @@ export const New: Story = {
     data: { subtab: 'type' },
   },
   play: async () => {
-    await _testsWaitForText('/qore/file/event');
+    await waitFor(
+      () => expect(document.querySelector('.reqore-popover-content')).toBeInTheDocument(),
+      {
+        timeout: 10000,
+      }
+    );
   },
 };
 
