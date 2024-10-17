@@ -429,9 +429,11 @@ export const NewIfStateWithExpression: StoryFSM = {
     await sleep(1000);
 
     // Submit the state
+    console.log('Submitting state');
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
 
+    console.log('Waiting for Expression state to be in the canvas');
     await waitFor(() => expect(canvas.getByText('Expression')).toBeInTheDocument(), {
       timeout: 10000,
     });

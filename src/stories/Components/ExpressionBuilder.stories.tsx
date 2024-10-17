@@ -371,6 +371,7 @@ export const NewExpression: Story = {
       target: { value: 'test' },
     });
 
+    console.log('Waiting for the checkbox in the expression');
     await waitFor(
       () => {
         expect(document.querySelector('.expression .reqore-checkbox')).toBeInTheDocument();

@@ -82,6 +82,7 @@ export async function _testsChangeRichText(value: string, nth: number = 0) {
 }
 
 export async function _testsQodexCanBePublished() {
+  console.log('Waiting for publish button');
   await waitFor(() => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(), {
     timeout: 10000,
   });
