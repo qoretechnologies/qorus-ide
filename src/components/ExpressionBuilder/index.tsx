@@ -20,7 +20,6 @@ import { fetchData } from '../../helpers/functions';
 import { validateField } from '../../helpers/validations';
 import { useQorusTypes } from '../../hooks/useQorusTypes';
 import { useTemplates } from '../../hooks/useTemplates';
-import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import auto from '../Field/auto';
 import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
@@ -728,20 +727,6 @@ export const ExpressionBuilder = ({
 }: IExpressionBuilderProps) => {
   const templates = useTemplates(!isChild, localTemplates);
   const theme = useReqoreTheme();
-
-  useWhyDidYouUpdate('ExpressionBuilder', {
-    localTemplates,
-    value,
-    isChild,
-    level,
-    index,
-    path,
-    type,
-    returnType,
-    group,
-    onChange,
-    onValueChange,
-  });
 
   if (templates.loading) {
     return (

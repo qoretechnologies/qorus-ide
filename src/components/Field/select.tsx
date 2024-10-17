@@ -23,7 +23,6 @@ import { compose } from 'recompose';
 import styled from 'styled-components';
 import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
-import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import CustomDialog from '../CustomDialog';
 import FieldEnhancer from '../FieldEnhancer';
 import { IField } from '../FieldWrapper';
@@ -402,17 +401,6 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
       items?.find((item) => item.name === value || item.value === value)?.display_name || value
     );
   };
-
-  useWhyDidYouUpdate(name, {
-    items,
-    value,
-    query,
-    appliedFilters,
-    isSelectDialogOpen,
-    listener,
-    hasProcessor,
-    isProcessorSelected,
-  });
 
   if (autoSelect && filteredItems.length === 1 && !filteredItems[0].disabled) {
     // Automaticaly select the first item
