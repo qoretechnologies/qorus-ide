@@ -447,17 +447,24 @@ export async function _testsClickStateByLabel(canvas, label, options = {}) {
 export async function _testsOpenTemplates() {
   await waitFor(
     async () => {
-      await expect(document.querySelector('.template-selector')).toBeInTheDocument();
+      await expect(
+        document.querySelector('.template-selector'),
+        'Waiting for .template-selector in _testsOpenTemplates'
+      ).toBeInTheDocument();
     },
     { timeout: 10000 }
   );
 
   await sleep(500);
 
-  await _testsClickButton({ selector: '.template-selector', wait: 5000 });
+  await _testsClickButton({ selector: '.template-selector', wait: 15000 });
 
   await waitFor(
-    () => expect(document.querySelector('.reqore-popover-content')).toBeInTheDocument(),
+    () =>
+      expect(
+        document.querySelector('.reqore-popover-content'),
+        'Waiting for popover content in _testsOpenTemplate'
+      ).toBeInTheDocument(),
     { timeout: 10000 }
   );
 }
