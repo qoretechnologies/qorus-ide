@@ -3,6 +3,7 @@ import { expect, fireEvent, fn, waitFor, within } from '@storybook/test';
 import jsyaml from 'js-yaml';
 import { useEffect, useState } from 'react';
 import Options, { IOptionsSchema } from '../../../components/Field/systemOptions';
+import { _testsWaitForText, sleep } from '../../Tests/utils';
 
 const meta = {
   component: Options,
@@ -264,6 +265,8 @@ export const Basic: StoryObj<typeof meta> = {
       }
     );
 
+    await sleep(2000);
+
     await expect(rest.args.onChange).toHaveBeenLastCalledWith(
       'options',
       expect.objectContaining({
@@ -462,5 +465,8 @@ export const OptionWithExpression: StoryObj<typeof meta> = {
         is_expression: true,
       },
     },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    await _testsWaitForText('substr()', undefined, 2);
   },
 };

@@ -469,11 +469,14 @@ export async function _testsOpenTemplates() {
   );
 }
 
-export async function _testsWaitForText(text: string, selector?: string) {
+export async function _testsWaitForText(text: string, selector?: string, nth: number = 1) {
   console.log('Waiting for text:', text, selector);
-  await waitFor(() => expect(screen.queryAllByText(text, { selector })[0]).toBeInTheDocument(), {
-    timeout: 10000,
-  });
+  await waitFor(
+    () => expect(screen.queryAllByText(text, { selector })[nth - 1]).toBeInTheDocument(),
+    {
+      timeout: 10000,
+    }
+  );
 }
 
 export async function _testsCreatorViewCode() {
