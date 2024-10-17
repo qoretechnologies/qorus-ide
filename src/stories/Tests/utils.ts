@@ -247,8 +247,11 @@ export function _testsSelectItemFromCollection(
       await waitFor(async () => await canvas.queryAllByText(collectionLabel)[0], {
         timeout: 10000,
       });
+      await sleep(500);
 
-      await fireEvent.click(canvas.queryAllByText(collectionLabel)[0]);
+      await waitFor(() => fireEvent.click(canvas.queryAllByText(collectionLabel)[0]), {
+        timeout: 10000,
+      });
     }
 
     await waitFor(() => expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(), {
