@@ -351,17 +351,25 @@ export const NewExpression: Story = {
       timeout: 10000,
     });
 
+    console.log('Opening templates in new expression');
+
     await _testsOpenTemplates();
 
     await sleep(300);
+
+    console.log('Clicking context data in new expression');
 
     await fireEvent.click(canvas.getAllByText(/Context Data/)[0]);
 
     await sleep(300);
 
+    console.log('Clicking interface name in new expression');
+
     await fireEvent.click(canvas.getAllByText(/Interface Name/)[0]);
 
     await sleep(1500);
+
+    console.log('Selecting `ends with` in new expression');
 
     await _testsSelectItemFromCollection(canvas, 'ends with', 'PleaseSelect')();
 
@@ -372,6 +380,7 @@ export const NewExpression: Story = {
     });
 
     console.log('Waiting for the checkbox in the expression');
+
     await waitFor(
       () => {
         expect(document.querySelector('.expression .reqore-checkbox')).toBeInTheDocument();

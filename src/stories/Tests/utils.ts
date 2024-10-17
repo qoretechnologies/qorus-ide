@@ -455,7 +455,7 @@ export async function _testsOpenTemplates() {
     { timeout: 10000 }
   );
 
-  await sleep(500);
+  await sleep(1500);
 
   await _testsClickButton({ selector: '.template-selector', wait: 15000 });
 
@@ -524,9 +524,16 @@ export async function _testsClickButton({
 }) {
   console.log('Clicking button:', label, selector, nth, wait);
   if (!label) {
-    await waitFor(() => expect(document.querySelectorAll(selector)[nth]).toBeInTheDocument(), {
-      timeout: wait,
-    });
+    await waitFor(
+      () =>
+        expect(
+          document.querySelectorAll(selector)[nth],
+          `Waited for button ${selector} ${nth}`
+        ).toBeInTheDocument(),
+      {
+        timeout: wait,
+      }
+    );
     await fireEvent.click(document.querySelectorAll(selector)[nth]);
   } else {
     await waitFor(
