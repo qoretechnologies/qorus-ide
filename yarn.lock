@@ -3747,10 +3747,10 @@
   dependencies:
     lodash "^4.17.15"
 
-"@qoretechnologies/reqore@^0.48.3":
-  version "0.48.3"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.48.3.tgz#59b505e917f6c4ee762ea633357a8a1365a90811"
-  integrity sha512-DMLVVJw8tE3Ni2K3Zk5h87xn5XRDsAaLy1l1u6NaDBWZMhZaqrXzdJMPfm388EjPiFOCtGoVMUBJqvJXkvfQVg==
+"@qoretechnologies/reqore@^0.48.5":
+  version "0.48.5"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqore/-/reqore-0.48.5.tgz#f03c1423514d2b94240886e204a2ab1995d44215"
+  integrity sha512-pueABDfpIMzTZOmtpbzlKz9TSYYJIoYTbOVcApZRD2nLB7vu79zCPdErEXn5XYmTWIA5KuhsTOfyqFk3ViUVYQ==
   dependencies:
     "@internationalized/date" "^3.5.3"
     "@popperjs/core" "^2.11.6"
@@ -3779,12 +3779,12 @@
     use-context-selector "^1.4.1"
     yaml "^2.3.1"
 
-"@qoretechnologies/reqraft@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.6.3.tgz#1d5eab4076bfc7dc8506e8fc8543c76bdf61a130"
-  integrity sha512-OzuNBlRo4MhyUBxCahzosM3nlJ9EtcyJWRJUaZASnt8IQPHLwucrpZ2KXVsxn4iVEjNWTMFrNeaFSTsLUBEmpg==
+"@qoretechnologies/reqraft@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@qoretechnologies/reqraft/-/reqraft-0.6.4.tgz#2a8c665430e89f3199bfceaea7c6bb7b900b852c"
+  integrity sha512-kho8HUXVl1uPHl+JWiEfB53hKawbQGaRJqN66usla7v/Ttb5CTVFZKMOLoZ7IktccTRKjWJik11/F2I17GuBMQ==
   dependencies:
-    "@qoretechnologies/reqore" "^0.48.3"
+    "@qoretechnologies/reqore" "^0.48.5"
     "@tanstack/react-query" "4"
     classnames "^2.2.6"
     cronstrue "^2.50.0"
@@ -17996,6 +17996,7 @@ prelude-ls@~1.1.2:
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
 "prettier-fallback@npm:prettier@^3", prettier@^3.1.1:
+  name prettier-fallback
   version "3.2.5"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
   integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==

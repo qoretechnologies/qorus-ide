@@ -89,7 +89,7 @@ const MethodSelector = ({ onChange, name, value }) => {
           }}
         />
       )}
-      <ReqoreControlGroup fluid stack fill>
+      <ReqoreControlGroup stack fill>
         <Select
           fill
           forceDropdown

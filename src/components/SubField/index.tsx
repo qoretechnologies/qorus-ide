@@ -1,8 +1,4 @@
-import {
-  ReqoreMessage,
-  ReqorePanel,
-  ReqoreVerticalSpacer,
-} from '@qoretechnologies/reqore';
+import { ReqoreMessage, ReqorePanel, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
 import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import React, { useMemo } from 'react';
@@ -83,11 +79,9 @@ const SubField: React.FC<ISubFieldProps> = ({
         size='small'
         style={{ width: '100%' }}
         contentStyle={{ display: 'flex', flexFlow: 'column' }}
-        contentEffect={
-          subtle
-            ? undefined
-            : { gradient: { colors: 'main', direction: 'to right bottom' } }
-        }
+        customTheme={{
+          main: 'main:darken:2',
+        }}
         intent={isValid === false ? 'danger' : undefined}
         label={title}
         badge={badge}

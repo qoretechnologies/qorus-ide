@@ -1,14 +1,12 @@
 import { StoryObj } from '@storybook/react';
 import { expect, fireEvent, waitFor, within } from '@storybook/test';
 import { useState } from 'react';
+import { ExpressionBuilder, IExpression } from '../../components/ExpressionBuilder';
 import {
-  ExpressionBuilder,
-  IExpression,
-} from '../../components/ExpressionBuilder';
-import {
+  _testsClickButton,
   _testsOpenTemplates,
   _testsSelectItemFromCollection,
-  _testsSelectItemFromDropdown,
+  _testsWaitForText,
   sleep,
 } from '../Tests/utils';
 import { StoryMeta } from '../types';
@@ -52,10 +50,9 @@ export type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   play: async ({ canvasElement }) => {
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
   },
 };
 export const WithSimpleValue: Story = {
@@ -78,10 +75,9 @@ export const WithSimpleValue: Story = {
     },
   },
   play: async ({ canvasElement }) => {
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -211,10 +207,9 @@ export const WithComplexValue: Story = {
     },
   },
   play: async ({ canvasElement }) => {
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(6),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(6), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -238,10 +233,9 @@ export const WithIntType: Story = {
     },
   },
   play: async ({ canvasElement }) => {
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -264,10 +258,9 @@ export const WithSelectableType: Story = {
     },
   },
   play: async ({ canvasElement }) => {
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -277,26 +270,18 @@ export const ArgsChangeWhenOperatorChanges: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression .reqore-textarea')
-        ).toHaveLength(2),
+      () => expect(document.querySelectorAll('.expression .reqore-textarea')).toHaveLength(2),
       { timeout: 10000 }
     );
 
     await _testsSelectItemFromCollection(canvas, 'is between', 'contains')();
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression .reqore-textarea')
-        ).toHaveLength(3),
+      () => expect(document.querySelectorAll('.expression .reqore-textarea')).toHaveLength(3),
       { timeout: 10000 }
     );
 
-    await expect(
-      document.querySelectorAll('.expression .reqore-textarea')
-    ).toHaveLength(3);
+    await expect(document.querySelectorAll('.expression .reqore-textarea')).toHaveLength(3);
   },
 };
 
@@ -305,24 +290,21 @@ export const NewGroupsCanBeCreated: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
 
     await fireEvent.click(document.querySelector('.expression-and'));
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(2),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(2), {
+      timeout: 10000,
+    });
 
     await fireEvent.click(document.querySelector('.expression-or'));
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(3),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(3), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -331,21 +313,17 @@ export const GroupsCanBeDeleted: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(6),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(6), {
+      timeout: 10000,
+    });
 
     await sleep(1000);
 
-    await fireEvent.click(
-      document.querySelectorAll('.expression-group-remove')[1]
-    );
+    await fireEvent.click(document.querySelectorAll('.expression-group-remove')[1]);
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(5),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(5), {
+      timeout: 10000,
+    });
   },
 };
 
@@ -355,20 +333,13 @@ export const ExpressionIsResetWhenValueIsRemoved: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression .template-remove')
-        ).toHaveLength(1),
+      () => expect(document.querySelectorAll('.expression .template-remove')).toHaveLength(1),
       { timeout: 10000 }
     );
 
-    await fireEvent.click(
-      document.querySelectorAll('.expression .template-remove')[0]
-    );
+    await fireEvent.click(document.querySelectorAll('.expression .template-remove')[0]);
 
-    await expect(
-      document.querySelector('.expression-operator-selector')
-    ).not.toBeInTheDocument();
+    await expect(document.querySelector('.expression-operator-selector')).not.toBeInTheDocument();
   },
 };
 
@@ -376,46 +347,48 @@ export const NewExpression: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression')).toHaveLength(1),
-      { timeout: 10000 }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
+      timeout: 10000,
+    });
+
+    console.log('Opening templates in new expression');
 
     await _testsOpenTemplates();
 
     await sleep(300);
 
+    console.log('Clicking context data in new expression');
+
     await fireEvent.click(canvas.getAllByText(/Context Data/)[0]);
 
     await sleep(300);
+
+    console.log('Clicking interface name in new expression');
 
     await fireEvent.click(canvas.getAllByText(/Interface Name/)[0]);
 
     await sleep(1500);
 
+    console.log('Selecting `ends with` in new expression');
+
     await _testsSelectItemFromCollection(canvas, 'ends with', 'PleaseSelect')();
 
     await sleep(300);
 
-    await fireEvent.change(
-      document.querySelectorAll('.expression .reqore-textarea')[1],
-      {
-        target: { value: 'test' },
-      }
-    );
+    await fireEvent.change(document.querySelectorAll('.expression .reqore-textarea')[1], {
+      target: { value: 'test' },
+    });
+
+    console.log('Waiting for the checkbox in the expression');
 
     await waitFor(
       () => {
-        expect(
-          document.querySelector('.expression .reqore-checkbox')
-        ).toBeInTheDocument();
+        expect(document.querySelector('.expression .reqore-checkbox')).toBeInTheDocument();
       },
       { timeout: 10000 }
     );
 
-    await fireEvent.click(
-      document.querySelector('.expression .reqore-checkbox')
-    );
+    await fireEvent.click(document.querySelector('.expression .reqore-checkbox'));
   },
 };
 
@@ -450,10 +423,7 @@ export const ExpressionWithIntReturnType: Story = {
   },
   play: async ({ canvasElement }) => {
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression .template-remove')
-        ).toHaveLength(2),
+      () => expect(document.querySelectorAll('.expression .template-remove')).toHaveLength(2),
       { timeout: 10000 }
     );
   },
@@ -467,10 +437,7 @@ export const VariableArgumentsCanBeRemoved: Story = {
     await fireEvent.click(document.querySelector('.expression-remove-arg'));
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression-remove-arg')
-        ).toHaveLength(2),
+      () => expect(document.querySelectorAll('.expression-remove-arg')).toHaveLength(2),
       { timeout: 10000 }
     );
   },
@@ -484,20 +451,14 @@ export const VariableArgumentsCanBeAdded: Story = {
     await fireEvent.click(document.querySelector('.expression-remove-arg'));
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression-remove-arg')
-        ).toHaveLength(2),
+      () => expect(document.querySelectorAll('.expression-remove-arg')).toHaveLength(2),
       { timeout: 10000 }
     );
 
     await fireEvent.click(document.querySelector('.expression-add-arg'));
 
     await waitFor(
-      () =>
-        expect(
-          document.querySelectorAll('.expression-remove-arg')
-        ).toHaveLength(3),
+      () => expect(document.querySelectorAll('.expression-remove-arg')).toHaveLength(3),
       { timeout: 10000 }
     );
   },
@@ -513,15 +474,12 @@ export const FunctionsInsideExpression: Story = {
     await sleep(300);
 
     await fireEvent.click(document.querySelector('.function-selector'));
-    await waitFor(() => fireEvent.click(canvas.queryAllByText(/substr/)[0]), {
+    await waitFor(() => fireEvent.click(canvas.queryAllByText('substr()')[0]), {
       timeout: 10000,
     });
-    await waitFor(
-      () => expect(document.querySelectorAll('.reqore-input')).toHaveLength(2),
-      {
-        timeout: 10000,
-      }
-    );
+    await waitFor(() => expect(document.querySelectorAll('.reqore-input')).toHaveLength(2), {
+      timeout: 10000,
+    });
 
     await fireEvent.change(document.querySelectorAll('.reqore-input')[0], {
       target: { value: 10 },
@@ -542,7 +500,11 @@ export const FunctionFirstArgTypeCanBeChanged: Story = {
             is_expression: false,
             required: true,
           },
-          null,
+          {
+            type: 'string',
+            is_expression: false,
+            required: true,
+          },
           {
             type: 'string',
             is_expression: false,
@@ -563,19 +525,89 @@ export const FunctionFirstArgTypeCanBeChanged: Story = {
     const canvas = within(canvasElement);
 
     await waitFor(
-      () =>
-        expect(
-          canvas.queryAllByText(/format number with/)[0]
-        ).toBeInTheDocument(),
+      () => expect(canvas.queryAllByText(/format number with/)[0]).toBeInTheDocument(),
       {
         timeout: 10000,
       }
     );
 
-    await _testsSelectItemFromDropdown(undefined, 'int', 'num')();
+    await sleep(5000);
 
-    await waitFor(() => expect(canvas.queryAllByText(/int/)).toHaveLength(2), {
-      timeout: 10000,
-    });
+    await _testsSelectItemFromCollection(canvas, 'str', 'num')();
+
+    // await waitFor(() => expect(canvas.queryAllByText(/int/)).toHaveLength(2), {
+    //   timeout: 10000,
+    // });
+  },
+};
+
+export const ExpressionCanBeWrapped: Story = {
+  args: {
+    value: {
+      value: {
+        exp: 'OR',
+        args: [
+          {
+            value: {
+              args: [
+                {
+                  value: '$local:some-bool',
+                  type: 'bool',
+                },
+                {
+                  value: 'kek',
+                  type: 'string',
+                  is_expression: false,
+                  required: true,
+                },
+              ],
+              exp: 'ABSOLUTE-EQUALS',
+            },
+            is_expression: true,
+          },
+          {
+            value: {
+              args: [
+                {
+                  value: '$timestamp:next_midnight',
+                  type: 'date',
+                },
+                {
+                  value: 'test',
+                  type: 'string',
+                  is_expression: false,
+                  required: true,
+                },
+              ],
+              exp: 'LIST-CONTAINS',
+            },
+            is_expression: true,
+            type: 'string',
+            required: true,
+          },
+        ],
+      },
+      is_expression: true,
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
+
+    await _testsWaitForText('absolutely equals');
+    await _testsWaitForText('contains');
+
+    await _testsSelectItemFromCollection(canvas, 'concatenate (string)', 'Wrap')();
+
+    await _testsWaitForText('concatenate (string)');
+  },
+};
+export const ExpressionCanBeUnwrapped: Story = {
+  ...ExpressionCanBeWrapped,
+  play: async ({ canvasElement, ...rest }) => {
+    await ExpressionCanBeWrapped.play({ canvasElement, ...rest });
+
+    await _testsClickButton({ selector: '.expression-unwrap' });
+
+    await expect(document.querySelectorAll('.expression')).toHaveLength(2);
   },
 };

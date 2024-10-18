@@ -2,7 +2,7 @@ import { ReqoreMessage, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
 import { forEach, isEqual, omit, reduce } from 'lodash';
 import size from 'lodash/size';
 import React, { useCallback, useContext, useMemo, useState } from 'react';
-import { useUpdateEffect } from 'react-use';
+import { useDebounce, useUpdateEffect } from 'react-use';
 import FSMView, {
   IFSMMetadata,
   IFSMState,
@@ -13,25 +13,15 @@ import FSMView, {
 } from '.';
 import Content from '../../../components/Content';
 import CustomDialog from '../../../components/CustomDialog';
-import Connectors, {
-  IProviderType,
-} from '../../../components/Field/connectors';
+import Connectors, { IProviderType } from '../../../components/Field/connectors';
 import RadioField from '../../../components/Field/radioField';
-import {
-  default as Select,
-  default as SelectField,
-} from '../../../components/Field/select';
+import { default as Select, default as SelectField } from '../../../components/Field/select';
 import Options from '../../../components/Field/systemOptions';
 import FieldGroup from '../../../components/FieldGroup';
 import { ContentWrapper, FieldWrapper } from '../../../components/FieldWrapper';
 import { Messages } from '../../../constants/messages';
 import { TextContext } from '../../../context/text';
-import {
-  getRecursiveStatesConnectedtoState,
-  getStatesForTemplates,
-  getVariable,
-  removeFSMState,
-} from '../../../helpers/fsm';
+import { getStatesForTemplates, getVariable, removeFSMState } from '../../../helpers/fsm';
 import { getMaxExecutionOrderFromStates } from '../../../helpers/functions';
 import { validateField } from '../../../helpers/validations';
 import { postMessage } from '../../../hocomponents/withMessageHandler';
@@ -98,7 +88,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   fsmName,
   target_dir,
   interfaceId,
-  disableInitial,
   metadata,
   blockLogicType,
   setBlockLogicType,
@@ -107,23 +96,25 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   isNameValid,
   isCustomBlockSecondPage,
   isActionValid,
-  isMetadatHidden,
   setIsMetadataHidden,
 }) => {
   const [newData, setNewData] = useState<IFSMState>(data);
   const t = useContext(TextContext);
-  const [showConfigItemsManager, setShowConfigItemsManager] =
-    useState<boolean>(false);
+  const [showConfigItemsManager, setShowConfigItemsManager] = useState<boolean>(false);
 
   useUpdateEffect(() => {
     if (!isEqual(data, newData)) {
       setNewData(data);
     }
-  }, [data]);
+  }, [JSON.stringify(data)]);
 
-  useUpdateEffect(() => {
-    onSubmit(id, omit(newData, ['transitions']));
-  }, [newData]);
+  useDebounce(
+    () => {
+      onSubmit(id, omit(newData, ['transitions']));
+    },
+    100,
+    [JSON.stringify(newData)]
+  );
 
   useUpdateEffect(() => {
     if (newData.action?.value?.['class']) {
@@ -192,8 +183,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       if (value) {
         handleDataUpdate(
           'execution_order',
-          data?.execution_order ||
-            getMaxExecutionOrderFromStates(otherStates) + 1
+          data?.execution_order || getMaxExecutionOrderFromStates(otherStates) + 1
         );
       } else {
         handleDataUpdate('execution_order', null);
@@ -228,10 +218,6 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
 
   const statesForTemplates = useMemo(() => {
     return getStatesForTemplates(id || newData.keyId, otherStates);
-  }, [newData.keyId, JSON.stringify(otherStates)]);
-
-  const connectedStates = useMemo(() => {
-    return getRecursiveStatesConnectedtoState(id || newData.keyId, otherStates);
   }, [newData.keyId, JSON.stringify(otherStates)]);
 
   const renderActionField = () => {
@@ -320,9 +306,8 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                 info={
                   <>
                     <ReqoreMessage intent='info'>
-                      This provider is read only because it is defined in a
-                      variable. You can edit the variable to change the provider
-                      configuration.
+                      This provider is read only because it is defined in a variable. You can edit
+                      the variable to change the provider configuration.
                     </ReqoreMessage>
                     <ReqoreVerticalSpacer height={10} />
                   </>
@@ -434,9 +419,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             }}
             autoSelect
             placeholder='Select or create a Mapper'
-            onChange={(_name, value) =>
-              handleDataUpdate('action', { type: 'mapper', value })
-            }
+            onChange={(_name, value) => handleDataUpdate('action', { type: 'mapper', value })}
             value={newData?.action?.value}
             target_dir={target_dir}
             name='action'
@@ -444,17 +427,11 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               default_values: newData?.injectedData
                 ? {
                     name: `${
-                      newData.injectedData?.name
-                        ? `${newData.injectedData?.name}-`
-                        : ''
+                      newData.injectedData?.name ? `${newData.injectedData?.name}-` : ''
                     }${newData.injectedData?.from}-${newData.injectedData?.to}`,
                     desc: `mapper to bridge ${newData.injectedData?.from} to ${
                       newData.injectedData?.to
-                    }${
-                      newData.injectedData?.name
-                        ? ` in flow ${newData.injectedData?.name}`
-                        : ''
-                    }`,
+                    }${newData.injectedData?.name ? ` in flow ${newData.injectedData?.name}` : ''}`,
                     version: '1.0',
                   }
                 : {
@@ -480,9 +457,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               return_value: 'objects',
             }}
             target_dir={target_dir}
-            onChange={(_name, value) =>
-              handleDataUpdate('action', { type: 'pipeline', value })
-            }
+            onChange={(_name, value) => handleDataUpdate('action', { type: 'pipeline', value })}
             value={newData?.action?.value}
             name='action'
             autoSelect
@@ -497,9 +472,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
           <ConnectorSelector
             value={newData?.action?.value}
             target_dir={target_dir}
-            onChange={(value) =>
-              handleDataUpdate('action', { type: 'connector', value })
-            }
+            onChange={(value) => handleDataUpdate('action', { type: 'connector', value })}
             types={['input', 'input-output', 'output']}
           />
         );
@@ -512,9 +485,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             minimal
             requiresRequest
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) =>
-              handleDataUpdate('action', { type: 'apicall', value })
-            }
+            onChange={(_name, value) => handleDataUpdate('action', { type: 'apicall', value })}
             value={newData?.action?.value}
           />
         );
@@ -527,9 +498,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             minimal
             isMessage
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) =>
-              handleDataUpdate('action', { type: 'send-message', value })
-            }
+            onChange={(_name, value) => handleDataUpdate('action', { type: 'send-message', value })}
             value={newData?.action?.value}
           />
         );
@@ -547,9 +516,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             key={actionType}
             recordType={actionType}
             isInitialEditing={!!data?.action?.value}
-            onChange={(_name, value) =>
-              handleDataUpdate('action', { type: actionType, value })
-            }
+            onChange={(_name, value) => handleDataUpdate('action', { type: actionType, value })}
             value={newData?.action?.value}
           />
         );
@@ -604,11 +571,8 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
       forEach(newData.states, (state: IFSMState, id: string) => {
         if (
           state.action?.type === 'var-action' &&
-          (state.action?.value as TVariableActionValue)?.var_type ===
-            'autovar' &&
-          !variables?.autovar?.[
-            (state.action?.value as TVariableActionValue).var_name
-          ]
+          (state.action?.value as TVariableActionValue)?.var_type === 'autovar' &&
+          !variables?.autovar?.[(state.action?.value as TVariableActionValue).var_name]
         ) {
           statesToRemove.push(id);
         }
@@ -629,13 +593,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
     }
 
     return variables;
-  }, [
-    metadata.globalvar,
-    newData.globalvar,
-    newData.localvar,
-    autoVars.value,
-    newData.states,
-  ]);
+  }, [metadata.globalvar, newData.globalvar, newData.localvar, autoVars.value, newData.states]);
 
   return (
     <>
@@ -670,11 +628,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
           {newData.type === 'block' && (
             <>
               <FieldGroup label='Block configuration'>
-                <FieldWrapper
-                  label={t('field-label-block-logic')}
-                  isValid
-                  compact
-                >
+                <FieldWrapper label={t('field-label-block-logic')} isValid compact>
                   <RadioField
                     name='block-logic'
                     onChange={(_name, value) => {
@@ -688,11 +642,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                   />
                 </FieldWrapper>
               </FieldGroup>
-              <FieldWrapper
-                label={t('field-label-block-config')}
-                isValid
-                compact
-              >
+              <FieldWrapper label={t('field-label-block-config')} isValid compact>
                 <Options
                   name='block-config'
                   onChange={handleDataUpdate}
@@ -703,10 +653,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
             </>
           )}
           {newData.type === 'block' && blockLogicType === 'fsm' ? (
-            <FieldWrapper
-              label={t('FSM')}
-              isValid={validateField('string', newData?.fsm)}
-            >
+            <FieldWrapper label={t('FSM')} isValid={validateField('string', newData?.fsm)}>
               <SelectField
                 get_message={{
                   action: 'creator-get-objects',
@@ -753,8 +700,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
               ) : null}
             </>
           ) : null}
-          {newData.type === 'block' &&
-          newData['block-type'] !== 'transaction' ? (
+          {newData.type === 'block' && newData['block-type'] !== 'transaction' ? (
             <FieldGroup label='Types'>
               <FieldWrapper label={t('InputType')} isValid type={t('Optional')}>
                 <Connectors
@@ -764,11 +710,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                   value={newData?.['input-type']}
                 />
               </FieldWrapper>
-              <FieldWrapper
-                label={t('OutputType')}
-                isValid
-                type={t('Optional')}
-              >
+              <FieldWrapper label={t('OutputType')} isValid type={t('Optional')}>
                 <Connectors
                   name='output-type'
                   isInitialEditing={data?.['output-type']}
@@ -787,11 +729,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
                 connectedStates={statesForTemplates}
                 required
               />
-              <FieldWrapper
-                label={t('InputOutputType')}
-                isValid
-                type={t('Optional')}
-              >
+              <FieldWrapper label={t('InputOutputType')} isValid type={t('Optional')}>
                 <Connectors
                   name='input-output-type'
                   isInitialEditing={data['input-output-type']}

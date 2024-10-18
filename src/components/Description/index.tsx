@@ -1,9 +1,11 @@
 import {
+  ReqoreSpan,
   ReqoreTextEffect,
   ReqoreVerticalSpacer,
   useReqoreProperty,
 } from '@qoretechnologies/reqore';
 import { IReqoreParagraphProps, ReqoreP } from '@qoretechnologies/reqore/dist/components/Paragraph';
+import { TQorusType } from '@qoretechnologies/ts-toolkit';
 import ReactMarkdown from 'react-markdown';
 
 export interface IDescriptionProps extends IReqoreParagraphProps {
@@ -11,6 +13,7 @@ export interface IDescriptionProps extends IReqoreParagraphProps {
   longDescription: string;
   maxShortDescriptionLength?: number;
   margin?: 'top' | 'bottom' | 'both' | 'none';
+  type?: TQorusType;
 }
 
 export const Description = ({
@@ -18,11 +21,12 @@ export const Description = ({
   longDescription,
   maxShortDescriptionLength = 1000,
   margin = 'bottom',
+  type,
   ...rest
 }: IDescriptionProps) => {
   const addModal = useReqoreProperty('addModal');
 
-  if (!shortDescription && !longDescription) {
+  if (!shortDescription && !longDescription && !type) {
     return null;
   }
 
@@ -50,10 +54,24 @@ export const Description = ({
     <>
       {margin === 'both' || margin === 'top' ? <ReqoreVerticalSpacer height={10} /> : null}
       <ReqoreP {...rest}>
+        {type ? (
+          <>
+            <ReqoreSpan
+              className='description-type'
+              customTheme={{
+                text: {
+                  color: 'muted',
+                },
+              }}
+            >
+              [{type}]
+            </ReqoreSpan>{' '}
+          </>
+        ) : null}
         {finalShortDescription}{' '}
         {finalLongDescription ? (
           <ReqoreTextEffect
-            className="description-more"
+            className='description-more'
             effect={{
               interactive: true,
               opacity: 0.5,
