@@ -470,9 +470,12 @@ export async function _testsOpenTemplates() {
 }
 
 export async function _testsWaitForText(text: string, selector?: string, nth: number = 1) {
-  console.log('Waiting for text:', text, selector);
   await waitFor(
-    () => expect(screen.queryAllByText(text, { selector })[nth - 1]).toBeInTheDocument(),
+    () =>
+      expect(
+        screen.queryAllByText(text, { selector })[nth - 1],
+        `Expected text ${text}`
+      ).toBeInTheDocument(),
     {
       timeout: 10000,
     }

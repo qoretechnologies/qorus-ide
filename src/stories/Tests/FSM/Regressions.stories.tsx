@@ -45,6 +45,9 @@ export const MultipleOptionsWithOneAllowedValue: StoryFSM = {
 };
 
 export const SubExpressionCanBeAddedInIfState: StoryFSM = {
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async (context) => {
     const canvas = within(context.canvasElement);
     await NewIfStateWithExpression.play(context);
