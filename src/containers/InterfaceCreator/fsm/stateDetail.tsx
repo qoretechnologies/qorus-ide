@@ -316,15 +316,15 @@ export const FSMStateDetail = memo(
         actions={[
           {
             as: ReqoreTag,
-            show: hasSaved,
+            show: hasSaved || !isEqual(data, dataToSubmit),
             props: {
-              label: 'Saved',
+              label: !isEqual(data, dataToSubmit) ? 'Unsaved' : 'Saved',
               minimal: true,
               theme: { main: 'transparent' },
               flat: true,
               asBadge: true,
-              icon: 'CheckLine',
-              iconColor: 'success:lighten',
+              icon: !isEqual(data, dataToSubmit) ? 'ErrorWarningLine' : 'CheckLine',
+              iconColor: !isEqual(data, dataToSubmit) ? 'warning:lighten' : 'success:lighten',
               className: 'state-saved-flag',
             } as IReqoreTagProps,
           },
