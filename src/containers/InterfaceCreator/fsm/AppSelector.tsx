@@ -38,9 +38,7 @@ export const filterApps = (
     if (app[filter] === filterValue) {
       // Check if this app has other actions than event actions
       return app.actions?.some((action) =>
-        type === 'event'
-          ? action.action_code_str === 'EVENT'
-          : action.action_code_str !== 'EVENT'
+        type === 'event' ? action.action_code_str === 'EVENT' : action.action_code_str !== 'EVENT'
       );
     }
 
@@ -56,10 +54,7 @@ export const AppSelector = ({
   showVariables,
 }: IAppSelectorProps) => {
   const value = useGetAppActionData();
-  const [favorites, updateFavorites] = useQorusStorage<string[]>(
-    'appCatalogueFavorites',
-    []
-  );
+  const [favorites, updateFavorites] = useQorusStorage<string[]>('appCatalogueFavorites', []);
 
   const apps = useMemo(() => {
     if (!value) return [];
@@ -151,9 +146,7 @@ export const AppSelector = ({
           icon='Apps2Line'
           onActionSelect={(action, app) => {
             if (app.name === 'action_sets') {
-              onActionSetSelect(
-                changeStateIdsToGenerated(action.metadata?.states)
-              );
+              onActionSetSelect(changeStateIdsToGenerated(action.metadata?.states));
             } else {
               onActionSelect({ ...action, type: 'appaction' }, app);
             }
@@ -175,7 +168,9 @@ export const AppSelector = ({
               {
                 ...action,
                 type:
-                  action.action === 'schedule' || action.action === 'on-demand'
+                  action.action === 'schedule' ||
+                  action.action === 'on-demand' ||
+                  action.action === 'webhook'
                     ? 'appaction'
                     : (action.action as TAction),
               },
