@@ -138,6 +138,7 @@ export const TemplateField = ({
   filterTemplates = true,
   componentFromType,
   isFunction,
+  returnType,
   ...rest
 }: ITemplateFieldProps) => {
   const qorusTypes = useQorusTypes();
@@ -148,7 +149,7 @@ export const TemplateField = ({
       return [];
     }
 
-    const data = await fetchData(`/system/expressions?first_arg_type=${type}`);
+    const data = await fetchData(`/system/expressions`);
 
     return data.data;
   }, [type]);
@@ -225,7 +226,7 @@ export const TemplateField = ({
             value,
           }}
           type={type}
-          returnType={type}
+          returnType={returnType || type}
           onChange={(expressionValue: IExpression | undefined, remove: boolean) => {
             onChange(name, expressionValue?.value || value?.args[0]?.value, type, !remove);
           }}
@@ -339,7 +340,7 @@ export const TemplateField = ({
                 exp: func.name,
                 args: [
                   {
-                    type: getExpressionArgumentType(func.args[0], qorusTypes.value),
+                    type: type || getExpressionArgumentType(func.args[0], qorusTypes.value),
                     value,
                   },
                 ],

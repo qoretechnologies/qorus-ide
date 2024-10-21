@@ -603,14 +603,14 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                     gradient: {
                       direction: 'to right',
                       colors: {
-                        0: value ? 'info' : 'main',
+                        0: value ? 'info' : 'main:lighten:2',
                         100: hasError(items, value)
                           ? 'danger:darken'
                           : hasWarning(items, value)
                             ? 'warning'
                             : value
                               ? 'info'
-                              : 'main',
+                              : 'main:lighten:2',
                       },
                     },
                   }

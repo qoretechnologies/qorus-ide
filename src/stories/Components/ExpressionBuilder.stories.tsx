@@ -17,6 +17,8 @@ const meta = {
   render: (args) => {
     const [exp, setExp] = useState<IExpression>(args.value);
 
+    console.log(exp);
+
     return (
       <ExpressionBuilder
         {...args}
@@ -49,6 +51,9 @@ export default meta;
 export type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    returnType: ['string', 'int'],
+  },
   play: async ({ canvasElement }) => {
     await waitFor(() => expect(document.querySelectorAll('.expression')).toHaveLength(1), {
       timeout: 10000,
@@ -609,5 +614,51 @@ export const ExpressionCanBeUnwrapped: Story = {
     await _testsClickButton({ selector: '.expression-unwrap' });
 
     await expect(document.querySelectorAll('.expression')).toHaveLength(2);
+  },
+};
+
+export const MultipleAcceptedTypes: Story = {
+  args: {
+    returnType: ['string', 'int'],
+    value: {
+      value: {
+        args: [
+          {
+            value: {
+              exp: 'PLUS-STRING',
+              args: [
+                {
+                  type: 'string',
+                  value: '$local:name',
+                },
+                {
+                  value: 'issue3102service',
+                  type: 'service',
+                  is_expression: false,
+                  required: true,
+                },
+                {
+                  value: 'telco-om-demo',
+                  type: 'job',
+                  is_expression: false,
+                  required: true,
+                },
+              ],
+            },
+            type: 'string',
+            is_expression: true,
+            required: true,
+          },
+          {
+            value: 1,
+            type: 'float',
+            is_expression: false,
+            required: true,
+          },
+        ],
+        exp: 'DIV-FLOAT',
+      },
+      is_expression: true,
+    },
   },
 };

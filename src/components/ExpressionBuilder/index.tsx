@@ -12,7 +12,7 @@ import {
 import { TReqoreHexColor } from '@qoretechnologies/reqore/dist/components/Effect';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { getReadableColorFrom } from '@qoretechnologies/reqore/dist/helpers/colors';
-import { clone, cloneDeep, get, set, size, unset } from 'lodash';
+import { clone, cloneDeep, get, isArray, set, size, unset } from 'lodash';
 import { darken, rgba } from 'polished';
 import { useAsyncRetry } from 'react-use';
 import styled, { css } from 'styled-components';
@@ -24,6 +24,8 @@ import auto from '../Field/auto';
 import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
+import { ExpressionBuilderArgumentInfo } from './argumentInfo';
+import { ExpressionBuilderArgumentLabel } from './argumentLabel';
 
 export const ExpressionDefaultValue: IExpression = {
   value: { args: [] },
@@ -105,7 +107,7 @@ export interface IExpressionBuilderProps {
   type?: IQorusType;
   path?: string;
   index?: number;
-  returnType?: IQorusType;
+  returnType?: IQorusType | IQorusType[];
   group?: 'AND' | 'OR';
   onChange?: (value: IExpression, remove?: boolean) => void;
   onValueChange?: (value: IExpression, path: string, remove?: boolean) => void;
@@ -292,7 +294,7 @@ export const Expression = ({
   const selectedExpression = expressions.value?.find((exp) => exp.name === value.value.exp);
   const firstArgSchema = selectedExpression?.args[0];
   const firstParamType = firstArgument?.is_expression
-    ? firstArgSchema?.type?.base_type
+    ? firstArgSchema?.type?.types_accepted[0]
     : firstArgument?.type || type || 'context';
   let restOfArgs = selectedExpression?.args.slice(1);
 
@@ -306,14 +308,27 @@ export const Expression = ({
   }
 
   const expressionReturnType = selectedExpression?.return_type;
-  const isReturnTypeMatching =
-    returnType === 'auto' ||
-    returnType === 'any' ||
-    returnType === 'context' ||
-    returnType === expressionReturnType;
+  const isReturnTypeMatching = isArray(returnType)
+    ? returnType.includes(expressionReturnType)
+    : returnType === 'auto' ||
+      returnType === 'any' ||
+      returnType === 'context' ||
+      returnType === expressionReturnType;
 
   const conformsType = (type: IQorusType, typesAccepted: IQorusType[]) =>
     type === 'auto' || type === 'any' || typesAccepted?.includes(type);
+
+  const getArgumentType = (arg: IExpression) => {
+    if (arg?.is_expression) {
+      return expressions.value?.find((exp) => exp.name === arg.value.exp)?.return_type;
+    }
+
+    return arg?.type;
+  };
+
+  const argumentMatchesType = (arg: IExpression, schema: TExpressionSchemaArg) => {
+    return schema.type.types_accepted.includes(getArgumentType(arg));
+  };
 
   return (
     <StyledExpressionItem
@@ -342,17 +357,10 @@ export const Expression = ({
       >
         {firstParamType && (
           <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
-            <ReqoreP
-              size='tiny'
-              effect={{
-                uppercase: true,
-                spaced: 1,
-                weight: 'bold',
-                opacity: 0.6,
-              }}
-            >
-              {selectedExpression?.args[0].display_name || 'Start here'}
-            </ReqoreP>
+            <ExpressionBuilderArgumentLabel
+              required={firstArgSchema?.required}
+              label={firstArgSchema?.display_name || 'Start Here'}
+            />
             <ReqoreControlGroup stack>
               {firstArgument?.is_expression ? null : (
                 <Select
@@ -390,6 +398,7 @@ export const Expression = ({
                 key={firstParamType}
                 type={firstParamType}
                 defaultType={firstParamType}
+                returnType={firstArgSchema?.type?.types_accepted}
                 value={firstArgument?.value}
                 isFunction={firstArgument?.is_expression}
                 onChange={(_name, value, type, isFunction) => {
@@ -397,7 +406,7 @@ export const Expression = ({
                     updateArg(
                       value,
                       0,
-                      isFunction ? selectedExpression?.args?.[0]?.type.base_type : type,
+                      isFunction ? undefined : type,
                       isFunction,
                       selectedExpression?.args?.[0]?.required
                     );
@@ -412,25 +421,11 @@ export const Expression = ({
               />
             </ReqoreControlGroup>
             {selectedExpression ? (
-              <ReqoreP
-                size='tiny'
-                effect={{
-                  uppercase: true,
-                  spaced: 1,
-                  weight: 'bold',
-                  opacity: 0.6,
-                }}
-                customTheme={{
-                  main: !conformsType(
-                    firstArgument?.type || type || 'context',
-                    firstArgSchema?.type?.types_accepted
-                  )
-                    ? 'warning:lighten:5'
-                    : undefined,
-                }}
-              >
-                Expects: {firstArgSchema?.type?.base_type} compatible type
-              </ReqoreP>
+              <ExpressionBuilderArgumentInfo
+                matchesType={argumentMatchesType(firstArgument, firstArgSchema)}
+                acceptedTypes={firstArgSchema.type?.types_accepted}
+                argumentType={getArgumentType(firstArgument)}
+              />
             ) : null}
           </ReqoreControlGroup>
         )}
@@ -484,17 +479,7 @@ export const Expression = ({
                 wrap
                 style={{ flexShrink: 1 }}
               >
-                <ReqoreP
-                  size='tiny'
-                  effect={{
-                    uppercase: true,
-                    spaced: 1,
-                    weight: 'bold',
-                    opacity: 0.6,
-                  }}
-                >
-                  {arg.display_name}
-                </ReqoreP>
+                <ExpressionBuilderArgumentLabel required={arg.required} label={arg.display_name} />
                 <ReqoreControlGroup verticalAlign='flex-end' stack>
                   {rest[index]?.is_expression ? null : (
                     <Select
@@ -503,14 +488,14 @@ export const Expression = ({
                       defaultItems={types.value}
                       intent={
                         conformsType(
-                          rest[index]?.type || arg.type?.base_type,
+                          rest[index]?.type || arg.type?.types_accepted[0],
                           arg.type.types_accepted
                         )
                           ? undefined
                           : 'warning'
                       }
                       showDescription={false}
-                      value={rest[index]?.type || arg.type?.base_type}
+                      value={rest[index]?.type || arg.type?.types_accepted[0]}
                       onChange={(_name, value) => {
                         updateArg(
                           undefined,
@@ -534,8 +519,9 @@ export const Expression = ({
                     noSoft
                     allowFunctions
                     isFunction={rest[index]?.is_expression}
-                    type={rest[index]?.type || arg.type?.base_type}
-                    defaultType={rest[index]?.type || arg.type?.base_type}
+                    type={rest[index]?.type || arg.type?.types_accepted[0]}
+                    defaultType={rest[index]?.type || arg.type?.types_accepted[0]}
+                    returnType={arg.type.types_accepted}
                     canBeNull={false}
                     value={rest[index]?.value ?? arg.default_value}
                     templates={localTemplates}
@@ -544,7 +530,7 @@ export const Expression = ({
                       updateArg(
                         value,
                         index + 1,
-                        isFunction ? arg.type.base_type : type,
+                        isFunction ? undefined : type,
                         isFunction,
                         arg.required
                       );
@@ -569,24 +555,11 @@ export const Expression = ({
                     />
                   ) : null}
                 </ReqoreControlGroup>
-                <ReqoreP
-                  size='tiny'
-                  effect={{
-                    uppercase: true,
-                    spaced: 1,
-                    weight: 'bold',
-                    opacity: 0.6,
-                  }}
-                  customTheme={{
-                    text: {
-                      color: !conformsType(rest[index]?.type || 'context', arg.type.types_accepted)
-                        ? 'warning:lighten:8'
-                        : undefined,
-                    },
-                  }}
-                >
-                  Expects: {arg?.type?.base_type} compatible type
-                </ReqoreP>
+                <ExpressionBuilderArgumentInfo
+                  matchesType={argumentMatchesType(rest[index], arg)}
+                  acceptedTypes={arg.type?.types_accepted}
+                  argumentType={getArgumentType(rest[index])}
+                />
               </ReqoreControlGroup>
             ))
           : null}
@@ -704,7 +677,7 @@ export const Expression = ({
             icon='ErrorWarningLine'
             intent='danger'
             size='small'
-            label={`This expression returns ${expressionReturnType || 'nothing'} but the expected return type is ${returnType}`}
+            label={`This expression returns ${expressionReturnType || 'nothing'} but the expected return type is ${isArray(returnType) ? returnType.join(' or ') : returnType}`}
           />
         </>
       )}
