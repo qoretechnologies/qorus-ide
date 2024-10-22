@@ -104,6 +104,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
 
   useUpdateEffect(() => {
     if (!isEqual(data, newData)) {
+      console.log('isEqual', data, newData);
       setNewData(data);
     }
   }, [JSON.stringify(data)]);
@@ -143,6 +144,7 @@ const FSMStateDialog: React.FC<IFSMStateDialogProps> = ({
   );
 
   const handleDataUpdate = (name: string, value: any) => {
+    console.log(name, value);
     if (typeof value === 'undefined') {
       setNewData((cur) => omit(cur, [name]));
       return;

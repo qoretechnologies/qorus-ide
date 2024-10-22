@@ -195,6 +195,7 @@ export const NewState: StoryFSM = {
       await waitFor(() => expect(document.querySelector('.state-saved-flag')).toBeInTheDocument(), {
         timeout: 5000,
       });
+      await _testsWaitForText('Saved');
     }
 
     await _testsAddNewState(

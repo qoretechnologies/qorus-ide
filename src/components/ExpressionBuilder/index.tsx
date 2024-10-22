@@ -10,6 +10,7 @@ import {
   useReqoreTheme,
 } from '@qoretechnologies/reqore';
 import { TReqoreHexColor } from '@qoretechnologies/reqore/dist/components/Effect';
+import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { getReadableColorFrom } from '@qoretechnologies/reqore/dist/helpers/colors';
 import { clone, cloneDeep, get, isArray, set, size, unset } from 'lodash';
@@ -24,14 +25,15 @@ import auto from '../Field/auto';
 import Select from '../Field/select';
 import { IOptionsSchemaArg, IQorusType } from '../Field/systemOptions';
 import { TemplateField } from '../Field/template';
-import { ExpressionBuilderArgumentInfo } from './argumentInfo';
-import { ExpressionBuilderArgumentLabel } from './argumentLabel';
+import { ExpressionBuilderArgumentWrapper } from './argumentWrapper';
 
 export const ExpressionDefaultValue: IExpression = {
   value: { args: [] },
   is_expression: true,
 };
-export const StyledExpressionItem = styled.div`
+export const StyledExpressionItem: React.FC<
+  IReqorePanelProps & { isChild?: boolean; isAndOr?: boolean }
+> = styled.div`
   position: relative;
   overflow: unset;
 
@@ -155,6 +157,7 @@ export const Expression = ({
   }
 
   const updateType = (val: IQorusType, conformsCurrentType?: boolean) => {
+    console.log('updateType', val, conformsCurrentType);
     if (conformsCurrentType) {
       onValueChange(
         {
@@ -191,6 +194,7 @@ export const Expression = ({
   };
 
   const updateExp = (val: string) => {
+    console.log('updateExp', val);
     const args = [value.value.args[0]];
 
     // Check if this expression has variable arguments
@@ -265,6 +269,7 @@ export const Expression = ({
     isFunction?: boolean,
     isRequired?: boolean
   ) => {
+    console.log('updateArg', val, index, type, isFunction, isRequired);
     const args = clone(value.value.args);
 
     args[index] = {
@@ -318,16 +323,19 @@ export const Expression = ({
   const conformsType = (type: IQorusType, typesAccepted: IQorusType[]) =>
     type === 'auto' || type === 'any' || typesAccepted?.includes(type);
 
-  const getArgumentType = (arg: IExpression) => {
+  const getArgumentType = (arg: IExpression, schema: TExpressionSchemaArg) => {
     if (arg?.is_expression) {
       return expressions.value?.find((exp) => exp.name === arg.value.exp)?.return_type;
     }
 
-    return arg?.type;
+    return arg?.type || schema.type?.types_accepted[0];
   };
 
   const argumentMatchesType = (arg: IExpression, schema: TExpressionSchemaArg) => {
-    return schema.type.types_accepted.includes(getArgumentType(arg));
+    return (
+      schema.type.types_accepted.includes('any') ||
+      schema.type.types_accepted.includes(getArgumentType(arg, schema))
+    );
   };
 
   return (
@@ -335,10 +343,12 @@ export const Expression = ({
       as={ReqorePanel}
       intent={validateField('expression', value) && isReturnTypeMatching ? 'info' : 'danger'}
       flat
+      minimal
+      size='small'
       isChild={isChild}
       className='expression'
       customTheme={{
-        main: darken(`0.0${level * 25}`, theme.main) as TReqoreHexColor,
+        main: `main:darken:${level}`,
       }}
       style={{
         marginLeft: isChild ? 30 : undefined,
@@ -356,116 +366,81 @@ export const Expression = ({
         size='normal'
       >
         {firstParamType && (
-          <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
-            <ExpressionBuilderArgumentLabel
-              required={firstArgSchema?.required}
-              label={firstArgSchema?.display_name || 'Start Here'}
-            />
-            <ReqoreControlGroup stack>
-              {firstArgument?.is_expression ? null : (
-                <Select
-                  fixed
-                  name='type'
-                  defaultItems={types.value}
-                  value={firstArgument?.type || type || 'context'}
-                  intent={
-                    conformsType(
-                      firstArgument?.type || type || 'context',
-                      firstArgSchema?.type?.types_accepted
-                    )
-                      ? undefined
-                      : 'warning'
-                  }
-                  onChange={(_name, value) => {
-                    updateType(value === 'context' ? undefined : value, true);
-                  }}
-                  labelEffect={{
-                    uppercase: true,
-                    spaced: 1,
-                    weight: 'thick',
-                    textSize: 'tiny',
-                    italic: true,
-                  }}
-                  flat
-                  compact
-                  showDescription={false}
-                />
-              )}
-              <TemplateField
-                component={auto}
-                minimal
-                allowFunctions
-                key={firstParamType}
-                type={firstParamType}
-                defaultType={firstParamType}
-                returnType={firstArgSchema?.type?.types_accepted}
-                value={firstArgument?.value}
-                isFunction={firstArgument?.is_expression}
-                onChange={(_name, value, type, isFunction) => {
-                  if (type !== 'any' && type !== 'auto') {
-                    updateArg(
-                      value,
-                      0,
-                      isFunction ? undefined : type,
-                      isFunction,
-                      selectedExpression?.args?.[0]?.required
-                    );
-                  }
-                }}
-                templates={localTemplates}
-                allowTemplates
-                allowCustomValues={!!firstArgument?.type}
-                filterTemplates={!!firstArgument?.type}
-                fluid={false}
-                fixed={true}
-              />
-            </ReqoreControlGroup>
-            {selectedExpression ? (
-              <ExpressionBuilderArgumentInfo
-                matchesType={argumentMatchesType(firstArgument, firstArgSchema)}
-                acceptedTypes={firstArgSchema.type?.types_accepted}
-                argumentType={getArgumentType(firstArgument)}
-              />
-            ) : null}
-          </ReqoreControlGroup>
-        )}
-        {firstArgument?.value !== undefined && firstArgument?.value !== null ? (
-          <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
-            <ReqoreP
-              size='tiny'
-              effect={{
-                uppercase: true,
-                spaced: 1,
-                weight: 'bold',
-                opacity: 0.6,
+          <ExpressionBuilderArgumentWrapper
+            expressions={expressions.value}
+            arg={firstArgument}
+            schema={firstArgSchema}
+            onTypeChange={(value) => {
+              updateType(value === 'context' ? undefined : value, true);
+            }}
+            label='Arg #1'
+          >
+            <TemplateField
+              component={auto}
+              minimal
+              allowFunctions
+              level={level + 1}
+              key={firstParamType}
+              type={firstParamType}
+              defaultType={firstParamType}
+              returnType={firstArgSchema?.type?.types_accepted}
+              value={firstArgument?.value}
+              isFunction={firstArgument?.is_expression}
+              onChange={(_name, value, type, isFunction) => {
+                if (type !== 'any' && type !== 'auto') {
+                  updateArg(
+                    value,
+                    0,
+                    isFunction ? undefined : type,
+                    isFunction,
+                    selectedExpression?.args?.[0]?.required
+                  );
+                }
               }}
-            >
-              Function
-            </ReqoreP>
-            <Select
-              flat
-              className='expression-operator-selector'
-              value={value?.value?.exp}
+              templates={localTemplates}
+              allowTemplates
+              allowCustomValues={!!firstArgument?.type}
+              filterTemplates={!!firstArgument?.type}
               fluid={false}
               fixed={true}
-              compact
-              defaultItems={expressions.value
-                ?.filter((exp) => exp.subtype !== 2)
-                .map((exp) => ({
-                  name: exp.name,
-                  value: exp.name,
-                  display_name: exp.display_name,
-                  short_desc: exp.desc,
-                  badge: exp.symbol,
-                }))}
-              onChange={(_name, value) => {
-                updateExp(value);
-              }}
-              showDescription='tooltip'
-              size='normal'
             />
-          </ReqoreControlGroup>
-        ) : null}
+          </ExpressionBuilderArgumentWrapper>
+        )}
+        <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
+          <ReqoreP
+            size='tiny'
+            effect={{
+              uppercase: true,
+              spaced: 1,
+              weight: 'bold',
+              opacity: 0.6,
+            }}
+          >
+            Function
+          </ReqoreP>
+          <Select
+            flat
+            className='expression-operator-selector'
+            value={value?.value?.exp}
+            fluid={false}
+            fixed={true}
+            compact
+            defaultItems={expressions.value
+              ?.filter((exp) => exp.subtype !== 2)
+              .map((exp) => ({
+                name: exp.name,
+                value: exp.name,
+                display_name: exp.display_name,
+                short_desc: exp.desc,
+                badge: exp.symbol,
+              }))}
+            onChange={(_name, value) => {
+              updateExp(value);
+            }}
+            showDescription='tooltip'
+            size='normal'
+          />
+        </ReqoreControlGroup>
         {firstArgument?.value !== undefined &&
         firstArgument?.value !== null &&
         validateField(firstParamType, firstArgument?.value, {
@@ -473,99 +448,59 @@ export const Expression = ({
         }) &&
         selectedExpression
           ? restOfArgs?.map((arg, index) => (
-              <ReqoreControlGroup
-                vertical
-                key={`${value?.value.exp}${index}-group`}
-                wrap
-                style={{ flexShrink: 1 }}
+              <ExpressionBuilderArgumentWrapper
+                expressions={expressions.value}
+                arg={rest[index]}
+                schema={arg}
+                onTypeChange={(value) => {
+                  updateArg(
+                    undefined,
+                    index + 1,
+                    value === 'context' ? undefined : (value as IQorusType)
+                  );
+                }}
+                onRemoveArgClick={() => {
+                  removeVarArg(index + 1);
+                }}
+                label={`Arg #${index + 2}`}
+                key={index}
+                hasMultipleArgs={selectedExpression.varargs && size(rest) > 1}
               >
-                <ExpressionBuilderArgumentLabel required={arg.required} label={arg.display_name} />
-                <ReqoreControlGroup verticalAlign='flex-end' stack>
-                  {rest[index]?.is_expression ? null : (
-                    <Select
-                      compact
-                      name='type'
-                      defaultItems={types.value}
-                      intent={
-                        conformsType(
-                          rest[index]?.type || arg.type?.types_accepted[0],
-                          arg.type.types_accepted
-                        )
-                          ? undefined
-                          : 'warning'
-                      }
-                      showDescription={false}
-                      value={rest[index]?.type || arg.type?.types_accepted[0]}
-                      onChange={(_name, value) => {
-                        updateArg(
-                          undefined,
-                          index + 1,
-                          value === 'context' ? undefined : (value as IQorusType)
-                        );
-                      }}
-                      flat
-                      labelEffect={{
-                        uppercase: true,
-                        spaced: 1,
-                        weight: 'thick',
-                        textSize: 'tiny',
-                        italic: true,
-                      }}
-                    />
-                  )}
-                  <TemplateField
-                    minimal
-                    component={auto}
-                    noSoft
-                    allowFunctions
-                    isFunction={rest[index]?.is_expression}
-                    type={rest[index]?.type || arg.type?.types_accepted[0]}
-                    defaultType={rest[index]?.type || arg.type?.types_accepted[0]}
-                    returnType={arg.type.types_accepted}
-                    canBeNull={false}
-                    value={rest[index]?.value ?? arg.default_value}
-                    templates={localTemplates}
-                    allowTemplates
-                    onChange={(_name, value, type, isFunction) => {
-                      updateArg(
-                        value,
-                        index + 1,
-                        isFunction ? undefined : type,
-                        isFunction,
-                        arg.required
-                      );
-                    }}
-                    fluid={false}
-                    fixed={true}
-                  />
-                  {selectedExpression.varargs && size(rest) > 1 ? (
-                    <ReqoreButton
-                      flat
-                      compact
-                      customTheme={{
-                        main: 'danger:darken:3:0.5',
-                      }}
-                      fixed
-                      className='expression-remove-arg'
-                      icon='CloseLine'
-                      tooltip='Remove argument'
-                      onClick={() => {
-                        removeVarArg(index + 1);
-                      }}
-                    />
-                  ) : null}
-                </ReqoreControlGroup>
-                <ExpressionBuilderArgumentInfo
-                  matchesType={argumentMatchesType(rest[index], arg)}
-                  acceptedTypes={arg.type?.types_accepted}
-                  argumentType={getArgumentType(rest[index])}
+                <TemplateField
+                  minimal
+                  component={auto}
+                  noSoft
+                  level={level + 1}
+                  allowFunctions
+                  isFunction={rest[index]?.is_expression}
+                  key={rest[index]?.type || arg.type?.types_accepted[0]}
+                  type={rest[index]?.type || arg.type?.types_accepted[0]}
+                  defaultType={rest[index]?.type || arg.type?.types_accepted[0]}
+                  returnType={arg.type.types_accepted}
+                  canBeNull={false}
+                  value={rest[index]?.value ?? arg.default_value}
+                  templates={localTemplates}
+                  allowTemplates
+                  onChange={(_name, value, type, isFunction) => {
+                    console.log('UPDATING VAR ARG', index, value, type, isFunction);
+                    updateArg(
+                      value,
+                      index + 1,
+                      isFunction ? undefined : type,
+                      isFunction,
+                      arg.required
+                    );
+                  }}
+                  fluid={false}
+                  fixed={true}
                 />
-              </ReqoreControlGroup>
+              </ExpressionBuilderArgumentWrapper>
             ))
           : null}
+
         <ReqoreControlGroup vertical>
           <ReqoreIcon icon='Settings4Fill' size='11px' effect={{ opacity: 0.6 }} />
-          <ReqoreControlGroup>
+          <ReqoreControlGroup wrap>
             {selectedExpression?.varargs && (
               <ReqoreButton
                 flat
@@ -677,6 +612,7 @@ export const Expression = ({
             icon='ErrorWarningLine'
             intent='danger'
             size='small'
+            wrap
             label={`This expression returns ${expressionReturnType || 'nothing'} but the expected return type is ${isArray(returnType) ? returnType.join(' or ') : returnType}`}
           />
         </>

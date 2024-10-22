@@ -617,6 +617,52 @@ export const ExpressionCanBeUnwrapped: Story = {
   },
 };
 
+export const ExpressionCanBeChanged: Story = {
+  args: {
+    value: {
+      value: {
+        exp: 'GREATER-THAN',
+        args: [
+          {
+            value: {
+              args: [
+                {
+                  value: '$local:name',
+                  type: 'string',
+                },
+              ],
+              exp: 'SIZE',
+            },
+            is_expression: true,
+            required: true,
+          },
+          {
+            type: 'int',
+            is_expression: false,
+            required: true,
+          },
+        ],
+      },
+      is_expression: true,
+    },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    await _testsWaitForText('get size');
+
+    await sleep(2000);
+
+    await _testsSelectItemFromCollection(within(canvasElement), 'contains', 'get size')();
+
+    await sleep(2000);
+
+    await _testsSelectItemFromCollection(
+      within(canvasElement),
+      'concatenate (string)',
+      'contains'
+    )();
+  },
+};
+
 export const MultipleAcceptedTypes: Story = {
   args: {
     returnType: ['string', 'int'],

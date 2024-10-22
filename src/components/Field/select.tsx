@@ -644,6 +644,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               <ReqoreDropdown
                 items={query === '' ? reqoreItems : filterItems(reqoreItems)}
                 filterable
+                fluid
                 key={value}
                 disabled={disabled}
                 readOnly={reqoreItems.length === 0}
@@ -661,14 +662,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                   className: 'q-select-input',
                 }}
                 description={getItemShortDescription(value) || description}
-                effect={
-                  !rest.minimal && {
-                    gradient: {
-                      direction: 'to left',
-                      colors: value ? 'info' : 'main',
-                    },
-                  }
-                }
+                intent={hasError(items, value) ? 'danger' : value ? 'info' : undefined}
+                {...rest}
               >
                 {value
                   ? getLabel(items, value)

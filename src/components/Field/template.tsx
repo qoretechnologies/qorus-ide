@@ -139,6 +139,7 @@ export const TemplateField = ({
   componentFromType,
   isFunction,
   returnType,
+  level,
   ...rest
 }: ITemplateFieldProps) => {
   const qorusTypes = useQorusTypes();
@@ -225,6 +226,7 @@ export const TemplateField = ({
             is_expression: true,
             value,
           }}
+          level={level}
           type={type}
           returnType={returnType || type}
           onChange={(expressionValue: IExpression | undefined, remove: boolean) => {

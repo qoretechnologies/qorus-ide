@@ -18,13 +18,7 @@ import SelectField from './select';
 
 export interface IInterfaceSelector {
   t?: TTranslator;
-  type:
-    | 'workflows'
-    | 'services'
-    | 'jobs'
-    | 'connections'
-    | 'mappers'
-    | 'value-maps';
+  type: 'workflow' | 'service' | 'job' | 'connection' | 'mapper' | 'value-map';
   itemsActions?: (item: string) => IReqorePanelProps['actions'];
 }
 
@@ -32,9 +26,7 @@ export const InterfaceSelector: FunctionComponent<
   ILongStringField & IField & IFieldChange & IInterfaceSelector
 > = ({ name, onChange, value, default_value, type, itemsActions, ...rest }) => {
   // Get the qorus instance
-  const { qorus_instance } = useContext<{ qorus_instance?: string }>(
-    InitialContext
-  );
+  const { qorus_instance } = useContext<{ qorus_instance?: string }>(InitialContext);
   const t = useContext(TextContext);
   // Fetch data on mount
   const {
@@ -54,9 +46,7 @@ export const InterfaceSelector: FunctionComponent<
   if (!qorus_instance) {
     return (
       <div>
-        <ReqoreMessage intent='warning'>
-          {t('InterfacesQorusInstanceRequired')}
-        </ReqoreMessage>
+        <ReqoreMessage intent='warning'>{t('InterfacesQorusInstanceRequired')}</ReqoreMessage>
         <ReqoreVerticalSpacer height={10} />
         <ReqoreP>{value || default_value}</ReqoreP>
       </div>
@@ -80,9 +70,14 @@ export const InterfaceSelector: FunctionComponent<
     );
   }
 
+  console.log(rest);
+
   return (
     <SelectField
       {...rest}
+      fluid
+      flat
+      minimal={false}
       defaultItems={interfaces.data.map((i) => ({
         name: i,
         actions: itemsActions?.(i),

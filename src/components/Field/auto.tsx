@@ -118,6 +118,15 @@ function AutoField<T = any>({
   const addModal = useReqoreProperty('addModal');
 
   useMount(() => {
+    console.log(
+      'MOUNTING FIELD',
+      name,
+      type,
+      value,
+      default_value,
+      defaultType,
+      defaultInternalType
+    );
     let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
 
     // If default type was not provided, get the type from the value
@@ -146,11 +155,11 @@ function AutoField<T = any>({
     }
 
     // Set the default value
-    handleChange(
-      name,
-      getValueOrDefaultValue(value, default_value, _canBeNull(internalType)),
-      internalType
-    );
+    // handleChange(
+    //   name,
+    //   getValueOrDefaultValue(value, default_value, _canBeNull(internalType)),
+    //   internalType
+    // );
   });
 
   useEffect(() => {
