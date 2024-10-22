@@ -13,7 +13,7 @@ export const getArgumentType = (
     return expressions?.find((exp) => exp.name === arg.value.exp)?.return_type;
   }
 
-  return arg?.type || schema.type?.types_accepted[0];
+  return arg?.type || schema?.type?.types_accepted[0];
 };
 
 export const argumentMatchesType = (
@@ -22,7 +22,7 @@ export const argumentMatchesType = (
   schema: TExpressionSchemaArg
 ) => {
   return (
-    schema.type.types_accepted.includes('any') ||
-    schema.type.types_accepted.includes(getArgumentType(expressions, arg, schema))
+    schema?.type.types_accepted.includes('any') ||
+    schema?.type.types_accepted.includes(getArgumentType(expressions, arg, schema))
   );
 };

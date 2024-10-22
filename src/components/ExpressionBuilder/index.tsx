@@ -1,5 +1,4 @@
 import {
-  ReqoreButton,
   ReqoreControlGroup,
   ReqoreIcon,
   ReqoreP,
@@ -157,7 +156,6 @@ export const Expression = ({
   }
 
   const updateType = (val: IQorusType, conformsCurrentType?: boolean) => {
-    console.log('updateType', val, conformsCurrentType);
     if (conformsCurrentType) {
       onValueChange(
         {
@@ -194,7 +192,6 @@ export const Expression = ({
   };
 
   const updateExp = (val: string) => {
-    console.log('updateExp', val);
     const args = [value.value.args[0]];
 
     // Check if this expression has variable arguments
@@ -269,7 +266,6 @@ export const Expression = ({
     isFunction?: boolean,
     isRequired?: boolean
   ) => {
-    console.log('updateArg', val, index, type, isFunction, isRequired);
     const args = clone(value.value.args);
 
     args[index] = {
@@ -320,24 +316,6 @@ export const Expression = ({
       returnType === 'context' ||
       returnType === expressionReturnType;
 
-  const conformsType = (type: IQorusType, typesAccepted: IQorusType[]) =>
-    type === 'auto' || type === 'any' || typesAccepted?.includes(type);
-
-  const getArgumentType = (arg: IExpression, schema: TExpressionSchemaArg) => {
-    if (arg?.is_expression) {
-      return expressions.value?.find((exp) => exp.name === arg.value.exp)?.return_type;
-    }
-
-    return arg?.type || schema.type?.types_accepted[0];
-  };
-
-  const argumentMatchesType = (arg: IExpression, schema: TExpressionSchemaArg) => {
-    return (
-      schema.type.types_accepted.includes('any') ||
-      schema.type.types_accepted.includes(getArgumentType(arg, schema))
-    );
-  };
-
   return (
     <StyledExpressionItem
       as={ReqorePanel}
@@ -350,6 +328,32 @@ export const Expression = ({
       customTheme={{
         main: `main:darken:${level}`,
       }}
+      label={
+        <Select
+          flat
+          size='small'
+          className='expression-operator-selector'
+          value={value?.value?.exp}
+          icon='Functions'
+          placeholder='Select function'
+          fluid={false}
+          fixed={true}
+          compact
+          defaultItems={expressions.value
+            ?.filter((exp) => exp.subtype !== 2)
+            .map((exp) => ({
+              name: exp.name,
+              value: exp.name,
+              display_name: exp.display_name,
+              short_desc: exp.desc,
+              badge: exp.symbol,
+            }))}
+          onChange={(_name, value) => {
+            updateExp(value);
+          }}
+          showDescription='tooltip'
+        />
+      }
       style={{
         marginLeft: isChild ? 30 : undefined,
         borderStyle: 'dashed',
@@ -357,13 +361,125 @@ export const Expression = ({
       contentStyle={{
         overflowX: 'hidden',
       }}
+      actions={[
+        {
+          flat: true,
+          compact: true,
+          className: 'expression-add-arg',
+          tooltip: 'Add argument',
+          label: 'Add arg',
+          icon: 'AddLine',
+          fixed: true,
+          disabled: !validateField('expression', value),
+          onClick: () => {
+            updateArg(undefined, size(value.value.args), undefined, false);
+          },
+          show: !!selectedExpression && selectedExpression.varargs === true,
+        },
+        {
+          as: Select,
+          props: {
+            flat: true,
+            compact: true,
+            className: 'expression-wrap',
+            placeholder: 'Wrap',
+            icon: 'Functions',
+            showRightIcon: false,
+            fluid: false,
+            fixed: true,
+            defaultItems: expressions.value
+              ?.filter((exp) => exp.subtype !== 2)
+              .map((exp) => ({
+                name: exp.name,
+                value: exp.name,
+                display_name: exp.display_name,
+                short_desc: exp.desc,
+                badge: exp.symbol,
+              })),
+            onChange: (_name, value) => {
+              wrapExpression(value);
+            },
+            showDescription: 'tooltip',
+            tooltip: 'Wrap this expression in another expression',
+          },
+        },
+        {
+          flat: true,
+          compact: true,
+          className: 'expression-unwrap',
+          label: 'Remove',
+          textAlign: 'center',
+          icon: 'CloseLine',
+          tooltip: 'Remove this expression but keep the children',
+          fixed: true,
+          onClick: unwrapExpression,
+          show: value.value.args?.[0]?.is_expression === true,
+        },
+        {
+          flat: true,
+          compact: true,
+          className: 'expression-group-remove',
+          intent: 'danger',
+          textAlign: 'center',
+          icon: 'DeleteBinLine',
+          tooltip: 'Remove this expression and its children',
+          fixed: true,
+          onClick: handleRemoveClick,
+        },
+      ]}
+      bottomActions={[
+        {
+          show: !!selectedExpression && expressionReturnType === 'bool',
+          group: [
+            {
+              flat: true,
+              compact: true,
+              className: 'expression-and',
+              label: 'AND',
+              textAlign: 'center',
+              icon: 'AddLine',
+              fixed: true,
+              show: !group || group === 'OR',
+              onClick: () => {
+                updateExpToAndOr('AND');
+              },
+            },
+            {
+              flat: true,
+              compact: true,
+              className: 'expression-or',
+              label: 'OR',
+              textAlign: 'center',
+              icon: 'AddLine',
+              show: !group || group === 'AND',
+              fixed: true,
+              onClick: () => {
+                updateExpToAndOr('OR');
+              },
+            },
+          ],
+        },
+      ]}
     >
+      {selectedExpression && (
+        <>
+          <ReqoreTag
+            wrap
+            icon='InformationFill'
+            label={selectedExpression?.desc}
+            minimal
+            size='small'
+          />
+          <ReqoreVerticalSpacer height={10} />
+        </>
+      )}
       <ReqoreControlGroup
         fluid={false}
         style={{ maxWidth: '100%' }}
         wrap
         verticalAlign='flex-start'
         size='normal'
+        gapSize='huge'
       >
         {firstParamType && (
           <ExpressionBuilderArgumentWrapper
@@ -406,47 +522,7 @@ export const Expression = ({
             />
           </ExpressionBuilderArgumentWrapper>
         )}
-        <ReqoreControlGroup style={{ flexShrink: 1 }} vertical>
-          <ReqoreP
-            size='tiny'
-            effect={{
-              uppercase: true,
-              spaced: 1,
-              weight: 'bold',
-              opacity: 0.6,
-            }}
-          >
-            Function
-          </ReqoreP>
-          <Select
-            flat
-            className='expression-operator-selector'
-            value={value?.value?.exp}
-            fluid={false}
-            fixed={true}
-            compact
-            defaultItems={expressions.value
-              ?.filter((exp) => exp.subtype !== 2)
-              .map((exp) => ({
-                name: exp.name,
-                value: exp.name,
-                display_name: exp.display_name,
-                short_desc: exp.desc,
-                badge: exp.symbol,
-              }))}
-            onChange={(_name, value) => {
-              updateExp(value);
-            }}
-            showDescription='tooltip'
-            size='normal'
-          />
-        </ReqoreControlGroup>
-        {firstArgument?.value !== undefined &&
-        firstArgument?.value !== null &&
-        validateField(firstParamType, firstArgument?.value, {
-          isFunction: firstArgument?.is_expression,
-        }) &&
-        selectedExpression
+        {selectedExpression
           ? restOfArgs?.map((arg, index) => (
               <ExpressionBuilderArgumentWrapper
                 expressions={expressions.value}
@@ -473,7 +549,7 @@ export const Expression = ({
                   level={level + 1}
                   allowFunctions
                   isFunction={rest[index]?.is_expression}
-                  key={rest[index]?.type || arg.type?.types_accepted[0]}
+                  key={index}
                   type={rest[index]?.type || arg.type?.types_accepted[0]}
                   defaultType={rest[index]?.type || arg.type?.types_accepted[0]}
                   returnType={arg.type.types_accepted}
@@ -482,7 +558,6 @@ export const Expression = ({
                   templates={localTemplates}
                   allowTemplates
                   onChange={(_name, value, type, isFunction) => {
-                    console.log('UPDATING VAR ARG', index, value, type, isFunction);
                     updateArg(
                       value,
                       index + 1,
@@ -497,112 +572,6 @@ export const Expression = ({
               </ExpressionBuilderArgumentWrapper>
             ))
           : null}
-
-        <ReqoreControlGroup vertical>
-          <ReqoreIcon icon='Settings4Fill' size='11px' effect={{ opacity: 0.6 }} />
-          <ReqoreControlGroup wrap>
-            {selectedExpression?.varargs && (
-              <ReqoreButton
-                flat
-                compact
-                className='expression-add-arg'
-                tooltip='Add argument'
-                icon='AddLine'
-                fixed
-                disabled={!validateField('expression', value)}
-                onClick={() => {
-                  updateArg(undefined, size(value.value.args), undefined, false);
-                }}
-              />
-            )}
-            <ReqoreControlGroup stack>
-              {validateField(firstParamType, firstArgument?.value, {
-                isFunction: firstArgument?.is_expression,
-              }) &&
-              selectedExpression &&
-              expressionReturnType === 'bool' ? (
-                <>
-                  {!group || group === 'OR' ? (
-                    <ReqoreButton
-                      flat
-                      className='expression-and'
-                      compact
-                      label='AND'
-                      textAlign='center'
-                      icon='AddLine'
-                      fixed
-                      onClick={() => {
-                        updateExpToAndOr('AND');
-                      }}
-                    />
-                  ) : null}
-                  {!group || group === 'AND' ? (
-                    <ReqoreButton
-                      flat
-                      compact
-                      className='expression-or'
-                      label='OR'
-                      textAlign='center'
-                      icon='AddLine'
-                      fixed
-                      onClick={() => updateExpToAndOr('OR')}
-                    />
-                  ) : null}
-                </>
-              ) : null}
-            </ReqoreControlGroup>
-            <ReqoreControlGroup>
-              <Select
-                flat
-                compact
-                className='expression-wrap'
-                placeholder='Wrap'
-                icon='BracesLine'
-                showRightIcon={false}
-                fluid={false}
-                fixed={true}
-                defaultItems={expressions.value
-                  ?.filter((exp) => exp.subtype !== 2)
-                  .map((exp) => ({
-                    name: exp.name,
-                    value: exp.name,
-                    display_name: exp.display_name,
-                    short_desc: exp.desc,
-                    badge: exp.symbol,
-                  }))}
-                onChange={(_name, value) => {
-                  wrapExpression(value);
-                }}
-                showDescription='tooltip'
-                size='normal'
-              />
-              {value.value.args?.[0]?.is_expression && (
-                <ReqoreButton
-                  flat
-                  compact
-                  className='expression-unwrap'
-                  intent='warning'
-                  textAlign='center'
-                  icon='CloseLine'
-                  tooltip='Remove this expression but keep the children'
-                  fixed
-                  onClick={unwrapExpression}
-                />
-              )}
-              <ReqoreButton
-                flat
-                compact
-                className='expression-group-remove'
-                intent='danger'
-                textAlign='center'
-                icon='DeleteBinLine'
-                tooltip='Remove this expression and its children'
-                fixed
-                onClick={handleRemoveClick}
-              />
-            </ReqoreControlGroup>
-          </ReqoreControlGroup>
-        </ReqoreControlGroup>
       </ReqoreControlGroup>
       {!isReturnTypeMatching && (
         <>

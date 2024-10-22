@@ -1,7 +1,6 @@
 import { ReqoreButton, ReqoreControlGroup, ReqorePanel } from '@qoretechnologies/reqore';
 import { TQorusType } from '@qoretechnologies/ts-toolkit';
 import { IExpression, IExpressionSchema, TExpressionSchemaArg } from '.';
-import { argumentMatchesType, getArgumentType } from '../../helpers/expressions';
 import { useQorusTypes } from '../../hooks/useQorusTypes';
 import Select from '../Field/select';
 import { ExpressionBuilderArgumentLabel } from './argumentLabel';
@@ -29,14 +28,14 @@ export const ExpressionBuilderArgumentWrapper = ({
 }: IExpressionBuilderArgumentWrapperProps) => {
   const types = useQorusTypes();
 
-  if (arg.is_expression) {
+  if (arg?.is_expression) {
     return (
       <ReqorePanel
         minimal
         fluid
         responsiveTitle={false}
         responsiveActions={false}
-        label={`${label} - ${schema.display_name}`}
+        label={`${label} - "${schema.display_name}"`}
         headerEffect={{
           uppercase: true,
           spaced: 1,
@@ -72,21 +71,21 @@ export const ExpressionBuilderArgumentWrapper = ({
   }
 
   return (
-    <ReqoreControlGroup vertical wrap style={{ flexShrink: 1 }}>
+    <ReqoreControlGroup vertical wrap style={{ flexShrink: 1 }} size='small'>
       <ExpressionBuilderArgumentLabel
-        required={schema.required}
-        label={schema.display_name}
-        matchesType={argumentMatchesType(expressions, arg, schema)}
-        acceptedTypes={schema.type?.types_accepted}
-        argumentType={getArgumentType(expressions, arg, schema)}
+        arg={arg}
+        schema={schema}
+        label={label}
+        expressions={expressions}
       />
-      <ReqoreControlGroup verticalAlign='flex-end' stack wrap>
+      <ReqoreControlGroup verticalAlign='flex-start' stack wrap fluid>
         <Select
           compact
+          fixed
           name='type'
           defaultItems={types.value}
           showDescription={false}
-          value={arg?.type || schema.type?.types_accepted[0]}
+          value={arg?.type || schema?.type?.types_accepted[0] || 'context'}
           onChange={(_name, value) => {
             onTypeChange(value);
           }}

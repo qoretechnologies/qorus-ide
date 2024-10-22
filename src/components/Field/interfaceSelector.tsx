@@ -70,8 +70,6 @@ export const InterfaceSelector: FunctionComponent<
     );
   }
 
-  console.log(rest);
-
   return (
     <SelectField
       {...rest}

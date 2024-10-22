@@ -17,8 +17,6 @@ const meta = {
   render: (args) => {
     const [exp, setExp] = useState<IExpression>(args.value);
 
-    console.log(exp);
-
     return (
       <ExpressionBuilder
         {...args}
@@ -332,22 +330,6 @@ export const GroupsCanBeDeleted: Story = {
   },
 };
 
-export const ExpressionIsResetWhenValueIsRemoved: Story = {
-  ...WithIntType,
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    await waitFor(
-      () => expect(document.querySelectorAll('.expression .template-remove')).toHaveLength(1),
-      { timeout: 10000 }
-    );
-
-    await fireEvent.click(document.querySelectorAll('.expression .template-remove')[0]);
-
-    await expect(document.querySelector('.expression-operator-selector')).not.toBeInTheDocument();
-  },
-};
-
 export const NewExpression: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
@@ -376,7 +358,9 @@ export const NewExpression: Story = {
 
     console.log('Selecting `ends with` in new expression');
 
-    await _testsSelectItemFromCollection(canvas, 'ends with', 'PleaseSelect')();
+    await _testsSelectItemFromCollection(canvas, 'ends with', 'Select function')();
+
+    await _testsSelectItemFromCollection(canvas, 'str', 'con')();
 
     await sleep(300);
 

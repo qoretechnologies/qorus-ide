@@ -118,15 +118,6 @@ function AutoField<T = any>({
   const addModal = useReqoreProperty('addModal');
 
   useMount(() => {
-    console.log(
-      'MOUNTING FIELD',
-      name,
-      type,
-      value,
-      default_value,
-      defaultType,
-      defaultInternalType
-    );
     let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
 
     // If default type was not provided, get the type from the value
@@ -265,6 +256,7 @@ function AutoField<T = any>({
               app: rest.app,
               action: rest.action,
               compact: true,
+              size: rest.size,
             },
           },
         ];
@@ -503,6 +495,7 @@ function AutoField<T = any>({
             dataType='yaml'
             resultDataType='yaml'
             type='object'
+            fill
           />
         );
       }
@@ -533,6 +526,7 @@ function AutoField<T = any>({
             resultDataType='yaml'
             type='array'
             {...rest}
+            fill
           />
         );
       }
