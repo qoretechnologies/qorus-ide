@@ -1,6 +1,7 @@
 import { ReqoreIcon, ReqoreP, ReqoreSpan } from '@qoretechnologies/reqore';
 import { IExpression, IExpressionSchema, TExpressionSchemaArg } from '.';
 import { argumentMatchesType, getArgumentType } from '../../helpers/expressions';
+import { validateField } from '../../helpers/validations';
 
 export interface IExpressionBuilderArgumentLabelProps {
   label: string;
@@ -33,6 +34,7 @@ export const ExpressionBuilderArgumentLabel = ({
 
   const matchesType = argumentMatchesType(expressions, arg, schema);
   const argumentType = getArgumentType(expressions, arg, schema);
+  const isArgumentValid = matchesType && validateField('expression', arg);
 
   return (
     <ReqoreP
@@ -44,7 +46,7 @@ export const ExpressionBuilderArgumentLabel = ({
       }}
       customTheme={{
         text: {
-          color: !matchesType ? 'warning:lighten:7' : undefined,
+          color: !isArgumentValid ? 'warning:lighten:7' : undefined,
         },
       }}
       title={

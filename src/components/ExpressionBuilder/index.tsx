@@ -519,6 +519,7 @@ export const Expression = ({
               filterTemplates={!!firstArgument?.type}
               fluid={false}
               fixed={true}
+              disableManagement
             />
           </ExpressionBuilderArgumentWrapper>
         )}
@@ -568,6 +569,7 @@ export const Expression = ({
                   }}
                   fluid={false}
                   fixed={true}
+                  disableManagement
                 />
               </ExpressionBuilderArgumentWrapper>
             ))

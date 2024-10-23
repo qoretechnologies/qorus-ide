@@ -243,6 +243,7 @@ export const TemplateField = ({
       fixed={rest.fixed}
       size={rest.size}
       stack={rest.stack}
+      {...rest}
       verticalAlign='flex-start'
     >
       {!isTemplate && (
@@ -290,6 +291,8 @@ export const TemplateField = ({
         <ReqoreControlGroup stack>
           <ReqoreDropdown
             className='template-selector'
+            flat
+            minimal={false}
             onItemSelect={(item) => onChange(name, item.value, item.badge as IQorusType)}
             items={
               filterTemplates
@@ -304,6 +307,7 @@ export const TemplateField = ({
               fixed
               icon='CloseLine'
               tooltip='Remove template value'
+              minimal={false}
               className='template-remove'
               compact
               flat
@@ -326,6 +330,8 @@ export const TemplateField = ({
           defaultItems={functions.value}
           fixed
           compact
+          flat
+          minimal={false}
           showDescription='tooltip'
           showPlaceholder={false}
           showRightIcon={false}
@@ -359,12 +365,13 @@ export const TemplateField = ({
           fixed
           icon='MoneyDollarCircleLine'
           className='template-toggle'
+          minimal={false}
           customTheme={{
             main: isTemplate ? 'info:darken:1:0.3' : undefined,
           }}
           tooltip={isTemplate ? 'Use custom value' : 'Use a template'}
           compact
-          flat={!isTemplate}
+          flat
           size={rest.size}
           onClick={() => {
             setIsTemplate(true);

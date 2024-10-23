@@ -64,6 +64,7 @@ export interface IAutoFieldProps extends IField {
   isConfigItem?: boolean;
   isVariable?: boolean;
   disableSearchOptions?: boolean;
+  disableManagement?: boolean;
 
   allowedTypes?: { name: IQorusType }[];
   supports_templates?: boolean;
@@ -110,6 +111,7 @@ function AutoField<T = any>({
   isVariable,
   allowedTypes,
   element_type,
+  disableManagement,
   ...rest
 }: IAutoFieldProps & T) {
   const [currentType, setType] = useState<IQorusType>(defaultInternalType || null);
@@ -268,7 +270,7 @@ function AutoField<T = any>({
   };
 
   const renderConnectionManagement = () => {
-    if (type !== 'connection') {
+    if (type !== 'connection' || disableManagement) {
       return null;
     }
 
@@ -731,41 +733,34 @@ function AutoField<T = any>({
 
   // Render type picker if the type is auto or any
   return (
-    <ReqoreControlGroup
-      fill={rest.fill}
-      fluid={rest.fluid}
-      fixed={rest.fixed}
-      className='auto-field-group'
-    >
-      <ReqoreControlGroup vertical fluid>
-        {showPicker && (
-          <SelectField
-            fixed
-            flat
-            minimal={rest.minimal}
-            size={rest.size}
-            name='type'
-            defaultItems={types}
-            value={currentInternalType}
-            onChange={(_name, value) => {
-              handleTypeChange(name, value);
-            }}
-          />
-        )}
+    <ReqoreControlGroup {...rest} className={`${rest.className} auto-field-group`} vertical fluid>
+      {showPicker && (
+        <SelectField
+          fixed
+          flat
+          minimal={rest.minimal}
+          size={rest.size}
+          name='type'
+          defaultItems={types}
+          value={currentInternalType}
+          onChange={(_name, value) => {
+            handleTypeChange(name, value);
+          }}
+        />
+      )}
 
-        {renderField(currentInternalType)}
-        {canBeNull && (
-          <ReqoreButton
-            intent={isSetToNull ? 'warning' : undefined}
-            icon={isSetToNull ? 'CloseLine' : undefined}
-            onClick={handleNullToggle}
-            fixed
-          >
-            {isSetToNull ? 'Unset null' : 'Set as null'}
-          </ReqoreButton>
-        )}
-        {renderConnectionManagement()}
-      </ReqoreControlGroup>
+      {renderField(currentInternalType)}
+      {canBeNull && (
+        <ReqoreButton
+          intent={isSetToNull ? 'warning' : undefined}
+          icon={isSetToNull ? 'CloseLine' : undefined}
+          onClick={handleNullToggle}
+          fixed
+        >
+          {isSetToNull ? 'Unset null' : 'Set as null'}
+        </ReqoreButton>
+      )}
+      {renderConnectionManagement()}
     </ReqoreControlGroup>
   );
 }
