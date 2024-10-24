@@ -7,11 +7,13 @@ import {
 import { IReqorePanelProps } from '@qoretechnologies/reqore/dist/components/Panel';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { ReqraftObjectFormField } from '@qoretechnologies/reqraft/dist/components/form/fields/object/Object';
+import { TQorusType } from '@qoretechnologies/ts-toolkit';
 import jsyaml from 'js-yaml';
 import { get, map, set, size } from 'lodash';
 import { useEffect, useState } from 'react';
 import useMount from 'react-use/lib/useMount';
 import { apiHost } from '../../common/vscode';
+import { fixOldArgSchemaData } from '../../helpers/functions';
 import {
   getTypeFromValue,
   getValueOrDefaultValue,
@@ -20,6 +22,7 @@ import {
 } from '../../helpers/validations';
 import withTextContext from '../../hocomponents/withTextContext';
 import { ConnectionManagement } from '../ConnectionManagement';
+import { Description } from '../Description';
 import { IField } from '../FieldWrapper';
 import SubField from '../SubField';
 import ArrayAutoField from './arrayAuto';
@@ -33,6 +36,7 @@ import { InterfaceSelector } from './interfaceSelector';
 import LongStringField from './longString';
 import MultiSelect from './multiSelect';
 import NumberField from './number';
+import { OptionFieldMessages } from './optionFieldMessages';
 import OptionHashField from './optionHash';
 import RadioField from './radioField';
 import { RichTextField } from './richText';
@@ -60,6 +64,7 @@ export interface IAutoFieldProps extends IField {
   isConfigItem?: boolean;
   isVariable?: boolean;
   disableSearchOptions?: boolean;
+  disableManagement?: boolean;
 
   allowedTypes?: { name: IQorusType }[];
   supports_templates?: boolean;
@@ -71,6 +76,7 @@ export interface IAutoFieldProps extends IField {
   disabled?: boolean;
 
   templates?: IReqoreFormTemplates;
+  metadata?: ISelectFieldItem['metadata'];
 }
 
 export const DefaultNoSoftTypes = [
@@ -105,6 +111,7 @@ function AutoField<T = any>({
   isVariable,
   allowedTypes,
   element_type,
+  disableManagement,
   ...rest
 }: IAutoFieldProps & T) {
   const [currentType, setType] = useState<IQorusType>(defaultInternalType || null);
@@ -114,7 +121,12 @@ function AutoField<T = any>({
 
   useMount(() => {
     let defType: IQorusType = defaultType && (defaultType.replace(/"/g, '').trim() as any);
-    defType = defType || 'any';
+
+    // If default type was not provided, get the type from the value
+    if (!defType) {
+      defType = getTypeFromValue(maybeParseYaml(value));
+    }
+
     let internalType;
     // If value already exists, but the type is auto or any
     // set the type based on the value
@@ -123,6 +135,7 @@ function AutoField<T = any>({
     } else {
       internalType = defaultInternalType || defType;
     }
+
     setInternalType(internalType);
     setType(defType);
     // If the value is null and can be null, set the null flag
@@ -135,12 +148,18 @@ function AutoField<T = any>({
     }
 
     // Set the default value
-    handleChange(
-      name,
-      getValueOrDefaultValue(value, default_value, _canBeNull(internalType)),
-      internalType
-    );
+    // handleChange(
+    //   name,
+    //   getValueOrDefaultValue(value, default_value, _canBeNull(internalType)),
+    //   internalType
+    // );
   });
+
+  useEffect(() => {
+    if (defaultType && currentInternalType !== defaultType) {
+      setInternalType(defaultType);
+    }
+  }, [defaultType]);
 
   useEffect(() => {
     // Auto field type depends on other fields' value
@@ -239,6 +258,7 @@ function AutoField<T = any>({
               app: rest.app,
               action: rest.action,
               compact: true,
+              size: rest.size,
             },
           },
         ];
@@ -247,6 +267,34 @@ function AutoField<T = any>({
         return [];
       }
     }
+  };
+
+  const renderConnectionManagement = () => {
+    if (type !== 'connection' || disableManagement) {
+      return null;
+    }
+
+    let metadata: ISelectFieldItem['metadata'] = rest.metadata;
+
+    // If the field has allowed values, and the value is set
+    // get the metadata from the allowed values
+    if (rest.allowed_values) {
+      if (value) {
+        metadata = rest.allowed_values?.find(
+          (item) => item.value === value || item.name === value
+        )?.metadata;
+      }
+    }
+
+    return (
+      <ConnectionManagement
+        selectedConnection={value}
+        onChange={(value) => handleChange(name, value)}
+        redirectUri={`${apiHost}/grant`}
+        {...rest}
+        metadata={metadata}
+      />
+    );
   };
 
   const renderField = (currentType: IQorusType) => {
@@ -379,8 +427,13 @@ function AutoField<T = any>({
       case 'hash':
       case 'hash<auto>': {
         if (arg_schema) {
-          const currentPath = path ? `${path}.` : '';
-          const transformedValue = typeof value === 'string' ? maybeParseYaml(value) : value;
+          const transformedValue: Record<
+            string,
+            { type: TQorusType; value: any; is_expression?: boolean }
+          > = fixOldArgSchemaData(
+            typeof value === 'string' ? maybeParseYaml(value) : value,
+            arg_schema
+          );
 
           return map(arg_schema, (schema, option) => {
             return (
@@ -388,39 +441,49 @@ function AutoField<T = any>({
                 title={schema.display_name || option}
                 key={option}
                 {...schema}
-                desc={`${schema.desc}`}
-                descTitle={`${currentPath}${option}`}
                 collapsible
                 nested={level > 0}
                 isValid={
                   schema.required
-                    ? validateField(schema.type, get(transformedValue, `${option}`))
+                    ? validateField(schema.type, get(transformedValue, `${option}`)?.value, schema)
                     : true
                 }
                 detail={schema.required ? 'Required' : 'Optional'}
               >
+                <Description
+                  shortDescription={schema.short_desc}
+                  longDescription={schema.desc}
+                  type={schema.type as TQorusType}
+                />
                 <TemplateField
                   component={AutoField}
+                  allowFunctions
+                  isFunction={get(transformedValue, `${option}`)?.is_expression}
                   {...rest}
                   {...schema}
-                  path={`${currentPath}${option}`}
-                  name={`${currentPath}${option}`}
+                  name={option}
                   level={level + 1}
                   defaultType={schema.type}
                   defaultInternalType={schema.type}
-                  value={get(transformedValue, `${option}`)}
-                  onChange={(n, v) => {
+                  value={get(transformedValue, `${option}`)?.value}
+                  onChange={(n, v, type, isFunction) => {
                     if (v !== undefined) {
-                      if (level === 0) {
-                        const newValue = set(transformedValue || {}, n, v);
+                      const newValue = set(transformedValue || {}, n, {
+                        type: type || schema.type,
+                        value: v,
+                        is_expression: isFunction,
+                      });
 
-                        handleChange(name, newValue);
-                      } else {
-                        handleChange(n, v);
-                      }
+                      handleChange(name, newValue);
                     }
                   }}
                   column
+                />
+                <OptionFieldMessages
+                  schema={arg_schema}
+                  allOptions={transformedValue}
+                  name={option}
+                  option={get(transformedValue, `${option}`) || {}}
                 />
               </SubField>
             );
@@ -434,6 +497,7 @@ function AutoField<T = any>({
             dataType='yaml'
             resultDataType='yaml'
             type='object'
+            fill
           />
         );
       }
@@ -464,6 +528,7 @@ function AutoField<T = any>({
             resultDataType='yaml'
             type='array'
             {...rest}
+            fill
           />
         );
       }
@@ -654,7 +719,7 @@ function AutoField<T = any>({
         className='auto-field-schema-wrapper'
         style={{
           flexFlow: column || arg_schema ? 'column' : 'row',
-          marginLeft: 10 * level,
+          //marginLeft: 10 * level,
           overflow: 'hidden',
           flex: '1 1 auto',
           //maxHeight: level === 0 ? '500px' : undefined,
@@ -668,50 +733,34 @@ function AutoField<T = any>({
 
   // Render type picker if the type is auto or any
   return (
-    <ReqoreControlGroup
-      fill={rest.fill}
-      fluid={rest.fluid}
-      fixed={rest.fixed}
-      className='auto-field-group'
-    >
-      <ReqoreControlGroup vertical fluid>
-        {showPicker && (
-          <SelectField
-            fixed
-            flat
-            minimal={rest.minimal}
-            size={rest.size}
-            name='type'
-            defaultItems={types}
-            value={currentInternalType}
-            onChange={(_name, value) => {
-              handleTypeChange(name, value);
-            }}
-          />
-        )}
+    <ReqoreControlGroup {...rest} className={`auto-field-group`} vertical fluid>
+      {showPicker && (
+        <SelectField
+          fixed
+          flat
+          minimal={rest.minimal}
+          size={rest.size}
+          name='type'
+          defaultItems={types}
+          value={currentInternalType}
+          onChange={(_name, value) => {
+            handleTypeChange(name, value);
+          }}
+        />
+      )}
 
-        {renderField(currentInternalType)}
-        {canBeNull && (
-          <ReqoreButton
-            intent={isSetToNull ? 'warning' : undefined}
-            icon={isSetToNull ? 'CloseLine' : undefined}
-            onClick={handleNullToggle}
-            fixed
-          >
-            {isSetToNull ? 'Unset null' : 'Set as null'}
-          </ReqoreButton>
-        )}
-        {type === 'connection' ? (
-          <ConnectionManagement
-            selectedConnection={value}
-            onChange={(value) => handleChange(name, value)}
-            allowedValues={rest.allowed_values}
-            redirectUri={`${apiHost}/grant`}
-            app={rest.app}
-            action={rest.action}
-          />
-        ) : null}
-      </ReqoreControlGroup>
+      {renderField(currentInternalType)}
+      {canBeNull && (
+        <ReqoreButton
+          intent={isSetToNull ? 'warning' : undefined}
+          icon={isSetToNull ? 'CloseLine' : undefined}
+          onClick={handleNullToggle}
+          fixed
+        >
+          {isSetToNull ? 'Unset null' : 'Set as null'}
+        </ReqoreButton>
+      )}
+      {renderConnectionManagement()}
     </ReqoreControlGroup>
   );
 }

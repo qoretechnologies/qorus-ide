@@ -27,6 +27,7 @@ import DateField from '../Field/date';
 import LongStringField from '../Field/longString';
 import Number from '../Field/number';
 import { RichTextField } from './richText';
+import Select from './select';
 
 export type IQorusType =
   | 'string'
@@ -137,6 +138,9 @@ export const TemplateField = ({
   filterTemplates = true,
   componentFromType,
   isFunction,
+  returnType,
+  level,
+  className,
   ...rest
 }: ITemplateFieldProps) => {
   const qorusTypes = useQorusTypes();
@@ -147,7 +151,7 @@ export const TemplateField = ({
       return [];
     }
 
-    const data = await fetchData(`/system/expressions?first_arg_type=${type}`);
+    const data = await fetchData(`/system/expressions`);
 
     return data.data;
   }, [type]);
@@ -223,8 +227,9 @@ export const TemplateField = ({
             is_expression: true,
             value,
           }}
+          level={level}
           type={type}
-          returnType={type}
+          returnType={returnType || type}
           onChange={(expressionValue: IExpression | undefined, remove: boolean) => {
             onChange(name, expressionValue?.value || value?.args[0]?.value, type, !remove);
           }}
@@ -239,6 +244,7 @@ export const TemplateField = ({
       fixed={rest.fixed}
       size={rest.size}
       stack={rest.stack}
+      {...rest}
       verticalAlign='flex-start'
     >
       {!isTemplate && (
@@ -247,7 +253,7 @@ export const TemplateField = ({
           onChange={onChange}
           name={name}
           {...rest}
-          className={`${rest.className} template-selector`}
+          className={`${className} template-selector`}
           templates={
             allowTemplates
               ? filterTemplates
@@ -286,6 +292,8 @@ export const TemplateField = ({
         <ReqoreControlGroup stack>
           <ReqoreDropdown
             className='template-selector'
+            flat
+            minimal={false}
             onItemSelect={(item) => onChange(name, item.value, item.badge as IQorusType)}
             items={
               filterTemplates
@@ -300,6 +308,7 @@ export const TemplateField = ({
               fixed
               icon='CloseLine'
               tooltip='Remove template value'
+              minimal={false}
               className='template-remove'
               compact
               flat
@@ -318,16 +327,19 @@ export const TemplateField = ({
       ) : null}
 
       {allowFunctions && !size(rest.allowed_values) && !rest.readonly ? (
-        <ReqoreDropdown
-          items={functions.value?.map((func) => ({
-            label: func.display_name,
-            description: func.short_desc,
-            value: func.name,
-          }))}
+        <Select
+          defaultItems={functions.value}
+          fixed
+          compact
+          flat
+          minimal={false}
+          showDescription='tooltip'
+          showPlaceholder={false}
+          showRightIcon={false}
           className='function-selector'
           icon='Functions'
-          onItemSelect={(item) => {
-            const func = functions.value.find((f) => f.name === item.value);
+          onChange={(_n, item) => {
+            const func = functions.value.find((f) => f.name === item);
             setIsTemplate(false);
             setTemplateValue(null);
 
@@ -337,7 +349,7 @@ export const TemplateField = ({
                 exp: func.name,
                 args: [
                   {
-                    type: getExpressionArgumentType(func.args[0], qorusTypes.value),
+                    type: type || getExpressionArgumentType(func.args[0], qorusTypes.value),
                     value,
                   },
                 ],
@@ -354,12 +366,13 @@ export const TemplateField = ({
           fixed
           icon='MoneyDollarCircleLine'
           className='template-toggle'
+          minimal={false}
           customTheme={{
             main: isTemplate ? 'info:darken:1:0.3' : undefined,
           }}
           tooltip={isTemplate ? 'Use custom value' : 'Use a template'}
           compact
-          flat={!isTemplate}
+          flat
           size={rest.size}
           onClick={() => {
             setIsTemplate(true);

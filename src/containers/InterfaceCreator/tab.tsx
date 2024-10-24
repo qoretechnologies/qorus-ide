@@ -211,25 +211,20 @@ const TutorialButton = ({ type, onClick }) => {
         <ReqoreButton
           icon='QuestionMark'
           onClick={() => {
-            tutorials[type].elements = tutorials[type].elements.map(
-              (element) => {
-                const el = document.querySelector(`#${element.id}`);
+            tutorials[type].elements = tutorials[type].elements.map((element) => {
+              const el = document.querySelector(`#${element.id}`);
 
-                if (!el) {
-                  return undefined;
-                }
-
-                return {
-                  ...element,
-                  elementData: el.getBoundingClientRect(),
-                };
+              if (!el) {
+                return undefined;
               }
-            );
 
-            onClick([
-              ...tutorials.default.elements,
-              ...tutorials[type].elements,
-            ]);
+              return {
+                ...element,
+                elementData: el.getBoundingClientRect(),
+              };
+            });
+
+            onClick([...tutorials.default.elements, ...tutorials[type].elements]);
           }}
         >
           Tutorial
@@ -263,8 +258,7 @@ const Tab: React.FC<ITabProps> = ({
   const [draftsOpen, setDraftsOpen] = useState<boolean>(false);
   const { changeTab, isSavingDraft, lastDraft, is_hosted_instance }: any =
     useContext(InitialContext);
-  const { methods, setMethods, setMethodsCount }: any =
-    useContext(MethodsContext);
+  const { methods, setMethods, setMethodsCount }: any = useContext(MethodsContext);
   const { addDraft } = useContext<IDraftsContext>(DraftsContext);
   const [draftsCount, setDraftsCount] = useState<number>(0);
   const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
@@ -278,17 +272,16 @@ const Tab: React.FC<ITabProps> = ({
     })
   );
   const [searchParams] = useSearchParams();
-  const [isAiDialogAllowed] = useReqraftStorage<TOption>(
-    'config.allowAiCreateDialog',
-    { type: 'boolean', value: true }
-  );
+  const [isAiDialogAllowed] = useReqraftStorage<TOption>('config.allowAiCreateDialog', {
+    type: 'boolean',
+    value: true,
+  });
   const allowAiCreateDialog =
     !searchParams.has('draftId') &&
     supportsAICreation[type] &&
     !isEditing() &&
     isAiDialogAllowed.value === true;
-  const [isCreateFromTextOpen, setIsCreateFromTextOpen] =
-    useState<boolean>(allowAiCreateDialog);
+  const [isCreateFromTextOpen, setIsCreateFromTextOpen] = useState<boolean>(allowAiCreateDialog);
 
   useEffect(() => {
     setIsCreateFromTextOpen(allowAiCreateDialog);
@@ -379,10 +372,7 @@ const Tab: React.FC<ITabProps> = ({
             // used in class connections as triggers
             const { 'class-connections': classConnections } = data.service;
             const removedMethods: any[] = methods.filter((method) => {
-              return (
-                method.name !== 'init' &&
-                !isMethodUsedInCC(method.name, classConnections)
-              );
+              return method.name !== 'init' && !isMethodUsedInCC(method.name, classConnections);
             });
             // Set the methods to only leave the init method
             // only if no methods were left
@@ -390,8 +380,7 @@ const Tab: React.FC<ITabProps> = ({
               return size(removedMethods) !== size(methods)
                 ? [...cur].filter(
                     (method) =>
-                      method.name === 'init' ||
-                      isMethodUsedInCC(method.name, classConnections)
+                      method.name === 'init' || isMethodUsedInCC(method.name, classConnections)
                   )
                 : [{ name: 'init', desc: '' }];
             });
@@ -400,9 +389,7 @@ const Tab: React.FC<ITabProps> = ({
               removeSubItemFromFields(method.id, 'service-methods');
             });
 
-            setMethodsCount(
-              (current: number) => current - size(removedMethods)
-            );
+            setMethodsCount((current: number) => current - size(removedMethods));
           }
           data.changeInitialData('isRecreate', true);
           setRecreateDialog(null);
@@ -495,7 +482,7 @@ const Tab: React.FC<ITabProps> = ({
       icon: 'CloseLine',
       label: 'Cancel',
       compact: true,
-      tooltip: 'Cancel you work, delete a draft and go back',
+      tooltip: 'Cancel your unsaved work, delete a draft and go back',
       onClick: () => {
         if (searchParams.has('draftId')) {
           deleteDraft(type, searchParams.get('draftId'));
@@ -531,10 +518,7 @@ const Tab: React.FC<ITabProps> = ({
   return (
     <>
       {isCreateFromTextOpen && (
-        <CreateInterfaceFromTextModal
-          type={type}
-          onClose={() => setIsCreateFromTextOpen(false)}
-        />
+        <CreateInterfaceFromTextModal type={type} onClose={() => setIsCreateFromTextOpen(false)} />
       )}
       {draftsOpen && (
         <CustomDialog

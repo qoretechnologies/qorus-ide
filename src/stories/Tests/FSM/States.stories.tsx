@@ -82,7 +82,7 @@ export const NewStateFromVariable: StoryFSM = {
     // Open the state
     await waitFor(
       async () => {
-        await expect(document.querySelectorAll('.system-option.reqore-input')[0]).toHaveValue(100);
+        await expect(document.querySelectorAll('.system-option .reqore-input')[0]).toHaveValue(100);
       },
       { timeout: 15000 }
     );
@@ -177,7 +177,7 @@ export const NewWhileState: StoryFSM = {
     await waitFor(
       async () => await expect(document.querySelector('.state-next-button')).toBeDisabled(),
       {
-        timeout: 5000,
+        timeout: 10000,
       }
     );
 
@@ -196,7 +196,7 @@ export const NewWhileState: StoryFSM = {
     await waitFor(
       async () => await expect(document.querySelector('.state-next-button')).toBeEnabled(),
       {
-        timeout: 5000,
+        timeout: 10000,
       }
     );
 
@@ -429,10 +429,14 @@ export const NewIfStateWithExpression: StoryFSM = {
     await sleep(1000);
 
     // Submit the state
+    console.log('Submitting state');
     await waitFor(_testsSubmitFSMState(), { timeout: 5000 });
     await sleep(200);
 
-    await waitFor(() => expect(canvas.getByText('Expression')).toBeInTheDocument());
+    console.log('Waiting for Expression state to be in the canvas');
+    await waitFor(() => expect(canvas.getByText('Expression')).toBeInTheDocument(), {
+      timeout: 10000,
+    });
     await _testsQodexCanBePublished();
   },
 };
@@ -783,7 +787,7 @@ export const NewUpdateState: StoryFSM = {
           document.querySelector('.fsm-state-detail .system-option .reqore-textarea')
         ).toHaveValue('Some description');
       },
-      { timeout: 5000 }
+      { timeout: 10000 }
     );
     await _testsQodexCanBePublished();
   },

@@ -9,6 +9,7 @@ import {
   _testsWaitForText,
 } from '../utils';
 import { SwitchesToBuilder } from './Basic.stories';
+import { NewIfStateWithExpression } from './States.stories';
 
 const meta = {
   component: FSMView,
@@ -40,5 +41,18 @@ export const MultipleOptionsWithOneAllowedValue: StoryFSM = {
     await _testsSelectItemFromCollection(canvas, 'Haltian Demo')();
     await _testsWaitForText('239');
     await _testsWaitForText('337');
+  },
+};
+
+export const SubExpressionCanBeAddedInIfState: StoryFSM = {
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async (context) => {
+    const canvas = within(context.canvasElement);
+    await NewIfStateWithExpression.play(context);
+
+    // Select concat from the list
+    await _testsSelectItemFromCollection(canvas, 'equals', undefined, '.function-selector')();
   },
 };

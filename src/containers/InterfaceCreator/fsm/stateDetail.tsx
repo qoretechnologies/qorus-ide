@@ -11,13 +11,7 @@ import { IReqoreTagProps } from '@qoretechnologies/reqore/dist/components/Tag';
 import { camelCase, isEqual, reduce, size } from 'lodash';
 import { memo, useCallback, useContext, useState } from 'react';
 import { useDebounce, useUnmount, useUpdateEffect } from 'react-use';
-import {
-  IFSMMetadata,
-  IFSMState,
-  IFSMStates,
-  TAppAndAction,
-  TFSMVariables,
-} from '.';
+import { IFSMMetadata, IFSMState, IFSMStates, TAppAndAction, TFSMVariables } from '.';
 import {
   NegativeColorEffect,
   PositiveColorEffect,
@@ -41,8 +35,7 @@ import FSMStateDialog, { TAction } from './stateDialog';
 import { FSMItemIconByType } from './toolbarItem';
 import FSMTransitionOrderDialog from './transitionOrderDialog';
 
-export interface IFSMStateDetailProps
-  extends Omit<IReqorePanelProps, 'id' | 'onSubmit'> {
+export interface IFSMStateDetailProps extends Omit<IReqorePanelProps, 'id' | 'onSubmit'> {
   id: string | number;
   interfaceId: string;
   data: IFSMState;
@@ -52,11 +45,7 @@ export interface IFSMStateDetailProps
   outputProvider?: any;
   activeTab?: string;
   onClose: () => void;
-  onSubmit: (
-    data: Partial<IFSMState>,
-    addNewStateOnSuccess?: boolean,
-    isValid?: boolean
-  ) => void;
+  onSubmit: (data: Partial<IFSMState>, addNewStateOnSuccess?: boolean, isValid?: boolean) => void;
   onDelete: (unfilled?: boolean) => void;
   onFavorite: (data: Partial<IFSMState>) => void;
   onCloneClick: () => void;
@@ -94,9 +83,7 @@ export const FSMStateDetail = memo(
     const [blockLogicType, setBlockLogicType] = useState<'fsm' | 'custom'>(
       data.fsm ? 'fsm' : 'custom'
     );
-    const [actionType, setActionType] = useState<TAction>(
-      data?.action?.type || 'none'
-    );
+    const [actionType, setActionType] = useState<TAction>(data?.action?.type || 'none');
 
     const [isMetadataHidden, setIsMetadataHidden] = useState<boolean>(false);
     const [isSubmitLoading, setIsLoading] = useState<boolean>(false);
@@ -119,14 +106,14 @@ export const FSMStateDetail = memo(
       if (!isEqual(data, dataToSubmit)) {
         setDataToSubmit(data);
       }
-    }, [data]);
+    }, [JSON.stringify(data)]);
 
     useUpdateEffect(() => {
       if (!isEqual(data, dataToSubmit)) {
         load();
         setHasSaved(false);
       }
-    }, [dataToSubmit]);
+    }, [JSON.stringify(dataToSubmit)]);
 
     useUpdateEffect(() => {
       //onSavedStatusChanged?.(hasSaved);
@@ -151,12 +138,7 @@ export const FSMStateDetail = memo(
       }
 
       return isStateValid(dataToSubmit, metadata, optionsSchema);
-    }, [
-      autoVars.loading,
-      JSON.stringify(dataToSubmit),
-      JSON.stringify(optionsSchema),
-      isLoading,
-    ]);
+    }, [autoVars.loading, JSON.stringify(dataToSubmit), JSON.stringify(optionsSchema), isLoading]);
 
     useDebounce(
       () => {
@@ -164,8 +146,8 @@ export const FSMStateDetail = memo(
           handleSubmitClick();
         }
       },
-      100,
-      [dataToSubmit, isDataValid(), hasSaved]
+      1000,
+      [JSON.stringify(dataToSubmit), isDataValid(), hasSaved]
     );
 
     const handleClose = () => {
@@ -190,19 +172,11 @@ export const FSMStateDetail = memo(
     };
 
     const isCustomBlockFirstPage = () => {
-      return (
-        !isMetadataHidden &&
-        dataToSubmit.type === 'block' &&
-        blockLogicType === 'custom'
-      );
+      return !isMetadataHidden && dataToSubmit.type === 'block' && blockLogicType === 'custom';
     };
 
     const isCustomBlockSecondPage = () => {
-      return (
-        isMetadataHidden &&
-        dataToSubmit.type === 'block' &&
-        blockLogicType === 'custom'
-      );
+      return isMetadataHidden && dataToSubmit.type === 'block' && blockLogicType === 'custom';
     };
 
     const handleSubmitClick = (addNewStateOnSuccess?: boolean) => {
@@ -318,9 +292,7 @@ export const FSMStateDetail = memo(
           },
           ...resizable,
         }}
-        icon={
-          FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]
-        }
+        icon={FSMItemIconByType[dataToSubmit?.action?.type || dataToSubmit?.type]}
         iconImage={app?.logo}
         iconProps={{
           rounded: true,
@@ -344,15 +316,15 @@ export const FSMStateDetail = memo(
         actions={[
           {
             as: ReqoreTag,
-            show: hasSaved,
+            show: hasSaved || !isEqual(data, dataToSubmit),
             props: {
-              label: 'Saved',
+              label: !isEqual(data, dataToSubmit) ? 'Unsaved' : 'Saved',
               minimal: true,
               theme: { main: 'transparent' },
               flat: true,
               asBadge: true,
-              icon: 'CheckLine',
-              iconColor: 'success:lighten',
+              icon: !isEqual(data, dataToSubmit) ? 'ErrorWarningLine' : 'CheckLine',
+              iconColor: !isEqual(data, dataToSubmit) ? 'warning:lighten' : 'success:lighten',
               className: 'state-saved-flag',
             } as IReqoreTagProps,
           },
@@ -379,17 +351,13 @@ export const FSMStateDetail = memo(
               ? t('Remove from favorites')
               : t('Save as favorite'),
             className: 'state-favorite-button',
-            icon: getIsAlreadySaved(dataToSubmit.name)
-              ? 'StarFill'
-              : 'StarLine',
+            icon: getIsAlreadySaved(dataToSubmit.name) ? 'StarFill' : 'StarLine',
             intent: getIsAlreadySaved(dataToSubmit.name) ? 'info' : undefined,
             onClick: () => onFavorite(dataToSubmit),
           },
           {
             show: isCustomBlockFirstPage(),
-            label: !isFSMBlockConfigValid(dataToSubmit)
-              ? t('Fix to proceed')
-              : t('Next'),
+            label: !isFSMBlockConfigValid(dataToSubmit) ? t('Fix to proceed') : t('Next'),
             disabled: !isFSMBlockConfigValid(dataToSubmit),
             className: 'state-next-button',
             icon: !isFSMBlockConfigValid(dataToSubmit)
@@ -411,24 +379,12 @@ export const FSMStateDetail = memo(
             show: isLoading && !isCustomBlockFirstPage(),
             className: 'state-submit-button',
             id: `state-${camelCase(dataToSubmit?.name)}-submit-button`,
-            icon: isLoading
-              ? 'Loader5Line'
-              : !isDataValid()
-                ? 'ErrorWarningLine'
-                : undefined,
+            icon: isLoading ? 'Loader5Line' : !isDataValid() ? 'ErrorWarningLine' : undefined,
             leftIconProps: {
-              animation: isLoading
-                ? 'spin'
-                : isDataValid()
-                  ? 'heartbeat'
-                  : undefined,
+              animation: isLoading ? 'spin' : isDataValid() ? 'heartbeat' : undefined,
             },
             customTheme: { main: 'transparent' },
-            effect: isLoading
-              ? undefined
-              : !isDataValid()
-                ? WarningColorEffect
-                : undefined,
+            effect: isLoading ? undefined : !isDataValid() ? WarningColorEffect : undefined,
             position: 'right',
             responsive: false,
           },
@@ -473,10 +429,7 @@ export const FSMStateDetail = memo(
           style={{ overflow: 'hidden' }}
         >
           <ReqoreTabsContent tabId='info'>
-            <InputOutputType
-              inputProvider={inputProvider}
-              outputProvider={outputProvider}
-            />
+            <InputOutputType inputProvider={inputProvider} outputProvider={outputProvider} />
           </ReqoreTabsContent>
 
           <ReqoreTabsContent tabId='configuration'>
@@ -490,11 +443,7 @@ export const FSMStateDetail = memo(
               blockLogicType={blockLogicType}
               setBlockLogicType={setBlockLogicType}
               isNameValid={isFSMNameValid(dataToSubmit.name)}
-              isActionValid={isFSMActionValid(
-                dataToSubmit,
-                actionType,
-                metadata
-              )}
+              isActionValid={isFSMActionValid(dataToSubmit, actionType, metadata)}
               isCustomBlockSecondPage={isCustomBlockSecondPage()}
               isMetadataHidden={isMetadataHidden}
               setIsMetadataHidden={setIsMetadataHidden}
@@ -509,9 +458,7 @@ export const FSMStateDetail = memo(
               otherStates={reduce(
                 states,
                 (newStates, localState, sid) =>
-                  sid === id
-                    ? { ...newStates }
-                    : { ...newStates, [sid]: localState },
+                  sid === id ? { ...newStates } : { ...newStates, [sid]: localState },
                 {}
               )}
             />

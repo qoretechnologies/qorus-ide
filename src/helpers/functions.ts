@@ -2,6 +2,8 @@ import { IReqoreDropdownProps } from '@qoretechnologies/reqore/dist/components/D
 import { IReqoreDropdownItem } from '@qoretechnologies/reqore/dist/components/Dropdown/list';
 import { IReqoreFormTemplates } from '@qoretechnologies/reqore/dist/components/Textarea';
 import { IReqoreNotificationData } from '@qoretechnologies/reqore/dist/containers/ReqoreProvider';
+import { TQorusForm } from '@qoretechnologies/ts-toolkit';
+import { reduce } from 'lodash';
 import cloneDeep from 'lodash/cloneDeep';
 import forEach from 'lodash/forEach';
 import isArray from 'lodash/isArray';
@@ -21,7 +23,7 @@ import shortid from 'shortid';
 import { apiHost, apiToken } from '../common/vscode';
 import { TExpressionSchemaArg } from '../components/ExpressionBuilder';
 import { IProviderType } from '../components/Field/connectors';
-import { IOptions, IQorusType } from '../components/Field/systemOptions';
+import { IOptions, IOptionsSchema, IQorusType } from '../components/Field/systemOptions';
 import { interfaceKindTransform } from '../constants/interfaces';
 import { Messages } from '../constants/messages';
 import {
@@ -34,17 +36,12 @@ import {
 import { TQodexTemplates } from '../containers/InterfaceCreator/fsm/AppActionOptions';
 import { TAction } from '../containers/InterfaceCreator/fsm/stateDialog';
 import { IQorusInterface } from '../containers/InterfacesView';
-import {
-  addMessageListener,
-  postMessage,
-} from '../hocomponents/withMessageHandler';
+import { addMessageListener, postMessage } from '../hocomponents/withMessageHandler';
 import { IQorusTypeObject } from '../hooks/useQorusTypes';
 import { isStateValid } from './fsm';
 
-const functionOrStringExp: Function = (
-  item: Function | string,
-  ...itemArguments
-) => (typeof item === 'function' ? item(...itemArguments) : item);
+const functionOrStringExp: Function = (item: Function | string, ...itemArguments) =>
+  typeof item === 'function' ? item(...itemArguments) : item;
 
 const getType = (item: any): string => {
   if (isBoolean(item)) {
@@ -117,8 +114,7 @@ export const isStateIsolated = (
   forEach(states, (stateData, keyId) => {
     if (
       stateData.transitions?.find(
-        (transition: IFSMTransition) =>
-          transition.state === stateKey && !transition.fake
+        (transition: IFSMTransition) => transition.state === stateKey && !transition.fake
       )
     ) {
       isIsolated = false;
@@ -129,11 +125,7 @@ export const isStateIsolated = (
 };
 
 export interface ITypeComparatorData {
-  interfaceName?:
-    | string
-    | IProviderType
-    | TVariableActionValue
-    | TFSMClassConnectorAction;
+  interfaceName?: string | IProviderType | TVariableActionValue | TFSMClassConnectorAction;
   connectorName?: string;
   interfaceKind?: 'if' | 'block' | 'processor' | TAction | 'transaction';
   typeData?: any;
@@ -150,9 +142,9 @@ export const getProviderFromInterfaceObject = (
     }
     case 'class': {
       if (connectorName) {
-        return data?.['class-connectors']?.find(
-          (connector) => connector.name === connectorName
-        )?.[`${type}-provider`];
+        return data?.['class-connectors']?.find((connector) => connector.name === connectorName)?.[
+          `${type}-provider`
+        ];
       }
 
       return data?.processor?.[`processor-${type}-type`];
@@ -244,14 +236,10 @@ export const areTypesCompatible = async (
   output.options = await formatAndFixOptionsToKeyValuePairs(output.options);
   input.options = await formatAndFixOptionsToKeyValuePairs(input.options);
 
-  const comparison = await fetchData(
-    '/dataprovider/compareTypes?context=ui',
-    'PUT',
-    {
-      base_type: input,
-      type: output,
-    }
-  );
+  const comparison = await fetchData('/dataprovider/compareTypes?context=ui', 'PUT', {
+    base_type: input,
+    type: output,
+  });
 
   if (!comparison.ok) {
     return true;
@@ -260,9 +248,7 @@ export const areTypesCompatible = async (
   return comparison.data;
 };
 
-export const formatAndFixOptionsToKeyValuePairs = async (
-  options?: IOptions
-): Promise<IOptions> => {
+export const formatAndFixOptionsToKeyValuePairs = async (options?: IOptions): Promise<IOptions> => {
   const newOptions = cloneDeep(options || {});
 
   for await (const optionName of Object.keys(newOptions || {})) {
@@ -271,13 +257,9 @@ export const formatAndFixOptionsToKeyValuePairs = async (
     if (newOptions[optionName].type === 'file-as-string') {
       // We need to fetch the file contents from the server
       // Load the contents into the schema string
-      const { fileData } = await callBackendBasic(
-        Messages.GET_FILE_CONTENT,
-        undefined,
-        {
-          file: newOptions[optionName].value,
-        }
-      );
+      const { fileData } = await callBackendBasic(Messages.GET_FILE_CONTENT, undefined, {
+        file: newOptions[optionName].value,
+      });
 
       newValue = fileData;
     }
@@ -434,10 +416,7 @@ export const getPipelineClosestParentOutputData = (
   }
 
   if (item.type === 'queue') {
-    return getPipelineClosestParentOutputData(
-      item.parent,
-      pipelineInputProvider
-    );
+    return getPipelineClosestParentOutputData(item.parent, pipelineInputProvider);
   }
 
   return {
@@ -458,11 +437,7 @@ const flattenPipeline = (data, parent?: any) => {
       return [...newData, newElement];
     }
 
-    return [
-      ...newData,
-      newElement,
-      ...flattenPipeline(newElement.children, newElement),
-    ];
+    return [...newData, newElement, ...flattenPipeline(newElement.children, newElement)];
   }, []);
 };
 
@@ -506,11 +481,7 @@ const fetchCache: {
   };
 } = {};
 
-const doFetchData = async (
-  url: string,
-  method = 'GET',
-  body?: { [key: string]: any }
-) => {
+const doFetchData = async (url: string, method = 'GET', body?: { [key: string]: any }) => {
   return fetch(`${apiHost}api/latest/${url}`, {
     method,
     headers: {
@@ -636,16 +607,10 @@ export const getTargetFile = (data: any) => {
   return data?.id;
 };
 
-export const insertUrlPartBeforeQuery = (
-  url: string,
-  part: string,
-  query?: string
-) => {
+export const insertUrlPartBeforeQuery = (url: string, part: string, query?: string) => {
   const urlParts = url.split('?');
   const urlWithoutQuery = urlParts[0];
-  const q = `?${urlParts[1] || ''}${urlParts[1] && query ? '&' : ''}${
-    query ? query : ''
-  }`;
+  const q = `?${urlParts[1] || ''}${urlParts[1] && query ? '&' : ''}${query ? query : ''}`;
 
   return `${urlWithoutQuery}${part}${q}`;
 };
@@ -657,11 +622,14 @@ export const hasValue = (value) => {
     return false;
   }
 };
-export const getDraftId = (
-  data: IQorusInterface['data'],
-  interfaceId?: string
-) => {
+export const getDraftId = (data: IQorusInterface['data'], interfaceId?: string) => {
   return data?.id ?? interfaceId;
+};
+
+export const QorusTypeCompatibilityTable = {
+  string: ['string', 'binary', 'number', 'boolean', 'date', 'int', 'bool', 'float'],
+  number: ['number', 'int', 'float'],
+  data: ['string', 'binary'],
 };
 
 export const filterTemplatesByType = (
@@ -683,10 +651,8 @@ export const filterTemplatesByType = (
       return (
         subItem.badge === fieldType ||
         fieldType === 'richtext' ||
-        (fieldType === 'string' &&
-          isTypeStringCompatible(subItem.badge as string)) ||
-        (fieldType === 'number' &&
-          isTypeNumberCompatible(subItem.badge as string)) ||
+        (fieldType === 'string' && isTypeStringCompatible(subItem.badge as string)) ||
+        (fieldType === 'number' && isTypeNumberCompatible(subItem.badge as string)) ||
         (fieldType === 'data' && isTypeDataCompatible(subItem.badge as string))
       );
     });
@@ -755,17 +721,14 @@ export const buildTemplates = (
               image: logo,
             },
             badge: app,
-            items: map(
-              items,
-              ({ display_name, value, example_value, name, type }) => ({
-                label: display_name,
-                description: example_value
-                  ? `Example value: ${JSON.stringify(example_value)}`
-                  : undefined,
-                badge: type,
-                value,
-              })
-            ),
+            items: map(items, ({ display_name, value, example_value, name, type }) => ({
+              label: display_name,
+              description: example_value
+                ? `Example value: ${JSON.stringify(example_value)}`
+                : undefined,
+              badge: type,
+              value,
+            })),
           };
         }
       ),
@@ -781,23 +744,17 @@ export const getTypesAccepted = (
     return undefined;
   }
 
-  const _types = cloneDeep(types).filter(
-    (type) => type !== 'nothing' && type !== 'null'
-  );
+  const _types = cloneDeep(types).filter((type) => type !== 'nothing' && type !== 'null');
 
   if (size(_types) === 1) {
     if (_types[0] === 'auto' || _types[0] === 'any') {
       return undefined;
     }
 
-    return [
-      qorusTypes?.find((t) => t.name === _types[0]) || { name: _types[0] },
-    ];
+    return [qorusTypes?.find((t) => t.name === _types[0]) || { name: _types[0] }];
   }
 
-  return _types.map(
-    (type) => qorusTypes?.find((t) => t.name === type) || { name: type }
-  );
+  return _types.map((type) => qorusTypes?.find((t) => t.name === type) || { name: type });
 };
 
 export const getExpressionArgumentType = (
@@ -850,13 +807,35 @@ export const isTypeStringCompatible = (type: string) => {
 export const isTypeNumberCompatible = (type: string) => {
   const strongType = getStrongType(type);
 
-  return (
-    strongType === 'number' || strongType === 'int' || strongType === 'float'
-  );
+  return strongType === 'number' || strongType === 'int' || strongType === 'float';
 };
 
 export const isTypeDataCompatible = (type: string) => {
   const strongType = getStrongType(type);
 
   return strongType === 'string' || strongType === 'binary';
+};
+
+export const fixOldArgSchemaData = (
+  data: Record<string, any>,
+  arg_schema: IOptionsSchema
+): TQorusForm => {
+  return reduce(
+    data,
+    (newData, value, key): TQorusForm => {
+      if (typeof value === 'object') {
+        return { ...newData, [key]: value };
+      }
+
+      return {
+        ...newData,
+        [key]: {
+          value,
+          type: arg_schema[key]?.type,
+          is_expression: false,
+        },
+      };
+    },
+    {}
+  );
 };

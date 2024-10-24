@@ -1,11 +1,4 @@
-import {
-  expect,
-  fireEvent,
-  screen,
-  userEvent,
-  waitFor,
-  within,
-} from '@storybook/test';
+import { expect, fireEvent, screen, userEvent, waitFor, within } from '@storybook/test';
 
 const stateCategory = {
   mapper: 'Interfaces',
@@ -64,16 +57,12 @@ export async function _testsChangeRichText(value: string, nth: number = 0) {
   await waitFor(
     () =>
       expect(
-        document.querySelectorAll('div.system-option[contenteditable="true"]')[
-          nth
-        ]
+        document.querySelectorAll('div.system-option [contenteditable="true"]')[nth]
       ).toBeInTheDocument(),
     { timeout: 10000 }
   );
 
-  const element = document.querySelectorAll(
-    'div.system-option[contenteditable="true"]'
-  )[nth];
+  const element = document.querySelectorAll('div.system-option [contenteditable="true"]')[nth];
 
   await element.scrollIntoView();
 
@@ -93,77 +82,50 @@ export async function _testsChangeRichText(value: string, nth: number = 0) {
 }
 
 export async function _testsQodexCanBePublished() {
-  await waitFor(
-    () => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(),
-    {
-      timeout: 10000,
-    }
-  );
+  console.log('Waiting for publish button');
+  await waitFor(() => expect(screen.getAllByText('Publish')[0]).toBeInTheDocument(), {
+    timeout: 10000,
+  });
 }
 
 export async function _testsCloseStateDetail() {
-  await fireEvent.click(
-    document.querySelector('.fsm-state-detail .reqore-button')
-  );
+  await fireEvent.click(document.querySelector('.fsm-state-detail .reqore-button'));
 }
 
-export async function _testsOpenAppCatalogue(
-  wrapperId?: string,
-  x: number = 100,
-  y: number = 100
-) {
+export async function _testsOpenAppCatalogue(wrapperId?: string, x: number = 100, y: number = 100) {
   const fullWrapperId = `${wrapperId ? `${wrapperId}-` : ''}fsm-diagram`;
 
-  await waitFor(
-    () => expect(document.getElementById(fullWrapperId)).toBeInTheDocument(),
-    {
-      timeout: 10000,
-    }
-  );
+  await waitFor(() => expect(document.getElementById(fullWrapperId)).toBeInTheDocument(), {
+    timeout: 10000,
+  });
 
-  const wrapper = document
-    .getElementById(fullWrapperId)
-    .querySelector('.element-pan');
+  const wrapper = document.getElementById(fullWrapperId).querySelector('.element-pan');
 
   await fireEvent.dblClick(wrapper, {
     clientX: wrapper.getBoundingClientRect().left + x,
     clientY: wrapper.getBoundingClientRect().top + y,
   });
 
-  await waitFor(
-    () =>
-      expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(),
-    {
-      timeout: 10000,
-    }
-  );
+  await waitFor(() => expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(), {
+    timeout: 10000,
+  });
 }
 
 export async function _testsCloseAppCatalogue() {
-  await fireEvent.click(
-    document.querySelector('.fsm-app-selector .reqore-drawer-close-button')
-  );
+  await fireEvent.click(document.querySelector('.fsm-app-selector .reqore-drawer-close-button'));
 }
 
 export async function _testsManageVariableFromCatalogue(variableName: string) {
   await userEvent.click(
-    screen
-      .getByText(variableName)
-      .closest('.reqore-panel-title')
-      .querySelector('.manage-variable')
+    screen.getByText(variableName).closest('.reqore-panel-title').querySelector('.manage-variable')
   );
 }
 
 export async function _testsSelectAppOrAction(canvas, appOrAction: string) {
-  await waitFor(
-    () => canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' }),
-    {
-      timeout: 10000,
-    }
-  );
-  await fireEvent.click(
-    canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' })
-  );
+  await waitFor(() => canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' }), {
+    timeout: 10000,
+  });
+  await fireEvent.click(canvas.getByText(appOrAction, { selector: '.fsm-app-selector h4' }));
 }
 
 export async function _testsOpenAppCatalogueFromState(
@@ -177,9 +139,7 @@ export async function _testsOpenAppCatalogueFromState(
     return;
   }
 
-  await fireEvent.click(
-    document.querySelector(`#state-${stateId} ${className}`)
-  );
+  await fireEvent.click(document.querySelector(`#state-${stateId} ${className}`));
 }
 
 export async function _testsSelectFromAppCatalogue(
@@ -188,13 +148,9 @@ export async function _testsSelectFromAppCatalogue(
   app?: string,
   action?: string
 ) {
-  await waitFor(
-    () =>
-      expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(),
-    {
-      timeout: 10000,
-    }
-  );
+  await waitFor(() => expect(document.querySelector('.fsm-app-selector')).toBeInTheDocument(), {
+    timeout: 10000,
+  });
 
   if (app) {
     if (action) {
@@ -232,11 +188,7 @@ export async function _testsAddNewState(
   await _testsSelectFromAppCatalogue(canvas, stateType);
 }
 
-export async function _testsAddNewVariableState(
-  variableName: string,
-  canvas,
-  wrapperId?: string
-) {
+export async function _testsAddNewVariableState(variableName: string, canvas, wrapperId?: string) {
   await _testsOpenAppCatalogue(wrapperId);
   await _testsSelectAppOrAction(canvas, 'Variables');
   await _testsSelectAppOrAction(canvas, variableName);
@@ -250,13 +202,9 @@ export function _testsSelectItemFromDropdown(
 ) {
   return async () => {
     if (className) {
-      await waitFor(
-        () =>
-          expect(document.querySelectorAll(className)[0]).toBeInTheDocument(),
-        {
-          timeout: 10000,
-        }
-      );
+      await waitFor(() => expect(document.querySelectorAll(className)[0]).toBeInTheDocument(), {
+        timeout: 10000,
+      });
       await fireEvent.click(document.querySelectorAll(className)[0]);
     } else {
       await waitFor(async () => await canvas.queryAllByText(dropdownLabel)[0], {
@@ -270,17 +218,11 @@ export function _testsSelectItemFromDropdown(
       await sleep(300);
     }
 
-    await waitFor(
-      () =>
-        expect(document.querySelector('.q-select-input')).toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
+    await waitFor(() => expect(document.querySelector('.q-select-input')).toBeInTheDocument(), {
+      timeout: 10000,
+    });
 
-    const parent = within(
-      document.querySelector('.reqore-popover-content .reqore-menu')
-    );
+    const parent = within(document.querySelector('.reqore-popover-content .reqore-menu'));
 
     await waitFor(async () => await parent.getAllByText(itemLabel)[0], {
       timeout: 10000,
@@ -293,29 +235,37 @@ export function _testsSelectItemFromDropdown(
 export function _testsSelectItemFromCollection(
   canvas,
   itemLabel: string,
-  collectionLabel: string = 'PleaseSelect'
+  collectionLabel: string = 'PleaseSelect',
+  className?: string
 ) {
   return async () => {
-    await waitFor(async () => await canvas.getAllByText(collectionLabel)[0], {
-      timeout: 10000,
-    });
-
-    await sleep(500);
-
-    await fireEvent.click(canvas.getAllByText(collectionLabel)[0]);
-
-    await waitFor(
-      () =>
-        expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(),
-      {
+    if (className) {
+      await waitFor(() => expect(document.querySelectorAll(className)[0]).toBeInTheDocument(), {
         timeout: 10000,
-      }
-    );
-    await waitFor(async () => await canvas.getByText(itemLabel), {
+      });
+      await fireEvent.click(document.querySelectorAll(className)[0]);
+    } else {
+      await waitFor(async () => await canvas.queryAllByText(collectionLabel)[0], {
+        timeout: 10000,
+      });
+      await sleep(500);
+
+      await waitFor(() => fireEvent.click(canvas.queryAllByText(collectionLabel)[0]), {
+        timeout: 10000,
+      });
+    }
+
+    await waitFor(() => expect(document.querySelector('.q-select-dialog')).toBeInTheDocument(), {
       timeout: 10000,
     });
 
-    await fireEvent.click(canvas.getByText(itemLabel));
+    const parent = within(document.querySelector('.q-select-dialog'));
+
+    await waitFor(async () => await parent.getAllByText(itemLabel)[0], {
+      timeout: 10000,
+    });
+
+    await fireEvent.click(parent.getAllByText(itemLabel)[0]);
   };
 }
 
@@ -371,9 +321,7 @@ export async function _testsMoveState(
 
   await sleep(100);
 
-  const { left, top } = document
-    .querySelector(`#state-${id}`)
-    .getBoundingClientRect();
+  const { left, top } = document.querySelector(`#state-${id}`).getBoundingClientRect();
 
   await fireEvent.mouseMove(document.querySelector(`#state-${id}`), {
     clientX: left,
@@ -381,9 +329,7 @@ export async function _testsMoveState(
   });
 
   for await (const _ of Array(Math.round(times)).keys()) {
-    const { left, top } = document
-      .querySelector(`#state-${id}`)
-      .getBoundingClientRect();
+    const { left, top } = document.querySelector(`#state-${id}`).getBoundingClientRect();
 
     if (left > window.innerWidth - 100 || top > window.innerHeight - 100) {
       break;
@@ -417,27 +363,18 @@ export async function _testsConfirmDialog() {
 
 export async function _testsCloneState(name: string) {
   await _testsClickState(name);
-  await waitFor(
-    () => expect(document.querySelector('.state-clone-button')).toBeEnabled(),
-    {
-      timeout: 5000,
-    }
-  );
+  await waitFor(() => expect(document.querySelector('.state-clone-button')).toBeEnabled(), {
+    timeout: 5000,
+  });
   await fireEvent.click(document.querySelector('.state-clone-button'));
   await sleep(200);
 }
 
 export async function _testsDeleteState(name: string) {
   await _testsClickState(name);
-  await waitFor(
-    () =>
-      expect(
-        document.querySelector('.state-delete-button')
-      ).toBeInTheDocument(),
-    {
-      timeout: 5000,
-    }
-  );
+  await waitFor(() => expect(document.querySelector('.state-delete-button')).toBeInTheDocument(), {
+    timeout: 5000,
+  });
   await fireEvent.click(document.querySelector('.state-delete-button'));
   await sleep(200);
   await _testsConfirmDialog();
@@ -445,10 +382,7 @@ export async function _testsDeleteState(name: string) {
 
 export async function _testsDeleteMultipleStates() {
   await waitFor(
-    () =>
-      expect(
-        document.querySelector('#delete-multiple-states')
-      ).toBeInTheDocument(),
+    () => expect(document.querySelector('#delete-multiple-states')).toBeInTheDocument(),
     {
       timeout: 5000,
     }
@@ -471,31 +405,21 @@ export async function _testsDoubleClickState(name, options = {}) {
   await _testsClickState(name, options);
 }
 
-export async function _testsClickState(
-  name: string,
-  options = {},
-  nth: number = 0
-) {
+export async function _testsClickState(name: string, options = {}, nth: number = 0) {
   await fireEvent.mouseOver(
-    screen
-      .getAllByText(name, { selector: `.fsm-state h4` })
-      [nth].closest('.fsm-state'),
+    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
     options
   );
   await sleep(100);
   await fireEvent.mouseDown(
-    screen
-      .getAllByText(name, { selector: `.fsm-state h4` })
-      [nth].closest('.fsm-state'),
+    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
     {
       ...options,
       timeStamp: 0,
     }
   );
   await fireEvent.mouseUp(
-    screen
-      .getAllByText(name, { selector: `.fsm-state h4` })
-      [nth].closest('.fsm-state'),
+    screen.getAllByText(name, { selector: `.fsm-state h4` })[nth].closest('.fsm-state'),
     {
       ...options,
       timeStamp: 100,
@@ -504,9 +428,7 @@ export async function _testsClickState(
 }
 
 export function _testsGetStateByLabel(label: string, nth: number = 0) {
-  return screen
-    .getAllByText(label, { selector: `.fsm-state h4` })
-    [nth].closest('.fsm-state');
+  return screen.getAllByText(label, { selector: `.fsm-state h4` })[nth].closest('.fsm-state');
 }
 
 export async function _testsClickStateByLabel(canvas, label, options = {}) {
@@ -526,30 +448,34 @@ export async function _testsOpenTemplates() {
   await waitFor(
     async () => {
       await expect(
-        document.querySelector('.template-selector')
+        document.querySelector('.template-selector'),
+        'Waiting for .template-selector in _testsOpenTemplates'
       ).toBeInTheDocument();
     },
     { timeout: 10000 }
   );
 
-  await sleep(500);
+  await sleep(1500);
 
-  await _testsClickButton({ selector: '.template-selector', wait: 5000 });
+  await _testsClickButton({ selector: '.template-selector', wait: 15000 });
 
   await waitFor(
     () =>
       expect(
-        document.querySelector('.reqore-popover-content')
+        document.querySelector('.reqore-popover-content'),
+        'Waiting for popover content in _testsOpenTemplate'
       ).toBeInTheDocument(),
     { timeout: 10000 }
   );
 }
 
-export async function _testsWaitForText(text: string, selector?: string) {
-  console.log('Waiting for text:', text, selector);
+export async function _testsWaitForText(text: string, selector?: string, nth: number = 1) {
   await waitFor(
     () =>
-      expect(screen.queryAllByText(text, { selector })[0]).toBeInTheDocument(),
+      expect(
+        screen.queryAllByText(text, { selector })[nth - 1],
+        `Expected text ${text}`
+      ).toBeInTheDocument(),
     {
       timeout: 10000,
     }
@@ -558,44 +484,32 @@ export async function _testsWaitForText(text: string, selector?: string) {
 
 export async function _testsCreatorViewCode() {
   const canvas = screen;
-  await waitFor(
-    () => expect(canvas.queryAllByText('Edit code')[0]).toBeInTheDocument(),
-    { timeout: 5000 }
-  );
+  await waitFor(() => expect(canvas.queryAllByText('Edit code')[0]).toBeInTheDocument(), {
+    timeout: 5000,
+  });
   await fireEvent.click(canvas.queryAllByText('Edit code')[0]);
-  await waitFor(
-    () => expect(canvas.queryAllByText('Code Editor')[0]).toBeInTheDocument(),
-    { timeout: 5000 }
-  );
+  await waitFor(() => expect(canvas.queryAllByText('Code Editor')[0]).toBeInTheDocument(), {
+    timeout: 5000,
+  });
 }
 
-export async function _testsCreatorDraftSaveCheck(
-  label: string = 'display_name'
-) {
+export async function _testsCreatorDraftSaveCheck(label: string = 'display_name') {
   await _testsWaitForText(`field-label-${label}`);
 
-  await fireEvent.change(
-    document.querySelector('.creator-field .reqore-input'),
-    { target: { value: 'Test' } }
-  );
+  await fireEvent.change(document.querySelector('.creator-field .reqore-input'), {
+    target: { value: 'Test' },
+  });
 
   await _testsWaitForText('DraftSaved just now');
 }
 
-export async function _testsExpectFieldsCountToMatch(
-  count: number,
-  wait?: boolean,
-  type?: string
-) {
+export async function _testsExpectFieldsCountToMatch(count: number, wait?: boolean, type?: string) {
   const selector = type ? `.${type}-creator .creator-field` : '.creator-field';
 
   if (wait) {
-    await waitFor(
-      () => expect(document.querySelectorAll(selector)).toHaveLength(count),
-      {
-        timeout: 5000,
-      }
-    );
+    await waitFor(() => expect(document.querySelectorAll(selector)).toHaveLength(count), {
+      timeout: 5000,
+    });
   } else {
     await expect(document.querySelectorAll(selector)).toHaveLength(count);
   }
@@ -618,23 +532,22 @@ export async function _testsClickButton({
   if (!label) {
     await waitFor(
       () =>
-        expect(document.querySelectorAll(selector)[nth]).toBeInTheDocument(),
-      { timeout: wait }
+        expect(
+          document.querySelectorAll(selector)[nth],
+          `Waited for button ${selector} ${nth}`
+        ).toBeInTheDocument(),
+      {
+        timeout: wait,
+      }
     );
     await fireEvent.click(document.querySelectorAll(selector)[nth]);
   } else {
     await waitFor(
-      () =>
-        expect(
-          screen.queryAllByText(label, { selector })[nth]
-        ).toBeInTheDocument(),
+      () => expect(screen.queryAllByText(label, { selector })[nth]).toBeInTheDocument(),
       { timeout: wait }
     );
     await waitFor(
-      () =>
-        expect(
-          screen.queryAllByText(label, { selector })[nth].closest(parent)
-        ).toBeEnabled(),
+      () => expect(screen.queryAllByText(label, { selector })[nth].closest(parent)).toBeEnabled(),
       { timeout: wait }
     );
     await fireEvent.click(screen.queryAllByText(label, { selector })[nth]);
@@ -642,10 +555,9 @@ export async function _testsClickButton({
 }
 
 export async function _testsQogExpectStateCount(count: number) {
-  await waitFor(
-    () => expect(document.querySelectorAll('.fsm-state')).toHaveLength(count),
-    { timeout: 10000 }
-  );
+  await waitFor(() => expect(document.querySelectorAll('.fsm-state')).toHaveLength(count), {
+    timeout: 10000,
+  });
 }
 
 export async function _testsQogUndo() {

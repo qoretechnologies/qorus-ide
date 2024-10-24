@@ -1,21 +1,19 @@
-import {
-  ReqoreButton,
-  ReqoreControlGroup,
-  ReqoreVerticalSpacer,
-} from '@qoretechnologies/reqore';
+import { ReqoreButton, ReqoreControlGroup, ReqoreVerticalSpacer } from '@qoretechnologies/reqore';
+import { IWithReqoreSize } from '@qoretechnologies/reqore/dist/types/global';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useAuthorizeOAuth2App } from '../../hooks/useAuthorizeOAuth2App';
 import { ISelectFieldItem } from '../Field/select';
 import { ConnectionManagementModal } from './ManagementModal';
 
-export interface IConnectionManagementProps {
+export interface IConnectionManagementProps
+  extends Pick<ISelectFieldItem, 'metadata'>,
+    IWithReqoreSize {
   selectedConnection?: string;
   onChange?: (value: string) => void;
   redirectUri?: string;
-  allowedValues?: ISelectFieldItem[];
   app?: string;
   action?: string;
-  compact?: string;
+  compact?: boolean;
 }
 
 export const ConnectionManagement = memo(
@@ -23,38 +21,25 @@ export const ConnectionManagement = memo(
     selectedConnection,
     onChange,
     redirectUri,
-    allowedValues,
     app,
     action,
     compact,
+    metadata,
+    size,
   }: IConnectionManagementProps) => {
     const [manageConnection, setManageConnection] = useState(undefined);
-
-    const item = selectedConnection
-      ? allowedValues?.find(
-          (item) =>
-            item.value === selectedConnection ||
-            item.name === selectedConnection
-        )
-      : undefined;
 
     const { authorizeConnection } = useAuthorizeOAuth2App({
       redirectUri,
     });
 
-    const needsAuth = useMemo(() => item?.metadata?.needs_auth, [item]);
+    const needsAuth = useMemo(() => metadata?.needs_auth, [metadata]);
 
     const renderAuthButton = useCallback(() => {
       return (
         <ReqoreButton
           icon='ShareBoxLine'
-          label={
-            needsAuth
-              ? compact
-                ? 'Authorize'
-                : 'Authorization required'
-              : 'Re-authorize'
-          }
+          label={needsAuth ? (compact ? 'Authorize' : 'Authorization required') : 'Re-authorize'}
           badge={
             needsAuth
               ? {
@@ -78,10 +63,7 @@ export const ConnectionManagement = memo(
           onClick={(e) => {
             e.stopPropagation();
 
-            authorizeConnection(
-              selectedConnection,
-              item?.metadata?.oauth2_auth_code
-            );
+            authorizeConnection(selectedConnection, metadata?.oauth2_auth_code);
           }}
           description={
             compact
@@ -90,9 +72,10 @@ export const ConnectionManagement = memo(
                 ? 'This connection needs to be authorized before it can be used'
                 : 'Click here to re-authorize the connection'
           }
+          size={size}
         />
       );
-    }, [authorizeConnection, item, needsAuth, selectedConnection]);
+    }, [authorizeConnection, metadata, needsAuth, selectedConnection]);
 
     return (
       <>
@@ -115,34 +98,33 @@ export const ConnectionManagement = memo(
             }}
           />
         )}
-        {!compact && item?.metadata?.oauth2_auth_code ? (
-          <ReqoreControlGroup fluid vertical>
-            <ReqoreVerticalSpacer height={5} />
-            {renderAuthButton()}
+        <ReqoreControlGroup fluid vertical size={size}>
+          {!compact && metadata?.oauth2_auth_code ? (
+            <ReqoreControlGroup fluid vertical>
+              <ReqoreVerticalSpacer height={5} />
+              {renderAuthButton()}
+            </ReqoreControlGroup>
+          ) : null}
+
+          <ReqoreControlGroup fluid={!compact}>
+            {selectedConnection && (
+              <ReqoreButton
+                icon='Edit2Line'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setManageConnection({ connection: selectedConnection });
+                }}
+              >
+                {!compact ? 'Edit connection' : 'Edit'}
+              </ReqoreButton>
+            )}
+            {compact && renderAuthButton()}
+            {!compact && (
+              <ReqoreButton icon='AddLine' onClick={() => setManageConnection({})}>
+                Create new connection
+              </ReqoreButton>
+            )}
           </ReqoreControlGroup>
-        ) : null}
-        {!compact && <ReqoreVerticalSpacer height={10} />}
-        <ReqoreControlGroup fluid={!compact}>
-          {selectedConnection && (
-            <ReqoreButton
-              icon='Edit2Line'
-              onClick={(e) => {
-                e.stopPropagation();
-                setManageConnection({ connection: selectedConnection });
-              }}
-            >
-              {!compact ? 'Edit connection' : 'Edit'}
-            </ReqoreButton>
-          )}
-          {compact && renderAuthButton()}
-          {!compact && (
-            <ReqoreButton
-              icon='AddLine'
-              onClick={() => setManageConnection({})}
-            >
-              Create new connection
-            </ReqoreButton>
-          )}
         </ReqoreControlGroup>
       </>
     );

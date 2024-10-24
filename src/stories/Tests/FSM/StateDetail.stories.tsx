@@ -32,12 +32,8 @@ export const StateDataIsShown: StoryFSM = {
       timeout: 20000,
     });
     await sleep(5000);
-    await document
-      .querySelector('.system-option.reqore-textarea')
-      .scrollIntoView();
-    await fireEvent.click(
-      document.querySelector('.system-option.reqore-textarea')
-    );
+    await document.querySelector('.system-option .reqore-textarea').scrollIntoView();
+    await fireEvent.click(document.querySelector('.system-option .reqore-textarea'));
     await sleep(500);
     await _testsClickButton({ label: 'Templates' });
     await sleep(100);

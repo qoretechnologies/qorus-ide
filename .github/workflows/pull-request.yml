@@ -13,7 +13,7 @@ on:
 jobs:
   PullRequestTests:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       QORUS_TOKEN: ${{ secrets.QORUS_TOKEN }}
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -99,7 +99,7 @@ jobs:
           args: ':white_check_mark: Tests run #${{ github.run_number }} for [PR](${{ github.event.pull_request.html_url }}) triggered by ${{ github.triggering_actor }} *succeeded*, click GitHub Action link below to get the VSIX artifact.'
         if: success()
 
-      # Notify discord if failure
+      # # Notify discord if failure
       - name: Discord notification failure
         env:
           DISCORD_WEBHOOK: ${{secrets.DISCORD_WEBHOOK}}

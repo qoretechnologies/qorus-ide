@@ -15,7 +15,6 @@ import { buildTemplates, fetchData } from '../../../helpers/functions';
 import { addMessageListener, postMessage } from '../../../hocomponents/withMessageHandler';
 import { useFetchActionOptions } from '../../../hooks/useFetchActionOptions';
 import { useGetAppActionData } from '../../../hooks/useGetAppActionData';
-import { useWhyDidYouUpdate } from '../../../hooks/useWhyDidYouUpdate';
 
 export interface IQodexAppActionOptionsProps {
   appName: string;
@@ -69,14 +68,6 @@ export const QodexAppActionOptions = memo(
     const [templates, setTemplates] = useState<IReqoreTextareaProps['templates']>();
     const [value, setValue] = useState<IOptions>(outsideValue);
     const { metadata, states } = useContext(FSMContext);
-
-    useWhyDidYouUpdate(`AppActionOptions`, {
-      appName,
-      actionName,
-      value,
-      onChange,
-      connectedStates,
-    });
 
     useUpdateEffect(() => {
       setValue(outsideValue);

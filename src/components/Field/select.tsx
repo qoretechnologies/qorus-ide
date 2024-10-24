@@ -8,6 +8,7 @@ import {
   ReqoreMessage,
   ReqoreTag,
 } from '@qoretechnologies/reqore';
+import { IReqoreButtonProps } from '@qoretechnologies/reqore/dist/components/Button';
 import { IReqoreCollectionItemProps } from '@qoretechnologies/reqore/dist/components/Collection/item';
 import { IReqoreControlGroupProps } from '@qoretechnologies/reqore/dist/components/ControlGroup';
 import { IReqoreMenuItemProps } from '@qoretechnologies/reqore/dist/components/Menu/item';
@@ -22,7 +23,6 @@ import { compose } from 'recompose';
 import styled from 'styled-components';
 import { addMessageListener, postMessage } from '../../hocomponents/withMessageHandler';
 import withTextContext from '../../hocomponents/withTextContext';
-import { useWhyDidYouUpdate } from '../../hooks/useWhyDidYouUpdate';
 import CustomDialog from '../CustomDialog';
 import FieldEnhancer from '../FieldEnhancer';
 import { IField } from '../FieldWrapper';
@@ -66,6 +66,8 @@ export interface ISelectField extends IField {
   context?: any;
   className?: string;
   showDescription?: 'tooltip' | boolean;
+  showPlaceholder?: boolean;
+  showRightIcon?: boolean;
   minimal?: boolean;
 }
 
@@ -151,6 +153,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   filters,
   className,
   showDescription = true,
+  showPlaceholder = true,
+  showRightIcon = true,
   ...rest
 }) => {
   const [items, setItems] = useState<ISelectFieldItem[]>(defaultItems || []);
@@ -398,17 +402,6 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
     );
   };
 
-  useWhyDidYouUpdate(name, {
-    items,
-    value,
-    query,
-    appliedFilters,
-    isSelectDialogOpen,
-    listener,
-    hasProcessor,
-    isProcessorSelected,
-  });
-
   if (autoSelect && filteredItems.length === 1 && !filteredItems[0].disabled) {
     // Automaticaly select the first item
     if (!disabled && filteredItems[0].name !== value && !value) {
@@ -462,7 +455,9 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
   }
 
   if (!reference && (!filteredItems || filteredItems.length === 0)) {
-    return <ReqoreTag intent='muted' label={t('NoDataAvailable')} {...rest} icon='ForbidLine' />;
+    return (
+      <ReqoreTag intent='muted' label={t('NoDataAvailable')} {...rest} icon='ForbidLine' fixed />
+    );
   }
 
   const filterItems = (items: ISelectFieldItem[]): ISelectFieldItem[] => {
@@ -593,10 +588,12 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
           <ReqoreControlGroup {...rest} {...otherRest} stack fill>
             {hasItemsWithDesc(items) && !forceDropdown ? (
               <ReqoreButton
+                {...rest}
                 fluid
+                compact={rest.compact}
                 key={value}
                 icon={icon || (hasError(items, value) ? 'ErrorWarningLine' : undefined)}
-                rightIcon='ListUnordered'
+                rightIcon={showRightIcon ? 'ListUnordered' : undefined}
                 onClick={() => setSelectDialogOpen(true)}
                 description={getItemShortDescription(value, 'Select from available values')}
                 tooltip={getItemDescriptionTooltip(value)}
@@ -606,21 +603,25 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                     gradient: {
                       direction: 'to right',
                       colors: {
-                        0: value ? 'info' : 'main',
+                        0: value ? 'info' : 'main:lighten:2',
                         100: hasError(items, value)
                           ? 'danger:darken'
                           : hasWarning(items, value)
                             ? 'warning'
                             : value
                               ? 'info'
-                              : 'main',
+                              : 'main:lighten:2',
                       },
                     },
                   }
                 }
                 className={className}
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : showPlaceholder
+                    ? placeholder || t('PleaseSelect')
+                    : undefined}
               </ReqoreButton>
             ) : asMenu ? (
               <ReqoreMenu>
@@ -643,6 +644,7 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
               <ReqoreDropdown
                 items={query === '' ? reqoreItems : filterItems(reqoreItems)}
                 filterable
+                fluid
                 key={value}
                 disabled={disabled}
                 readOnly={reqoreItems.length === 0}
@@ -660,16 +662,14 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
                   className: 'q-select-input',
                 }}
                 description={getItemShortDescription(value) || description}
-                effect={
-                  !rest.minimal && {
-                    gradient: {
-                      direction: 'to left',
-                      colors: value ? 'info' : 'main',
-                    },
-                  }
-                }
+                intent={hasError(items, value) ? 'danger' : value ? 'info' : undefined}
+                {...rest}
               >
-                {value ? getLabel(items, value) : placeholder || t('PleaseSelect')}
+                {value
+                  ? getLabel(items, value)
+                  : showPlaceholder
+                    ? placeholder || t('PleaseSelect')
+                    : undefined}
               </ReqoreDropdown>
             )}
 
@@ -702,5 +702,8 @@ const SelectField: React.FC<ISelectField & IField & IReqoreControlGroupProps> = 
 };
 
 export default compose(withTextContext())(SelectField) as React.FC<
-  ISelectField & IField & Omit<IReqoreControlGroupProps, 'onChange' | 'children'>
+  ISelectField &
+    IField &
+    Omit<IReqoreControlGroupProps, 'onChange' | 'children'> &
+    Omit<IReqoreButtonProps, 'onChange' | 'children'>
 >;

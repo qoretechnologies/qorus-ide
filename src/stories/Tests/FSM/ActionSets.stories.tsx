@@ -48,9 +48,7 @@ export const CreateNewSet: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll(
-        '.fsm-action-set-dialog .system-option.reqore-textarea'
-      )[0],
+      document.querySelectorAll('.fsm-action-set-dialog .system-option .reqore-textarea')[0],
       {
         target: { value: 'Test action set' },
       }
@@ -60,13 +58,9 @@ export const CreateNewSet: StoryFSM = {
 
     await fireEvent.click(document.querySelector('#submit-action-set'));
 
-    await waitFor(
-      () =>
-        expect(document.querySelector('.reqore-modal')).not.toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
+    await waitFor(() => expect(document.querySelector('.reqore-modal')).not.toBeInTheDocument(), {
+      timeout: 10000,
+    });
 
     if (openAfter) {
       await _testsOpenAppCatalogue(undefined, 500, 200);
@@ -94,9 +88,7 @@ export const CreateNewSetWithEventTrigger: StoryFSM = {
     await sleep(200);
 
     await fireEvent.change(
-      document.querySelectorAll(
-        '.fsm-action-set-dialog .system-option.reqore-textarea'
-      )[0],
+      document.querySelectorAll('.fsm-action-set-dialog .system-option .reqore-textarea')[0],
       {
         target: { value: 'With Event Trigger' },
       }
@@ -106,13 +98,9 @@ export const CreateNewSetWithEventTrigger: StoryFSM = {
 
     await fireEvent.click(document.querySelector('#submit-action-set'));
 
-    await waitFor(
-      () =>
-        expect(document.querySelector('.reqore-modal')).not.toBeInTheDocument(),
-      {
-        timeout: 10000,
-      }
-    );
+    await waitFor(() => expect(document.querySelector('.reqore-modal')).not.toBeInTheDocument(), {
+      timeout: 10000,
+    });
 
     if (openAfter) {
       await _testsDeleteState('Schedule');
@@ -130,12 +118,7 @@ export const AddNewSet: StoryFSM = {
 
     await _testsOpenAppCatalogue(undefined, 500, 400);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'Test action set'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'Test action set');
 
     await sleep(200);
 
@@ -157,12 +140,7 @@ export const AddNewSetWithEventTrigger: StoryFSM = {
 
     await _testsOpenAppCatalogue(undefined, 500, 200);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'With Event Trigger'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'With Event Trigger');
 
     await sleep(200);
 
@@ -178,12 +156,7 @@ export const AddNewSetFromState: StoryFSM = {
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[0]);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'Test action set'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'Test action set');
 
     await sleep(200);
 
@@ -199,12 +172,7 @@ export const AddNewSetFromStateFromSet: StoryFSM = {
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[3]);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'Test action set'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'Test action set');
 
     await sleep(200);
 
@@ -220,12 +188,7 @@ export const AddNewSetFromStateAndFreely: StoryFSM = {
 
     await fireEvent.click(document.querySelectorAll('.add-new-state-after')[0]);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'Test action set'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'Test action set');
 
     await sleep(200);
 
@@ -233,12 +196,7 @@ export const AddNewSetFromStateAndFreely: StoryFSM = {
 
     await await _testsOpenAppCatalogue(undefined, 850, 250);
 
-    await _testsSelectFromAppCatalogue(
-      canvas,
-      undefined,
-      'Saved Favorites',
-      'Test action set'
-    );
+    await _testsSelectFromAppCatalogue(canvas, undefined, 'Saved Favorites', 'Test action set');
 
     await sleep(200);
 
@@ -262,9 +220,7 @@ export const RemoveActionSet: StoryFSM = {
 
     await sleep(200);
 
-    await expect(
-      document.querySelectorAll('.reqore-collection-item').length
-    ).toBe(appCount - 1);
+    await expect(document.querySelectorAll('.reqore-collection-item').length).toBe(appCount - 1);
   },
 };
 
@@ -276,10 +232,7 @@ export const SaveStateAsFavorite: StoryFSM = {
     await sleep(500);
     await _testsClickStateByLabel(canvas, 'Get User Info');
     await waitFor(
-      () =>
-        expect(
-          document.querySelector('.state-favorite-button')
-        ).toBeInTheDocument(),
+      () => expect(document.querySelector('.state-favorite-button')).toBeInTheDocument(),
       { timeout: 10000 }
     );
     await sleep(500);

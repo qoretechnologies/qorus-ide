@@ -26,7 +26,7 @@ export const Complex: StoryObj<typeof meta> = {
   },
 };
 
-export const WithValue: StoryObj<typeof meta> = {
+export const WithOldValue: StoryObj<typeof meta> = {
   args: {
     url: '/dataprovider/factories/mqtt/provider?provider_yaml_options={subscription_qos=Mgo=,subscription_topic=JyMnCg==,url=J3RjcDovL2xvY2FsaG9zdDoxODg4MycK}',
     messageId: 'message',
@@ -38,15 +38,27 @@ export const WithValue: StoryObj<typeof meta> = {
   },
 };
 
+export const WithNewValue: StoryObj<typeof meta> = {
+  args: {
+    url: '/dataprovider/factories/mqtt/provider?provider_yaml_options={subscription_qos=Mgo=,subscription_topic=JyMnCg==,url=J3RjcDovL2xvY2FsaG9zdDoxODg4MycK}',
+    messageId: 'message',
+    value: {
+      topic: { type: 'richtext', value: 'test' },
+      qos: { type: 'int', value: 10 },
+      retained: { type: 'boolean', value: true },
+    },
+  },
+};
+
 export const FreeformWithValue: StoryObj<typeof meta> = {
   args: {
     url: '/dataprovider/factories/mqtt/provider?provider_yaml_options={subscription_qos=Mgo=,subscription_topic=JyMnCg==,url=J3RjcDovL2xvY2FsaG9zdDoxODg4MycK}',
     messageId: 'message',
     isFreeform: true,
     value: {
-      topic: 'test',
-      qos: 1,
-      retained: true,
+      topic: { type: 'richtext', value: 'test' },
+      qos: { type: 'int', value: 10 },
+      retained: { type: 'boolean', value: true },
     },
   },
 };
