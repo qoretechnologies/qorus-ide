@@ -6,6 +6,7 @@ import { ConnectionManagement } from '../../components/ConnectionManagement';
 import { AppsContext } from '../../context/apps';
 import apps from '../Data/apps.json';
 import { StoryMeta } from '../types';
+import { sleep } from '../Tests/utils';
 
 const meta = {
   component: ConnectionManagement,
@@ -84,36 +85,36 @@ export const NewConnectionWithRequiredOptions: Story = {
     await NewConnection.play({ canvasElement, ...rest });
 
     await waitFor(
-      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(1),
+      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBe(2),
       { timeout: 5000 }
     );
   },
 };
 
 // TODO: Fix this test
-// export const EditingConnection: Story = {
-//   args: {
-//     app: 'GoogleCalendar',
-//   },
-//   parameters: {
-//     chromatic: { disable: true },
-//   },
-//   play: async ({ canvasElement, ...rest }) => {
-//     const canvas = within(canvasElement);
+export const EditingConnection: Story = {
+  args: {
+    app: 'GoogleCalendar',
+  },
+  parameters: {
+    chromatic: { disable: true },
+  },
+  play: async ({ canvasElement, ...rest }) => {
+    const canvas = within(canvasElement);
 
-//     await NewConnection.play({ canvasElement, ...rest });
+    await NewConnection.play({ canvasElement, ...rest });
 
-//     await sleep(500);
+    await sleep(500);
 
-//     await waitFor(() => canvas.getAllByText('Edit connection')[0], {
-//       timeout: 15000,
-//     });
+    await waitFor(() => canvas.getAllByText('Edit connection')[0], {
+      timeout: 15000,
+    });
 
-//     await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
+    await fireEvent.click(canvas.getAllByText('Edit connection')[0]);
 
-//     await waitFor(
-//       () => expect(document.querySelectorAll('.reqore-collection-item').length).toBeGreaterThan(1),
-//       { timeout: 5000 }
-//     );
-//   },
-// };
+    await waitFor(
+      () => expect(document.querySelectorAll('.reqore-collection-item').length).toBeGreaterThan(1),
+      { timeout: 5000 }
+    );
+  },
+};
