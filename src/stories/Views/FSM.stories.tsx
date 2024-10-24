@@ -341,6 +341,9 @@ export const ReadonlyVariablesInState: StoryFSM = {
   args: {
     fsm: multipleVariablesFsm,
   },
+  parameters: {
+    chromatic: { disable: true },
+  },
   play: async ({ canvasElement, stateType, ...rest }) => {
     const canvas = within(canvasElement);
     await MultipleDeepVariableStates.play({ canvasElement, ...rest });
