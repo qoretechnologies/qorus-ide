@@ -57,12 +57,12 @@ export async function _testsChangeRichText(value: string, nth: number = 0) {
   await waitFor(
     () =>
       expect(
-        document.querySelectorAll('div.system-option[contenteditable="true"]')[nth]
+        document.querySelectorAll('div.system-option [contenteditable="true"]')[nth]
       ).toBeInTheDocument(),
     { timeout: 10000 }
   );
 
-  const element = document.querySelectorAll('div.system-option[contenteditable="true"]')[nth];
+  const element = document.querySelectorAll('div.system-option [contenteditable="true"]')[nth];
 
   await element.scrollIntoView();
 

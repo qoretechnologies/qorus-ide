@@ -82,7 +82,7 @@ export const NewStateFromVariable: StoryFSM = {
     // Open the state
     await waitFor(
       async () => {
-        await expect(document.querySelectorAll('.system-option.reqore-input')[0]).toHaveValue(100);
+        await expect(document.querySelectorAll('.system-option .reqore-input')[0]).toHaveValue(100);
       },
       { timeout: 15000 }
     );

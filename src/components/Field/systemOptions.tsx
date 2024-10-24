@@ -779,7 +779,6 @@ const Options = ({
                   templates={templates.value}
                   component={AutoField}
                   {...getTypeAndCanBeNull(type, options[optionName].allowed_values, other.op)}
-                  className='system-option'
                   name={optionName}
                   onChange={(optionName, val, givenType, isFunction) => {
                     if (val !== undefined && val !== other.value) {

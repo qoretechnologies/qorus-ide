@@ -733,7 +733,7 @@ function AutoField<T = any>({
 
   // Render type picker if the type is auto or any
   return (
-    <ReqoreControlGroup {...rest} className={`${rest.className} auto-field-group`} vertical fluid>
+    <ReqoreControlGroup {...rest} className={`auto-field-group`} vertical fluid>
       {showPicker && (
         <SelectField
           fixed

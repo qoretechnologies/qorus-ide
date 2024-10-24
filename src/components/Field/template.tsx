@@ -140,6 +140,7 @@ export const TemplateField = ({
   isFunction,
   returnType,
   level,
+  className,
   ...rest
 }: ITemplateFieldProps) => {
   const qorusTypes = useQorusTypes();
@@ -252,7 +253,7 @@ export const TemplateField = ({
           onChange={onChange}
           name={name}
           {...rest}
-          className={`${rest.className} template-selector`}
+          className={`${className} template-selector`}
           templates={
             allowTemplates
               ? filterTemplates
